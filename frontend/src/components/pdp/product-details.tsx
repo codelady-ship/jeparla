@@ -9,10 +9,12 @@ import {
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
 import { ProductGrid } from "@/components/product/product-grid";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 import { asIntlNumber } from "@/lib/decimal";
+import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
@@ -85,6 +87,21 @@ export async function ProductDetails({
 
   return (
     <article className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
+      <JsonLd
+        data={[
+          productLd(p, locale),
+          breadcrumbs([
+            { name: t("catalog"), path: `/${locale}/products` },
+            ...[parent, category]
+              .filter((c) => c != null)
+              .map((c) => ({
+                name: c.name[locale],
+                path: `/${locale}/products?category=${c.slug}`,
+              })),
+            { name, path: `/${locale}/products/${p.slug}` },
+          ]),
+        ]}
+      />
       <nav aria-label={t("breadcrumb")} className="mb-6 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-1">
           <li>

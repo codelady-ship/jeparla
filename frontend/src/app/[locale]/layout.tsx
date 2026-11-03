@@ -41,7 +41,16 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: t("title"), template: "%s | Jeparla" },
     description: t("description"),
     alternates: alternates(locale),
-    openGraph: { siteName: "Jeparla", locale, type: "website" },
+    openGraph: { siteName: "Jeparla", locale, type: "website", url: `${SITE_URL}/${locale}` },
+    twitter: { card: "summary_large_image" },
+    applicationName: "Jeparla",
+    // Search Console / Bing Webmaster ownership tokens, set in the host env when ready.
+    verification: {
+      ...(process.env.GOOGLE_SITE_VERIFICATION && { google: process.env.GOOGLE_SITE_VERIFICATION }),
+      ...(process.env.BING_SITE_VERIFICATION && {
+        other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION },
+      }),
+    },
   };
 }
 

@@ -5,7 +5,7 @@ import { hasLocale } from "next-intl";
 import { ProductDetails } from "@/components/pdp/product-details";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
-import { api } from "@/lib/api";
+import { api, USING_MOCK } from "@/lib/api";
 
 // Known products are prerendered; new ones render on first request.
 export async function generateStaticParams() {
@@ -25,6 +25,8 @@ export async function generateMetadata({
     title: name,
     description: p.description[locale],
     alternates: alternates(locale, `/products/${p.slug}`),
+    // Demo data is invented and must not be indexed as real stores or products.
+    ...(USING_MOCK && { robots: { index: false, follow: true } }),
     openGraph: {
       title: name,
       images: p.images[0] ? [{ url: p.images[0].url, alt: p.images[0].alt[locale] }] : [],

@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { defaultLocale, locales, type Locale } from "./routing";
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
-  /\/$/,
-  "",
-);
+/**
+ * Public origin for canonical, hreflang, sitemap and structured data. Order: explicit
+ * NEXT_PUBLIC_SITE_URL, then Vercel's production domain (Vercel sets it at build time),
+ * then localhost for development. Search engines ignore pages whose canonical points
+ * to localhost, so production must never fall through to it.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000")
+).replace(/\/$/, "");
 
 /** canonical + hreflang links for a path without locale prefix, e.g. "/products". */
 export function alternates(locale: Locale, path = ""): Metadata["alternates"] {

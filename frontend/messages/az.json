@@ -253,5 +253,33 @@
     "noProductsTitle": "Məhsul tapılmadı",
     "noProductsText": "Axtarışı dəyişin və ya bütün məhsullara baxın.",
     "showAllProducts": "Bütün məhsullar"
+  },
+  "About": {
+    "title": "Jeparla nədir?",
+    "lead": "Jeparla Azərbaycanın qızıl, gümüş və brilyant zərgərlik mağazalarını bir yerdə toplayan onlayn kataloqdur.",
+    "how": "Məhsulları mağaza, kateqoriya, metal, əyar, çəki və qiymət üzrə axtarırsınız, sonra bəyəndiyiniz məhsul üçün birbaşa mağazaya WhatsApp ilə yazırsınız. Jeparla özü məhsul satmır və ödəniş qəbul etmir.",
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "what": {
+        "q": "Jeparla nədir?",
+        "a": "Azərbaycandakı zərgərlik mağazalarının məhsullarını bir saytda göstərən kataloqdur: qızıl, gümüş və brilyant zərgərlik."
+      },
+      "buy": {
+        "q": "Jeparla-da necə alış edim?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsini basın: mesajda məhsulun adı, kodu və linki olur. Alış, ödəniş və çatdırılma mağaza ilə birbaşa razılaşdırılır."
+      },
+      "price": {
+        "q": "Qiymətlər necə yenilənir?",
+        "a": "Satıcı qiyməti sabit və ya metala bağlı qoya bilər. Metala bağlı qiymətlər Azərbaycan Mərkəzi Bankının gündəlik metal məzənnəsi ilə avtomatik yenilənir, yenilənmə tarixi məhsulun yanında göstərilir."
+      },
+      "verified": {
+        "q": "\"Yoxlanılıb\" nişanı nə deməkdir?",
+        "a": "Satıcı və sənəd yoxlaması ayrı-ayrılıqda aparılır və hər biri ayrıca göstərilir. Aparılmayan yoxlama \"aparılmayıb\" kimi yazılır."
+      },
+      "sell": {
+        "q": "Mağazamı Jeparla-ya necə əlavə edim?",
+        "a": "\"Mağaza aç\" bölməsindən müraciət edin. Mağaza yoxlanıldıqdan sonra məhsullar moderasiyadan keçib kataloqda görünür."
+      }
+    }
   }
 }
