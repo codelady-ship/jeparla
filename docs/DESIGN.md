@@ -49,12 +49,46 @@ Hər ikisi Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir (2026-11-03 
 **Playfair Display-də manat işarəsi (₼) yoxdur:** qiymətlər həmişə `font-sans` və `tabular-nums`.
 Ölçülər: mətn 14–16px, başlıqlar 24 / 30 / 36px, sətir uzunluğu `max-w-prose`.
 
-## Spacing, radius, motion
+## Spacing və radius
 
 - Spacing: Tailwind şkalası (4px addım); səhifə kənarı mobil 16px, desktop 24px; bölmələr arası 48px.
 - Radius: baza `0.5rem` (`--radius`), kart `rounded-xl`, nişan tam yuvarlaq.
-- Motion: 100–200 ms, `ease-out`; scroll hero xaricində dekorativ animasiya yoxdur;
-  `prefers-reduced-motion`-da hamısı söndürülür. Tema keçidində keçid animasiyası yoxdur.
+
+## Motion
+
+Xarakter: premium zərgərlik vitrinlərinin (ilham: Swarovski) sakit, yavaş və yumşaq dayanan
+hərəkəti. Clean-room: onların kodu, faylları və dəqiq dəyərləri götürülmür; hiss müşahidə edilir,
+dəyərlər bizimdir (`tokens.json` -> `motion`).
+
+| Token               | Dəyər                            | Harada                                      |
+| ------------------- | -------------------------------- | ------------------------------------------- |
+| `--duration-fast`   | 150 ms                           | hover rəngi, fokus                          |
+| `--duration-base`   | 300 ms                           | menyu, dialoq, panel                        |
+| `--duration-slow`   | 600 ms                           | şəkil keçidi, link xətti, səhifə crossfade  |
+| `--duration-reveal` | 800 ms                           | scroll ilə görünmə                          |
+| `--duration-zoom`   | 1200 ms                          | məhsul şəklinin hover zoom-u                |
+| `--duration-morph`  | 500 ms                           | kartdan məhsul səhifəsinə şəkil keçidi      |
+| `--ease-luxe`       | `cubic-bezier(0.22, 1, 0.36, 1)` | əsas: sürətli başlayır, uzun yumşaq dayanır |
+| `--ease-standard`   | `cubic-bezier(0.4, 0, 0.2, 1)`   | kiçik UI dəyişiklikləri                     |
+| `--ease-in-out`     | `cubic-bezier(0.65, 0, 0.35, 1)` | açılıb-bağlanan panellər                    |
+
+Naxışlar:
+
+- **Scroll reveal:** `<Reveal index={i}>`, 24px yuxarı + fade, qrupda 80 ms növbə. Bir dəfə işləyir.
+  JS olmadıqda (`@media (scripting: enabled)`) gizlənmir, crawler və AI hər şeyi görür.
+- **Məhsul şəkli:** `group` + `overflow-hidden` daxilində `img-zoom` (1.05, 1200 ms) və ikinci şəkil
+  üçün `img-swap` (crossfade). Yalnız `hover: hover` cihazlarda.
+- **Link:** `link-underline`, xətt soldan sağa çəkilir.
+- **Səhifə keçidi:** View Transitions API, bütün səhifə üçün sakit crossfade; kartdakı şəkil
+  məhsul səhifəsinə `<ViewTransition name="product-{id}" share="morph" default="none">` ilə "uçur".
+- **Header:** aşağı scroll-da gizlənir, yuxarı scroll-da `transform` ilə geri gəlir (1.4).
+
+Qaydalar (Lighthouse üçün):
+
+- Yalnız `opacity` və `transform`. `width`, `height`, `top`, `margin` animasiya olunmur (CLS = 0).
+- LCP elementi və ilk ekrandakı məzmun **heç vaxt** reveal olunmur.
+- `prefers-reduced-motion: reduce`-da bütün keçidlər, zoom və view transition-lar söndürülür.
+- Tema keçidində animasiya yoxdur. Avtomatik oynayan video və karusel yoxdur.
 
 ## Komponentlər
 

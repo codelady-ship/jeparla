@@ -74,3 +74,94 @@
     @apply font-heading;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion (docs/DESIGN.md "Motion"). Only opacity and transform are animated,
+   so nothing shifts layout (CLS) and work stays on the compositor.
+   --------------------------------------------------------------------------- */
+
+/* Scroll reveal: content fades up once when it enters the viewport (see <Reveal>).
+   Hidden only when scripting is on, so no-JS visitors and crawlers see everything.
+   Never use on the LCP element or anything above the fold. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-distance), 0);
+    transition:
+      opacity var(--duration-reveal) var(--ease-luxe),
+      transform var(--duration-reveal) var(--ease-luxe);
+    transition-delay: calc(var(--reveal-index, 0) * var(--reveal-stagger));
+  }
+  [data-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Slow image zoom on hover: put on the <img> wrapper inside a `group` element
+   that has overflow hidden. */
+@utility img-zoom {
+  transition: transform var(--duration-zoom) var(--ease-luxe);
+  @media (hover: hover) {
+    :where(.group):hover & {
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* Second product image cross-fades in on hover. */
+@utility img-swap {
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-luxe);
+  @media (hover: hover) {
+    :where(.group):hover & {
+      opacity: 1;
+    }
+  }
+}
+
+/* Underline that draws from left to right. */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size var(--duration-slow) var(--ease-luxe);
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+/* Route change: quiet cross-fade of the whole page. Shared elements (product
+   image from card to product page) use <ViewTransition share="morph">. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-luxe);
+}
+::view-transition-group(.morph) {
+  animation-duration: var(--duration-morph);
+  animation-timing-function: var(--ease-luxe);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .img-zoom,
+  .img-swap,
+  .link-underline {
+    transition: none !important;
+  }
+  .img-zoom {
+    transform: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

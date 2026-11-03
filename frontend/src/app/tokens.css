@@ -3,6 +3,17 @@
 :root {
   color-scheme: light;
   --radius: 0.5rem;
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+  --duration-reveal: 800ms;
+  --duration-zoom: 1200ms;
+  --duration-morph: 500ms;
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --reveal-distance: 24px;
+  --reveal-stagger: 80ms;
   --background: #f7f3ea;
   --foreground: #292929;
   --card: #ffffff;

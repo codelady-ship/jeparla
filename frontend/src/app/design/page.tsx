@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Gem, Search } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,29 @@ export default function DesignPage() {
           <Badge variant="outline">Yeni</Badge>
           <Badge variant="destructive">Stokda yoxdur</Badge>
         </div>
+      </section>
+
+      <section aria-labelledby="motion" className="flex flex-col gap-4">
+        <h2 id="motion" className="font-heading text-2xl">
+          Hərəkət
+        </h2>
+        <p className="max-w-prose text-muted-foreground">
+          Kartlar scroll ilə növbə ilə görünür. Şəklin üzərinə gələndə yavaş zoom və ikinci şəkil;
+          linkin alt xətti soldan sağa çəkilir.
+        </p>
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {["Üzüklər", "Sırğalar", "Boyunbağılar", "Qolbaqlar"].map((name, i) => (
+            <Reveal as="li" key={name} index={i}>
+              <a href="#motion" className="group block">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
+                  <div className="absolute inset-0 img-zoom bg-linear-to-br from-muted to-gold/40" />
+                  <div className="absolute inset-0 bg-linear-to-tr from-primary/80 to-gold/60 img-swap" />
+                </div>
+                <span className="mt-2 inline-block link-underline text-sm font-medium">{name}</span>
+              </a>
+            </Reveal>
+          ))}
+        </ul>
       </section>
 
       <section aria-labelledby="forms" className="flex flex-col gap-4">
