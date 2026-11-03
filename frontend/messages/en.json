@@ -253,5 +253,33 @@
     "noProductsTitle": "No products found",
     "noProductsText": "Change the search or see all products.",
     "showAllProducts": "All products"
+  },
+  "About": {
+    "title": "What is Jeparla?",
+    "lead": "Jeparla is an online catalog that brings together gold, silver and diamond jewelry stores in Azerbaijan.",
+    "how": "You search products by store, category, metal, fineness, weight and price, then message the store directly on WhatsApp about the piece you like. Jeparla itself does not sell products or take payments.",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "what": {
+        "q": "What is Jeparla?",
+        "a": "A catalog that shows products from jewelry stores in Azerbaijan on one site: gold, silver and diamond jewelry."
+      },
+      "buy": {
+        "q": "How do I buy on Jeparla?",
+        "a": "Press the WhatsApp button on a product page: the message includes the product name, code and link. Purchase, payment and delivery are agreed directly with the store."
+      },
+      "price": {
+        "q": "How are prices updated?",
+        "a": "A seller can set a fixed price or a metal-linked one. Metal-linked prices update automatically with the daily metal rates of the Central Bank of Azerbaijan, and the update date is shown next to the product."
+      },
+      "verified": {
+        "q": "What does the Verified badge mean?",
+        "a": "Seller and document checks are done separately and each is shown on its own. A check that was not done is shown as not performed."
+      },
+      "sell": {
+        "q": "How do I add my store to Jeparla?",
+        "a": "Apply through Open a store. After the store is checked, its products go through moderation and then appear in the catalog."
+      }
+    }
   }
 }

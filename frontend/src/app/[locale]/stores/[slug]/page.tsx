@@ -8,13 +8,15 @@ import { Suspense } from "react";
 import { isVerified } from "@/components/product/product-card";
 import { ProductGridSkeleton } from "@/components/product/product-grid";
 import { StoreMonogram } from "@/components/stores/store-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import { StoreProducts } from "@/components/stores/store-products";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
-import { api } from "@/lib/api";
+import { api, USING_MOCK } from "@/lib/api";
 import { formatOpeningHours } from "@/lib/opening-hours";
+import { jewelryStore } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import { cn } from "cn";
 
@@ -34,6 +36,8 @@ export async function generateMetadata({
     title: `${store.name}, ${store.city}`,
     description: store.description[locale],
     alternates: alternates(locale, `/stores/${store.slug}`),
+    // Demo data is invented and must not be indexed as real stores or products.
+    ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
 }
 
@@ -58,6 +62,7 @@ export default async function StorePage({
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+      <JsonLd data={[jewelryStore(store, locale)]} />
       <header className="flex flex-col gap-6 border-b pb-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-5">
           <StoreMonogram name={store.name} size="lg" />

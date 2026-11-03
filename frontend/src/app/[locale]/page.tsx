@@ -1,3 +1,4 @@
+import { AboutJeparla } from "@/components/home/about-jeparla";
 import { HomeContent } from "@/components/home/home-content";
 import { NewArrivals } from "@/components/home/new-arrivals";
 
@@ -7,6 +8,7 @@ export default function Home() {
     <>
       <HomeContent />
       <NewArrivals />
+      <AboutJeparla />
     </>
   );
 }
