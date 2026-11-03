@@ -1,0 +1,36 @@
+feature,area,priority,reference,jeparla,notes
+Metal/purity line under product name,card,P1,https://mejuri.com/world/en/collections/dome,"Separate line: metal, purity, weight (e.g. Qizil 585 · 3,2 q)",Mejuri shows material line on every card
+Factual badges only,card,P1,https://mejuri.com/world/en/collections/dome,"Badges: Yeni, Verified, Metala bagli qiymet; no scarcity/sold-out pressure",Mejuri uses New/Sold out/bundle badges; we skip pressure badges
+Second image on hover,card,P1,https://www.missoma.com/collections/necklaces,img-swap crossfade on hover-capable devices only,Missoma cards carry two images; hover behaviour yoxlanilmayib
+Store name on card,card,P1,https://www.farfetch.com/boutiques,Small store name + Verified mark under price,Multi-store context; Farfetch shows boutique name + city
+Diamond 4C summary on card,card,P1,https://www.brilliantearth.com/loose-diamonds/search/,"One line: carat · shape · color · clarity",BE grid cards show carat/shape/cut/color/clarity + price
+Result count + All filters button,filter,P1,https://mejuri.com/world/en/collections/dome,"Count above grid, 3 primary filters inline, rest in Sheet",Mejuri: Category/Material/Availability + All Filters
+Horizontal filter bar with chips,filter,P1,https://baymard.com/ecommerce-design-examples/filtering-options/19244-zalando,"Desktop top bar 4-6 dropdowns, applied filters as removable chips, Clear all",Zalando fetch 503; based on Baymard/ScreensDesign search results
+Sticky Filter + Sort on mobile,filter,P1,https://baymard.com/research-articles/horizontal-filtering-sorting-design,"Sticky pair of buttons, Sheet with 'Show N results'",Third-party guidance; not verified on Zalando directly
+Filter state in URL,filter,P1,https://www.brilliantearth.com/loose-diamonds/search/,Query params for every filter; shareable and SEO-friendly,Our own requirement; BE has Reset All
+Occasion / gift filter,filter,P2,https://ca.pandora.net/en/shop-by,"Filter: nisan, toy, ad gunu, usaq ucun",Pandora CA filters incl. Occasions/Theme (search snippet; fetch 403)
+Shop-by hub page,search,P2,https://ca.pandora.net/en/shop-by,"Entry page: by category, metal, occasion, price band",Pandora fetch 403; from search results
+Shop by price bands,search,P2,https://www.catbirdnyc.com/,"Links like '200 AZN-e qeder' in menu and home",Catbird groups by Under $150/$300; Missoma has Shop By Price
+Gifts under X page,search,P2,https://www.swarovski.com/en-NL/c-swa-root/Categories/f/product-set/ps-selected-gifts,"Gift page with AZN price caps + for her/him, built from filter queries",Swarovski fetch 403; seen in search results
+Spec block not hidden in tabs,pdp,P1,https://baymard.com/ux-benchmark/case-studies/tiffany-and-co,Open spec sections or first accordion open; no horizontal tabs,Baymard flags horizontal tabs on Tiffany PDP
+Details & dimensions table,pdp,P1,https://www.missoma.com/products/mini-paperclip-chain-necklace-18ct-gold-plated,"Metal, purity, weight, length/width, stone, product code",Missoma lists weight and dimensions explicitly
+Feature chips on PDP,pdp,P2,https://www.missoma.com/products/mini-paperclip-chain-necklace-18ct-gold-plated,"Chips: Gumus 925, Sertifikatli, El isi (merchant claim + Verified)",Missoma shows Water-Resistant style tags
+Gallery with counter,pdp,P1,https://mejuri.com/world/en/products/dome-huggies,"Thumbnails + 'Sekil 1 / N' counter, fullscreen view",Mejuri shows Image 1 of 2
+Size guide link,pdp,P2,https://mejuri.com/world/en/products/dome-huggies,Ring/bracelet size guide in our own words (az/en/ru),Mejuri and Missoma both link a size guide
+More from this store + similar,pdp,P1,https://www.missoma.com/products/mini-paperclip-chain-necklace-18ct-gold-plated,Two carousels from real data instead of styled-with,Missoma 'styled with' not found on PDP; only cart cross-sell
+Trust strip near price,trust,P1,https://mejuri.com/world/en/products/dome-huggies,"Verified status, certificate, store warranty - only data the store entered",Mejuri shows warranty/returns/shipping badges near title
+Store story block,store,P1,https://www.catbirdnyc.com/,"Founded year, city/district, master/family, specialty",Catbird origin story tone; Farfetch 'About the store'
+Visit us block,store,P1,https://www.catbirdnyc.com/,"Address, map, hours, phone, WhatsApp button",Catbird 'Visit Us' section
+Store services list,store,P2,https://www.catbirdnyc.com/,"Resizing, repair, engraving, custom orders",Catbird lists in-store services
+Store directory by city,store,P1,https://www.farfetch.com/boutiques,"Grouped by city/district, search, pagination",Farfetch groups boutiques by region
+Store policies + last updated,store,P2,https://help.etsy.com/hc/en-in/articles/4409221032599-How-to-Find-the-Best-Items-for-You-on-Etsy,"Delivery, return, warranty text + 'Son yenilenme' date",Etsy fetch 403; based on help/forum search results
+Measurable trust signals only,trust,P1,https://help.etsy.com/hc/en-in/articles/4409221032599-How-to-Find-the-Best-Items-for-You-on-Etsy,"'N aydir platformada', Verified date; no sales count, no stars in MVP",Etsy shows sales count/stars; we cannot verify sales
+Diamond shape selector with icons,diamond,P1,https://www.brilliantearth.com/loose-diamonds/,"Own SVG icons for round, oval, princess, cushion, emerald, pear, marquise, radiant, asscher, heart",BE uses photos per shape; we draw our own icons
+Carat range slider,diamond,P1,https://www.brilliantearth.com/loose-diamonds/search/,Dual-thumb slider + min/max inputs,BE uses min/max inputs
+Color and clarity range,diamond,P1,https://www.brilliantearth.com/loose-diamonds/search/,"Ordinal range sliders: color D-K, clarity FL-I1; cut grade select",BE has separate Cut/Color/Clarity filters
+Certificate lab filter + display,diamond,P1,https://www.brilliantearth.com/loose-diamonds/search/,"Filter GIA/IGI/HRD/local; PDP shows lab, number, PDF link",BE Report filter IGI/GIA/HRD; PDP cert location yoxlanilmayib
+Natural vs lab-grown,diamond,P1,https://www.brilliantearth.com/loose-diamonds/search/,Required field + filter; clearly labelled on card,BE Origin filter
+Grid/list toggle with sortable columns,diamond,P2,https://www.brilliantearth.com/loose-diamonds/search/,"List view columns: shape, carat, color, clarity, cut, price, store",BE list view + compare column
+Step-by-step add product,store,P1,https://www.vinted.co.uk/help/375-uploading-step-by-step,"Merchant wizard: photos, category, metal/purity/weight, stones/4C, price, preview",Vinted official help steps
+Slow hover zoom on product image,motion,P2,https://www.swarovski.com/en-US/,"Use existing token zoom 1200ms, scale 1.05, ease luxe",Swarovski fetch 403; behaviour yoxlanilmayib - manual browser check needed
+Scroll fade-up reveal,motion,P2,https://www.swarovski.com/en-US/,"Existing Reveal 800ms, 24px, 80ms stagger; cap stagger at ~6 items",Swarovski behaviour yoxlanilmayib
