@@ -227,5 +227,31 @@
       "submit": "Send",
       "unavailable": "Sending reports will be available soon. Nothing is sent yet."
     }
+  },
+  "Stores": {
+    "title": "Stores",
+    "description": "Jewelry stores in Azerbaijan: address, opening hours, WhatsApp and products.",
+    "intro": "Pick a city or search by name. Each store's checks are shown separately.",
+    "loading": "Loading stores",
+    "searchLabel": "Store name",
+    "city": "City",
+    "allCities": "All cities",
+    "search": "Search",
+    "count": "{count, plural, =0 {No stores} one {# store} other {# stores}}",
+    "productCount": "{count, plural, =0 {No products} one {# product} other {# products}}",
+    "emptyTitle": "No stores found",
+    "showAll": "All stores",
+    "sellerVerified": "Seller verified",
+    "visit": "Visit",
+    "openMap": "Open in maps",
+    "whatsapp": "Message on WhatsApp",
+    "whatsappMessage": "Hello! I found your store {store} on Jeparla.",
+    "products": "Products from this store",
+    "searchInStore": "Search this store",
+    "category": "Category",
+    "allCategories": "All categories",
+    "noProductsTitle": "No products found",
+    "noProductsText": "Change the search or see all products.",
+    "showAllProducts": "All products"
   }
 }

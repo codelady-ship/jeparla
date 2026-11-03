@@ -227,5 +227,31 @@
       "submit": "Göndər",
       "unavailable": "Şikayət göndərmək tezliklə aktiv olacaq. Hələlik heç nə göndərilmir."
     }
+  },
+  "Stores": {
+    "title": "Mağazalar",
+    "description": "Azərbaycanın zərgərlik mağazaları: ünvan, iş saatları, WhatsApp və məhsullar.",
+    "intro": "Şəhərə görə seçin və ya adla axtarın. Hər mağazanın yoxlama statusu ayrıca göstərilir.",
+    "loading": "Mağazalar yüklənir",
+    "searchLabel": "Mağaza adı",
+    "city": "Şəhər",
+    "allCities": "Bütün şəhərlər",
+    "search": "Axtar",
+    "count": "{count, plural, =0 {Mağaza yoxdur} other {# mağaza}}",
+    "productCount": "{count, plural, =0 {Məhsul yoxdur} other {# məhsul}}",
+    "emptyTitle": "Mağaza tapılmadı",
+    "showAll": "Bütün mağazalar",
+    "sellerVerified": "Satıcı yoxlanılıb",
+    "visit": "Ziyarət",
+    "openMap": "Xəritədə aç",
+    "whatsapp": "WhatsApp ilə yaz",
+    "whatsappMessage": "Salam! Jeparla-da {store} mağazanızı gördüm.",
+    "products": "Mağazanın məhsulları",
+    "searchInStore": "Mağazada axtar",
+    "category": "Kateqoriya",
+    "allCategories": "Bütün kateqoriyalar",
+    "noProductsTitle": "Məhsul tapılmadı",
+    "noProductsText": "Axtarışı dəyişin və ya bütün məhsullara baxın.",
+    "showAllProducts": "Bütün məhsullar"
   }
 }
