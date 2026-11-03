@@ -9,6 +9,15 @@ const eslintConfig = defineConfig([
   ...nextTs,
   prettier,
   {
+    rules: {
+      // `_name` marks a value that is deliberately unused (e.g. omitting fields by destructuring).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", ignoreRestSiblings: true },
+      ],
+    },
+  },
+  {
     // UI text must come from messages/*.json (next-intl), never JSX literals.
     files: ["src/**/*.tsx"],
     ignores: ["src/components/ui/**", "src/app/[[]locale]/design/**", "src/**/*.test.tsx"],
