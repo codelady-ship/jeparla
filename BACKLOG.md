@@ -1,6 +1,6 @@
 # Jeparla — Backlog
 
-GitHub Issues əsaslı backlog: **8 epic** (hər gün bir epic + "Sonra") və **49 sub-issue**, native parent/sub-issue əlaqəsi ilə. Hamısı [@codelady-ship](https://github.com/codelady-ship)-ə assign olunub. Milestone = gün.
+GitHub Issues əsaslı backlog: **8 epic** (hər gün bir epic + "Sonra") və **53 sub-issue**, native parent/sub-issue əlaqəsi ilə. Hamısı [@codelady-ship](https://github.com/codelady-ship)-ə assign olunub. Milestone = gün.
 
 Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_PUBLIC_USE_MOCK`), 5–7-ci günlər backend, inteqrasiya və deploy.
 
@@ -9,13 +9,13 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 | Gün | Tarix | Epic | Sub-issue |
 |---|---|---|---|
 | 1 | 3 noyabr | [#1](https://github.com/codelady-ship/jeparla/issues/1) Gün 1 — Frontend təməli | 8 |
-| 2 | 4 noyabr | [#10](https://github.com/codelady-ship/jeparla/issues/10) Gün 2 — Kataloq UI | 6 |
+| 2 | 4 noyabr | [#10](https://github.com/codelady-ship/jeparla/issues/10) Gün 2 — Kataloq UI | 8 |
 | 3 | 5 noyabr | [#17](https://github.com/codelady-ship/jeparla/issues/17) Gün 3 — Axtarış, seçilmişlər, auth və satıcı qeydiyyatı UI | 5 |
 | 4 | 6 noyabr | [#23](https://github.com/codelady-ship/jeparla/issues/23) Gün 4 — Kabinet, admin, qiymət və hero UI | 5 |
 | 5 | 7 noyabr | [#29](https://github.com/codelady-ship/jeparla/issues/29) Gün 5 — Backend təməli və verilənlər bazası | 6 |
 | 6 | 8 noyabr | [#36](https://github.com/codelady-ship/jeparla/issues/36) Gün 6 — Backend API və frontend inteqrasiyası | 5 |
-| 7 | 9 noyabr | [#42](https://github.com/codelady-ship/jeparla/issues/42) Gün 7 — Metal qiymətləri və deploy | 5 |
-| — | — | [#48](https://github.com/codelady-ship/jeparla/issues/48) Sonra — v1-dən sonrakı işlər | 9 |
+| 7 | 9 noyabr | [#42](https://github.com/codelady-ship/jeparla/issues/42) Gün 7 — Metal qiymətləri və deploy | 6 |
+| — | — | [#48](https://github.com/codelady-ship/jeparla/issues/48) Sonra — v1-dən sonrakı işlər | 10 |
 
 ## Detallı backlog
 
@@ -29,7 +29,7 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 | [#5](https://github.com/codelady-ship/jeparla/issues/5) | 1.4 Layout: header, footer, mobil menyu, xəta səhifələri |
 | [#6](https://github.com/codelady-ship/jeparla/issues/6) | 1.5 Domen tipləri və nümunə məlumat qatı (mock API) |
 | [#7](https://github.com/codelady-ship/jeparla/issues/7) | 1.6 Frontend CI (GitHub Actions) |
-| [#8](https://github.com/codelady-ship/jeparla/issues/8) | 1.7 Qərar: frontend hostu və domen |
+| [#8](https://github.com/codelady-ship/jeparla/issues/8) | 1.7 Qərar: hostlar, Oracle Cloud hesabı və domen |
 | [#9](https://github.com/codelady-ship/jeparla/issues/9) | 1.8 İstinad saytlarının qısa araşdırması (recon) |
 
 ### Gün 2 — Kataloq UI ([#10](https://github.com/codelady-ship/jeparla/issues/10))
@@ -42,6 +42,8 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 | [#14](https://github.com/codelady-ship/jeparla/issues/14) | 2.4 Mağazalar: /stores və /stores/[slug] |
 | [#15](https://github.com/codelady-ship/jeparla/issues/15) | 2.5 Kateqoriya səhifəsi və ana səhifə bölmələri |
 | [#16](https://github.com/codelady-ship/jeparla/issues/16) | 2.6 SEO: metadata, sitemap, JSON-LD |
+| [#60](https://github.com/codelady-ship/jeparla/issues/60) | 2.7 Lighthouse CI və performans büdcəsi |
+| [#61](https://github.com/codelady-ship/jeparla/issues/61) | 2.8 GEO: AI axtarış sistemləri üçün struktur (llms.txt, JSON-LD, faktlar) |
 
 ### Gün 3 — Axtarış, seçilmişlər, auth və satıcı qeydiyyatı UI ([#17](https://github.com/codelady-ship/jeparla/issues/17))
 
@@ -90,9 +92,10 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 |---|---|
 | [#43](https://github.com/codelady-ship/jeparla/issues/43) | 7.1 AMB metal qiyməti: parser və snapshot |
 | [#44](https://github.com/codelady-ship/jeparla/issues/44) | 7.2 Qiymət mühərriki və gündəlik cron |
-| [#45](https://github.com/codelady-ship/jeparla/issues/45) | 7.3 Backend deploy: Render + Neon + Upstash + R2 |
-| [#46](https://github.com/codelady-ship/jeparla/issues/46) | 7.4 Frontend deploy və yatmış backend-ə dözümlülük |
+| [#45](https://github.com/codelady-ship/jeparla/issues/45) | 7.3 Backend deploy: Oracle Cloud Always Free (yatmayan server) |
+| [#46](https://github.com/codelady-ship/jeparla/issues/46) | 7.4 Frontend deploy və keşləmə |
 | [#47](https://github.com/codelady-ship/jeparla/issues/47) | 7.5 Preflight və v1 qəbul |
+| [#62](https://github.com/codelady-ship/jeparla/issues/62) | 7.6 Axtarış və AI sistemlərinə qoşulma, Lighthouse production yoxlaması |
 
 ### Sonra — v1-dən sonrakı işlər ([#48](https://github.com/codelady-ship/jeparla/issues/48))
 
@@ -107,3 +110,4 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 | [#55](https://github.com/codelady-ship/jeparla/issues/55) | 8.7 AI Studio: job API, kvota və UI |
 | [#56](https://github.com/codelady-ship/jeparla/issues/56) | 8.8 Monitorinq, backup və hüquqi səhifələr |
 | [#57](https://github.com/codelady-ship/jeparla/issues/57) | 8.9 Qərar: hüquqi tələblər |
+| [#63](https://github.com/codelady-ship/jeparla/issues/63) | 8.10 GEO kontent: bələdçilər, qiymət icmalları, xarici mənbələr |
