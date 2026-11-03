@@ -9,6 +9,8 @@ export const formats = {
   },
   dateTime: {
     short: { day: "numeric", month: "short", year: "numeric" },
-    priceUpdated: { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" },
+    // Prices change once a day (CBAR), so the date is enough; az CLDR joins date and
+    // time with a slash, which reads oddly.
+    priceUpdated: { day: "numeric", month: "long", year: "numeric" },
   },
 } satisfies Formats;

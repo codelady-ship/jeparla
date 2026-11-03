@@ -147,5 +147,85 @@
     "prev": "Previous",
     "next": "Next",
     "pageN": "Page {n}"
+  },
+  "Pdp": {
+    "breadcrumb": "Breadcrumb",
+    "catalog": "Catalog",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "zoom": "Enlarge image",
+    "imagePosition": "Image {n} of {total}",
+    "chooseVariant": "Choose a variant",
+    "size": "Size {size}",
+    "sku": "Code",
+    "priceUpdated": "Price updated:",
+    "metalLinkedNote": "Metal-linked price: it updates automatically with the daily CBAR rate.",
+    "whatsapp": "Message the store on WhatsApp",
+    "whatsappMessage": "Hello! I found this on Jeparla and I am interested: {name} (code {sku}). {url}",
+    "factsTitle": "Key facts",
+    "facts": {
+      "metal": "Metal",
+      "fineness": "Fineness",
+      "weight": "Weight",
+      "size": "Size",
+      "price": "Price",
+      "pricing": "Pricing",
+      "store": "Store",
+      "city": "City"
+    },
+    "pricing": {
+      "FIXED": "Fixed",
+      "METAL_LINKED": "Metal-linked"
+    },
+    "stonesTitle": "Stones",
+    "stones": {
+      "type": "Stone",
+      "shape": "Shape",
+      "carat": "Carat",
+      "color": "Color",
+      "clarity": "Clarity",
+      "certificate": "Certificate"
+    },
+    "stoneType": {
+      "DIAMOND": "Diamond",
+      "RUBY": "Ruby",
+      "SAPPHIRE": "Sapphire",
+      "EMERALD": "Emerald",
+      "PEARL": "Pearl",
+      "CUBIC_ZIRCONIA": "Cubic zirconia"
+    },
+    "labGrown": "lab-grown",
+    "na": "—",
+    "noCertificate": "None",
+    "verificationTitle": "Jeparla checks",
+    "verificationText": "Each check is done and shown separately.",
+    "checks": {
+      "seller": "Seller",
+      "documents": "Documents",
+      "expertise": "Expert appraisal"
+    },
+    "checkStatus": {
+      "VERIFIED": "Verified",
+      "PENDING": "In progress",
+      "REJECTED": "Not confirmed",
+      "NONE": "Not performed"
+    },
+    "storeTitle": "Store",
+    "similar": "Similar products",
+    "report": {
+      "open": "Report",
+      "title": "Report this product",
+      "text": "Tell us if the details are wrong or the product looks suspicious.",
+      "reason": "Reason",
+      "reasons": {
+        "WRONG_INFO": "Wrong details",
+        "FAKE": "May be counterfeit",
+        "PRICE": "Price is off",
+        "OTHER": "Other"
+      },
+      "details": "Details (optional)",
+      "submit": "Send",
+      "unavailable": "Sending reports will be available soon. Nothing is sent yet."
+    }
   }
 }

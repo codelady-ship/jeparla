@@ -299,9 +299,9 @@ function buildProduct(i: number): Product {
     stockStatus,
     publishedAt,
     description: {
-      az: `${name.az}. Çəki ${weight} q. Nümunə məhsul.`,
-      en: `${name.en}. Weight ${weight} g. Demo product.`,
-      ru: `${name.ru}. Вес ${weight} г. Демонстрационный товар.`,
+      az: `${name.az}. Nümunə məhsul, real deyil.`,
+      en: `${name.en}. Demo product, not real.`,
+      ru: `${name.ru}. Демонстрационный товар, не настоящий.`,
     },
     variants: [
       {
