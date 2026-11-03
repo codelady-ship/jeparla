@@ -1,0 +1,99 @@
+import { getTranslations } from "next-intl/server";
+import { ProductGrid, ProductGridEmpty } from "@/components/product/product-grid";
+import { Link } from "@/i18n/navigation";
+import { api } from "@/lib/api";
+import { activeFilters, PAGE_SIZE, parseFilters, type SearchParams } from "@/lib/catalog/filters";
+import { getLocale } from "next-intl/server";
+import { ActiveFilterChips, Pagination, SortForm } from "./catalog-toolbar";
+import { FilterFields, type FilterData } from "./filter-fields";
+import { FilterForm } from "./filter-form";
+import { FiltersSheet } from "./filters-sheet";
+
+const ACTION = "/products";
+
+/** Filters, results and pagination for /products. Reads the query, so it streams. */
+export async function Catalog({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const filters = parseFilters(await searchParams);
+  const [t, tc, locale, page, categories, stores, finenesses] = await Promise.all([
+    getTranslations("Catalog"),
+    getTranslations("Common"),
+    getLocale(),
+    api.listProducts({ ...filters, size: PAGE_SIZE }),
+    api.listCategories(),
+    api.listStores(),
+    api.listFinenesses(),
+  ]);
+  const data: FilterData = {
+    categories,
+    stores,
+    finenesses,
+    cities: [...new Set(stores.map((s) => s.city))].sort((a, b) => a.localeCompare(b, locale)),
+  };
+  const activeCount = activeFilters(filters).length;
+  const suggestions = categories
+    .filter((c) => c.parentId === null && c.productCount > 0)
+    .slice(0, 6);
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+      <aside aria-label={t("filters")} className="hidden lg:block">
+        <FilterForm action={ACTION} auto>
+          <FilterFields id="d" filters={filters} data={data} />
+        </FilterForm>
+      </aside>
+
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <FiltersSheet
+              labels={{ open: t("filters"), title: t("filters"), close: tc("close") }}
+              count={activeCount}
+            >
+              <FilterForm action={ACTION}>
+                <FilterFields id="m" filters={filters} data={data} />
+              </FilterForm>
+            </FiltersSheet>
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {t("count", { count: page.totalElements })}
+            </p>
+          </div>
+          <SortForm action={ACTION} filters={filters} />
+        </div>
+
+        <ActiveFilterChips action={ACTION} filters={filters} data={data} />
+
+        <ProductGrid
+          products={page.content}
+          empty={
+            <ProductGridEmpty title={t("emptyTitle")} text={t("emptyText")}>
+              <ul className="mt-2 flex flex-wrap justify-center gap-2">
+                {suggestions.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      href={`${ACTION}?category=${c.slug}`}
+                      className="inline-flex h-8 items-center rounded-full border px-3 text-sm hover:bg-muted"
+                    >
+                      {c.name[locale]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {activeCount > 0 && (
+                <Link href={ACTION} className="mt-2 link-underline text-sm font-medium">
+                  {t("clearAll")}
+                </Link>
+              )}
+            </ProductGridEmpty>
+          }
+        />
+
+        <Pagination
+          action={ACTION}
+          filters={filters}
+          page={page.page}
+          totalPages={page.totalPages}
+        />
+      </div>
+    </div>
+  );
+}

@@ -176,6 +176,12 @@ export type ProductFilters = {
   verified?: boolean;
   inStock?: boolean;
   city?: string;
+  /** Diamond filters (PLAN 5.4); match products with at least one such stone. */
+  shape?: string[];
+  minCarat?: Decimal;
+  maxCarat?: Decimal;
+  color?: string[];
+  clarity?: string[];
   sort?: ProductSort;
   page?: number;
   size?: number;
