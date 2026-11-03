@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
-import { use } from "react";
-import type { Locale } from "@/i18n/routing";
 import { Gem, Search } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -53,10 +50,9 @@ const SWATCHES = [
   { name: "warning", className: "bg-warning text-background" },
 ];
 
-export default function DesignPage({ params }: PageProps<"/[locale]/design">) {
-  setRequestLocale(use(params).locale as Locale);
+export default function DesignPage() {
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-10 sm:px-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-10 sm:px-6">
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Gem aria-hidden className="size-7 text-gold-text" />
@@ -196,6 +192,6 @@ export default function DesignPage({ params }: PageProps<"/[locale]/design">) {
           </Sheet>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

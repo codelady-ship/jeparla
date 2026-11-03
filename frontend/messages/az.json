@@ -19,5 +19,40 @@
   },
   "Home": {
     "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə."
+  },
+  "Nav": {
+    "home": "Ana səhifə",
+    "catalog": "Kataloq",
+    "stores": "Mağazalar",
+    "categories": "Kateqoriyalar",
+    "search": "Axtarış",
+    "favorites": "Seçilmişlər",
+    "login": "Daxil ol",
+    "menu": "Menyu",
+    "mainNav": "Əsas naviqasiya"
+  },
+  "Footer": {
+    "about": "Jeparla haqqında",
+    "buyers": "Alıcılar",
+    "sellers": "Satıcılar",
+    "legal": "Hüquqi",
+    "aboutUs": "Haqqımızda",
+    "contact": "Əlaqə",
+    "metalPrices": "Metal qiymətləri",
+    "openStore": "Mağaza aç",
+    "merchantCabinet": "Mağaza kabineti",
+    "privacy": "Məxfilik siyasəti",
+    "terms": "İstifadə şərtləri",
+    "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
+    "rights": "© Jeparla. Bütün hüquqlar qorunur."
+  },
+  "Errors": {
+    "notFoundTitle": "Səhifə tapılmadı",
+    "notFoundText": "Axtardığınız səhifə yoxdur və ya köçürülüb.",
+    "errorTitle": "Nəsə alınmadı",
+    "errorText": "Səhifəni yükləmək mümkün olmadı. Bir azdan yenidən cəhd edin.",
+    "retry": "Yenidən cəhd et",
+    "backHome": "Ana səhifəyə qayıt",
+    "loading": "Yüklənir"
   }
 }

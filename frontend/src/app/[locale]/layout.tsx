@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { locale as rootLocale } from "next/root-params";
+import { hasLocale } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+import { ViewTransition } from "react";
+import { IntlProvider } from "@/components/i18n/intl-provider";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
@@ -26,8 +31,9 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
-  const { locale } = await params;
+export async function generateMetadata(): Promise<Metadata> {
+  "use cache";
+  const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Metadata" });
   return {
@@ -39,13 +45,17 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   };
 }
 
-export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-  const { locale } = await params;
+export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
+  // Root param, not `params`: unknown segments below (e.g. [...rest]) stay prerenderable.
+  const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) notFound();
-  setRequestLocale(locale);
-  const messages = await getMessages();
+  const messages = await getMessages({ locale });
   // Only namespaces used by Client Components go to the browser (keeps JS small).
-  const clientMessages = { Common: messages.Common, LocaleSwitcher: messages.LocaleSwitcher };
+  const clientMessages = {
+    Common: messages.Common,
+    LocaleSwitcher: messages.LocaleSwitcher,
+    Errors: messages.Errors,
+  };
 
   return (
     <html
@@ -54,9 +64,18 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider messages={clientMessages}>
-          <ThemeProvider>{children}</ThemeProvider>
-        </NextIntlClientProvider>
+        <IntlProvider locale={locale} messages={clientMessages}>
+          <ThemeProvider>
+            <SiteHeader />
+            {/* Route changes cross-fade the page body; header and footer stay put. */}
+            <ViewTransition>
+              <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+                {children}
+              </main>
+            </ViewTransition>
+            <SiteFooter />
+          </ThemeProvider>
+        </IntlProvider>
       </body>
     </html>
   );

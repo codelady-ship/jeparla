@@ -30,7 +30,8 @@ describe("messages", () => {
   ])("%s has no empty strings and no emoji", (_, messages) => {
     for (const v of values(messages)) {
       expect(String(v).trim()).not.toBe("");
-      expect(String(v)).not.toMatch(/\p{Extended_Pictographic}/u);
+      // © ® ™ belong to the pictographic set but are ordinary typography.
+      expect(String(v)).not.toMatch(/(?![©®™])\p{Extended_Pictographic}/u);
     }
   });
 });

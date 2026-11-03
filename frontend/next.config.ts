@@ -5,6 +5,10 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  experimental: {
+    // Root layout is app/[locale], so unmatched URLs need a standalone 404 page.
+    globalNotFound: true,
+  },
   partialPrefetching: true,
   turbopack: {
     rules: {

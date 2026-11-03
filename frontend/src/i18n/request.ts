@@ -1,10 +1,14 @@
+import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { formats } from "./formats";
 import { routing } from "./routing";
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  const requested = await requestLocale;
+// The locale is the root param of app/[locale]. Reading it through next/root-params
+// keeps every page prerenderable with Cache Components (no headers() access), which
+// replaces the deprecated setRequestLocale() calls.
+export default getRequestConfig(async ({ locale: explicit }) => {
+  const requested = explicit ?? (await rootLocale());
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
   return {
