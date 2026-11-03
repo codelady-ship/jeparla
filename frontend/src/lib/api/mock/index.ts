@@ -1,6 +1,6 @@
 import { compareDecimal } from "@/lib/pricing";
 import { matchesQuery } from "@/lib/search/normalize";
-import type { Category, Page, Product, ProductFilters, ProductSummary } from "@/types/api";
+import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
 import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
@@ -38,6 +38,22 @@ function categoryText(c: Category): string {
   return `${c.name.az} ${c.name.en} ${c.name.ru}`;
 }
 
+function hasDiamondFilter(f: ProductFilters): boolean {
+  return Boolean(
+    f.shape?.length || f.minCarat || f.maxCarat || f.color?.length || f.clarity?.length,
+  );
+}
+
+function diamondMatches(s: Stone, f: ProductFilters): boolean {
+  if (s.type !== "DIAMOND") return false;
+  if (f.shape?.length && !(s.shape && f.shape.includes(s.shape))) return false;
+  if (f.color?.length && !(s.color && f.color.includes(s.color))) return false;
+  if (f.clarity?.length && !(s.clarity && f.clarity.includes(s.clarity))) return false;
+  if (f.minCarat && !(s.carat && compareDecimal(s.carat, f.minCarat) >= 0)) return false;
+  if (f.maxCarat && !(s.carat && compareDecimal(s.carat, f.maxCarat) <= 0)) return false;
+  return true;
+}
+
 function filterProducts(f: ProductFilters): Product[] {
   const cats = f.category ? categoryIds(f.category) : null;
   return PRODUCTS.filter((p) => {
@@ -53,6 +69,7 @@ function filterProducts(f: ProductFilters): Product[] {
     if (f.verified && p.verification.documents !== "VERIFIED") return false;
     if (f.inStock && p.stockStatus === "OUT_OF_STOCK") return false;
     if (f.city && p.store.city !== f.city) return false;
+    if (hasDiamondFilter(f) && !p.stones.some((s) => diamondMatches(s, f))) return false;
     if (f.q && !matchesQuery(productText(p), f.q)) return false;
     return true;
   });
