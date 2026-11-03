@@ -85,26 +85,29 @@ və eyni üsulu təkrarla):
 | Hissə | Pulsuz yer | Qeyd |
 | --- | --- | --- |
 | Frontend | Vercel Hobby və ya Cloudflare (OpenNext) / Netlify | DİQQƏT: Vercel Hobby şərtləri kommersiya istifadəsinə icazə vermir. Jeparla komissiya ilə pul qazanacaq → ya Cloudflare/Netlify, ya da gəlir başlayanda Vercel Pro. Şərtləri bu gün yoxla və issue-da yaz |
-| Backend API | Render Free (Docker), Frankfurt | 15 dəq istifadəsiz qalanda yatır, ilk sorğu ~1 dəq |
-| PostgreSQL | Neon Free | Render-in pulsuz Postgres-i 30 gündən sonra silinir — istifadə ETMƏ. `SPRING_DATASOURCE_URL` + `sslmode=require` |
-| Redis | Upstash Free və ya Render Key Value Free | yalnız keş və rate limit; Redis yoxdursa tətbiq işləməyə davam etsin |
+| Backend API | Oracle Cloud Always Free, ARM VM (Ampere A1), Docker Compose + Caddy (HTTPS) | YATMIR: istifadəçi istənilən an daxil olur. Kart yalnız doğrulama üçün; hesabı Gün 1-də aç (1.7). Ehtiyat: Hetzner CX22 (~4–5 EUR/ay), eyni compose |
+| PostgreSQL | Eyni VM-də PostgreSQL 16 (konteyner) | gecəlik `pg_dump` -> R2, 14 gün; bərpa yoxlanılır |
+| Redis | Eyni VM-də Redis 7 | yalnız keş və rate limit; Redis yoxdursa tətbiq işləməyə davam etsin |
 | Şəkillər, hero kadrları, sənədlər | Cloudflare R2 Free | S3 uyğun, çıxış trafiki pulsuz; sənədlər üçün ayrıca private bucket |
 | E-poçt | Resend Free | domen doğrulaması (SPF, DKIM, DMARC) |
 | Xəta izləmə | Sentry Free | frontend + backend |
 | Domen | ödənişlidir (jeparla.az) | pulsuz alt domen müvəqqəti |
 
 Pulsuz planın tələləri (hər biri issue olsun):
-- Yatmış backend → SEO və sürət: kataloq və məhsul səhifələri ISR/statik generasiya ilə
-  (revalidate) Next.js keşindən verilsin, backend yatanda da səhifə açılsın.
-  Lazım olsa uptime ping (14 dəq), Render-in aylıq pulsuz saat limitini hesabla.
-- Gündəlik AMB metal qiyməti job-u: yatmış serverdə Spring `@Scheduled` İŞLƏMƏYƏ BİLƏR.
-  GitHub Actions cron qorunan endpoint-i çağırsın (`POST /internal/jobs/metal-prices`, gizli token),
-  job idempotent olsun.
-- Neon-un yaddaş limiti: şəkillər DB-də saxlanılmır, yalnız açarlar; audit loglar üçün təmizləmə siyasəti.
+- Render kimi yatan pulsuz hostlar İSTİFADƏ OLUNMUR: server yatanda giriş sorğusu ~50 s
+  gözləyib uğursuz olur. Backend həmişə oyaq olmalıdır.
+- Oracle idle instansiyanı geri ala bilər (7 gün aşağı yük). Tədbir: hesabı Pay As You Go-ya
+  keçir (Always Free limitində pulsuz qalır), 1 USD büdcə xəbərdarlığı, serveri 30 dəqiqədə
+  sıfırdan qurmaq üçün addımlar `docs/deploy.md`-də, gecəlik backup R2-də.
+- Sürət: kataloq və məhsul səhifələri ISR (revalidate) ilə Next.js keşindən verilsin.
+- Gündəlik AMB metal qiyməti: Spring `@Scheduled` (`Asia/Baku`) + ShedLock; ehtiyat olaraq
+  GitHub Actions gündə bir dəfə tarixi yoxlayır və köhnədirsə qorunan endpoint-i çağırır
+  (`POST /internal/jobs/metal-prices`, gizli token); job idempotent olsun.
+- VM diski məhduddur: şəkillər DB-də saxlanılmır (R2-də), yalnız açarlar; audit loglar üçün təmizləmə siyasəti.
 - Pulsuz OLMAYANLAR (büdcəyə yaz): SMS OTP, AI şəkil generasiyası, domen, sonradan Vercel Pro.
   Bunlar üçün sərt xərc limiti və feature flag.
 - Hər pulsuz planın hazırkı limitlərini rəsmi səhifədən yoxla, tarix ilə `docs/deploy.md`-yə yaz.
-- `.env.example`, sirlər yalnız host dashboard-unda (`sync: false`), `render.yaml` Blueprint.
+- `.env.example`; sirlər yalnız serverdəki `.env`-də (600 icazə), frontend hostunun dashboard-unda və GitHub Secrets-də.
 
 ## 4. Məhsul qərarları
 - v1 = KATALOQ: səbət/onlayn ödəniş yoxdur; çevrilmə nöqtəsi WhatsApp (wa.me, mesajda
@@ -321,7 +324,30 @@ ikiqat klik, geri düyməsi, sessiya bitməsi, mobil, yalnız klaviatura).
 v1 qəbul: ziyarətçi mağaza və kateqoriya üzrə axtarır/filtrləyir; qiymət, əyar, çəki
 backend-dən gəlir; mağaza yalnız öz məhsulunu idarə edir; admin təsdiq/deaktiv edir;
 METAL_LINKED qiymət gündəlik yenilənir; WhatsApp düzgün nömrəyə gedir; sweep və contrast
-təmizdir; backup bərpası yoxlanılıb.
+təmizdir; backup bərpası yoxlanılıb; 1 saat istifadəsiz qalandan sonra giriş < 1 s işləyir;
+Lighthouse və GEO yoxlamaları (5.18) keçir.
+
+### 5.18 Lighthouse, Core Web Vitals və GEO (P0)
+**Lighthouse** (Lighthouse CI hər PR-da, issue 2.7):
+- Hədəf hər kateqoriyada 95+. CI həddi: mobil Performance >= 90, desktop >= 95;
+  Accessibility = 100, Best Practices >= 95, SEO = 100. Aşağı nəticə CI-ı qırmızı edir.
+- LCP < 2.0 s, CLS < 0.05, TBT < 150 ms; marşrut başına ilk yükləmə JS <= 150 KB (gzip).
+- Standart olaraq Server Components; `next/image` (AVIF/WebP, `sizes`, LCP-də `priority`);
+  `next/font` self-host + subset; üçüncü tərəf skriptləri yalnız lazy; hero-da LCP poster şəklidir.
+
+**GEO** (generative engine optimization: ChatGPT, Claude, Perplexity, Gemini, Google AI
+Overviews cavablarında Jeparla-nın mənbə kimi çıxması; issue 2.8, 7.6, 8.10):
+- `robots.txt` AI axtarış botlarına açıq (OAI-SearchBot, ChatGPT-User, GPTBot, ClaudeBot,
+  Claude-SearchBot, PerplexityBot, Google-Extended, Applebot-Extended, Bingbot), kabinet və API bağlı.
+- `/llms.txt` və `/llms-full.txt` (3 dil).
+- JSON-LD: Organization, WebSite + SearchAction, JewelryStore, Product + Offer (AZN,
+  priceValidUntil, əyar və çəki), BreadcrumbList, FAQPage, Article.
+- Hər məhsulda JS-siz ilkin HTML-də görünən faktlar cədvəli; `/qiymetler` səhifəsi gündəlik
+  qram qiymətini AMB mənbəsi və tarixlə verir (sitat gətirilə bilən orijinal məlumat).
+- Google Search Console, Bing Webmaster Tools (ChatGPT axtarışı Bing indeksindən istifadə edir),
+  Yandex Webmaster, IndexNow; analitikada AI referrer-ləri ayrıca.
+- Ayda bir dəfə 10 test sualı ilə AI sistemlərində yoxlama (`docs/geo-check.md`).
+- Dürüstlük: uydurma rəqəm, saxta rəy, redaktə olunmamış AI mətni yoxdur.
 
 ## 6. İş axını (hər mərhələdən sonra DAYAN və təsdiqimi gözlə)
 1. **Recon:** bölmə 2-dəki saytları qaydalara uyğun araşdır → `docs/research/recon.md`

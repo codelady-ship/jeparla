@@ -35,8 +35,11 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
   `az.jeparla.<feature>` (`auth`, `store`, `product`, `search`, `pricing`, `verification`, `admin` ...),
   hər birində `dto/`.
 - **Fayllar:** S3 uyğun storage (Cloudflare R2): public şəkillər, private sənədlər.
-- **Deploy (pulsuz):** frontend Cloudflare/Netlify (və ya Vercel), backend Render (Docker),
-  PostgreSQL Neon, Redis Upstash. Ətraflı: `docs/PLAN.md` bölmə 3a.
+- **Deploy (pulsuz):** frontend Cloudflare/Netlify (və ya Vercel); backend, PostgreSQL və Redis
+  Oracle Cloud Always Free ARM VM-də Docker Compose + Caddy ilə. Yatan hostlar (Render free və s.)
+  qadağandır: giriş sorğusu gözləyib uğursuz olur. Ətraflı: `docs/PLAN.md` bölmə 3a.
+- **Keyfiyyət həddi:** Lighthouse mobil Performance >= 90, Accessibility = 100, Best Practices >= 95,
+  SEO = 100 (CI yoxlayır); hər ictimai səhifədə JSON-LD və GEO qaydaları (`docs/PLAN.md` 5.18).
 
 ## Repo strukturu
 
