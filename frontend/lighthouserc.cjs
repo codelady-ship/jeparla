@@ -26,13 +26,12 @@ module.exports = {
       },
     },
     assert: {
-      // Target (PLAN 5.18): mobile performance >= 90, desktop >= 95. Measured on
-      // 2026-11-03 the mobile score is 87-88: the simulated 4G load is
-      // dominated by about 150 KB of preloaded Inter and about 210 KB of JS (observed
-      // LCP is under 0.5 s). Until that is cut, CI fails only on regressions below
-      // the current baseline; the target stays visible as warnings.
+      // PLAN 5.18: mobile performance >= 90, desktop >= 95 (the aim is 95+ everywhere;
+      // the mobile gate is 90 because simulated runs vary by 3-5 points). Measured
+      // 2026-11-03 after moving body text to the system font: home 90, catalog 92,
+      // product 93; accessibility, best practices and SEO 100.
       assertions: {
-        "categories:performance": ["error", { minScore: desktop ? 0.9 : 0.82 }],
+        "categories:performance": ["error", { minScore: desktop ? 0.95 : 0.9 }],
         "categories:accessibility": ["error", { minScore: 1 }],
         "categories:best-practices": ["error", { minScore: 0.95 }],
         "categories:seo": ["error", { minScore: 1 }],
@@ -41,7 +40,7 @@ module.exports = {
         "total-blocking-time": ["warn", { maxNumericValue: 150 }],
         // Budget: first-load JS (transfer size) and font files per page.
         "resource-summary:script:size": ["error", { maxNumericValue: 250 * 1024 }],
-        "resource-summary:font:count": ["warn", { maxNumericValue: 2 }],
+        "resource-summary:font:count": ["error", { maxNumericValue: 2 }],
         "errors-in-console": ["error", { maxLength: 0 }],
       },
     },

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { routing } from "@/i18n/routing";
 import az from "../../messages/az.json";
@@ -9,12 +8,6 @@ import "./globals.css";
 
 // Shown for URLs that match no route. It renders outside app/[locale], so the
 // language is unknown: the message appears in all three languages, az first.
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  display: "swap",
-});
-
 const MESSAGES = { az, en, ru } as const;
 
 export const metadata: Metadata = {
@@ -24,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="az" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="az" className="h-full antialiased" suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <main className="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center gap-8 px-4 py-24 text-center">

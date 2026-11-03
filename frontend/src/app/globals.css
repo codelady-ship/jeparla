@@ -8,7 +8,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  /* System UI font for text (#60): no download, covers Azerbaijani, Cyrillic and the manat sign. */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
   --font-heading: var(--font-playfair);
   --color-surface: var(--surface);
   --color-gold: var(--gold);

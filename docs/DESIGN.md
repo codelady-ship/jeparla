@@ -40,12 +40,14 @@ hidratasiya fərqi yoxdur. Keçid düyməsi: `ThemeToggle`.
 
 ## Tipoqrafiya
 
-| Rol                            | Şrift            | Qeyd                       |
-| ------------------------------ | ---------------- | -------------------------- |
-| Başlıq (`font-heading`, h1–h3) | Playfair Display | latin, latin-ext, cyrillic |
-| Mətn (`font-sans`)             | Inter            | latin, latin-ext, cyrillic |
+| Rol                            | Şrift            | Qeyd                                       |
+| ------------------------------ | ---------------- | ------------------------------------------ |
+| Başlıq (`font-heading`, h1–h3) | Playfair Display | latin, latin-ext, cyrillic                 |
+| Mətn (`font-sans`)             | Sistem şrifti    | system-ui: Segoe UI, Roboto, SF, Noto Sans |
 
-Hər ikisi Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir (2026-11-03 glyph yoxlaması).
+Hər ikisi Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir (2026-11-03 glyph yoxlaması). Mətn üçün
+Inter-dən sistem şriftinə keçid 2026-11-03-də qərara alındı (#60): ilk yükləmədə font endirilmir,
+mobil Lighthouse 90+ hədəfi üçün.
 **Playfair Display-də manat işarəsi (₼) yoxdur:** qiymətlər həmişə `font-sans` və `tabular-nums`.
 Ölçülər: mətn 14–16px, başlıqlar 24 / 30 / 36px, sətir uzunluğu `max-w-prose`.
 
