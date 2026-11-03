@@ -67,7 +67,14 @@ export type Store = StoreSummary & {
   createdAt: IsoDate;
 };
 
-export type ProductImage = { url: string; alt: LocalizedText; width: number; height: number };
+export type ProductImage = {
+  url: string;
+  alt: LocalizedText;
+  width: number;
+  height: number;
+  /** AI-generated or AI-edited images must carry a visible label (CLAUDE.md, honesty). */
+  aiGenerated: boolean;
+};
 
 export type StoneType = "DIAMOND" | "RUBY" | "SAPPHIRE" | "EMERALD" | "PEARL" | "CUBIC_ZIRCONIA";
 export type Stone = {

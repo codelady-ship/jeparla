@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 export function HomeContent() {
   const t = useTranslations("Home");
   return (
-    <section className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-24 text-center">
+    <section className="flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
       <Gem aria-hidden className="size-10 text-gold-text" />
       <h1 translate="no" className="text-4xl font-semibold tracking-tight">
         Jeparla
