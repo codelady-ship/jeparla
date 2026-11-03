@@ -94,7 +94,8 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
       # Canonical links must match the audited origin, or the SEO audit fails.
       NEXT_PUBLIC_SITE_URL: http://localhost:3100
-      LHCI_PRESET: ${{ matrix.preset }}
+      # Not LHCI_*: lhci reads those env vars as its own CLI options.
+      LH_PROFILE: ${{ matrix.preset }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -1,6 +1,6 @@
 // Lighthouse CI (issue #60, PLAN 5.18). Mobile is the main profile; desktop uses
-// LHCI_PRESET=desktop. Each page runs 3 times and the median is asserted.
-const desktop = process.env.LHCI_PRESET === "desktop";
+// LH_PROFILE=desktop. Each page runs 3 times and the median is asserted.
+const desktop = process.env.LH_PROFILE === "desktop";
 const base = "http://localhost:3100";
 const pages = [
   "/az",
