@@ -280,12 +280,19 @@ function buildProduct(i: number): Product {
     fineness: fineness.value,
     weightGrams: weight,
     images: [
-      {
-        url: "/placeholders/product.svg",
-        alt: name,
-        width: 800,
-        height: 1000,
-      },
+      { url: "/placeholders/product.svg", alt: name, width: 800, height: 1000, aiGenerated: false },
+      // Every third product has a second shot, so cards without one are covered too.
+      ...(i % 3 === 0
+        ? [
+            {
+              url: "/placeholders/product-alt.svg",
+              alt: name,
+              width: 800,
+              height: 1000,
+              aiGenerated: false,
+            },
+          ]
+        : []),
     ],
     hasStones: withStone,
     verification,

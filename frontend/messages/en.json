@@ -18,7 +18,9 @@
     }
   },
   "Home": {
-    "tagline": "Gold, silver and diamond jewelry stores in one place."
+    "tagline": "Gold, silver and diamond jewelry stores in one place.",
+    "newArrivals": "New arrivals",
+    "seeAll": "See all"
   },
   "Nav": {
     "home": "Home",
@@ -54,5 +56,28 @@
     "retry": "Try again",
     "backHome": "Back to home",
     "loading": "Loading"
+  },
+  "Product": {
+    "verified": "Verified",
+    "aiImage": "AI image",
+    "favoriteAdd": "Add to favorites",
+    "favoriteRemove": "Remove from favorites",
+    "compareAdd": "Add to compare",
+    "compareRemove": "Remove from compare",
+    "stock": {
+      "IN_STOCK": "In stock",
+      "MADE_TO_ORDER": "Made to order",
+      "OUT_OF_STOCK": "Out of stock"
+    },
+    "metal": {
+      "GOLD": "Gold",
+      "SILVER": "Silver",
+      "PLATINUM": "Platinum",
+      "PALLADIUM": "Palladium"
+    },
+    "loading": "Loading products",
+    "emptyTitle": "No products found",
+    "emptyText": "Change the filters or browse another category.",
+    "specs": "{metal} {fineness} · {weight}"
   }
 }

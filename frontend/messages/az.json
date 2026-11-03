@@ -18,7 +18,9 @@
     }
   },
   "Home": {
-    "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə."
+    "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə.",
+    "newArrivals": "Yeni məhsullar",
+    "seeAll": "Hamısına bax"
   },
   "Nav": {
     "home": "Ana səhifə",
@@ -54,5 +56,28 @@
     "retry": "Yenidən cəhd et",
     "backHome": "Ana səhifəyə qayıt",
     "loading": "Yüklənir"
+  },
+  "Product": {
+    "verified": "Yoxlanılıb",
+    "aiImage": "AI şəkil",
+    "favoriteAdd": "Seçilmişlərə əlavə et",
+    "favoriteRemove": "Seçilmişlərdən çıxar",
+    "compareAdd": "Müqayisəyə əlavə et",
+    "compareRemove": "Müqayisədən çıxar",
+    "stock": {
+      "IN_STOCK": "Stokda var",
+      "MADE_TO_ORDER": "Sifarişlə",
+      "OUT_OF_STOCK": "Stokda yoxdur"
+    },
+    "metal": {
+      "GOLD": "Qızıl",
+      "SILVER": "Gümüş",
+      "PLATINUM": "Platin",
+      "PALLADIUM": "Palladium"
+    },
+    "loading": "Məhsullar yüklənir",
+    "emptyTitle": "Məhsul tapılmadı",
+    "emptyText": "Filtrləri dəyişin və ya başqa kateqoriyaya baxın.",
+    "specs": "{metal} {fineness} · {weight}"
   }
 }

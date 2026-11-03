@@ -1,6 +1,12 @@
 import { HomeContent } from "@/components/home/home-content";
+import { NewArrivals } from "@/components/home/new-arrivals";
 
-// Placeholder home page. Real sections come with issue #15, header with #5.
+// Home page. The remaining sections come with issue #15, the scroll hero with #27.
 export default function Home() {
-  return <HomeContent />;
+  return (
+    <>
+      <HomeContent />
+      <NewArrivals />
+    </>
+  );
 }
