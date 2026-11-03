@@ -147,5 +147,85 @@
     "prev": "Назад",
     "next": "Вперёд",
     "pageN": "Страница {n}"
+  },
+  "Pdp": {
+    "breadcrumb": "Навигационная цепочка",
+    "catalog": "Каталог",
+    "prevImage": "Предыдущее фото",
+    "nextImage": "Следующее фото",
+    "zoom": "Увеличить фото",
+    "imagePosition": "Фото {n} из {total}",
+    "chooseVariant": "Выберите вариант",
+    "size": "Размер {size}",
+    "sku": "Код",
+    "priceUpdated": "Цена обновлена:",
+    "metalLinkedNote": "Цена привязана к металлу: обновляется автоматически по ежедневному курсу ЦБА.",
+    "whatsapp": "Написать магазину в WhatsApp",
+    "whatsappMessage": "Здравствуйте! Меня интересует товар с Jeparla: {name} (код {sku}). {url}",
+    "factsTitle": "Основные данные",
+    "facts": {
+      "metal": "Металл",
+      "fineness": "Проба",
+      "weight": "Вес",
+      "size": "Размер",
+      "price": "Цена",
+      "pricing": "Тип цены",
+      "store": "Магазин",
+      "city": "Город"
+    },
+    "pricing": {
+      "FIXED": "Фиксированная",
+      "METAL_LINKED": "Привязана к металлу"
+    },
+    "stonesTitle": "Камни",
+    "stones": {
+      "type": "Камень",
+      "shape": "Форма",
+      "carat": "Карат",
+      "color": "Цвет",
+      "clarity": "Чистота",
+      "certificate": "Сертификат"
+    },
+    "stoneType": {
+      "DIAMOND": "Бриллиант",
+      "RUBY": "Рубин",
+      "SAPPHIRE": "Сапфир",
+      "EMERALD": "Изумруд",
+      "PEARL": "Жемчуг",
+      "CUBIC_ZIRCONIA": "Фианит"
+    },
+    "labGrown": "выращенный",
+    "na": "—",
+    "noCertificate": "Нет",
+    "verificationTitle": "Проверки Jeparla",
+    "verificationText": "Каждая проверка проводится и показывается отдельно.",
+    "checks": {
+      "seller": "Продавец",
+      "documents": "Документы",
+      "expertise": "Экспертиза"
+    },
+    "checkStatus": {
+      "VERIFIED": "Проверено",
+      "PENDING": "Проверяется",
+      "REJECTED": "Не подтверждено",
+      "NONE": "Не проводилась"
+    },
+    "storeTitle": "Магазин",
+    "similar": "Похожие товары",
+    "report": {
+      "open": "Пожаловаться",
+      "title": "Жалоба на товар",
+      "text": "Сообщите нам, если данные неверны или товар вызывает сомнения.",
+      "reason": "Причина",
+      "reasons": {
+        "WRONG_INFO": "Неверные данные",
+        "FAKE": "Возможно подделка",
+        "PRICE": "Цена не соответствует",
+        "OTHER": "Другое"
+      },
+      "details": "Подробности (необязательно)",
+      "submit": "Отправить",
+      "unavailable": "Отправка жалоб скоро заработает. Пока ничего не отправляется."
+    }
   }
 }

@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  type CSSProperties,
+  type ElementType,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
 
-type Props = {
+type Props = Omit<HTMLAttributes<HTMLElement>, "style"> & {
   children: ReactNode;
   /** Position in a group; each step adds --reveal-stagger of delay. */
   index?: number;
@@ -15,7 +22,7 @@ type Props = {
  * Styles live in globals.css ([data-reveal]); reduced motion shows it at once.
  * Do not wrap the LCP element or anything visible on first paint.
  */
-export function Reveal({ children, index = 0, as: Tag = "div", className }: Props) {
+export function Reveal({ children, index = 0, as: Tag = "div", className, ...rest }: Props) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -44,6 +51,7 @@ export function Reveal({ children, index = 0, as: Tag = "div", className }: Prop
 
   return (
     <Tag
+      {...rest}
       ref={ref}
       data-reveal="hidden"
       className={className}

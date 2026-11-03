@@ -147,5 +147,85 @@
     "prev": "Əvvəlki",
     "next": "Növbəti",
     "pageN": "Səhifə {n}"
+  },
+  "Pdp": {
+    "breadcrumb": "Naviqasiya yolu",
+    "catalog": "Kataloq",
+    "prevImage": "Əvvəlki şəkil",
+    "nextImage": "Növbəti şəkil",
+    "zoom": "Şəkli böyüt",
+    "imagePosition": "Şəkil {n} / {total}",
+    "chooseVariant": "Variant seçin",
+    "size": "Ölçü {size}",
+    "sku": "Kod",
+    "priceUpdated": "Qiymət yenilənib:",
+    "metalLinkedNote": "Qiymət metala bağlıdır: AMB-nin gündəlik məzənnəsi ilə avtomatik yenilənir.",
+    "whatsapp": "WhatsApp ilə mağazaya yaz",
+    "whatsappMessage": "Salam! Jeparla-da bu məhsulla maraqlanıram: {name} (kod {sku}). {url}",
+    "factsTitle": "Əsas məlumatlar",
+    "facts": {
+      "metal": "Metal",
+      "fineness": "Əyar",
+      "weight": "Çəki",
+      "size": "Ölçü",
+      "price": "Qiymət",
+      "pricing": "Qiymət növü",
+      "store": "Mağaza",
+      "city": "Şəhər"
+    },
+    "pricing": {
+      "FIXED": "Sabit",
+      "METAL_LINKED": "Metala bağlı"
+    },
+    "stonesTitle": "Daşlar",
+    "stones": {
+      "type": "Daş",
+      "shape": "Forma",
+      "carat": "Karat",
+      "color": "Rəng",
+      "clarity": "Təmizlik",
+      "certificate": "Sertifikat"
+    },
+    "stoneType": {
+      "DIAMOND": "Brilyant",
+      "RUBY": "Yaqut",
+      "SAPPHIRE": "Sapfir",
+      "EMERALD": "Zümrüd",
+      "PEARL": "İnci",
+      "CUBIC_ZIRCONIA": "Sirkon"
+    },
+    "labGrown": "laboratoriya",
+    "na": "—",
+    "noCertificate": "Yoxdur",
+    "verificationTitle": "Jeparla yoxlaması",
+    "verificationText": "Hər yoxlama ayrıca aparılır və ayrıca göstərilir.",
+    "checks": {
+      "seller": "Satıcı",
+      "documents": "Sənədlər",
+      "expertise": "Ekspertiza"
+    },
+    "checkStatus": {
+      "VERIFIED": "Yoxlanılıb",
+      "PENDING": "Yoxlanılır",
+      "REJECTED": "Təsdiqlənməyib",
+      "NONE": "Aparılmayıb"
+    },
+    "storeTitle": "Mağaza",
+    "similar": "Oxşar məhsullar",
+    "report": {
+      "open": "Şikayət et",
+      "title": "Məhsul haqqında şikayət",
+      "text": "Məlumat səhvdirsə və ya məhsul şübhəlidirsə, bizə bildirin.",
+      "reason": "Səbəb",
+      "reasons": {
+        "WRONG_INFO": "Məlumat səhvdir",
+        "FAKE": "Saxta ola bilər",
+        "PRICE": "Qiymət uyğun deyil",
+        "OTHER": "Digər"
+      },
+      "details": "Ətraflı (istəyə bağlı)",
+      "submit": "Göndər",
+      "unavailable": "Şikayət göndərmək tezliklə aktiv olacaq. Hələlik heç nə göndərilmir."
+    }
   }
 }
