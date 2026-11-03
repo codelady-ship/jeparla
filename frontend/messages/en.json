@@ -171,7 +171,8 @@
     "pagination": "Pages",
     "prev": "Previous",
     "next": "Next",
-    "pageN": "Page {n}"
+    "pageN": "Page {n}",
+    "results": "Results"
   },
   "Pdp": {
     "breadcrumb": "Breadcrumb",

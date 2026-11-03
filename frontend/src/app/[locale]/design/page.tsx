@@ -85,8 +85,8 @@ export default function DesignPage() {
         <p className="font-heading text-4xl">Əsl zərgərlik, şəffaf qiymət</p>
         <p className="font-heading text-2xl">Ювелирные украшения из золота</p>
         <p className="max-w-prose text-muted-foreground">
-          Mətn şrifti Inter: Ə ə İ ı Ş ş Ç ç Ğ ğ Ö ö Ü ü, Ж ж Щ щ Ё ё. Qiymətlər həmişə bu şriftlə
-          yazılır, çünki başlıq şriftində manat işarəsi yoxdur.
+          Mətn şrifti sistem şriftidir: Ə ə İ ı Ş ş Ç ç Ğ ğ Ö ö Ü ü, Ж ж Щ щ Ё ё. Qiymətlər həmişə
+          bu şriftlə yazılır, çünki başlıq şriftində manat işarəsi yoxdur.
         </p>
         <p className="text-2xl font-semibold tabular-nums">1 248,50 ₼</p>
       </section>

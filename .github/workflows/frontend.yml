@@ -78,3 +78,32 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lighthouse:
+    name: lighthouse (${{ matrix.preset }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [mobile, desktop]
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Canonical links must match the audited origin, or the SEO audit fails.
+      NEXT_PUBLIC_SITE_URL: http://localhost:3100
+      # Not LHCI_*: lhci reads those env vars as its own CLI options.
+      LH_PROFILE: ${{ matrix.preset }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      # Report links (temporary public storage) are printed in the job log.
+      - run: npx lhci autorun

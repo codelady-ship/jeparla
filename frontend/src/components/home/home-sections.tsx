@@ -160,7 +160,11 @@ export async function BecomeSeller() {
             <p className="mt-1 max-w-xl text-muted-foreground">{t("sellerText")}</p>
           </div>
         </div>
-        <Link href="/sell" className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-11")}>
+        <Link
+          href="/sell"
+          prefetch={false}
+          className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-11")}
+        >
           {t("sellerCta")}
         </Link>
       </Reveal>

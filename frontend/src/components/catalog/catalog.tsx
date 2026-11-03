@@ -78,6 +78,8 @@ export async function Catalog({
         </div>
 
         <ActiveFilterChips action={ACTION} filters={filters} data={data} />
+        {/* Keeps heading order h1 > h2 > h3 (card titles) for screen readers. */}
+        <h2 className="sr-only">{t("results")}</h2>
 
         <ProductGrid
           products={page.content}

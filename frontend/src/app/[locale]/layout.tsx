@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
@@ -13,18 +13,14 @@ import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-// Both fonts cover Azerbaijani (Ə İ Ş Ç Ğ Ö Ü) and Cyrillic. Playfair Display has no
-// manat sign, so prices always use the body font (docs/DESIGN.md).
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  display: "swap",
-});
-
+// Headings use Playfair Display (Azerbaijani and Cyrillic covered; no manat sign, so
+// prices use the body font). Body text is the system UI font (globals.css), chosen in
+// #60: no font download on first load. Playfair is headings only and is not preloaded.
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
+  preload: false,
 });
 
 export function generateStaticParams() {
@@ -69,7 +65,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${playfair.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
