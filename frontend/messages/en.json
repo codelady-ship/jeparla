@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "Jeparla — gold, silver and diamond jewelry",
+    "description": "Jewelry stores of Azerbaijan in one place: search by store and category, daily metal prices, verified products."
+  },
+  "Common": {
+    "close": "Close",
+    "themeToDark": "Switch to dark mode",
+    "themeToLight": "Switch to light mode",
+    "skipToContent": "Skip to main content"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "locale": {
+      "az": "Azərbaycanca",
+      "en": "English",
+      "ru": "Русский"
+    }
+  },
+  "Home": {
+    "tagline": "Gold, silver and diamond jewelry stores in one place."
+  }
+}
