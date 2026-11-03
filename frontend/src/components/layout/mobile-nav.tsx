@@ -27,7 +27,9 @@ export function MobileNav({ items, labels }: Props) {
       </SheetTrigger>
       <SheetContent side="left" closeLabel={labels.close} className="w-72">
         <SheetHeader>
-          <SheetTitle className="font-heading text-2xl">Jeparla</SheetTitle>
+          <SheetTitle translate="no" className="font-heading text-2xl">
+            Jeparla
+          </SheetTitle>
         </SheetHeader>
         <nav aria-label={labels.menu} className="flex flex-col px-4">
           {[{ href: "/", label: labels.home }, ...items].map((item) => (

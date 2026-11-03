@@ -42,7 +42,9 @@ export function SiteFooter() {
     <footer className="mt-auto border-t bg-surface">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(4,1fr)]">
         <div className="flex flex-col items-start gap-3">
-          <p className="font-heading text-2xl font-semibold">Jeparla</p>
+          <p translate="no" className="font-heading text-2xl font-semibold">
+            Jeparla
+          </p>
           <p className="max-w-xs text-sm text-muted-foreground">{t("Footer.tagline")}</p>
           <LocaleSwitcher />
         </div>
