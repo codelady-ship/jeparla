@@ -1,0 +1,5 @@
+{
+  "avoid": ["Golden.az", "GoldenLux", "Golden Lux", "Planera", "Tiffany", "Swarovski", "Mejuri", "Missoma", "Pandora", "Catbird", "Brilliant Earth"],
+  "domains": ["golden.az", "planera-az.vercel.app", "tiffany.com", "swarovski.com", "mejuri.com", "missoma.com", "pandora.net", "catbirdnyc.com", "brilliantearth.com"],
+  "colors": ["#81D8D0", "#0ABAB5"]
+}
