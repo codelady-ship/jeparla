@@ -26,7 +26,11 @@ export function SiteHeader() {
           items={items}
           labels={{ menu: t("Nav.menu"), close: t("Common.close"), home: t("Nav.home") }}
         />
-        <Link href="/" className="font-heading text-2xl font-semibold tracking-tight">
+        <Link
+          href="/"
+          translate="no"
+          className="font-heading text-2xl font-semibold tracking-tight"
+        >
           Jeparla
         </Link>
         <nav aria-label={t("Nav.mainNav")} className="ml-8 hidden md:block">

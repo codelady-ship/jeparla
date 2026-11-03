@@ -35,7 +35,7 @@ import {
 // Internal design reference for developers. Not indexed, not linked from the site.
 // Copy here is Azerbaijani only; user-facing pages get translations in issue #4.
 export const metadata: Metadata = {
-  title: "Dizayn sistemi | Jeparla",
+  title: "Dizayn sistemi",
   robots: { index: false, follow: false },
 };
 
