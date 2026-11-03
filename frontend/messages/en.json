@@ -19,5 +19,40 @@
   },
   "Home": {
     "tagline": "Gold, silver and diamond jewelry stores in one place."
+  },
+  "Nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "stores": "Stores",
+    "categories": "Categories",
+    "search": "Search",
+    "favorites": "Favorites",
+    "login": "Sign in",
+    "menu": "Menu",
+    "mainNav": "Main navigation"
+  },
+  "Footer": {
+    "about": "About Jeparla",
+    "buyers": "Buyers",
+    "sellers": "Sellers",
+    "legal": "Legal",
+    "aboutUs": "About us",
+    "contact": "Contact",
+    "metalPrices": "Metal prices",
+    "openStore": "Open a store",
+    "merchantCabinet": "Store dashboard",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "tagline": "Jewelry stores of Azerbaijan in one place.",
+    "rights": "© Jeparla. All rights reserved."
+  },
+  "Errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The page you are looking for does not exist or has moved.",
+    "errorTitle": "Something went wrong",
+    "errorText": "The page could not be loaded. Please try again in a moment.",
+    "retry": "Try again",
+    "backHome": "Back to home",
+    "loading": "Loading"
   }
 }

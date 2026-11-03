@@ -1,0 +1,71 @@
+import { useTranslations } from "next-intl";
+import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
+import { Link } from "@/i18n/navigation";
+
+// Link targets are placeholders until their pages exist (#12, #14, #61, #56).
+const COLUMNS = [
+  {
+    title: "about",
+    links: [
+      { href: "/about", label: "Footer.aboutUs" },
+      { href: "/contact", label: "Footer.contact" },
+    ],
+  },
+  {
+    title: "buyers",
+    links: [
+      { href: "/products", label: "Nav.catalog" },
+      { href: "/stores", label: "Nav.stores" },
+      { href: "/prices", label: "Footer.metalPrices" },
+    ],
+  },
+  {
+    title: "sellers",
+    links: [
+      { href: "/sell", label: "Footer.openStore" },
+      { href: "/merchant", label: "Footer.merchantCabinet" },
+    ],
+  },
+  {
+    title: "legal",
+    links: [
+      { href: "/legal/privacy", label: "Footer.privacy" },
+      { href: "/legal/terms", label: "Footer.terms" },
+    ],
+  },
+] as const;
+
+export function SiteFooter() {
+  const t = useTranslations();
+
+  return (
+    <footer className="mt-auto border-t bg-surface">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(4,1fr)]">
+        <div className="flex flex-col items-start gap-3">
+          <p className="font-heading text-2xl font-semibold">Jeparla</p>
+          <p className="max-w-xs text-sm text-muted-foreground">{t("Footer.tagline")}</p>
+          <LocaleSwitcher />
+        </div>
+        {COLUMNS.map((col) => (
+          <nav key={col.title} aria-label={t(`Footer.${col.title}`)}>
+            <h2 className="mb-3 font-sans text-sm font-semibold">{t(`Footer.${col.title}`)}</h2>
+            <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="link-underline hover:text-foreground">
+                    {t(l.label)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+      </div>
+      <div className="border-t">
+        <p className="mx-auto max-w-7xl px-4 py-4 text-xs text-muted-foreground sm:px-6">
+          {t("Footer.rights")}
+        </p>
+      </div>
+    </footer>
+  );
+}
