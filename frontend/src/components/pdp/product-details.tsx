@@ -96,7 +96,7 @@ export async function ProductDetails({
               .filter((c) => c != null)
               .map((c) => ({
                 name: c.name[locale],
-                path: `/${locale}/products?category=${c.slug}`,
+                path: `/${locale}/categories/${c.slug}`,
               })),
             { name, path: `/${locale}/products/${p.slug}` },
           ]),
@@ -111,7 +111,7 @@ export async function ProductDetails({
           </li>
           {[parent, category].filter(Boolean).map((c) => (
             <li key={c!.id} className="before:mr-1 before:content-['/']">
-              <Link href={`/products?category=${c!.slug}`} className="hover:text-foreground">
+              <Link href={`/categories/${c!.slug}`} className="hover:text-foreground">
                 {c!.name[locale]}
               </Link>
             </li>

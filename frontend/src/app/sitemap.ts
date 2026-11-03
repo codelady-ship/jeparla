@@ -5,7 +5,11 @@ import { api, USING_MOCK } from "@/lib/api";
 
 /** Every public page in all three languages, each entry listing its translations. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, stores] = await Promise.all([api.listProducts({ size: 96 }), api.listStores()]);
+  const [products, stores, categories] = await Promise.all([
+    api.listProducts({ size: 96 }),
+    api.listStores(),
+    api.listCategories(),
+  ]);
 
   const entry = (
     path: string,
@@ -23,7 +27,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   };
 
-  const pages = [entry("", 1), entry("/products", 0.9), entry("/stores", 0.8)];
+  const pages = [
+    entry("", 1),
+    entry("/products", 0.9),
+    entry("/categories", 0.8),
+    entry("/stores", 0.8),
+    ...categories.map((c) => entry(`/categories/${c.slug}`, 0.7)),
+  ];
   // Demo stores and products are invented; they must not be indexed as real ones.
   if (USING_MOCK) return pages;
   return [

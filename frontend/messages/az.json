@@ -20,7 +20,32 @@
   "Home": {
     "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə.",
     "newArrivals": "Yeni məhsullar",
-    "seeAll": "Hamısına bax"
+    "seeAll": "Hamısına bax",
+    "categories": "Kateqoriyalar",
+    "stores": "Mağazalar",
+    "verifiedTitle": "Jeparla yoxlaması",
+    "verifiedText": "Üç yoxlama ayrı-ayrılıqda aparılır və hər məhsulda ayrıca göstərilir. Aparılmayan yoxlama gizlədilmir.",
+    "verified": {
+      "seller": {
+        "title": "Satıcı",
+        "text": "Mağazanın qeydiyyatı və əlaqə məlumatları yoxlanılır."
+      },
+      "documents": {
+        "title": "Sənədlər",
+        "text": "Satıcının təqdim etdiyi sənədlər (əyar, sertifikat) yoxlanılır."
+      },
+      "expertise": {
+        "title": "Ekspertiza",
+        "text": "Müstəqil ekspert məhsulu yoxlayıbsa, bu ayrıca qeyd olunur."
+      }
+    },
+    "pricesTitle": "Metal qiymətləri",
+    "demoData": "Nümunə data",
+    "pricesSource": "Mənbə: AMB, tarix:",
+    "perGram": "{metal}, 1 qram",
+    "sellerTitle": "Zərgərlik mağazanız var?",
+    "sellerText": "Məhsullarınızı Jeparla-da göstərin: alıcılar sizə birbaşa WhatsApp ilə yazır.",
+    "sellerCta": "Mağaza aç"
   },
   "Nav": {
     "home": "Ana səhifə",
@@ -279,6 +304,30 @@
       "sell": {
         "q": "Mağazamı Jeparla-ya necə əlavə edim?",
         "a": "\"Mağaza aç\" bölməsindən müraciət edin. Mağaza yoxlanıldıqdan sonra məhsullar moderasiyadan keçib kataloqda görünür."
+      }
+    }
+  },
+  "Categories": {
+    "title": "Kateqoriyalar",
+    "description": "Zərgərlik kateqoriyaları: üzük, sırğa, boyunbağı, qolbaq və digərləri.",
+    "intro": "Kateqoriya seçin, sonra metal, əyar, çəki və qiymətə görə süzün.",
+    "productCount": "{count, plural, =0 {Məhsul yoxdur} other {# məhsul}}",
+    "categoryDescription": "{name}: Azərbaycan zərgərlik mağazalarından qızıl, gümüş və brilyant modellər, əyar, çəki və qiymətlə.",
+    "breadcrumb": "Naviqasiya yolu",
+    "subcategories": "Alt kateqoriyalar",
+    "faqTitle": "{name}: suallar",
+    "faq": {
+      "fineness": {
+        "q": "{name} üçün hansı əyarı seçim?",
+        "a": "Əyar metalın təmizliyini göstərir: 585 qızılda 58,5% təmiz qızıl, 750-də 75% var. Yüksək əyar daha bahalı və yumşaqdır, gündəlik taxmaq üçün 585 daha davamlıdır."
+      },
+      "price": {
+        "q": "{name} qiyməti necə formalaşır?",
+        "a": "Qiymət metalın çəkisi və əyarı, işçilik və daşlardan asılıdır. Metala bağlı qiymətlər Mərkəzi Bankın gündəlik məzənnəsi ilə yenilənir."
+      },
+      "contact": {
+        "q": "Bəyəndiyim modeli necə alım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
       }
     }
   }

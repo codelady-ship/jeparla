@@ -9,16 +9,28 @@ import { FilterFields, type FilterData } from "./filter-fields";
 import { FilterForm } from "./filter-form";
 import { FiltersSheet } from "./filters-sheet";
 
-const ACTION = "/products";
-
-/** Filters, results and pagination for /products. Reads the query, so it streams. */
-export async function Catalog({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const filters = parseFilters(await searchParams);
+/**
+ * Filters, results and pagination. Reads the query, so it streams.
+ * On /products everything is in the URL; a category page passes `category` and
+ * `action`, which fixes the category and hides its filter.
+ */
+export async function Catalog({
+  searchParams,
+  action: ACTION = "/products",
+  category,
+}: {
+  searchParams: Promise<SearchParams>;
+  action?: string;
+  category?: string;
+}) {
+  const parsed = parseFilters(await searchParams);
+  // UI state (chips, links) leaves the fixed category out; the API query includes it.
+  const filters = category ? { ...parsed, category: undefined } : parsed;
   const [t, tc, locale, page, categories, stores, finenesses] = await Promise.all([
     getTranslations("Catalog"),
     getTranslations("Common"),
     getLocale(),
-    api.listProducts({ ...filters, size: PAGE_SIZE }),
+    api.listProducts({ ...filters, ...(category && { category }), size: PAGE_SIZE }),
     api.listCategories(),
     api.listStores(),
     api.listFinenesses(),
@@ -38,7 +50,7 @@ export async function Catalog({ searchParams }: { searchParams: Promise<SearchPa
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
       <aside aria-label={t("filters")} className="hidden lg:block">
         <FilterForm action={ACTION} auto>
-          <FilterFields id="d" filters={filters} data={data} />
+          <FilterFields id="d" filters={filters} data={data} hideCategory={Boolean(category)} />
         </FilterForm>
       </aside>
 
@@ -50,7 +62,12 @@ export async function Catalog({ searchParams }: { searchParams: Promise<SearchPa
               count={activeCount}
             >
               <FilterForm action={ACTION}>
-                <FilterFields id="m" filters={filters} data={data} />
+                <FilterFields
+                  id="m"
+                  filters={filters}
+                  data={data}
+                  hideCategory={Boolean(category)}
+                />
               </FilterForm>
             </FiltersSheet>
             <p className="text-sm text-muted-foreground" aria-live="polite">

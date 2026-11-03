@@ -20,7 +20,32 @@
   "Home": {
     "tagline": "Gold, silver and diamond jewelry stores in one place.",
     "newArrivals": "New arrivals",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "categories": "Categories",
+    "stores": "Stores",
+    "verifiedTitle": "Jeparla checks",
+    "verifiedText": "Three checks are done separately and each is shown on every product. A check that was not done is never hidden.",
+    "verified": {
+      "seller": {
+        "title": "Seller",
+        "text": "The store's registration and contact details are checked."
+      },
+      "documents": {
+        "title": "Documents",
+        "text": "Documents the seller provides (hallmark, certificate) are checked."
+      },
+      "expertise": {
+        "title": "Appraisal",
+        "text": "If an independent expert inspected the piece, it is noted separately."
+      }
+    },
+    "pricesTitle": "Metal prices",
+    "demoData": "Demo data",
+    "pricesSource": "Source: CBAR, date:",
+    "perGram": "{metal}, per gram",
+    "sellerTitle": "Do you run a jewelry store?",
+    "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",
+    "sellerCta": "Open a store"
   },
   "Nav": {
     "home": "Home",
@@ -279,6 +304,30 @@
       "sell": {
         "q": "How do I add my store to Jeparla?",
         "a": "Apply through Open a store. After the store is checked, its products go through moderation and then appear in the catalog."
+      }
+    }
+  },
+  "Categories": {
+    "title": "Categories",
+    "description": "Jewelry categories: rings, earrings, necklaces, bracelets and more.",
+    "intro": "Pick a category, then filter by metal, fineness, weight and price.",
+    "productCount": "{count, plural, =0 {No products} one {# product} other {# products}}",
+    "categoryDescription": "{name}: gold, silver and diamond pieces from jewelry stores in Azerbaijan, with fineness, weight and price.",
+    "breadcrumb": "Breadcrumb",
+    "subcategories": "Subcategories",
+    "faqTitle": "{name}: questions",
+    "faq": {
+      "fineness": {
+        "q": "Which fineness should I choose for {name}?",
+        "a": "Fineness shows metal purity: 585 gold is 58.5% pure gold, 750 is 75%. Higher fineness costs more and is softer; 585 holds up better for everyday wear."
+      },
+      "price": {
+        "q": "How is the price of {name} set?",
+        "a": "It depends on the metal weight and fineness, labor and stones. Metal-linked prices follow the Central Bank's daily rate."
+      },
+      "contact": {
+        "q": "How do I buy a piece I like?",
+        "a": "Use the WhatsApp button on the product page; the message includes the product name, code and link. The purchase is agreed directly with the store."
       }
     }
   }
