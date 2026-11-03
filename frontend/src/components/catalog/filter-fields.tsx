@@ -110,11 +110,14 @@ export function FilterFields({
   id,
   filters: f,
   data,
+  hideCategory = false,
 }: {
   /** Prefix for element ids, since the desktop and mobile forms can both be in the DOM. */
   id: string;
   filters: ProductFilters;
   data: FilterData;
+  /** Category pages fix the category, so its filter is not shown. */
+  hideCategory?: boolean;
 }) {
   const t = useTranslations("Catalog");
   const tp = useTranslations("Product");
@@ -130,37 +133,39 @@ export function FilterFields({
       {f.sort && <input type="hidden" name="sort" value={f.sort} />}
       {f.q && <input type="hidden" name="q" value={f.q} />}
 
-      <Group legend={t("category")}>
-        <Check id={`${id}-cat-all`} name="category" value="" checked={!f.category} type="radio">
-          {t("allCategories")}
-        </Check>
-        {roots.map((c) => (
-          <div key={c.id} className="flex flex-col gap-1.5">
-            <Check
-              id={`${id}-cat-${c.slug}`}
-              name="category"
-              value={c.slug}
-              checked={f.category === c.slug}
-              type="radio"
-            >
-              {c.name[locale]}
-            </Check>
-            {children(c.id).map((ch) => (
-              <div key={ch.id} className="pl-6">
-                <Check
-                  id={`${id}-cat-${ch.slug}`}
-                  name="category"
-                  value={ch.slug}
-                  checked={f.category === ch.slug}
-                  type="radio"
-                >
-                  {ch.name[locale]}
-                </Check>
-              </div>
-            ))}
-          </div>
-        ))}
-      </Group>
+      {!hideCategory && (
+        <Group legend={t("category")}>
+          <Check id={`${id}-cat-all`} name="category" value="" checked={!f.category} type="radio">
+            {t("allCategories")}
+          </Check>
+          {roots.map((c) => (
+            <div key={c.id} className="flex flex-col gap-1.5">
+              <Check
+                id={`${id}-cat-${c.slug}`}
+                name="category"
+                value={c.slug}
+                checked={f.category === c.slug}
+                type="radio"
+              >
+                {c.name[locale]}
+              </Check>
+              {children(c.id).map((ch) => (
+                <div key={ch.id} className="pl-6">
+                  <Check
+                    id={`${id}-cat-${ch.slug}`}
+                    name="category"
+                    value={ch.slug}
+                    checked={f.category === ch.slug}
+                    type="radio"
+                  >
+                    {ch.name[locale]}
+                  </Check>
+                </div>
+              ))}
+            </div>
+          ))}
+        </Group>
+      )}
 
       <Group legend={t("store")}>
         <StoreOptions
