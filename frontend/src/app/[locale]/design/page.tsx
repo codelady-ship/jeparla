@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { use } from "react";
+import type { Locale } from "@/i18n/routing";
 import { Gem, Search } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -50,7 +53,8 @@ const SWATCHES = [
   { name: "warning", className: "bg-warning text-background" },
 ];
 
-export default function DesignPage() {
+export default function DesignPage({ params }: PageProps<"/[locale]/design">) {
+  setRequestLocale(use(params).locale as Locale);
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-10 sm:px-6">
       <header className="flex items-center justify-between gap-4">

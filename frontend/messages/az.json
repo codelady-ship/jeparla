@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "Jeparla — qızıl, gümüş və brilyant zərgərlik",
+    "description": "Azərbaycanın zərgərlik mağazaları bir yerdə: mağaza və kateqoriya üzrə axtarış, gündəlik metal qiyməti, yoxlanılmış məhsullar."
+  },
+  "Common": {
+    "close": "Bağla",
+    "themeToDark": "Gecə rejiminə keç",
+    "themeToLight": "Gündüz rejiminə keç",
+    "skipToContent": "Əsas məzmuna keç"
+  },
+  "LocaleSwitcher": {
+    "label": "Dil",
+    "locale": {
+      "az": "Azərbaycanca",
+      "en": "English",
+      "ru": "Русский"
+    }
+  },
+  "Home": {
+    "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə."
+  }
+}
