@@ -45,10 +45,11 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          <Link href="/search" className={icon} aria-label={t("Nav.search")}>
+          {/* prefetch off until these routes exist (#18, #24); prefetching them 404s. */}
+          <Link href="/search" prefetch={false} className={icon} aria-label={t("Nav.search")}>
             <Search aria-hidden />
           </Link>
-          <Link href="/favorites" className={icon} aria-label={t("Nav.favorites")}>
+          <Link href="/favorites" prefetch={false} className={icon} aria-label={t("Nav.favorites")}>
             <Heart aria-hidden />
           </Link>
           <div className="hidden sm:block">
@@ -57,7 +58,7 @@ export function SiteHeader() {
           <ThemeToggle
             labels={{ toDark: t("Common.themeToDark"), toLight: t("Common.themeToLight") }}
           />
-          <Link href="/login" className={icon} aria-label={t("Nav.login")}>
+          <Link href="/login" prefetch={false} className={icon} aria-label={t("Nav.login")}>
             <UserRound aria-hidden />
           </Link>
         </div>

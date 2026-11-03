@@ -171,7 +171,8 @@
     "pagination": "Səhifələr",
     "prev": "Əvvəlki",
     "next": "Növbəti",
-    "pageN": "Səhifə {n}"
+    "pageN": "Səhifə {n}",
+    "results": "Nəticələr"
   },
   "Pdp": {
     "breadcrumb": "Naviqasiya yolu",

@@ -15,16 +15,20 @@ import "../globals.css";
 
 // Both fonts cover Azerbaijani (Ə İ Ş Ç Ğ Ö Ü) and Cyrillic. Playfair Display has no
 // manat sign, so prices always use the body font (docs/DESIGN.md).
+// Performance (#60): Inter uses "optional", so a slow first visit keeps the
+// metric-matched fallback instead of re-painting late (that late swap was the mobile
+// LCP); later visits have it cached. Playfair is headings only and is not preloaded.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "latin-ext", "cyrillic"],
-  display: "swap",
+  display: "optional",
 });
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
+  preload: false,
 });
 
 export function generateStaticParams() {

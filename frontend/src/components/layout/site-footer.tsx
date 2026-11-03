@@ -54,7 +54,12 @@ export function SiteFooter() {
             <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="link-underline hover:text-foreground">
+                  {/* Most footer routes arrive later; no prefetch keeps 404s out. */}
+                  <Link
+                    href={l.href}
+                    prefetch={false}
+                    className="link-underline hover:text-foreground"
+                  >
                     {t(l.label)}
                   </Link>
                 </li>
