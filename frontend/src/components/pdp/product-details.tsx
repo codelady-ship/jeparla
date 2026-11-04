@@ -9,6 +9,7 @@ import {
 import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
+import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SITE_URL } from "@/i18n/alternates";
@@ -216,7 +217,7 @@ export async function ProductDetails({
         </div>
       </div>
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-2 lg:gap-12">
         {p.stones.length > 0 && (
           <Reveal as="section" aria-labelledby="stones">
             <h2 id="stones" className="mb-3 text-xl">
@@ -311,6 +312,8 @@ export async function ProductDetails({
             </div>
           </Reveal>
         )}
+
+        <MetalPriceWidget className="lg:col-span-2" />
       </div>
 
       {related.length > 0 && (

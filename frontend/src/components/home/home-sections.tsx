@@ -1,15 +1,14 @@
 import { ArrowRight, BadgeCheck, FileCheck2, Microscope, Store } from "lucide-react";
-import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
+import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { Reveal } from "@/components/motion/reveal";
 import { StoreCard } from "@/components/stores/store-card";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { api, USING_MOCK } from "@/lib/api";
+import { api } from "@/lib/api";
 import { cn } from "cn";
-import { formatPrice } from "@/lib/money";
 
 function SectionHead({ id, title, link }: { id: string; title: string; link?: ReactNode }) {
   return (
@@ -103,47 +102,12 @@ export async function VerifiedExplainer() {
   );
 }
 
-export async function MetalPrices() {
-  const [t, tp, format, locale, prices] = await Promise.all([
-    getTranslations("Home"),
-    getTranslations("Product"),
-    getFormatter(),
-    getLocale(),
-    api.latestMetalPrices(),
-  ]);
-  const shown = prices.filter((p) => p.metal === "GOLD" || p.metal === "SILVER");
-  if (shown.length === 0) return null;
-  const date = shown[0].date;
+/** Daily CBAR gram prices and the 30-day chart (PLAN 5.10). */
+export function MetalPrices() {
   return (
-    <section aria-labelledby="home-prices" className={cn(WRAP, "pb-16")}>
-      <div className="flex flex-col gap-6 rounded-lg border bg-card p-6 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 id="home-prices" className="text-2xl">
-              {t("pricesTitle")}
-            </h2>
-            {/* Honesty rule: invented demo prices are labeled as such. */}
-            {USING_MOCK && <Badge variant="secondary">{t("demoData")}</Badge>}
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("pricesSource")}{" "}
-            <time dateTime={date}>{format.dateTime(new Date(date), "short")}</time>
-          </p>
-        </div>
-        <dl className="grid grid-cols-2 gap-6">
-          {shown.map((p) => (
-            <div key={p.metal}>
-              <dt className="text-sm text-muted-foreground">
-                {t("perGram", { metal: tp(`metal.${p.metal}`) })}
-              </dt>
-              <dd className="text-2xl font-semibold tabular-nums">
-                {formatPrice(p.pricePerGram, locale)}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    </section>
+    <div className={cn(WRAP, "pb-16")}>
+      <MetalPriceWidget />
+    </div>
   );
 }
 

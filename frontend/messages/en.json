@@ -40,10 +40,6 @@
         "text": "If an independent expert inspected the piece, it is noted separately."
       }
     },
-    "pricesTitle": "Metal prices",
-    "demoData": "Demo data",
-    "pricesSource": "Source: CBAR, date:",
-    "perGram": "{metal}, per gram",
     "sellerTitle": "Do you run a jewelry store?",
     "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",
     "sellerCta": "Open a store"
@@ -714,7 +710,7 @@
         "name": "For example: Gold engagement ring with diamond.",
         "description": "Design, sizing advice, packaging. Up to 2000 characters.",
         "size": "For rings and bracelets; leave empty for others.",
-        "price": "Fixed price. The metal-linked pricing mode comes in the next stage.",
+        "price": "Fixed price, AZN.",
         "fineness": "Choose the metal first."
       },
       "images": {
@@ -767,6 +763,50 @@
         },
         "toList": "Back to products",
         "another": "Add another product"
+      },
+      "pricing": {
+        "mode": "Pricing mode",
+        "modes": {
+          "FIXED": {
+            "title": "Fixed price",
+            "text": "You enter the price of each variant yourself."
+          },
+          "METAL_LINKED": {
+            "title": "Linked to metal",
+            "text": "The price updates every day with the CBAR metal rate."
+          }
+        },
+        "optional": "optional",
+        "fields": {
+          "laborPerGram": "Labor per gram (AZN)",
+          "laborFixed": "Fixed labor (AZN)",
+          "stonePrice": "Stone price (AZN)",
+          "markupPercent": "Markup, %",
+          "minPrice": "Minimum price (AZN)",
+          "maxPrice": "Maximum price (AZN)"
+        },
+        "hints": {
+          "markupPercent": "Store markup, for example 15."
+        },
+        "preview": {
+          "title": "Live preview",
+          "noQuote": "There is no daily rate for this metal yet. The price is computed when it arrives.",
+          "incomplete": "The preview needs the metal, the fineness, the weight of the first variant and valid amounts.",
+          "basis": "Today's pure metal price: {price} per gram, CBAR, {date}.",
+          "caption": "Price calculation for the first variant",
+          "metal": "Metal value",
+          "labor": "Labor",
+          "stone": "Stone",
+          "markup": "Markup",
+          "total": "Variant {n} price",
+          "clamped": {
+            "MIN": "The computed price was below the minimum, so the minimum is used.",
+            "MAX": "The computed price was above the maximum, so the maximum is used."
+          },
+          "note": "The price is recomputed every business day; buyers see it with the last update date."
+        },
+        "computed": "Computed price",
+        "pending": "Not enough data"
       }
     },
     "profile": {
@@ -822,7 +862,25 @@
       "docsRequired": "Upload at least one document to send to review.",
       "hoursInvalid": "Check the opening hours.",
       "sessionExpired": "Your session has expired. Sign in again.",
-      "check": "The form has errors, check the fields in red."
+      "check": "The form has errors, check the fields in red.",
+      "moneyInvalid": "Enter 0 or a positive amount, for example 12.50.",
+      "percentInvalid": "Enter a percent between 0 and 1000.",
+      "maxBelowMin": "The maximum price cannot be lower than the minimum."
     }
+  },
+  "MetalPrices": {
+    "title": "Daily metal prices",
+    "demoData": "Sample data",
+    "source": "Source: CBAR (Central Bank of Azerbaijan), date:",
+    "tile": "{metal} {fineness}, 1 gram",
+    "chartTitle": "{metal} {fineness}, 1 gram, last 30 business days",
+    "change": "{value}% over 30 business days",
+    "chartSummary": "{name}. Lowest {min}, highest {max}, latest {last}. Use the arrow keys to move between days.",
+    "table": "Show as a table",
+    "date": "Date",
+    "perGram": "1 gram",
+    "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
+    "error": "Metal prices could not be loaded right now. Check again a little later.",
+    "empty": "Today's price has not arrived yet."
   }
 }

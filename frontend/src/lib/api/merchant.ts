@@ -7,6 +7,7 @@ import type {
   MerchantStore,
   ProductInput,
 } from "@/types/merchant";
+import { EMPTY_PRICING } from "@/lib/merchant/draft";
 import { USING_MOCK } from "./index";
 import { CATEGORIES, PRODUCTS, STORES } from "./mock/fixtures";
 
@@ -89,6 +90,20 @@ export function toInput(p: Product): ProductInput {
     description: p.description.az,
     metal: p.metal,
     fineness: String(p.variants[0]?.fineness.id ?? ""),
+    pricingMode: p.variants[0]?.pricingMode ?? "FIXED",
+    pricing: (() => {
+      const r = p.variants.find((v) => v.pricing)?.pricing;
+      return r
+        ? {
+            laborPerGram: r.laborPerGram,
+            laborFixed: r.laborFixed,
+            stonePrice: r.stonePrice,
+            markupPercent: r.markupPercent,
+            minPrice: r.minPrice ?? "",
+            maxPrice: r.maxPrice ?? "",
+          }
+        : { ...EMPTY_PRICING };
+    })(),
     variants: p.variants.map((v) => ({
       key: `v${v.id}`,
       size: v.size ?? "",

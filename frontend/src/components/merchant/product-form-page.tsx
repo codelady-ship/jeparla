@@ -15,13 +15,18 @@ export async function ProductFormPage({ id }: { id?: string }) {
   if (!hasLocale(routing.locales, locale)) return null;
   const { api } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t] = await Promise.all([
+  const [store, product, categories, finenesses, t, prices] = await Promise.all([
     api.store(),
     productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
     publicApi.listCategories(),
     publicApi.listFinenesses(),
     getTranslations("Merchant.form"),
+    // Without a quote the form still works; the preview says the rate is missing.
+    publicApi.latestMetalPrices().catch(() => []),
   ]);
+  const quotes = Object.fromEntries(
+    prices.map((q) => [q.metal, { pricePerGram: q.pricePerGram, date: q.date }]),
+  );
   if (productId !== null && !product) notFound();
 
   // Leaf categories only: a product sits in the most specific one.
@@ -47,7 +52,9 @@ export async function ProductFormPage({ id }: { id?: string }) {
             value: String(f.id),
             label: f.label,
             metal: f.metal,
+            fineness: f.value,
           }))}
+          quotes={quotes}
           sellerApproved={store.sellerStatus === "VERIFIED"}
         />
       </MerchantIntl>

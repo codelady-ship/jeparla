@@ -40,10 +40,6 @@
         "text": "Müstəqil ekspert məhsulu yoxlayıbsa, bu ayrıca qeyd olunur."
       }
     },
-    "pricesTitle": "Metal qiymətləri",
-    "demoData": "Nümunə data",
-    "pricesSource": "Mənbə: AMB, tarix:",
-    "perGram": "{metal}, 1 qram",
     "sellerTitle": "Zərgərlik mağazanız var?",
     "sellerText": "Məhsullarınızı Jeparla-da göstərin: alıcılar sizə birbaşa WhatsApp ilə yazır.",
     "sellerCta": "Mağaza aç"
@@ -714,7 +710,7 @@
         "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
         "description": "Dizayn, ölçü məsləhəti, qablaşdırma. Ən çox 2000 simvol.",
         "size": "Üzük və qolbaq üçün; digərlərində boş saxlayın.",
-        "price": "Sabit qiymət. Metala bağlı qiymət rejimi növbəti mərhələdə əlavə olunur.",
+        "price": "Sabit qiymət, AZN.",
         "fineness": "Əvvəl metalı seçin."
       },
       "images": {
@@ -767,6 +763,50 @@
         },
         "toList": "Məhsullara qayıt",
         "another": "Daha bir məhsul əlavə et"
+      },
+      "pricing": {
+        "mode": "Qiymət rejimi",
+        "modes": {
+          "FIXED": {
+            "title": "Sabit qiymət",
+            "text": "Hər variantın qiymətini özünüz yazırsınız."
+          },
+          "METAL_LINKED": {
+            "title": "Metala bağlı",
+            "text": "Qiymət hər gün AMB-nin metal məzənnəsi ilə avtomatik yenilənir."
+          }
+        },
+        "optional": "istəyə bağlı",
+        "fields": {
+          "laborPerGram": "İşçilik, 1 qram üçün (AZN)",
+          "laborFixed": "Sabit işçilik (AZN)",
+          "stonePrice": "Daş qiyməti (AZN)",
+          "markupPercent": "Əlavə, %",
+          "minPrice": "Minimum qiymət (AZN)",
+          "maxPrice": "Maksimum qiymət (AZN)"
+        },
+        "hints": {
+          "markupPercent": "Mağaza əlavəsi, məsələn 15."
+        },
+        "preview": {
+          "title": "Canlı önizləmə",
+          "noQuote": "Bu metal üçün gündəlik məzənnə hələ yoxdur. Qiymət məzənnə gələndə hesablanacaq.",
+          "incomplete": "Önizləmə üçün metal, əyar, birinci variantın çəkisi və düzgün məbləğlər lazımdır.",
+          "basis": "Bugünkü təmiz metal qiyməti: 1 qram {price}, AMB, {date}.",
+          "caption": "Birinci variantın qiymət hesablanması",
+          "metal": "Metal dəyəri",
+          "labor": "İşçilik",
+          "stone": "Daş",
+          "markup": "Əlavə",
+          "total": "Variant {n} qiyməti",
+          "clamped": {
+            "MIN": "Hesablanan qiymət minimumdan aşağı idi, minimum qiymət götürüldü.",
+            "MAX": "Hesablanan qiymət maksimumdan yuxarı idi, maksimum qiymət götürüldü."
+          },
+          "note": "Qiymət hər iş günü yenidən hesablanır, alıcı onu son yenilənmə tarixi ilə görür."
+        },
+        "computed": "Hesablanmış qiymət",
+        "pending": "Məlumat tam deyil"
       }
     },
     "profile": {
@@ -822,7 +862,25 @@
       "docsRequired": "Yoxlamaya göndərmək üçün ən azı bir sənəd yükləyin.",
       "hoursInvalid": "İş saatlarını yoxlayın.",
       "sessionExpired": "Sessiyanın vaxtı bitib. Yenidən daxil olun.",
-      "check": "Formada səhv var, qırmızı sahələri yoxlayın."
+      "check": "Formada səhv var, qırmızı sahələri yoxlayın.",
+      "moneyInvalid": "0 və ya müsbət məbləğ yazın, məsələn 12,50.",
+      "percentInvalid": "0 ilə 1000 arasında faiz yazın.",
+      "maxBelowMin": "Maksimum qiymət minimumdan az ola bilməz."
     }
+  },
+  "MetalPrices": {
+    "title": "Gündəlik metal qiymətləri",
+    "demoData": "Nümunə data",
+    "source": "Mənbə: AMB (Azərbaycan Mərkəzi Bankı), tarix:",
+    "tile": "{metal} {fineness}, 1 qram",
+    "chartTitle": "{metal} {fineness}, 1 qram, son 30 iş günü",
+    "change": "30 iş günündə {value}%",
+    "chartSummary": "{name}. Ən aşağı {min}, ən yüksək {max}, son qiymət {last}. Günlər arasında ox düymələri ilə keçin.",
+    "table": "Cədvəl kimi göstər",
+    "date": "Tarix",
+    "perGram": "1 qram",
+    "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
+    "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
+    "empty": "Bugünkü qiymət hələ gəlməyib."
   }
 }
