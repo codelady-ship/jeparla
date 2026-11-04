@@ -331,5 +331,20 @@
         "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
       }
     }
+  },
+  "Search": {
+    "open": "Axtarış",
+    "title": "Jeparla-da axtar",
+    "placeholder": "Mağaza, kateqoriya və ya məhsul axtar",
+    "recent": "Son axtarışlar",
+    "clearRecent": "Təmizlə",
+    "stores": "Mağazalar",
+    "categories": "Kateqoriyalar",
+    "products": "Məhsullar",
+    "seeAll": "\"{query}\" üzrə bütün nəticələr",
+    "loading": "Axtarılır",
+    "empty": "Heç nə tapılmadı. Başqa söz yoxlayın.",
+    "error": "Axtarış alınmadı. Yenidən yoxlayın.",
+    "results": "{count} nəticə"
   }
 }

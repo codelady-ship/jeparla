@@ -1,5 +1,6 @@
-import { Heart, Search, UserRound } from "lucide-react";
+import { Heart, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SearchDialog } from "@/components/search/search-dialog";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -45,10 +46,25 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          {/* prefetch off until these routes exist (#18, #24); prefetching them 404s. */}
-          <Link href="/search" prefetch={false} className={icon} aria-label={t("Nav.search")}>
-            <Search aria-hidden />
-          </Link>
+          <SearchDialog
+            labels={{
+              open: t("Search.open"),
+              title: t("Search.title"),
+              placeholder: t("Search.placeholder"),
+              recent: t("Search.recent"),
+              clearRecent: t("Search.clearRecent"),
+              stores: t("Search.stores"),
+              categories: t("Search.categories"),
+              products: t("Search.products"),
+              loading: t("Search.loading"),
+              empty: t("Search.empty"),
+              error: t("Search.error"),
+              seeAll: t.raw("Search.seeAll") as string,
+              results: t.raw("Search.results") as string,
+              close: t("Common.close"),
+            }}
+          />
+          {/* prefetch off until these routes exist (#20, #21); prefetching them 404s. */}
           <Link href="/favorites" prefetch={false} className={icon} aria-label={t("Nav.favorites")}>
             <Heart aria-hidden />
           </Link>
