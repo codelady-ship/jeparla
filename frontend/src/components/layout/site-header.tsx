@@ -1,7 +1,8 @@
-import { Heart, UserRound } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SavedCount } from "@/components/saved/saved-count";
 import { SearchDialog } from "@/components/search/search-dialog";
+import { AccountMenu } from "@/components/auth/account-menu";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -65,7 +66,6 @@ export function SiteHeader() {
               close: t("Common.close"),
             }}
           />
-          {/* prefetch off for /login until it exists (#21); prefetching it 404s. */}
           <Link href="/favorites" className={`${icon} relative`}>
             <Heart aria-hidden />
             <span className="sr-only">{t("Nav.favorites")}</span>
@@ -77,9 +77,15 @@ export function SiteHeader() {
           <ThemeToggle
             labels={{ toDark: t("Common.themeToDark"), toLight: t("Common.themeToLight") }}
           />
-          <Link href="/login" prefetch={false} className={icon} aria-label={t("Nav.login")}>
-            <UserRound aria-hidden />
-          </Link>
+          <AccountMenu
+            labels={{
+              login: t("Nav.login"),
+              account: t("Nav.account"),
+              dashboard: t("Nav.dashboard"),
+              favorites: t("Nav.favorites"),
+              logout: t("Nav.logout"),
+            }}
+          />
         </div>
       </div>
     </HeaderShell>

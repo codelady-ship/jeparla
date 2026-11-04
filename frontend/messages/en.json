@@ -57,7 +57,10 @@
     "favorites": "Favorites",
     "login": "Sign in",
     "menu": "Menu",
-    "mainNav": "Main navigation"
+    "mainNav": "Main navigation",
+    "account": "Account menu",
+    "dashboard": "Dashboard",
+    "logout": "Sign out"
   },
   "Footer": {
     "about": "About Jeparla",
@@ -399,5 +402,64 @@
     "noStones": "No stones",
     "stock": "Stock",
     "gramUnit": "g"
+  },
+  "Auth": {
+    "login": {
+      "title": "Sign in",
+      "description": "Sign in to your Jeparla account.",
+      "intro": "For your favorites and your store dashboard.",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "noAccount": "No account yet?"
+    },
+    "register": {
+      "title": "Create account",
+      "description": "Create a buyer account on Jeparla.",
+      "intro": "A buyer account is free and takes a minute.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "seller": "Own a jewelry store?",
+      "sellerLink": "Join as a seller"
+    },
+    "forgot": {
+      "title": "Reset password",
+      "description": "Reset the password of your Jeparla account.",
+      "intro": "Enter your e-mail.",
+      "submit": "Continue",
+      "notice": "Password reset does not work yet: recovery by SMS and e-mail turns on when the backend is ready. No e-mail was sent.",
+      "back": "Back to sign in"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "E-mail",
+      "password": "Password",
+      "confirm": "Repeat password"
+    },
+    "hints": {
+      "password": "At least {min} characters, with a letter and a digit."
+    },
+    "errors": {
+      "required": "Please fill in this field.",
+      "emailInvalid": "This e-mail address is not valid, for example name@example.com.",
+      "nameShort": "The name needs at least 2 letters.",
+      "nameLong": "The name is too long.",
+      "passwordShort": "The password needs at least {min} characters.",
+      "passwordLong": "The password is too long.",
+      "passwordLetter": "Add at least one letter.",
+      "passwordDigit": "Add at least one digit.",
+      "passwordMismatch": "The passwords do not match.",
+      "unavailable": "Sign-in is not available yet. Please try again later.",
+      "network": "Could not connect. Check your internet and try again.",
+      "server": "Something went wrong. Please try again."
+    },
+    "pending": "Please wait",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. Nothing is stored.",
+    "areas": {
+      "merchant": "Store dashboard",
+      "admin": "Admin panel",
+      "soon": "This section is being built."
+    }
   }
 }
