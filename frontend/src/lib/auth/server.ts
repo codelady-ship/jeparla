@@ -5,6 +5,7 @@ import {
   encodeSession,
   SESSION_COOKIE,
   SESSION_MAX_AGE,
+  SIGNED_IN_COOKIE,
   type Role,
   type Session,
 } from "./session";
@@ -14,17 +15,21 @@ export async function readSession(): Promise<Session | null> {
 }
 
 export async function writeSession(s: Session) {
-  (await cookies()).set(SESSION_COOKIE, encodeSession(s), {
-    httpOnly: true,
-    sameSite: "lax",
+  const jar = await cookies();
+  const base = {
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: SESSION_MAX_AGE,
-  });
+  };
+  jar.set(SESSION_COOKIE, encodeSession(s), { ...base, httpOnly: true });
+  jar.set(SIGNED_IN_COOKIE, "1", base);
 }
 
 export async function clearSession() {
-  (await cookies()).delete(SESSION_COOKIE);
+  const jar = await cookies();
+  jar.delete(SESSION_COOKIE);
+  jar.delete(SIGNED_IN_COOKIE);
 }
 
 /**

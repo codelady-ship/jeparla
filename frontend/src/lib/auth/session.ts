@@ -8,6 +8,11 @@ export type Session = { name: string; email: string; role: Role };
 
 export const SESSION_COOKIE = "jeparla_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
+/**
+ * Readable marker next to the httpOnly session: it holds no data, it only tells
+ * the browser whether asking /api/auth/me is worth it. Guests make no request.
+ */
+export const SIGNED_IN_COOKIE = "jeparla_signed_in";
 
 const ROLES: readonly Role[] = ["USER", "MERCHANT", "ADMIN"];
 
