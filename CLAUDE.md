@@ -14,9 +14,9 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
   `tools/sweep.py` CI-da yoxlayır (`docs/brand.json`).
 - **Emoji qadağandır:** issue, commit, UI və sənədlərdə. İkonlar yalnız `lucide-react`.
 - **UI kitabxanası: shadcn/ui.** Əvvəl mövcud komponent, yalnız qarşılığı yoxdursa custom.
-- **Rənglər yalnız token-lərlə** (raw hex komponentdə yoxdur). Əsas palitra (2026-11 redizayn):
-  charcoal `#141414`, qara `#090909`, qızılı `#C6A15B` (açıq `#E8D39A`, tünd `#8D6A2D`),
-  gümüşü `#D8DCE1`, brilyant ağı `#F7F8FA`, fil sümüyü `#F5F1E8`. Mənbə: `docs/design/tokens.json`.
+- **Rənglər yalnız token-lərlə** (raw hex komponentdə yoxdur). Əsas palitra:
+  tünd yaşıl `#16251F`, qızılı `#C5A15A`, krem `#F7F3EA`, ağ `#FFFFFF`, mətn `#292929`; hero səhnələri
+  üçün sabit `--scene-*` (yaşıl, qızılı, gümüşü). Qara fon yoxdur. Mənbə: `docs/design/tokens.json`.
   Light və dark tema; `tools/contrast.py` ilə WCAG AA, 0 xəta.
 - **Şriftlər:** başlıq Cormorant (variable), mətn sistem şrifti (Lighthouse büdcəsi: 2 şrift faylı); Azərbaycan (Ə, İ, Ş, Ç, Ğ, Ö, Ü) və rus
   hərflərini dəstəkləməlidir.

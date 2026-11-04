@@ -14,8 +14,8 @@
   --font-heading: var(--font-cormorant), "Cormorant", Georgia, serif;
   /* Small technical labels only (prices source, dates); no extra download. */
   --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
-  --color-scene-ink: var(--scene-ink);
-  --color-scene-charcoal: var(--scene-charcoal);
+  --color-scene-deep: var(--scene-deep);
+  --color-scene-green: var(--scene-green);
   --color-scene-ivory: var(--scene-ivory);
   --color-scene-ivory-muted: var(--scene-ivory-muted);
   --color-scene-gold: var(--scene-gold);

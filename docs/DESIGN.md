@@ -6,35 +6,32 @@ Canlı nümunə: `/design` səhifəsi (indekslənmir).
 
 ## Rənglər (rollar)
 
-2026-11-05 redizayn: tünd yaşıl/krem palitradan charcoal, fil sümüyü, qızılı və gümüşü
-palitraya keçid (sahibin qərarı, premium kinematik vitrin).
-
 | Rol                       | Light                           | Dark                            | İstifadə                    |
 | ------------------------- | ------------------------------- | ------------------------------- | --------------------------- |
-| bg                        | `#F5F1E8` fil sümüyü            | `#0B0B0B`                       | səhifə fonu                 |
-| surface                   | `#FFFFFF`                       | `#141414` charcoal              | kart, dialoq, panel         |
-| surface-muted             | `#ECE6D9`                       | `#1E1E1E`                       | ikinci dərəcəli fon, hover  |
-| border                    | `#DDD5C4`                       | `#2C2A27`                       | incə (hairline) xətlər      |
-| input                     | `#8A8170`                       | `#767676`                       | forma sərhədi (3:1)         |
-| text                      | `#141414`                       | `#F5F1E8`                       | əsas mətn                   |
-| text-muted                | `#5C5850`                       | `#A39E95`                       | köməkçi mətn                |
-| primary / on-primary      | `#141414` / `#F5F1E8`           | `#C6A15B` / `#141414`           | əsas düymə                  |
-| accent (gold) / on-accent | `#C6A15B` / `#141414`           | eyni                            | qızılı CTA, Verified nişanı |
-| accent-text (gold-text)   | `#7A5B1F`                       | `#D9BE7E`                       | qızılı ikon və link         |
-| ring                      | `#8D6A2D`                       | `#E8D39A`                       | fokus halqası               |
+| bg                        | `#F7F3EA` krem                  | `#0E1814`                       | səhifə fonu                 |
+| surface                   | `#FFFFFF`                       | `#16251F`                       | kart, dialoq, panel         |
+| surface-muted             | `#EFE8DA`                       | `#1F3129`                       | ikinci dərəcəli fon, hover  |
+| border                    | `#E2D9C6`                       | `#2B3F36`                       | dekorativ xətlər            |
+| input                     | `#8F8470`                       | `#6D8479`                       | forma sərhədi (3:1)         |
+| text                      | `#292929`                       | `#F7F3EA`                       | əsas mətn                   |
+| text-muted                | `#5E5A52`                       | `#B9B3A6`                       | köməkçi mətn                |
+| primary / on-primary      | `#16251F` / `#F7F3EA`           | `#C5A15A` / `#16251F`           | əsas düymə                  |
+| accent (gold) / on-accent | `#C5A15A` / `#16251F`           | eyni                            | qızılı CTA, Verified nişanı |
+| accent-text (gold-text)   | `#7A5B1F`                       | `#D8B977`                       | qızılı ikon və link         |
+| ring                      | `#8C6A26`                       | `#D8B977`                       | fokus halqası               |
 | danger, success, warning  | `#B42318`, `#1D6A43`, `#8A5300` | `#F2857B`, `#6CC896`, `#E5B45A` | status                      |
-
-**Səhnə rəngləri (`--scene-*`, temadan asılı deyil).** Hero səhnələri öz işığını daşıyır:
-`ink #090909`, `charcoal #141414`, `ivory #F5F1E8`, `ivory-muted #B8B2A7`, `gold #C6A15B`,
-`gold-light #E8D39A`, `gold-deep #8D6A2D`, `silver #D8DCE1`, `diamond #F7F8FA`,
-`silver-text #4A4F57`. Tailwind: `bg-scene-ink`, `text-scene-gold-light` və s.
 
 Tailwind sinifləri: `bg-background`, `bg-card`, `bg-muted`, `bg-primary`, `bg-gold text-on-gold`,
 `text-gold-text`, `text-success`, `text-warning`, `bg-destructive text-on-destructive`.
 
-**Qızılı qaydası.** `#C6A15B` fil sümüyü fonda kifayət qədər kontrast vermir. Light temada qızılı
-yalnız **fon** kimi (üzərində tünd mətn) istifadə olunur; ikon, link, xətt üçün `gold-text`.
-Qızılı heç vaxt yeganə məna daşıyıcısı deyil (ikon + mətn). Ucuz qızılı qradiyent yoxdur.
+**Qızılı qaydası.** `#C5A15A` krem fonda yalnız 2.2:1 kontrast verir. Light temada qızılı yalnız
+**fon** kimi (üzərində `on-gold` tünd mətn) istifadə olunur. Qızılı ikon, link, xətt üçün
+`gold-text`. Qızılı heç vaxt yeganə məna daşıyıcısı deyil (ikon + mətn).
+
+**Səhnə rəngləri (`--scene-*`, temadan asılı deyil).** Hero səhnələri öz işığını daşıyır:
+`deep #0E1814`, `green #16251F`, `ivory #F7F3EA`, `ivory-muted #B9B3A6`, `gold #C5A15A`,
+`gold-light #E8D39A`, `gold-deep #8C6A26`, `silver #D8DCE1`, `diamond #F7F8FA`,
+`silver-text #4A4F57`. Tailwind: `bg-scene-deep`, `text-scene-gold-light` və s.
 
 **Kontrast.** `tokens.json`-dakı `pairs` siyahısındakı 66 cüt WCAG AA-dan keçir. Yoxlama:
 `python3 tools/contrast.py docs/design/tokens.json` (CI) və `npm test` (eyni düstur,
@@ -62,7 +59,7 @@ Böyük editorial başlıqlar (hero 56–120px) yalnız `font-heading`; sətir u
 ## Spacing və radius
 
 - Spacing: Tailwind şkalası (4px addım); səhifə kənarı mobil 16px, desktop 24px; bölmələr arası 48px.
-- Radius: baza `0.375rem` (`--radius`); editorial bloklar az yuvarlaq, incə xətli; nişan tam yuvarlaq.
+- Radius: baza `0.5rem` (`--radius`), kart `rounded-xl`, nişan tam yuvarlaq.
 
 ## Motion
 
