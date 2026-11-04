@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
@@ -15,14 +15,21 @@ import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-// Headings use Playfair Display (Azerbaijani and Cyrillic covered; no manat sign, so
-// prices use the body font). Body text is the system UI font (globals.css), chosen in
-// #60: no font download on first load. Playfair is headings only and is not preloaded.
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+// Headings: Cormorant Garamond (editorial serif; Latin Extended covers Azerbaijani,
+// plus Cyrillic). Text: Manrope. Both are self-hosted by next/font with swap, and
+// only the unicode subsets a page uses are downloaded. Prices fall back to the
+// system font for the manat sign, which neither font has.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
-  preload: false,
 });
 
 export function generateStaticParams() {
@@ -70,7 +77,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   return (
     <html
       lang={locale}
-      className={`${playfair.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">

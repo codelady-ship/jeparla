@@ -8,11 +8,24 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* System UI font for text (#60): no download, covers Azerbaijani, Cyrillic and the manat sign. */
+  /* Manrope for text, Cormorant Garamond for headings (2026-11 redesign); system fonts
+     stay as fallbacks, so the manat sign and any missing glyph still render. */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
     "Noto Sans", sans-serif;
-  --font-heading: var(--font-playfair);
+  --font-heading: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  /* Small technical labels only (prices source, dates); no extra download. */
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+  --color-scene-ink: var(--scene-ink);
+  --color-scene-charcoal: var(--scene-charcoal);
+  --color-scene-ivory: var(--scene-ivory);
+  --color-scene-ivory-muted: var(--scene-ivory-muted);
+  --color-scene-gold: var(--scene-gold);
+  --color-scene-gold-light: var(--scene-gold-light);
+  --color-scene-gold-deep: var(--scene-gold-deep);
+  --color-scene-silver: var(--scene-silver);
+  --color-scene-diamond: var(--scene-diamond);
+  --color-scene-silver-text: var(--scene-silver-text);
   --color-surface: var(--surface);
   --color-gold: var(--gold);
   --color-on-gold: var(--on-gold);
