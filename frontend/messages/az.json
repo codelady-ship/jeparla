@@ -346,5 +346,26 @@
     "empty": "Heç nə tapılmadı. Başqa söz yoxlayın.",
     "error": "Axtarış alınmadı. Yenidən yoxlayın.",
     "results": "{count} nəticə"
+  },
+  "SearchPage": {
+    "title": "Axtarış",
+    "description": "Jeparla-da mağaza, kateqoriya və zərgərlik məmulatı axtarın.",
+    "loading": "Nəticələr yüklənir",
+    "label": "Axtarış sözü",
+    "placeholder": "Məsələn: qızıl üzük, Ayzər, 585",
+    "submit": "Axtar",
+    "tabs": "Nəticə növləri",
+    "tab": {
+      "all": "Hamısı",
+      "products": "Məhsullar",
+      "stores": "Mağazalar",
+      "categories": "Kateqoriyalar"
+    },
+    "seeAll": "Hamısı ({count})",
+    "startTitle": "Nə axtarırsınız?",
+    "startText": "Mağaza adı, kateqoriya, metal və ya əyar yazın.",
+    "emptyTitle": "\"{query}\" üzrə heç nə tapılmadı",
+    "emptyText": "Yazılışı yoxlayın və ya daha qısa, ümumi söz yazın (məsələn \"üzük\", \"qızıl\"). Ə, ı, ş kimi hərfləri e, i, s ilə yazmaq da olar.",
+    "tryCategories": "Kateqoriyalara baxın"
   }
 }

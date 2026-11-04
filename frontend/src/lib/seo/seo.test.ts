@@ -45,9 +45,7 @@ describe("JSON-LD", () => {
     expect(org.name).toBe("Jeparla");
     expect(org.logo.url).toMatch(/\/logo\.png$/);
     const site = website("az", "x") as { potentialAction: { target: { urlTemplate: string } } };
-    expect(site.potentialAction.target.urlTemplate).toContain(
-      "/az/products?q={search_term_string}",
-    );
+    expect(site.potentialAction.target.urlTemplate).toContain("/az/search?q={search_term_string}");
   });
 
   it("escapes < so data cannot close the script tag", () => {
