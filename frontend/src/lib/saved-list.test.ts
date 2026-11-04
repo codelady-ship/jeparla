@@ -25,7 +25,7 @@ describe("createSavedList", () => {
     const list = createSavedList("t3", 2);
     list.toggle(1);
     list.toggle(2);
-    expect(list.toggle(3)).toBe(false);
+    expect(list.toggle(3)).toBe("full");
     expect(list.get()).toEqual([1, 2]);
   });
 
@@ -45,5 +45,17 @@ describe("createSavedList", () => {
     off();
     list.toggle(9);
     expect(cb).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("remove and clear", () => {
+  it("removes one id and clears all", () => {
+    const list = createSavedList("t-rc");
+    list.toggle(1);
+    list.toggle(2);
+    list.remove(1);
+    expect(list.get()).toEqual([2]);
+    list.clear();
+    expect(list.get()).toEqual([]);
   });
 });

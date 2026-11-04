@@ -1,8 +1,11 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
+import { GitCompareArrows, Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
+import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { compare, favorites } from "@/lib/saved-list";
+import { useSavedIds } from "@/lib/use-saved";
 import { cn } from "cn";
 
 /** Everything about a variant the client needs, already formatted on the server. */
@@ -25,11 +28,22 @@ type Labels = {
   priceUpdated: string;
   whatsapp: string;
   metalLinkedNote: string | null;
+  actions: ProductActionLabels;
 };
 
-export function VariantPanel({ variants, labels }: { variants: VariantView[]; labels: Labels }) {
+export function VariantPanel({
+  productId,
+  variants,
+  labels,
+}: {
+  productId: number;
+  variants: VariantView[];
+  labels: Labels;
+}) {
   const [id, setId] = useState(variants[0]?.id);
   const v = variants.find((x) => x.id === id) ?? variants[0];
+  const isFavorite = useSavedIds(favorites).includes(productId);
+  const compared = useSavedIds(compare);
   if (!v) return null;
 
   return (
@@ -88,6 +102,31 @@ export function VariantPanel({ variants, labels }: { variants: VariantView[]; la
         <MessageCircle aria-hidden />
         {labels.whatsapp}
       </a>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          aria-pressed={isFavorite}
+          onClick={() => favorites.toggle(productId)}
+        >
+          <Heart aria-hidden className={cn(isFavorite && "fill-current text-gold-text")} />
+          {isFavorite ? labels.actions.favoriteRemove : labels.actions.favoriteAdd}
+        </Button>
+        {/* Compare is per variant: switching the variant above changes what is added. */}
+        <Button
+          type="button"
+          variant="outline"
+          aria-pressed={compared.includes(v.id)}
+          onClick={() => toggleCompare(v.id, labels.actions)}
+        >
+          <GitCompareArrows
+            aria-hidden
+            className={cn(compared.includes(v.id) && "text-gold-text")}
+          />
+          {compared.includes(v.id) ? labels.actions.compareRemove : labels.actions.compareAdd}
+        </Button>
+      </div>
     </div>
   );
 }

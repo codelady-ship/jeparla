@@ -276,6 +276,7 @@ function buildProduct(i: number): Product {
     },
     metal,
     priceFrom: { amount, currency: "AZN" },
+    defaultVariantId: id * 10,
     pricingMode,
     fineness: fineness.value,
     weightGrams: weight,

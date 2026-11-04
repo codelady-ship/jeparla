@@ -113,6 +113,22 @@ export const mockApi: JeparlaApi = {
   async listProducts(filters) {
     return listProducts(filters);
   },
+  async getProductsByIds(ids) {
+    const byId = new Map(PRODUCTS.filter((p) => p.status === "APPROVED").map((p) => [p.id, p]));
+    return ids.flatMap((id) => {
+      const p = byId.get(id);
+      return p ? [toSummary(p)] : [];
+    });
+  },
+  async getCompareItems(variantIds) {
+    return variantIds.flatMap((vid) => {
+      const p = PRODUCTS.find(
+        (x) => x.status === "APPROVED" && x.variants.some((v) => v.id === vid),
+      );
+      const variant = p?.variants.find((v) => v.id === vid);
+      return p && variant ? [{ product: toSummary(p), variant, stones: p.stones }] : [];
+    });
+  },
   async getProduct(slug) {
     return PRODUCTS.find((p) => p.slug === slug && p.status === "APPROVED") ?? null;
   },

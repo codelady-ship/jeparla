@@ -1,15 +1,15 @@
 "use client";
 
 import { Clock, Loader2, Search, Store, Tag, Gem, X } from "lucide-react";
-import { useFormatter, useLocale } from "next-intl";
+import { useLocale } from "next-intl";
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/navigation";
-import { asIntlNumber } from "@/lib/decimal";
 import { addRecent, clearRecent, readRecent } from "@/lib/search/recent";
 import type { Suggestions } from "@/types/api";
 import { cn } from "cn";
+import { formatPrice } from "@/lib/money";
 
 export type SearchLabels = {
   open: string;
@@ -58,7 +58,6 @@ export function SearchDialog({ labels }: { labels: SearchLabels }) {
   const [active, setActive] = useState(-1);
   const router = useRouter();
   const locale = useLocale();
-  const format = useFormatter();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -160,12 +159,12 @@ export function SearchDialog({ labels }: { labels: SearchLabels }) {
           id: `p-${p.slug}`,
           group: "products" as const,
           label: p.name[locale],
-          sub: format.number(asIntlNumber(p.priceFrom.amount), "price"),
+          sub: formatPrice(p.priceFrom.amount, locale),
           href: `/products/${p.slug}`,
         })),
       },
     ].filter((g) => g.items.length > 0);
-  }, [state, recent, labels, locale, format]);
+  }, [state, recent, labels, locale]);
 
   const flat = groups.flatMap((g) => g.items);
   const count = state.status === "done" ? flat.length : 0;

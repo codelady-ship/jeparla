@@ -7,7 +7,8 @@
     "close": "Bağla",
     "themeToDark": "Gecə rejiminə keç",
     "themeToLight": "Gündüz rejiminə keç",
-    "skipToContent": "Əsas məzmuna keç"
+    "skipToContent": "Əsas məzmuna keç",
+    "compare": "Müqayisə"
   },
   "LocaleSwitcher": {
     "label": "Dil",
@@ -103,7 +104,9 @@
     "loading": "Məhsullar yüklənir",
     "emptyTitle": "Məhsul tapılmadı",
     "emptyText": "Filtrləri dəyişin və ya başqa kateqoriyaya baxın.",
-    "specs": "{metal} {fineness} · {weight}"
+    "specs": "{metal} {fineness} · {weight}",
+    "compareFull": "Ən çox 4 məhsul müqayisə etmək olar: daha çoxu telefonda oxunmur. Yenisini əlavə etmək üçün əvvəlcə birini çıxarın.",
+    "compareOpen": "Müqayisəyə keç"
   },
   "Catalog": {
     "title": "Kataloq",
@@ -367,5 +370,34 @@
     "emptyTitle": "\"{query}\" üzrə heç nə tapılmadı",
     "emptyText": "Yazılışı yoxlayın və ya daha qısa, ümumi söz yazın (məsələn \"üzük\", \"qızıl\"). Ə, ı, ş kimi hərfləri e, i, s ilə yazmaq da olar.",
     "tryCategories": "Kateqoriyalara baxın"
+  },
+  "Saved": {
+    "favoritesTitle": "Seçilmişlər",
+    "favoritesDescription": "Bəyəndiyiniz zərgərlik məmulatları bir yerdə.",
+    "favoritesIntro": "Ürək işarəsi ilə saxladığınız məhsullar.",
+    "compareTitle": "Müqayisə",
+    "compareDescription": "2–4 zərgərlik məmulatını çəki, əyar, qiymət, daş və mağaza üzrə müqayisə edin.",
+    "compareIntro": "Müqayisə variant səviyyəsindədir: çəki, əyar və qiymət seçdiyiniz varianta aiddir.",
+    "loading": "Yüklənir",
+    "error": "Siyahını yükləmək alınmadı.",
+    "retry": "Yenidən yoxla",
+    "browse": "Kataloqa bax",
+    "clearAll": "Hamısını təmizlə",
+    "deviceNote": "Siyahı bu brauzerdə saxlanılır. Hesaba daxil olanda hesabınıza köçürüləcək.",
+    "favoritesEmptyTitle": "Hələ seçilmiş məhsul yoxdur",
+    "favoritesEmptyText": "Məhsul kartındakı ürək işarəsinə basın, burada görünəcək.",
+    "favoritesCount": "{count} məhsul",
+    "compareEmptyTitle": "Müqayisə siyahısı boşdur",
+    "compareEmptyText": "Məhsul kartında və ya səhifəsində müqayisə düyməsinə basın. Ən çox {max} məhsul.",
+    "compareCount": "{count} / {max} məhsul",
+    "compareAddMore": "Müqayisə üçün ən azı daha bir məhsul əlavə edin.",
+    "compareNote": "Fərqli dəyərlər qızılı rənglə göstərilir.",
+    "compareTable": "Məhsulların müqayisəsi",
+    "sku": "Kod {sku}",
+    "remove": "Çıxar",
+    "removeItem": "{name} müqayisədən çıxar",
+    "noStones": "Daşsız",
+    "stock": "Stok",
+    "gramUnit": "q"
   }
 }

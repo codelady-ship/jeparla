@@ -1,12 +1,8 @@
 import type { Formats } from "next-intl";
 
-// Prices arrive from the API as decimal strings (BigDecimal); Intl formats strings
-// exactly, so they are never turned into floats.
+// Money and weight are formatted by lib/money (exact, same text on server and
+// client); only dates go through Intl here.
 export const formats = {
-  number: {
-    price: { style: "currency", currency: "AZN", minimumFractionDigits: 2 },
-    grams: { style: "unit", unit: "gram", maximumFractionDigits: 3 },
-  },
   dateTime: {
     short: { day: "numeric", month: "short", year: "numeric" },
     // Prices change once a day (CBAR), so the date is enough; az CLDR joins date and

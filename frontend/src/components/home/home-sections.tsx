@@ -1,5 +1,5 @@
 import { ArrowRight, BadgeCheck, FileCheck2, Microscope, Store } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { Reveal } from "@/components/motion/reveal";
@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { api, USING_MOCK } from "@/lib/api";
-import { asIntlNumber } from "@/lib/decimal";
 import { cn } from "cn";
+import { formatPrice } from "@/lib/money";
 
 function SectionHead({ id, title, link }: { id: string; title: string; link?: ReactNode }) {
   return (
@@ -104,10 +104,11 @@ export async function VerifiedExplainer() {
 }
 
 export async function MetalPrices() {
-  const [t, tp, format, prices] = await Promise.all([
+  const [t, tp, format, locale, prices] = await Promise.all([
     getTranslations("Home"),
     getTranslations("Product"),
     getFormatter(),
+    getLocale(),
     api.latestMetalPrices(),
   ]);
   const shown = prices.filter((p) => p.metal === "GOLD" || p.metal === "SILVER");
@@ -136,7 +137,7 @@ export async function MetalPrices() {
                 {t("perGram", { metal: tp(`metal.${p.metal}`) })}
               </dt>
               <dd className="text-2xl font-semibold tabular-nums">
-                {format.number(asIntlNumber(p.pricePerGram), "price")}
+                {formatPrice(p.pricePerGram, locale)}
               </dd>
             </div>
           ))}

@@ -41,6 +41,8 @@ const enc = encodeURIComponent;
 
 export const httpApi: JeparlaApi = {
   listProducts: (f = {}) => get("/products", f),
+  getProductsByIds: (ids) => get("/products", { ids: ids.join(",") }),
+  getCompareItems: (ids) => get("/variants", { ids: ids.join(",") }),
   getProduct: (slug) => getOrNull(`/products/${enc(slug)}`),
   listCategories: () => get("/categories"),
   listFinenesses: () => get("/finenesses"),

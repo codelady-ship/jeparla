@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import robots, { AI_BOTS } from "@/app/robots";
 import { PRODUCTS, STORES } from "@/lib/api/mock/fixtures";
-import { formats } from "@/i18n/formats";
 import { jewelryStore, organization, product, serializeJsonLd, website } from "./json-ld";
 import { buildLlmsTxt } from "./llms";
 
@@ -32,7 +31,6 @@ describe("JSON-LD", () => {
     expect(ld.offers.priceCurrency).toBe("AZN");
     // Same string the facts table formats, so both agree.
     expect(typeof ld.offers.price).toBe("string");
-    expect(formats.number.price.currency).toBe(ld.offers.priceCurrency);
   });
 
   it("does not invent ratings or reviews", () => {

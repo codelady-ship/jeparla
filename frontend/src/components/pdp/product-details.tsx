@@ -6,6 +6,7 @@ import {
   MapPin,
   Store as StoreIcon,
 } from "lucide-react";
+import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -13,7 +14,6 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import { asIntlNumber } from "@/lib/decimal";
 import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
@@ -57,12 +57,12 @@ export async function ProductDetails({
     id: v.id,
     label: [
       v.fineness.label,
-      format.number(asIntlNumber(v.weightGrams), "grams"),
+      formatGrams(v.weightGrams, locale),
       v.size && t("size", { size: v.size }),
     ]
       .filter(Boolean)
       .join(" · "),
-    price: format.number(asIntlNumber(v.price.amount), "price"),
+    price: formatPrice(v.price.amount, locale),
     sku: v.sku,
     stock: tp(`stock.${v.stockStatus}`),
     inStock: v.stockStatus !== "OUT_OF_STOCK",
@@ -77,9 +77,9 @@ export async function ProductDetails({
   const facts: [string, string][] = [
     [t("facts.metal"), tp(`metal.${p.metal}`)],
     [t("facts.fineness"), first?.fineness.label ?? String(p.fineness)],
-    [t("facts.weight"), format.number(asIntlNumber(p.weightGrams), "grams")],
+    [t("facts.weight"), formatGrams(p.weightGrams, locale)],
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
-    [t("facts.price"), format.number(asIntlNumber(p.priceFrom.amount), "price")],
+    [t("facts.price"), formatPrice(p.priceFrom.amount, locale)],
     [t("facts.pricing"), t(`pricing.${p.pricingMode}`)],
     [t("facts.store"), p.store.name],
     [t("facts.city"), p.store.city],
@@ -155,6 +155,7 @@ export async function ProductDetails({
           </div>
 
           <VariantPanel
+            productId={p.id}
             variants={variants}
             labels={{
               choose: t("chooseVariant"),
@@ -162,6 +163,14 @@ export async function ProductDetails({
               priceUpdated: t("priceUpdated"),
               whatsapp: t("whatsapp"),
               metalLinkedNote: p.pricingMode === "METAL_LINKED" ? t("metalLinkedNote") : null,
+              actions: {
+                favoriteAdd: tp("favoriteAdd"),
+                favoriteRemove: tp("favoriteRemove"),
+                compareAdd: tp("compareAdd"),
+                compareRemove: tp("compareRemove"),
+                compareFull: tp("compareFull"),
+                compareOpen: tp("compareOpen"),
+              },
             }}
           />
 

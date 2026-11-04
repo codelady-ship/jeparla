@@ -1,11 +1,11 @@
 import { X } from "lucide-react";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { asIntlNumber } from "@/lib/decimal";
 import { activeFilters, SORTS, toQuery } from "@/lib/catalog/filters";
 import type { ProductFilters } from "@/types/api";
 import type { FilterData } from "./filter-fields";
 import { FilterForm } from "./filter-form";
+import { formatPrice } from "@/lib/money";
 
 /** Sort select as its own GET form; current filters ride along as hidden fields. */
 export function SortForm({ action, filters }: { action: string; filters: ProductFilters }) {
@@ -54,7 +54,6 @@ export function ActiveFilterChips({
 }) {
   const t = useTranslations("Catalog");
   const tp = useTranslations("Product");
-  const format = useFormatter();
   const locale = useLocale();
   const chips = activeFilters(filters);
   if (chips.length === 0) return null;
@@ -71,7 +70,7 @@ export function ActiveFilterChips({
         return t(`shapes.${value as "ROUND"}`);
       case "minPrice":
       case "maxPrice":
-        return t(`chip.${key}`, { value: format.number(asIntlNumber(value), "price") });
+        return t(`chip.${key}`, { value: formatPrice(value, locale) });
       case "verified":
         return t("verifiedOnly");
       case "inStock":
