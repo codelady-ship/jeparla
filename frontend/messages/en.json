@@ -331,5 +331,20 @@
         "a": "Use the WhatsApp button on the product page; the message includes the product name, code and link. The purchase is agreed directly with the store."
       }
     }
+  },
+  "Search": {
+    "open": "Search",
+    "title": "Search Jeparla",
+    "placeholder": "Search stores, categories or products",
+    "recent": "Recent searches",
+    "clearRecent": "Clear",
+    "stores": "Stores",
+    "categories": "Categories",
+    "products": "Products",
+    "seeAll": "All results for \"{query}\"",
+    "loading": "Searching",
+    "empty": "Nothing found. Try another word.",
+    "error": "Search failed. Please try again.",
+    "results": "{count} results"
   }
 }
