@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } fro
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@/i18n/navigation";
-import { postAuth } from "@/lib/auth/client";
+import { postAuth } from "@/lib/auth/actions";
 import { fieldErrors, PASSWORD_MIN, type FieldErrors } from "@/lib/auth/schemas";
 import { CITIES } from "@/lib/seller/cities";
 import { firstOpenStep, sellerDraft, type SellerDraft } from "@/lib/seller/draft";

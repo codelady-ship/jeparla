@@ -50,11 +50,18 @@ type State =
  * Header search: one box, suggestions grouped by store, category and product.
  * ARIA combobox with a listbox; arrows move, Enter opens, Esc closes.
  */
-export function SearchDialog({ labels }: { labels: SearchLabels }) {
-  const [open, setOpen] = useState(false);
+export default function SearchDialog({
+  labels,
+  defaultOpen = false,
+}: {
+  labels: SearchLabels;
+  /** True when the launcher loaded this chunk because the visitor asked to search. */
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   const [query, setQuery] = useState("");
   const [state, setState] = useState<State>({ status: "idle" });
-  const [recent, setRecent] = useState<string[]>([]);
+  const [recent, setRecent] = useState<string[]>(() => (defaultOpen ? readRecent() : []));
   const [active, setActive] = useState(-1);
   const router = useRouter();
   const locale = useLocale();
