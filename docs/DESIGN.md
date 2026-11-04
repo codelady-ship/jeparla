@@ -105,3 +105,11 @@ Qaydalar (Lighthouse üçün):
 shadcn/ui (`base-nova`, Base UI): Button (`gold` variantı əlavə), Badge (`gold`), Input, Label,
 Card, Dialog, Sheet. Dialog və Sheet-in bağla düyməsinin adı `closeLabel` prop-u ilə ötürülür
 (tərcümə üçün). İkonlar yalnız `lucide-react`, dekorativ ikonlarda `aria-hidden`.
+
+## Hərəkət kitabxanası
+
+Kinematik hero (3 səhnə) GSAP 3 + ScrollTrigger ilə qurulur (`gsap` npm, "Standard no charge"
+lisenziyası, kommersiya istifadəsi pulsuz). Qaydalar: yalnız ana səhifədə, hero görünəndən sonra
+dinamik import; LCP poster şəkildir, animasiyadan asılı deyil; `prefers-reduced-motion` olanda
+pin və scrub yoxdur, statik səhnələr ardıcıl göstərilir; mətn real HTML-dir, 3 dildə.
+Başqa səhifələrdə animasiya CSS ilə (`--duration-*`, `--ease-*` token-ləri).

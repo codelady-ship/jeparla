@@ -43,6 +43,18 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
 - **Keyfiyyət həddi:** Lighthouse mobil Performance >= 90, Accessibility = 100, Best Practices >= 95,
   SEO = 100 (CI yoxlayır); hər ictimai səhifədə JSON-LD və GEO qaydaları (`docs/PLAN.md` 5.18).
 
+## Dizayn və animasiya skill-ləri
+
+`.claude/skills/`-də (lokal, gitignore; sahibin GitHub fork-larından, MIT):
+- `hallmark`: istiqamət, kompozisiya və "AI slop" yoxlaması (UI dəyişikliyindən əvvəl və sonra).
+- `gsap-core`, `gsap-scrolltrigger`, `gsap-react`, `gsap-timeline`, `gsap-performance`:
+  kinematik hero və scroll animasiyaları. GSAP yalnız ana səhifənin hero-sunda, dinamik import
+  ilə, `gsap.matchMedia` + `prefers-reduced-motion` ilə; `useGSAP` ilə təmizlənir.
+- `emil-design-eng`, `review-animations`, `animation-performance`: mikro-animasiya keyfiyyəti
+  (yalnız `transform`/`opacity`, 60fps, layout thrash yoxdur).
+Seçilməyənlər: impeccable (ilk işə düşəndə kənardan binar endirir), react-bits və three.js
+(JS büdcəsi), framer-motion (GSAP kifayətdir).
+
 ## Repo strukturu
 
 ```
