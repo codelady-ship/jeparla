@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "@/i18n/navigation";
-import { postAuth } from "@/lib/auth/client";
+import { postAuth } from "@/lib/auth/actions";
 import {
   fieldErrors,
   forgotSchema,

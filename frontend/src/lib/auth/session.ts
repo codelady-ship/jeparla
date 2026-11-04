@@ -17,7 +17,13 @@ export const SIGNED_IN_COOKIE = "jeparla_signed_in";
 const ROLES: readonly Role[] = ["USER", "MERCHANT", "ADMIN"];
 
 export function encodeSession(s: Session): string {
-  return Buffer.from(JSON.stringify(s), "utf8").toString("base64url");
+  // TextEncoder + btoa instead of Buffer: this module is also bundled for the
+  // browser, and Buffer would pull in a polyfill.
+  const bytes = new TextEncoder().encode(JSON.stringify(s));
+  return btoa(String.fromCharCode(...bytes))
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/, "");
 }
 
 export function decodeSession(raw: string | undefined): Session | null {

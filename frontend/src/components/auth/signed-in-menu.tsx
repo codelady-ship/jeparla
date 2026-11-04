@@ -4,7 +4,7 @@ import { Menu } from "@base-ui/react/menu";
 import { Heart, LayoutDashboard, LogOut } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
-import { signOut } from "@/lib/auth/client";
+import { signOut } from "@/lib/auth/actions";
 import { homeFor, type Session } from "@/lib/auth/session";
 import { cn } from "cn";
 import type { AccountLabels } from "./account-menu";

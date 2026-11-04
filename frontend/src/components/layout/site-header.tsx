@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SavedCount } from "@/components/saved/saved-count";
-import { SearchDialog } from "@/components/search/search-dialog";
+import { SearchLauncher } from "@/components/search/search-launcher";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -48,7 +48,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          <SearchDialog
+          <SearchLauncher
             labels={{
               open: t("Search.open"),
               title: t("Search.title"),
