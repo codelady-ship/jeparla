@@ -1,5 +1,6 @@
 import type {
   Category,
+  CompareItem,
   Fineness,
   MetalPrice,
   MetalType,
@@ -22,6 +23,10 @@ import type {
 export interface JeparlaApi {
   /** GET /api/v1/products */
   listProducts(filters?: ProductFilters): Promise<Page<ProductSummary>>;
+  /** GET /api/v1/products?ids= (favorites); unknown or hidden ids are left out. */
+  getProductsByIds(ids: number[]): Promise<ProductSummary[]>;
+  /** GET /api/v1/variants?ids= (compare), in the order asked. */
+  getCompareItems(variantIds: number[]): Promise<CompareItem[]>;
   /** GET /api/v1/products/{slug} */
   getProduct(slug: string): Promise<Product | null>;
   /** GET /api/v1/categories */

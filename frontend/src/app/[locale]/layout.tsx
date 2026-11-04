@@ -6,6 +6,8 @@ import { hasLocale } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransition } from "react";
 import { IntlProvider } from "@/components/i18n/intl-provider";
+import { NoticeRegion } from "@/components/feedback/notice-region";
+import { CompareTray } from "@/components/saved/compare-tray";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -54,7 +56,10 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   // Root param, not `params`: unknown segments below (e.g. [...rest]) stay prerenderable.
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) notFound();
-  const messages = await getMessages({ locale });
+  const [messages, tc] = await Promise.all([
+    getMessages({ locale }),
+    getTranslations({ locale, namespace: "Common" }),
+  ]);
   // Only namespaces used by Client Components go to the browser (keeps JS small).
   const clientMessages = {
     Common: messages.Common,
@@ -79,6 +84,8 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
               </main>
             </ViewTransition>
             <SiteFooter />
+            <CompareTray label={tc("compare")} />
+            <NoticeRegion closeLabel={tc("close")} />
           </ThemeProvider>
         </IntlProvider>
       </body>

@@ -123,6 +123,8 @@ export type ProductSummary = {
   metal: MetalType;
   /** Lowest variant price. */
   priceFrom: Money;
+  /** The variant priceFrom comes from; the compare button on a card adds this one. */
+  defaultVariantId: number;
   pricingMode: PricingMode;
   fineness: number;
   weightGrams: Decimal;
@@ -138,6 +140,13 @@ export type Product = ProductSummary & {
   variants: Variant[];
   stones: Stone[];
   status: ProductStatus;
+};
+
+/** One column of /compare: comparison is per variant (weight, fineness, price differ). */
+export type CompareItem = {
+  product: ProductSummary;
+  variant: Variant;
+  stones: Stone[];
 };
 
 export type MetalPrice = {

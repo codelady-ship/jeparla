@@ -1,5 +1,6 @@
 import { Heart, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SavedCount } from "@/components/saved/saved-count";
 import { SearchDialog } from "@/components/search/search-dialog";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -64,9 +65,11 @@ export function SiteHeader() {
               close: t("Common.close"),
             }}
           />
-          {/* prefetch off until these routes exist (#20, #21); prefetching them 404s. */}
-          <Link href="/favorites" prefetch={false} className={icon} aria-label={t("Nav.favorites")}>
+          {/* prefetch off for /login until it exists (#21); prefetching it 404s. */}
+          <Link href="/favorites" className={`${icon} relative`}>
             <Heart aria-hidden />
+            <span className="sr-only">{t("Nav.favorites")}</span>
+            <SavedCount list="favorites" />
           </Link>
           <div className="hidden sm:block">
             <LocaleSwitcher />

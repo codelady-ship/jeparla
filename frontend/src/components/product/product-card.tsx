@@ -1,12 +1,12 @@
 import { ShieldCheck, Sparkles } from "lucide-react";
 import Image from "next/image";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ViewTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
-import { asIntlNumber } from "@/lib/decimal";
 import type { ProductSummary, Verification } from "@/types/api";
 import { ProductActions } from "./product-actions";
+import { formatPrice, formatGrams } from "@/lib/money";
 
 export const CARD_SIZES = "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
 
@@ -23,7 +23,6 @@ type Props = {
 
 export function ProductCard({ product: p, preload = false }: Props) {
   const t = useTranslations("Product");
-  const format = useFormatter();
   const locale = useLocale();
   const [main, second] = p.images;
   const svg = (url: string) => url.endsWith(".svg");
@@ -73,11 +72,14 @@ export function ProductCard({ product: p, preload = false }: Props) {
         </div>
         <ProductActions
           id={p.id}
+          variantId={p.defaultVariantId}
           labels={{
             favoriteAdd: t("favoriteAdd"),
             favoriteRemove: t("favoriteRemove"),
             compareAdd: t("compareAdd"),
             compareRemove: t("compareRemove"),
+            compareFull: t("compareFull"),
+            compareOpen: t("compareOpen"),
           }}
         />
       </div>
@@ -96,11 +98,11 @@ export function ProductCard({ product: p, preload = false }: Props) {
           {t("specs", {
             metal: t(`metal.${p.metal}`),
             fineness: p.fineness,
-            weight: format.number(asIntlNumber(p.weightGrams), "grams"),
+            weight: formatGrams(p.weightGrams, locale),
           })}
         </p>
         <p className="mt-auto pt-1 font-semibold tabular-nums">
-          {format.number(asIntlNumber(p.priceFrom.amount), "price")}
+          {formatPrice(p.priceFrom.amount, locale)}
         </p>
       </div>
     </article>

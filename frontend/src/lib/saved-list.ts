@@ -8,7 +8,10 @@ export type SavedList = {
   /** Stable snapshot for useSyncExternalStore. */
   get: () => readonly number[];
   has: (id: number) => boolean;
-  toggle: (id: number) => boolean;
+  /** Returns the new state; "full" when adding would pass the limit. */
+  toggle: (id: number) => boolean | "full";
+  remove: (id: number) => void;
+  clear: () => void;
 };
 
 const EMPTY: readonly number[] = Object.freeze([]);
@@ -65,13 +68,21 @@ export function createSavedList(key: string, max = Infinity): SavedList {
     toggle(id) {
       const current = read();
       const on = !current.includes(id);
-      if (on && current.length >= max) return false;
+      if (on && current.length >= max) return "full";
       write(on ? [...current, id] : current.filter((x) => x !== id));
       return on;
+    },
+    remove(id) {
+      write(read().filter((x) => x !== id));
+    },
+    clear() {
+      write([]);
     },
   };
 }
 
 export const favorites = createSavedList("jeparla-favorites");
 /** Comparing more than 4 items is unreadable on a phone. */
-export const compare = createSavedList("jeparla-compare", 4);
+export const MAX_COMPARE = 4;
+/** Variant ids, not product ids: weight, fineness and price belong to the variant. */
+export const compare = createSavedList("jeparla-compare-variants", MAX_COMPARE);

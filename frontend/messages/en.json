@@ -7,7 +7,8 @@
     "close": "Close",
     "themeToDark": "Switch to dark mode",
     "themeToLight": "Switch to light mode",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "compare": "Compare"
   },
   "LocaleSwitcher": {
     "label": "Language",
@@ -103,7 +104,9 @@
     "loading": "Loading products",
     "emptyTitle": "No products found",
     "emptyText": "Change the filters or browse another category.",
-    "specs": "{metal} {fineness} · {weight}"
+    "specs": "{metal} {fineness} · {weight}",
+    "compareFull": "You can compare up to 4 items: more is unreadable on a phone. Remove one first to add another.",
+    "compareOpen": "Go to compare"
   },
   "Catalog": {
     "title": "Catalog",
@@ -367,5 +370,34 @@
     "emptyTitle": "Nothing found for \"{query}\"",
     "emptyText": "Check the spelling or try a shorter, more general word (for example \"ring\", \"gold\"). Azerbaijani letters like ə, ı, ş can be typed as e, i, s.",
     "tryCategories": "Browse categories"
+  },
+  "Saved": {
+    "favoritesTitle": "Favorites",
+    "favoritesDescription": "The jewelry you liked, in one place.",
+    "favoritesIntro": "Products you saved with the heart button.",
+    "compareTitle": "Compare",
+    "compareDescription": "Compare 2–4 pieces of jewelry by weight, fineness, price, stones and store.",
+    "compareIntro": "Comparison is per variant: weight, fineness and price belong to the variant you picked.",
+    "loading": "Loading",
+    "error": "Could not load the list.",
+    "retry": "Try again",
+    "browse": "Browse the catalog",
+    "clearAll": "Clear all",
+    "deviceNote": "The list is kept in this browser. It moves to your account when you sign in.",
+    "favoritesEmptyTitle": "No favorites yet",
+    "favoritesEmptyText": "Tap the heart on a product card and it will show up here.",
+    "favoritesCount": "{count, plural, one {# product} other {# products}}",
+    "compareEmptyTitle": "Nothing to compare yet",
+    "compareEmptyText": "Use the compare button on a product card or page. Up to {max} products.",
+    "compareCount": "{count} of {max} products",
+    "compareAddMore": "Add at least one more product to compare.",
+    "compareNote": "Values that differ are shown in gold.",
+    "compareTable": "Product comparison",
+    "sku": "Code {sku}",
+    "remove": "Remove",
+    "removeItem": "Remove {name} from compare",
+    "noStones": "No stones",
+    "stock": "Stock",
+    "gramUnit": "g"
   }
 }
