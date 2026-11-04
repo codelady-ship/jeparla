@@ -346,5 +346,26 @@
     "empty": "Nothing found. Try another word.",
     "error": "Search failed. Please try again.",
     "results": "{count} results"
+  },
+  "SearchPage": {
+    "title": "Search",
+    "description": "Search Jeparla for stores, categories and jewelry.",
+    "loading": "Loading results",
+    "label": "Search term",
+    "placeholder": "For example: gold ring, Ayzer, 585",
+    "submit": "Search",
+    "tabs": "Result types",
+    "tab": {
+      "all": "All",
+      "products": "Products",
+      "stores": "Stores",
+      "categories": "Categories"
+    },
+    "seeAll": "See all ({count})",
+    "startTitle": "What are you looking for?",
+    "startText": "Type a store name, category, metal or fineness.",
+    "emptyTitle": "Nothing found for \"{query}\"",
+    "emptyText": "Check the spelling or try a shorter, more general word (for example \"ring\", \"gold\"). Azerbaijani letters like ə, ı, ş can be typed as e, i, s.",
+    "tryCategories": "Browse categories"
   }
 }

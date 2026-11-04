@@ -8,6 +8,7 @@ const pages = [
   "/az/products/toy-uzukleri-silver-925-2",
   "/az/stores/ayzer-zerger",
   "/az/categories/uzukler",
+  "/az/search?q=qizil",
 ];
 
 module.exports = {
