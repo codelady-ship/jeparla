@@ -1,5 +1,5 @@
 import { AboutJeparla } from "@/components/home/about-jeparla";
-import { HomeContent } from "@/components/home/home-content";
+import { CinematicHero } from "@/components/home/hero/cinematic-hero";
 import {
   BecomeSeller,
   FeaturedStores,
@@ -9,11 +9,11 @@ import {
 } from "@/components/home/home-sections";
 import { NewArrivals } from "@/components/home/new-arrivals";
 
-// Home page. The hero is a placeholder until the scroll hero (#27).
+// Home page: cinematic hero (#27), then the catalog sections.
 export default function Home() {
   return (
     <>
-      <HomeContent />
+      <CinematicHero />
       <HomeCategories />
       <NewArrivals />
       <MetalPrices />

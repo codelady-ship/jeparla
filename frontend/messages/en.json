@@ -19,7 +19,6 @@
     }
   },
   "Home": {
-    "tagline": "Gold, silver and diamond jewelry stores in one place.",
     "newArrivals": "New arrivals",
     "seeAll": "See all",
     "categories": "Categories",
@@ -882,5 +881,52 @@
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
     "empty": "Today's price has not arrived yet."
+  },
+  "Hero": {
+    "label": "Jeparla collections",
+    "intro": {
+      "title": "A world of its own shine.",
+      "text": "Azerbaijan's jewelry stores and their gold, silver and diamond collections in one place."
+    },
+    "gold": {
+      "title": "The timeless beauty of gold.",
+      "text": "585 and 750 gold: forms passed down through generations."
+    },
+    "shine": {
+      "title": "The finesse of purity and brilliance.",
+      "text": "925 silver and diamonds: a quiet sparkle that catches the light."
+    },
+    "final": {
+      "title": "Every metal has its own character.",
+      "text": "Silver, diamond and gold. Choose yours."
+    },
+    "ctaCollection": "Explore the collection",
+    "ctaStores": "Browse stores",
+    "scrollHint": "Scroll down",
+    "panels": {
+      "silver": {
+        "name": "Silver",
+        "animal": "White tiger"
+      },
+      "diamond": {
+        "name": "Diamond",
+        "animal": "Snow leopard"
+      },
+      "gold": {
+        "name": "Gold",
+        "animal": "Tiger"
+      }
+    },
+    "items": {
+      "earrings": "Earrings",
+      "necklace": "Necklace",
+      "bracelet": "Bracelet",
+      "ring": "Ring",
+      "pendant": "Pendant",
+      "chain": "Chain"
+    },
+    "itemLink": "{metal}: {item}",
+    "modelSoon": "Model photo shoot in progress",
+    "credit": "Photo: {name}, Unsplash"
   }
 }

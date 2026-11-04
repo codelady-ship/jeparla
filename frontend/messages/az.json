@@ -19,7 +19,6 @@
     }
   },
   "Home": {
-    "tagline": "Qızıl, gümüş və brilyant zərgərlik mağazaları bir yerdə.",
     "newArrivals": "Yeni məhsullar",
     "seeAll": "Hamısına bax",
     "categories": "Kateqoriyalar",
@@ -882,5 +881,52 @@
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
     "empty": "Bugünkü qiymət hələ gəlməyib."
+  },
+  "Hero": {
+    "label": "Jeparla kolleksiyaları",
+    "intro": {
+      "title": "İşıltının öz dünyası.",
+      "text": "Azərbaycanın zərgərlik mağazaları və onların qızıl, gümüş, brilyant kolleksiyaları bir yerdə."
+    },
+    "gold": {
+      "title": "Qızılın zamansız gözəlliyi.",
+      "text": "585 və 750 əyarlı qızıl: nəsildən-nəslə keçən formalar."
+    },
+    "shine": {
+      "title": "Saflığın və parıltının incəliyi.",
+      "text": "925 gümüş və brilyant: işığı tutan, sakit parıltı."
+    },
+    "final": {
+      "title": "Hər metalın öz xarakteri var.",
+      "text": "Gümüş, brilyant və qızıl. Özünüzünkünü seçin."
+    },
+    "ctaCollection": "Kolleksiyanı kəşf et",
+    "ctaStores": "Mağazalara bax",
+    "scrollHint": "Aşağı sürüşdürün",
+    "panels": {
+      "silver": {
+        "name": "Gümüş",
+        "animal": "Ağ pələng"
+      },
+      "diamond": {
+        "name": "Brilyant",
+        "animal": "Qar bəbiri"
+      },
+      "gold": {
+        "name": "Qızıl",
+        "animal": "Pələng"
+      }
+    },
+    "items": {
+      "earrings": "Sırğa",
+      "necklace": "Boyunbağı",
+      "bracelet": "Qolbaq",
+      "ring": "Üzük",
+      "pendant": "Asqı",
+      "chain": "Zəncir"
+    },
+    "itemLink": "{metal}: {item}",
+    "modelSoon": "Model çəkilişi hazırlanır",
+    "credit": "Foto: {name}, Unsplash"
   }
 }
