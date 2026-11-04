@@ -57,7 +57,10 @@
     "favorites": "Seçilmişlər",
     "login": "Daxil ol",
     "menu": "Menyu",
-    "mainNav": "Əsas naviqasiya"
+    "mainNav": "Əsas naviqasiya",
+    "account": "Hesab menyusu",
+    "dashboard": "Kabinet",
+    "logout": "Çıxış"
   },
   "Footer": {
     "about": "Jeparla haqqında",
@@ -399,5 +402,64 @@
     "noStones": "Daşsız",
     "stock": "Stok",
     "gramUnit": "q"
+  },
+  "Auth": {
+    "login": {
+      "title": "Daxil ol",
+      "description": "Jeparla hesabınıza daxil olun.",
+      "intro": "Seçilmişləriniz və mağaza kabinetiniz üçün.",
+      "submit": "Daxil ol",
+      "forgot": "Şifrəni unutmusunuz?",
+      "noAccount": "Hesabınız yoxdur?"
+    },
+    "register": {
+      "title": "Qeydiyyat",
+      "description": "Jeparla-da alıcı hesabı yaradın.",
+      "intro": "Alıcı hesabı pulsuzdur və bir dəqiqə çəkir.",
+      "submit": "Hesab yarat",
+      "haveAccount": "Artıq hesabınız var?",
+      "seller": "Zərgərlik mağazanız var?",
+      "sellerLink": "Satıcı kimi qoşulun"
+    },
+    "forgot": {
+      "title": "Şifrəni bərpa et",
+      "description": "Jeparla hesabının şifrəsini bərpa edin.",
+      "intro": "E-poçtunuzu yazın.",
+      "submit": "Davam et",
+      "notice": "Şifrə bərpası hələ işləmir: SMS və e-poçt ilə bərpa backend hazır olanda aktiv olacaq. Heç bir məktub göndərilmədi.",
+      "back": "Girişə qayıt"
+    },
+    "fields": {
+      "name": "Ad",
+      "email": "E-poçt",
+      "password": "Şifrə",
+      "confirm": "Şifrəni təkrarlayın"
+    },
+    "hints": {
+      "password": "Ən azı {min} simvol, hərf və rəqəm olsun."
+    },
+    "errors": {
+      "required": "Bu sahəni doldurun.",
+      "emailInvalid": "E-poçt ünvanı düzgün deyil, məsələn ad@example.az.",
+      "nameShort": "Ad ən azı 2 hərf olmalıdır.",
+      "nameLong": "Ad çox uzundur.",
+      "passwordShort": "Şifrə ən azı {min} simvol olmalıdır.",
+      "passwordLong": "Şifrə çox uzundur.",
+      "passwordLetter": "Şifrədə ən azı bir hərf olsun.",
+      "passwordDigit": "Şifrədə ən azı bir rəqəm olsun.",
+      "passwordMismatch": "Şifrələr eyni deyil.",
+      "unavailable": "Giriş hələ aktiv deyil. Bir az sonra yenidən yoxlayın.",
+      "network": "Bağlantı alınmadı. İnterneti yoxlayıb yenidən cəhd edin.",
+      "server": "Nəsə alınmadı. Yenidən cəhd edin."
+    },
+    "pending": "Gözləyin",
+    "showPassword": "Şifrəni göstər",
+    "hidePassword": "Şifrəni gizlət",
+    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. Məlumat heç yerdə saxlanılmır.",
+    "areas": {
+      "merchant": "Mağaza kabineti",
+      "admin": "Admin paneli",
+      "soon": "Bu bölmə hazırlanır."
+    }
   }
 }
