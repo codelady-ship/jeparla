@@ -455,7 +455,7 @@
     "pending": "Gözləyin",
     "showPassword": "Şifrəni göstər",
     "hidePassword": "Şifrəni gizlət",
-    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. Məlumat heç yerdə saxlanılmır.",
+    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. merchant+new@ ilə başlayan ünvan isə təsdiq gözləyən yeni satıcıdır. Məlumat heç yerdə saxlanılmır.",
     "areas": {
       "merchant": "Mağaza kabineti",
       "admin": "Admin paneli",
@@ -571,6 +571,258 @@
       "dashboard": "Kabinetə keç",
       "home": "Ana səhifə",
       "startOver": "Yeni qeydiyyat başlat"
+    }
+  },
+  "Merchant": {
+    "title": "Mağaza kabineti",
+    "nav": {
+      "label": "Kabinet bölmələri",
+      "dashboard": "Panel",
+      "products": "Məhsullar",
+      "profile": "Mağaza profili"
+    },
+    "demoNote": "Demo rejimi: statistika nümunədir və dəyişikliklər serverdə saxlanılmır. Qaralamalar bu brauzerdə qalır.",
+    "status": {
+      "ALL": "Hamısı",
+      "DRAFT": "Qaralama",
+      "IN_REVIEW": "Yoxlamada",
+      "APPROVED": "Aktiv",
+      "RETURNED": "Geri qaytarılıb",
+      "INACTIVE": "Deaktiv"
+    },
+    "seller": {
+      "PENDING": {
+        "title": "Mağazanız yoxlamadadır",
+        "text": "Məhsulları indi qaralama kimi hazırlaya bilərsiniz. Mağaza təsdiqlənəndən sonra onları yoxlamaya göndərə biləcəksiniz."
+      },
+      "NONE": {
+        "title": "Mağaza hələ yoxlanılmayıb",
+        "text": "Təsdiq sənədlərini yükləyin ki, yoxlama başlasın. O vaxta qədər məhsullar qaralama olaraq qalır."
+      },
+      "REJECTED": {
+        "title": "Mağaza təsdiqlənmədi",
+        "text": "Sənədləri yeniləyin və ya dəstək ilə əlaqə saxlayın. Məhsullar yayımlanmır."
+      }
+    },
+    "dashboard": {
+      "title": "Panel",
+      "intro": "{store} mağazasının son 30 günü.",
+      "views": "Baxışlar",
+      "whatsappClicks": "WhatsApp klikləri",
+      "last30": "son 30 gün",
+      "byStatus": "Məhsullar statusa görə",
+      "returned": "Geri qaytarılan məhsullar",
+      "returnedText": "Admin qeydini oxuyun, düzəldib yenidən göndərin.",
+      "viewAll": "Bütün məhsullar",
+      "newProduct": "Yeni məhsul",
+      "emptyTitle": "Hələ məhsul yoxdur",
+      "emptyText": "İlk məhsulu əlavə edin: şəkillər, əyar, çəki və qiymət. Bir neçə dəqiqə çəkir.",
+      "draftTitle": "Yarımçıq məhsul",
+      "draftText": "{name} adlı qaralama bu brauzerdə saxlanılıb.",
+      "draftUntitled": "Adsız qaralama bu brauzerdə saxlanılıb.",
+      "draftResume": "Davam et",
+      "demoData": "Nümunə data",
+      "fix": "Düzəlt"
+    },
+    "products": {
+      "title": "Məhsullar",
+      "search": "Məhsul adı ilə axtar",
+      "statusLabel": "Status",
+      "count": "{count, plural, one {# məhsul} other {# məhsul}}",
+      "emptyFiltered": "Bu axtarışa uyğun məhsul yoxdur.",
+      "clearFilters": "Filtrləri təmizlə",
+      "colProduct": "Məhsul",
+      "colStatus": "Status",
+      "colPrice": "Qiymət",
+      "colViews": "Baxış",
+      "colUpdated": "Yenilənib",
+      "colActions": "Əməliyyatlar",
+      "edit": "Redaktə et",
+      "editNamed": "{name} redaktə et",
+      "deactivate": "Deaktiv et",
+      "activate": "Aktiv et",
+      "toggleNamed": "{action}: {name}",
+      "toggled": {
+        "INACTIVE": "{name} deaktiv edildi: kataloqda görünmür.",
+        "APPROVED": "{name} yenidən aktivdir."
+      },
+      "toggleFailed": "Status dəyişmədi. Yenidən cəhd edin.",
+      "variants": "{count, plural, one {# variant} other {# variant}}",
+      "fromPrice": "{price}-dan",
+      "adminNote": "Admin qeydi"
+    },
+    "form": {
+      "newTitle": "Yeni məhsul",
+      "editTitle": "Məhsulu redaktə et",
+      "intro": "Beş qısa addım. Hər dəyişiklik bu brauzerdə avtomatik saxlanılır.",
+      "steps": {
+        "1": {
+          "title": "Şəkillər",
+          "intro": "Ən azı bir şəkil. Birinci şəkil kataloqda görünür; sıranı oxlarla dəyişin."
+        },
+        "2": {
+          "title": "Əsas məlumat",
+          "intro": "Alıcı məhsulu ad və kateqoriya ilə tapır."
+        },
+        "3": {
+          "title": "Metal və variantlar",
+          "intro": "Hər ölçü və ya çəki ayrı variantdır, öz qiyməti ilə."
+        },
+        "4": {
+          "title": "Daşlar",
+          "intro": "Daş yoxdursa bu addımı keçin."
+        },
+        "5": {
+          "title": "Sənədlər və göndərmə",
+          "intro": "Əyar və daş sertifikatları məhsulun yoxlanmasını sürətləndirir."
+        }
+      },
+      "progress": "Məhsul formunun addımları",
+      "stepDone": "tamamlanıb",
+      "stepOf": "Addım {step} / {total}",
+      "stepStatus": "Addım {step} / {total}: {title}",
+      "next": "Növbəti",
+      "back": "Geri",
+      "choose": "Seçin",
+      "optional": "istəyə bağlı",
+      "savedAt": "Qaralama saxlanıldı, {time}",
+      "notPersisted": "Brauzerdə yer qalmadı: qaralama yalnız bu səhifə açıq olanda qalır. Bəzi şəkilləri silin.",
+      "saveDraft": "Qaralama kimi saxla",
+      "submitReview": "Yoxlamaya göndər",
+      "discard": "Qaralamanı sil",
+      "discardConfirm": "Qaralama silinsin? Bu brauzerdə saxlanılan məlumat itəcək.",
+      "discardYes": "Bəli, sil",
+      "discardNo": "Ləğv et",
+      "fields": {
+        "name": "Məhsulun adı",
+        "category": "Kateqoriya",
+        "description": "Təsvir",
+        "metal": "Metal",
+        "fineness": "Əyar",
+        "size": "Ölçü",
+        "weight": "Çəki, q",
+        "price": "Qiymət, AZN",
+        "stock": "Mövcudluq",
+        "stoneType": "Daşın növü",
+        "origin": "Mənşəyi",
+        "carat": "Karat",
+        "count": "Say",
+        "certificateLab": "Sertifikat laboratoriyası",
+        "certificateNumber": "Sertifikat nömrəsi"
+      },
+      "hints": {
+        "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
+        "description": "Dizayn, ölçü məsləhəti, qablaşdırma. Ən çox 2000 simvol.",
+        "size": "Üzük və qolbaq üçün; digərlərində boş saxlayın.",
+        "price": "Sabit qiymət. Metala bağlı qiymət rejimi növbəti mərhələdə əlavə olunur.",
+        "fineness": "Əvvəl metalı seçin."
+      },
+      "images": {
+        "drop": "Şəkilləri bura atın və ya seçin",
+        "rules": "JPG, PNG və ya WebP, hər biri {max} MB-a qədər, ən çox {count} şəkil. Telefonda kamera da açılır.",
+        "list": "Məhsul şəkilləri",
+        "cover": "Əsas şəkil",
+        "position": "Şəkil {n}",
+        "moveBack": "{name} əvvələ çək",
+        "moveForward": "{name} sona çək",
+        "remove": "{name} sil",
+        "badType": "{name}: yalnız JPG, PNG və WebP qəbul olunur.",
+        "tooBig": "{name}: fayl {max} MB-dan böyükdür.",
+        "tooMany": "Ən çox {max} şəkil əlavə etmək olar.",
+        "failed": "{name}: şəkli oxumaq alınmadı.",
+        "processing": "Şəkillər hazırlanır",
+        "added": "{count, plural, one {# şəkil əlavə olundu} other {# şəkil əlavə olundu}}"
+      },
+      "variants": {
+        "title": "Variant {n}",
+        "add": "Variant əlavə et",
+        "remove": "Variant {n} sil",
+        "max": "Ən çox {max} variant."
+      },
+      "stones": {
+        "title": "Daş {n}",
+        "add": "Daş əlavə et",
+        "remove": "Daş {n} sil",
+        "none": "Daş əlavə olunmayıb.",
+        "natural": "Təbii",
+        "labGrown": "Laboratoriyada yetişdirilib"
+      },
+      "docs": {
+        "what": "Əyar möhürü, daş sertifikatı (GIA, IGI və s.) və ya alış sənədi."
+      },
+      "review": {
+        "title": "Göndərməzdən əvvəl",
+        "ready": "Yoxlamadan sonra məhsul kataloqda görünəcək. Admin sənədləri yoxlayır, adətən 1-2 iş günü.",
+        "docsNeeded": "Yoxlamaya göndərmək üçün ən azı bir sənəd lazımdır. Sənəd olmadan qaralama kimi saxlaya bilərsiniz.",
+        "liveNote": "Aktiv məhsulu dəyişsəniz, dəyişiklik yoxlamadan sonra görünəcək."
+      },
+      "done": {
+        "DRAFT": {
+          "title": "Qaralama saxlanıldı",
+          "text": "Məhsul kataloqda görünmür. İstədiyiniz vaxt davam edə bilərsiniz."
+        },
+        "IN_REVIEW": {
+          "title": "Məhsul yoxlamaya göndərildi",
+          "text": "Yoxlama bitəndə məhsul kataloqda görünəcək. Nəticəni məhsul siyahısında izləyin."
+        },
+        "toList": "Məhsullara qayıt",
+        "another": "Daha bir məhsul əlavə et"
+      }
+    },
+    "profile": {
+      "title": "Mağaza profili",
+      "intro": "Bu məlumat mağaza səhifəsində və WhatsApp düyməsində görünür.",
+      "fields": {
+        "name": "Mağazanın adı",
+        "whatsapp": "WhatsApp nömrəsi",
+        "city": "Şəhər",
+        "address": "Ünvan",
+        "social": "Sosial şəbəkə",
+        "description": "Mağaza haqqında"
+      },
+      "hours": {
+        "title": "İş saatları",
+        "intro": "Bağlı günləri işarələməyin. Fasiləsiz iş saatı göstərilir.",
+        "open": "{day} açıqdır",
+        "from": "{day} açılış",
+        "to": "{day} bağlanış",
+        "closed": "Bağlı",
+        "copy": "Bazar ertəsini bütün açıq günlərə köçür",
+        "invalid": "Bağlanış saatı açılışdan sonra olmalıdır."
+      },
+      "days": {
+        "Mo": "Bazar ertəsi",
+        "Tu": "Çərşənbə axşamı",
+        "We": "Çərşənbə",
+        "Th": "Cümə axşamı",
+        "Fr": "Cümə",
+        "Sa": "Şənbə",
+        "Su": "Bazar"
+      },
+      "save": "Yadda saxla",
+      "saved": "Profil yeniləndi.",
+      "status": "Satıcı statusu",
+      "sellerStatus": {
+        "NONE": "Yoxlanılmayıb",
+        "PENDING": "Yoxlamada",
+        "VERIFIED": "Təsdiqlənib",
+        "REJECTED": "Təsdiqlənmədi"
+      }
+    },
+    "errors": {
+      "imagesRequired": "Ən azı bir şəkil əlavə edin.",
+      "imagesTooMany": "Ən çox 8 şəkil olar.",
+      "descriptionLong": "Mətn çox uzundur.",
+      "sizeLong": "Ölçü çox uzundur.",
+      "variantsRequired": "Ən azı bir variant olmalıdır.",
+      "variantsTooMany": "Variant çox oldu.",
+      "countInvalid": "1 və ya daha çox tam ədəd yazın.",
+      "stonesTooMany": "Daş çox oldu.",
+      "sellerNotApproved": "Mağaza təsdiqlənməyib: məhsulu yalnız qaralama kimi saxlamaq olar.",
+      "docsRequired": "Yoxlamaya göndərmək üçün ən azı bir sənəd yükləyin.",
+      "hoursInvalid": "İş saatlarını yoxlayın.",
+      "sessionExpired": "Sessiyanın vaxtı bitib. Yenidən daxil olun.",
+      "check": "Formada səhv var, qırmızı sahələri yoxlayın."
     }
   }
 }

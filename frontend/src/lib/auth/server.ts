@@ -35,12 +35,14 @@ export async function clearSession() {
 /**
  * Demo sign-in while the backend does not exist (Day 5 replaces this with
  * POST /api/v1/auth/login). Any valid email and password work; the role comes
- * from the address: admin@... is ADMIN, merchant@... is MERCHANT, others USER.
+ * from the address: admin@... is ADMIN, merchant@... and merchant+new@... (a seller
+ * still waiting for approval) are MERCHANT, others USER.
  * Passwords are never stored or logged.
  */
 export function mockRoleFor(email: string): Role {
   const local = email.split("@")[0]?.toLowerCase();
-  return local === "admin" ? "ADMIN" : local === "merchant" ? "MERCHANT" : "USER";
+  if (local === "admin") return "ADMIN";
+  return local === "merchant" || local?.startsWith("merchant+") ? "MERCHANT" : "USER";
 }
 
 export const AUTH_AVAILABLE = USING_MOCK;

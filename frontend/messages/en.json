@@ -455,7 +455,7 @@
     "pending": "Please wait",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. Nothing is stored.",
+    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored.",
     "areas": {
       "merchant": "Store dashboard",
       "admin": "Admin panel",
@@ -571,6 +571,258 @@
       "dashboard": "Go to dashboard",
       "home": "Home",
       "startOver": "Start a new sign-up"
+    }
+  },
+  "Merchant": {
+    "title": "Store cabinet",
+    "nav": {
+      "label": "Cabinet sections",
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "profile": "Store profile"
+    },
+    "demoNote": "Demo mode: statistics are sample data and changes are not saved on the server. Drafts stay in this browser.",
+    "status": {
+      "ALL": "All",
+      "DRAFT": "Draft",
+      "IN_REVIEW": "In review",
+      "APPROVED": "Live",
+      "RETURNED": "Returned",
+      "INACTIVE": "Inactive"
+    },
+    "seller": {
+      "PENDING": {
+        "title": "Your store is being checked",
+        "text": "You can prepare products as drafts now. Once the store is approved you can send them to review."
+      },
+      "NONE": {
+        "title": "The store has not been checked yet",
+        "text": "Upload the verification documents so the check can start. Until then products stay drafts."
+      },
+      "REJECTED": {
+        "title": "The store was not approved",
+        "text": "Update the documents or contact support. Products are not published."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "intro": "The last 30 days of {store}.",
+      "views": "Views",
+      "whatsappClicks": "WhatsApp clicks",
+      "last30": "last 30 days",
+      "byStatus": "Products by status",
+      "returned": "Returned products",
+      "returnedText": "Read the admin note, fix it and send it again.",
+      "viewAll": "All products",
+      "newProduct": "New product",
+      "emptyTitle": "No products yet",
+      "emptyText": "Add your first product: photos, fineness, weight and price. It takes a few minutes.",
+      "draftTitle": "Unfinished product",
+      "draftText": "A draft named {name} is saved in this browser.",
+      "draftUntitled": "An untitled draft is saved in this browser.",
+      "draftResume": "Continue",
+      "demoData": "Sample data",
+      "fix": "Fix"
+    },
+    "products": {
+      "title": "Products",
+      "search": "Search by product name",
+      "statusLabel": "Status",
+      "count": "{count, plural, one {# product} other {# products}}",
+      "emptyFiltered": "No products match this search.",
+      "clearFilters": "Clear filters",
+      "colProduct": "Product",
+      "colStatus": "Status",
+      "colPrice": "Price",
+      "colViews": "Views",
+      "colUpdated": "Updated",
+      "colActions": "Actions",
+      "edit": "Edit",
+      "editNamed": "Edit {name}",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "toggleNamed": "{action}: {name}",
+      "toggled": {
+        "INACTIVE": "{name} is inactive: it is hidden from the catalog.",
+        "APPROVED": "{name} is live again."
+      },
+      "toggleFailed": "The status did not change. Try again.",
+      "variants": "{count, plural, one {# variant} other {# variants}}",
+      "fromPrice": "from {price}",
+      "adminNote": "Admin note"
+    },
+    "form": {
+      "newTitle": "New product",
+      "editTitle": "Edit product",
+      "intro": "Five short steps. Every change is saved in this browser automatically.",
+      "steps": {
+        "1": {
+          "title": "Photos",
+          "intro": "At least one photo. The first one shows in the catalog; reorder with the arrows."
+        },
+        "2": {
+          "title": "Basics",
+          "intro": "Buyers find the product by its name and category."
+        },
+        "3": {
+          "title": "Metal and variants",
+          "intro": "Each size or weight is a separate variant with its own price."
+        },
+        "4": {
+          "title": "Stones",
+          "intro": "Skip this step if there are no stones."
+        },
+        "5": {
+          "title": "Documents and sending",
+          "intro": "Hallmark and stone certificates make the check faster."
+        }
+      },
+      "progress": "Product form steps",
+      "stepDone": "done",
+      "stepOf": "Step {step} of {total}",
+      "stepStatus": "Step {step} of {total}: {title}",
+      "next": "Next",
+      "back": "Back",
+      "choose": "Choose",
+      "optional": "optional",
+      "savedAt": "Draft saved at {time}",
+      "notPersisted": "The browser is out of space: the draft lasts only while this page is open. Remove some photos.",
+      "saveDraft": "Save as draft",
+      "submitReview": "Send to review",
+      "discard": "Delete draft",
+      "discardConfirm": "Delete the draft? What is saved in this browser will be lost.",
+      "discardYes": "Yes, delete",
+      "discardNo": "Cancel",
+      "fields": {
+        "name": "Product name",
+        "category": "Category",
+        "description": "Description",
+        "metal": "Metal",
+        "fineness": "Fineness",
+        "size": "Size",
+        "weight": "Weight, g",
+        "price": "Price, AZN",
+        "stock": "Availability",
+        "stoneType": "Stone type",
+        "origin": "Origin",
+        "carat": "Carat",
+        "count": "Count",
+        "certificateLab": "Certificate lab",
+        "certificateNumber": "Certificate number"
+      },
+      "hints": {
+        "name": "For example: Gold engagement ring with diamond.",
+        "description": "Design, sizing advice, packaging. Up to 2000 characters.",
+        "size": "For rings and bracelets; leave empty for others.",
+        "price": "Fixed price. The metal-linked pricing mode comes in the next stage.",
+        "fineness": "Choose the metal first."
+      },
+      "images": {
+        "drop": "Drop photos here or choose them",
+        "rules": "JPG, PNG or WebP, up to {max} MB each, at most {count} photos. On a phone the camera opens too.",
+        "list": "Product photos",
+        "cover": "Cover photo",
+        "position": "Photo {n}",
+        "moveBack": "Move {name} earlier",
+        "moveForward": "Move {name} later",
+        "remove": "Remove {name}",
+        "badType": "{name}: only JPG, PNG and WebP are accepted.",
+        "tooBig": "{name}: the file is larger than {max} MB.",
+        "tooMany": "You can add at most {max} photos.",
+        "failed": "{name}: the photo could not be read.",
+        "processing": "Preparing photos",
+        "added": "{count, plural, one {# photo added} other {# photos added}}"
+      },
+      "variants": {
+        "title": "Variant {n}",
+        "add": "Add variant",
+        "remove": "Remove variant {n}",
+        "max": "At most {max} variants."
+      },
+      "stones": {
+        "title": "Stone {n}",
+        "add": "Add stone",
+        "remove": "Remove stone {n}",
+        "none": "No stones added.",
+        "natural": "Natural",
+        "labGrown": "Lab-grown"
+      },
+      "docs": {
+        "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document."
+      },
+      "review": {
+        "title": "Before sending",
+        "ready": "After the check the product appears in the catalog. An admin checks the documents, usually within 1-2 business days.",
+        "docsNeeded": "Sending to review needs at least one document. Without one you can save a draft.",
+        "liveNote": "If you change a live product, the change shows after the check."
+      },
+      "done": {
+        "DRAFT": {
+          "title": "Draft saved",
+          "text": "The product is not in the catalog. You can continue any time."
+        },
+        "IN_REVIEW": {
+          "title": "Product sent to review",
+          "text": "It appears in the catalog when the check is done. Follow the result in the product list."
+        },
+        "toList": "Back to products",
+        "another": "Add another product"
+      }
+    },
+    "profile": {
+      "title": "Store profile",
+      "intro": "This shows on the store page and on the WhatsApp button.",
+      "fields": {
+        "name": "Store name",
+        "whatsapp": "WhatsApp number",
+        "city": "City",
+        "address": "Address",
+        "social": "Social media",
+        "description": "About the store"
+      },
+      "hours": {
+        "title": "Opening hours",
+        "intro": "Leave closed days unchecked. Hours are shown without a break.",
+        "open": "Open on {day}",
+        "from": "{day} opens",
+        "to": "{day} closes",
+        "closed": "Closed",
+        "copy": "Copy Monday to all open days",
+        "invalid": "Closing time must be after opening time."
+      },
+      "days": {
+        "Mo": "Monday",
+        "Tu": "Tuesday",
+        "We": "Wednesday",
+        "Th": "Thursday",
+        "Fr": "Friday",
+        "Sa": "Saturday",
+        "Su": "Sunday"
+      },
+      "save": "Save",
+      "saved": "Profile updated.",
+      "status": "Seller status",
+      "sellerStatus": {
+        "NONE": "Not checked",
+        "PENDING": "Being checked",
+        "VERIFIED": "Approved",
+        "REJECTED": "Not approved"
+      }
+    },
+    "errors": {
+      "imagesRequired": "Add at least one photo.",
+      "imagesTooMany": "At most 8 photos.",
+      "descriptionLong": "The text is too long.",
+      "sizeLong": "The size is too long.",
+      "variantsRequired": "There must be at least one variant.",
+      "variantsTooMany": "Too many variants.",
+      "countInvalid": "Enter a whole number, 1 or more.",
+      "stonesTooMany": "Too many stones.",
+      "sellerNotApproved": "The store is not approved: the product can only be saved as a draft.",
+      "docsRequired": "Upload at least one document to send to review.",
+      "hoursInvalid": "Check the opening hours.",
+      "sessionExpired": "Your session has expired. Sign in again.",
+      "check": "The form has errors, check the fields in red."
     }
   }
 }
