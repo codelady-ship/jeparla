@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Cormorant } from "next/font/google";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
@@ -15,19 +15,12 @@ import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-// Headings: Cormorant Garamond (editorial serif; Latin Extended covers Azerbaijani,
-// plus Cyrillic). Text: Manrope. Both are self-hosted by next/font with swap, and
-// only the unicode subsets a page uses are downloaded. Prices fall back to the
-// system font for the manat sign, which neither font has.
-const cormorant = Cormorant_Garamond({
+// Headings: Cormorant, a variable editorial serif, so one file per unicode subset
+// (Latin Extended covers Azerbaijani, plus Cyrillic). Body text uses the system font:
+// the font budget is two files per page (lighthouserc.cjs), and a second web font
+// cost mobile performance. Prices fall back to the system font for the manat sign.
+const cormorant = Cormorant({
   variable: "--font-cormorant",
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-const manrope = Manrope({
-  variable: "--font-manrope",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
 });
@@ -77,7 +70,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   return (
     <html
       lang={locale}
-      className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
+      className={`${cormorant.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">

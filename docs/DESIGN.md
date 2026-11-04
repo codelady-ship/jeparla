@@ -50,11 +50,11 @@ hidratasiya fərqi yoxdur. Keçid düyməsi: `ThemeToggle`. Hero səhnələri h�
 
 | Rol                            | Şrift              | Qeyd                                         |
 | ------------------------------ | ------------------ | -------------------------------------------- |
-| Başlıq (`font-heading`, h1–h3) | Cormorant Garamond | editorial serif; 400/500/600, italic         |
-| Mətn (`font-sans`)             | Manrope            | latin, latin-ext, cyrillic                   |
+| Başlıq (`font-heading`, h1–h3) | Cormorant          | variable serif (300–700), italic yoxdur      |
+| Mətn (`font-sans`)             | sistem sans-serif  | şrift büdcəsi: səhifədə maks. 2 fayl         |
 | Kiçik texniki nişanlar         | sistem monospace   | `font-mono`, az istifadə (tarix, mənbə)      |
 
-Hər ikisi Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir. Şriftlər `next/font` ilə öz hostumuzdan,
+Cormorant Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir. Şrift `next/font` ilə öz hostumuzdan,
 `display: swap`; yalnız səhifənin istifadə etdiyi unicode alt-dəstləri endirilir.
 **Manat işarəsi (₼) bu şriftlərdə yoxdur:** sistem şriftinə düşür; qiymətlər `tabular-nums`.
 Böyük editorial başlıqlar (hero 56–120px) yalnız `font-heading`; sətir uzunluğu `max-w-prose`.
