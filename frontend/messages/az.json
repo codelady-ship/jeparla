@@ -461,5 +461,116 @@
       "admin": "Admin paneli",
       "soon": "Bu bölmə hazırlanır."
     }
+  },
+  "Sell": {
+    "title": "Satıcı kimi qoşulun",
+    "description": "Zərgərlik mağazanızı Jeparla-ya əlavə edin: hesab, mağaza məlumatları, təsdiq sənədləri və ilk məhsul.",
+    "intro": "Dörd qısa addım. Məlumatlar bu brauzerdə yadda qalır, istədiyiniz vaxt davam edə bilərsiniz.",
+    "loading": "Forma yüklənir",
+    "progress": "Qeydiyyat addımları",
+    "stepDone": "tamamlandı",
+    "stepStatus": "Addım {step} / {total}: {title}",
+    "stepOf": "Addım {step} / {total}",
+    "steps": {
+      "1": {
+        "title": "Hesab",
+        "intro": "Sizinlə əlaqə və giriş üçün."
+      },
+      "2": {
+        "title": "Mağaza",
+        "intro": "Alıcıların görəcəyi məlumatlar."
+      },
+      "3": {
+        "title": "Sənədlər",
+        "intro": "\"Jeparla Verified\" yoxlaması üçün."
+      },
+      "4": {
+        "title": "İlk məhsul",
+        "intro": "İstəyə bağlıdır: indi və ya sonra kabinetdən əlavə edə bilərsiniz."
+      }
+    },
+    "fields": {
+      "name": "Ad və soyad",
+      "phone": "Mobil telefon",
+      "password": "Şifrə",
+      "storeName": "Mağazanın adı",
+      "whatsapp": "WhatsApp nömrəsi",
+      "city": "Şəhər",
+      "address": "Ünvan",
+      "social": "Instagram və ya sayt",
+      "legalType": "Hüquqi forma",
+      "taxId": "VÖEN",
+      "productName": "Məhsulun adı",
+      "category": "Kateqoriya",
+      "fineness": "Əyar",
+      "weight": "Çəki (qram)",
+      "price": "Qiymət (AZN)"
+    },
+    "hints": {
+      "phone": "Məsələn 050 123 45 67. SMS təsdiqi sonra əlavə olunacaq.",
+      "whatsapp": "Alıcılar bu nömrəyə yazacaq.",
+      "social": "@ad və ya https:// ilə başlayan keçid.",
+      "taxId": "10 rəqəm."
+    },
+    "legal": {
+      "COMPANY": "Hüquqi şəxs (MMC və s.)",
+      "SOLE_TRADER": "Fərdi sahibkar"
+    },
+    "choose": "Seçin",
+    "optional": "istəyə bağlı",
+    "docs": {
+      "what": "Mağazanın qeydiyyat şəhadətnaməsi, VÖEN arayışı və ya əyar möhürü sənədi.",
+      "drop": "Faylları bura atın və ya seçin",
+      "rules": "PDF, JPG və ya PNG, hər biri {max} MB-a qədər, ən çox {count} fayl.",
+      "list": "Seçilmiş sənədlər",
+      "remove": "{name} sil",
+      "badType": "{name}: yalnız PDF, JPG və PNG qəbul olunur.",
+      "tooBig": "{name}: fayl {max} MB-dan böyükdür.",
+      "tooMany": "Ən çox {max} fayl əlavə etmək olar.",
+      "later": "Sənədləri sonra kabinetdən də yükləyə bilərsiniz, amma yoxlama onlarsız başlamır. Demo rejimində fayllar heç yerə göndərilmir."
+    },
+    "productDraft": "Məhsul qaralama kimi saxlanılır və mağaza təsdiqlənəndən sonra yayımlanır.",
+    "back": "Geri",
+    "next": "Davam et",
+    "finish": "Qeydiyyatı bitir",
+    "skipProduct": "Məhsulsuz bitir",
+    "draftNote": "Şifrə təhlükəsizlik üçün yadda saxlanmır; səhifəni yeniləsəniz, sonda onu yenidən yazmaq lazım olacaq.",
+    "errors": {
+      "phoneInvalid": "Azərbaycan mobil nömrəsi yazın, məsələn 050 123 45 67.",
+      "storeNameShort": "Mağazanın adı ən azı 2 simvol olmalıdır.",
+      "addressShort": "Ünvanı tam yazın: küçə və bina.",
+      "addressLong": "Ünvan çox uzundur.",
+      "socialInvalid": "@ad və ya https:// ilə başlayan keçid yazın.",
+      "taxIdInvalid": "VÖEN 10 rəqəmdən ibarətdir.",
+      "productNameShort": "Məhsulun adı ən azı 3 simvol olmalıdır.",
+      "decimalInvalid": "Müsbət ədəd yazın, məsələn 3,25.",
+      "passwordLost": "Təhlükəsizlik üçün şifrə yadda saxlanmır. Onu yenidən yazın."
+    },
+    "done": {
+      "title": "Təbriklər! Siz qeydiyyatdan keçdiniz",
+      "text": "\"{store}\" mağazasının müraciəti qəbul edildi. Yoxlamadan sonra məhsullarınız kataloqda görünəcək.",
+      "statusTitle": "Təsdiq statusu",
+      "rows": {
+        "seller": "Satıcı yoxlaması",
+        "documents": "Sənədlər",
+        "product": "İlk məhsul"
+      },
+      "status": {
+        "pending": "Yoxlanılır",
+        "waiting": "Gözlənilir",
+        "none": "Əlavə edilməyib",
+        "draft": "Qaralama"
+      },
+      "nextTitle": "Növbəti addımlar",
+      "next": {
+        "review": "Jeparla komandası mağaza məlumatlarını yoxlayır və sizinlə əlaqə saxlayır.",
+        "docs": "Kabinetdən təsdiq sənədlərini yükləyin: onlarsız yoxlama başlamır.",
+        "products": "Kabinetdə məhsullarınızı əlavə edin.",
+        "publish": "Təsdiqdən sonra məhsullar kataloqda yayımlanır."
+      },
+      "dashboard": "Kabinetə keç",
+      "home": "Ana səhifə",
+      "startOver": "Yeni qeydiyyat başlat"
+    }
   }
 }

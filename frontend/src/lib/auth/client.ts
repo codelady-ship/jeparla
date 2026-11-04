@@ -60,7 +60,7 @@ export type AuthResult =
   { ok: true; session: Session } | { ok: false; errors: Record<string, string> };
 
 /** Posts a form to an auth route. The password is only in the request body. */
-export async function postAuth(path: string, body: Record<string, string>): Promise<AuthResult> {
+export async function postAuth(path: string, body: unknown): Promise<AuthResult> {
   const res = await fetch(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

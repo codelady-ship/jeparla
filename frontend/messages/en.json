@@ -461,5 +461,116 @@
       "admin": "Admin panel",
       "soon": "This section is being built."
     }
+  },
+  "Sell": {
+    "title": "Join as a seller",
+    "description": "Add your jewelry store to Jeparla: account, store details, verification documents and a first product.",
+    "intro": "Four short steps. Your answers stay in this browser, so you can continue any time.",
+    "loading": "Loading the form",
+    "progress": "Sign-up steps",
+    "stepDone": "done",
+    "stepStatus": "Step {step} of {total}: {title}",
+    "stepOf": "Step {step} of {total}",
+    "steps": {
+      "1": {
+        "title": "Account",
+        "intro": "So we can reach you and you can sign in."
+      },
+      "2": {
+        "title": "Store",
+        "intro": "What buyers will see."
+      },
+      "3": {
+        "title": "Documents",
+        "intro": "For the \"Jeparla Verified\" check."
+      },
+      "4": {
+        "title": "First product",
+        "intro": "Optional: add it now or later from your dashboard."
+      }
+    },
+    "fields": {
+      "name": "Full name",
+      "phone": "Mobile phone",
+      "password": "Password",
+      "storeName": "Store name",
+      "whatsapp": "WhatsApp number",
+      "city": "City",
+      "address": "Address",
+      "social": "Instagram or website",
+      "legalType": "Legal form",
+      "taxId": "Tax ID (VOEN)",
+      "productName": "Product name",
+      "category": "Category",
+      "fineness": "Fineness",
+      "weight": "Weight (grams)",
+      "price": "Price (AZN)"
+    },
+    "hints": {
+      "phone": "For example 050 123 45 67. SMS confirmation comes later.",
+      "whatsapp": "Buyers will message this number.",
+      "social": "@name or a link starting with https://.",
+      "taxId": "10 digits."
+    },
+    "legal": {
+      "COMPANY": "Company (LLC etc.)",
+      "SOLE_TRADER": "Sole trader"
+    },
+    "choose": "Choose",
+    "optional": "optional",
+    "docs": {
+      "what": "Store registration certificate, tax ID statement or hallmark document.",
+      "drop": "Drop files here or choose them",
+      "rules": "PDF, JPG or PNG, up to {max} MB each, at most {count} files.",
+      "list": "Chosen documents",
+      "remove": "Remove {name}",
+      "badType": "{name}: only PDF, JPG and PNG are accepted.",
+      "tooBig": "{name}: the file is larger than {max} MB.",
+      "tooMany": "You can add at most {max} files.",
+      "later": "You can also upload documents later from your dashboard, but the check does not start without them. In demo mode files are not sent anywhere."
+    },
+    "productDraft": "The product is saved as a draft and published after your store is approved.",
+    "back": "Back",
+    "next": "Continue",
+    "finish": "Finish sign-up",
+    "skipProduct": "Finish without a product",
+    "draftNote": "For security the password is not saved; if you reload the page you will need to type it again at the end.",
+    "errors": {
+      "phoneInvalid": "Enter an Azerbaijani mobile number, for example 050 123 45 67.",
+      "storeNameShort": "The store name needs at least 2 characters.",
+      "addressShort": "Enter the full address: street and building.",
+      "addressLong": "The address is too long.",
+      "socialInvalid": "Enter @name or a link starting with https://.",
+      "taxIdInvalid": "The tax ID has 10 digits.",
+      "productNameShort": "The product name needs at least 3 characters.",
+      "decimalInvalid": "Enter a positive number, for example 3.25.",
+      "passwordLost": "For security the password is not saved. Please type it again."
+    },
+    "done": {
+      "title": "Congratulations! You are signed up",
+      "text": "The application for \"{store}\" was received. After the check your products will appear in the catalog.",
+      "statusTitle": "Verification status",
+      "rows": {
+        "seller": "Seller check",
+        "documents": "Documents",
+        "product": "First product"
+      },
+      "status": {
+        "pending": "In review",
+        "waiting": "Waiting",
+        "none": "Not added",
+        "draft": "Draft"
+      },
+      "nextTitle": "Next steps",
+      "next": {
+        "review": "The Jeparla team checks your store details and gets in touch.",
+        "docs": "Upload the verification documents from your dashboard: the check does not start without them.",
+        "products": "Add your products in the dashboard.",
+        "publish": "After approval your products are published in the catalog."
+      },
+      "dashboard": "Go to dashboard",
+      "home": "Home",
+      "startOver": "Start a new sign-up"
+    }
   }
 }
