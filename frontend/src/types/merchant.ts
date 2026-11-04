@@ -8,6 +8,7 @@ import type {
   IsoDate,
   LocalizedText,
   MetalType,
+  PricingMode,
   ProductStatus,
   StockStatus,
   StoneType,
@@ -78,6 +79,16 @@ export type StoneInput = {
   certificateNumber: string;
 };
 
+/** METAL_LINKED inputs as typed; empty min/max means no limit. */
+export type PricingInput = {
+  laborPerGram: string;
+  laborFixed: string;
+  stonePrice: string;
+  markupPercent: string;
+  minPrice: string;
+  maxPrice: string;
+};
+
 /** What the product form edits; also the body of POST/PUT /api/v1/merchant/products. */
 export type ProductInput = {
   images: ProductImageInput[];
@@ -86,6 +97,12 @@ export type ProductInput = {
   description: string;
   metal: MetalType | "";
   fineness: string;
+  /**
+   * One mode and rule for the whole product in the form; the API stores them on
+   * every variant (PLAN 5.10 prices per variant), each with its own weight.
+   */
+  pricingMode: PricingMode;
+  pricing: PricingInput;
   variants: VariantInput[];
   stones: StoneInput[];
   docs: { id: string; name: string; size: number; type: string }[];

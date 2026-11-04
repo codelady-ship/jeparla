@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { merchantApi, isNewDemoSeller } from "@/lib/api/merchant";
 import { mockRoleFor } from "@/lib/auth/server";
 import type { MerchantProductRow } from "@/types/merchant";
-import { EMPTY_INPUT, firstOpenStep, productDraft } from "./draft";
+import { previewPrice } from "@/components/merchant/pricing-fields";
+import { EMPTY_INPUT, EMPTY_PRICING, firstOpenStep, productDraft } from "./draft";
 import { filterRows, toggledStatus } from "./filter";
 import { formatWeek, invalidDays, parseWeek } from "./hours";
 import { move } from "./images";
@@ -54,6 +55,8 @@ describe("product schemas", () => {
     const r = metalStep.safeParse({
       metal: "GOLD",
       fineness: "2",
+      pricingMode: "FIXED",
+      pricing: EMPTY_PRICING,
       variants: [
         { key: "a", size: "", weightGrams: "3,25", price: "1248.50", stockStatus: "IN_STOCK" },
         { key: "b", size: "", weightGrams: "2", price: "1.005", stockStatus: "IN_STOCK" },
@@ -61,6 +64,41 @@ describe("product schemas", () => {
     });
     expect(r.success).toBe(false);
     if (!r.success) expect(pathErrors(r.error)).toEqual({ "variants.1.price": "decimalInvalid" });
+  });
+  it("needs the rule, not a price, for metal-linked products", () => {
+    const linked = (pricing: Partial<typeof EMPTY_PRICING>) =>
+      metalStep.safeParse({
+        metal: "GOLD",
+        fineness: "2",
+        pricingMode: "METAL_LINKED",
+        pricing: { ...EMPTY_PRICING, ...pricing },
+        variants: [{ key: "a", size: "", weightGrams: "3", price: "", stockStatus: "IN_STOCK" }],
+      });
+    expect(linked({ laborPerGram: "12,50", markupPercent: "15" }).success).toBe(true);
+    const r = linked({ laborFixed: "-1", markupPercent: "2000", minPrice: "900", maxPrice: "500" });
+    expect(r.success).toBe(false);
+    if (!r.success)
+      expect(pathErrors(r.error)).toEqual({
+        "pricing.laborFixed": "moneyInvalid",
+        "pricing.markupPercent": "percentInvalid",
+        "pricing.maxPrice": "maxBelowMin",
+      });
+  });
+  it("previews exactly what the shared formula gives", () => {
+    const quote = { pricePerGram: "225.0547", date: "2026-11-03" };
+    const pricing = {
+      ...EMPTY_PRICING,
+      laborPerGram: "12",
+      laborFixed: "20",
+      stonePrice: "400",
+      markupPercent: "15",
+    };
+    expect(previewPrice({ weightGrams: "3,25" }, 750, quote, pricing)?.total).toBe("1158.71");
+    expect(previewPrice({ weightGrams: "" }, 750, quote, pricing)).toBeNull();
+    expect(previewPrice({ weightGrams: "3" }, 750, null, pricing)).toBeNull();
+    expect(
+      previewPrice({ weightGrams: "3" }, 750, quote, { ...pricing, maxPrice: "x" }),
+    ).toBeNull();
   });
   it("checks stone type and count", () => {
     const r = stonesStep.safeParse({

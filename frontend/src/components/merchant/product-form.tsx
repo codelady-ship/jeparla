@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Plus, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { DocUpload } from "@/components/sell/doc-upload";
 import { SelectField, TextField } from "@/components/sell/fields";
@@ -10,6 +10,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
+import { formatPrice } from "@/lib/money";
 import { sendJson } from "@/lib/merchant/client";
 import { firstOpenStep, productDraft, STEPS, type ProductDraft } from "@/lib/merchant/draft";
 import {
@@ -26,9 +27,10 @@ import type { DocMeta } from "@/lib/seller/schemas";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
 import type { ProductInput, StoneInput, VariantInput } from "@/types/merchant";
 import { ImageUpload } from "./image-upload";
+import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 
 export type Option = { value: string; label: string };
-export type FinenessOption = Option & { metal: MetalType };
+export type FinenessOption = Option & { metal: MetalType; fineness: number };
 
 const STEP_KEYS = ["1", "2", "3", "4", "5"] as const;
 const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
@@ -50,6 +52,7 @@ export function ProductForm({
   categories,
   finenesses,
   sellerApproved,
+  quotes,
 }: {
   /** "new" or the product id. */
   draftKey: string;
@@ -58,8 +61,11 @@ export function ProductForm({
   categories: Option[];
   finenesses: FinenessOption[];
   sellerApproved: boolean;
+  /** Latest pure-metal gram price per metal, for the METAL_LINKED preview. */
+  quotes: Partial<Record<MetalType, GramQuote>>;
 }) {
   const t = useTranslations("Merchant.form");
+  const locale = useLocale();
   const tm = useTranslations("Merchant");
   const tp = useTranslations("Product");
   const tpd = useTranslations("Pdp");
@@ -207,6 +213,9 @@ export function ProductForm({
 
   const time = draft.savedAt ? new Date(draft.savedAt).toTimeString().slice(0, 5) : null;
   const metalFinenesses = finenesses.filter((f) => f.metal === p.metal);
+  const finenessValue = finenesses.find((f) => f.value === p.fineness)?.fineness ?? null;
+  const quote = p.metal ? (quotes[p.metal] ?? null) : null;
+  const linked = p.pricingMode === "METAL_LINKED";
 
   return (
     <div className="flex flex-col gap-6">
@@ -338,6 +347,18 @@ export function ProductForm({
               />
             </div>
 
+            <PricingFields
+              mode={p.pricingMode}
+              pricing={p.pricing}
+              variants={p.variants}
+              fineness={finenessValue}
+              quote={quote}
+              errors={errors}
+              err={err}
+              onMode={(pricingMode) => set({ pricingMode })}
+              onPricing={(patch) => set({ pricing: { ...p.pricing, ...patch } })}
+            />
+
             <ol className="flex flex-col gap-4">
               {p.variants.map((v, i) => (
                 <li key={v.key}>
@@ -355,15 +376,27 @@ export function ProductForm({
                         onChange={(e) => setVariant(v.key, { weightGrams: e.target.value })}
                         error={err(errors[`variants.${i}.weightGrams`])}
                       />
-                      <TextField
-                        id={`v-${v.key}-price`}
-                        label={t("fields.price")}
-                        inputMode="decimal"
-                        placeholder="450,00"
-                        value={v.price}
-                        onChange={(e) => setVariant(v.key, { price: e.target.value })}
-                        error={err(errors[`variants.${i}.price`])}
-                      />
+                      {linked ? (
+                        <div className="flex flex-col gap-2">
+                          <span className="text-sm font-medium">{t("pricing.computed")}</span>
+                          <span className="flex h-11 items-center text-base font-semibold tabular-nums">
+                            {(() => {
+                              const b = previewPrice(v, finenessValue, quote, p.pricing);
+                              return b ? formatPrice(b.total, locale) : t("pricing.pending");
+                            })()}
+                          </span>
+                        </div>
+                      ) : (
+                        <TextField
+                          id={`v-${v.key}-price`}
+                          label={t("fields.price")}
+                          inputMode="decimal"
+                          placeholder="450,00"
+                          value={v.price}
+                          onChange={(e) => setVariant(v.key, { price: e.target.value })}
+                          error={err(errors[`variants.${i}.price`])}
+                        />
+                      )}
                       <TextField
                         id={`v-${v.key}-size`}
                         label={t("fields.size")}
@@ -383,7 +416,9 @@ export function ProductForm({
                         }
                       />
                     </div>
-                    {i === 0 && <p className="text-xs text-muted-foreground">{t("hints.price")}</p>}
+                    {i === 0 && !linked && (
+                      <p className="text-xs text-muted-foreground">{t("hints.price")}</p>
+                    )}
                     {p.variants.length > 1 && (
                       <Button
                         type="button"

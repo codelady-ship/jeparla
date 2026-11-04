@@ -1,4 +1,4 @@
-import type { ProductInput } from "@/types/merchant";
+import type { PricingInput, ProductInput } from "@/types/merchant";
 
 /**
  * Product form drafts in localStorage: one for a new product ("new") and one per
@@ -14,6 +14,15 @@ export type ProductDraft = {
   savedAt: string | null;
 };
 
+export const EMPTY_PRICING: PricingInput = Object.freeze({
+  laborPerGram: "0",
+  laborFixed: "0",
+  stonePrice: "0",
+  markupPercent: "0",
+  minPrice: "",
+  maxPrice: "",
+}) as PricingInput;
+
 export const EMPTY_INPUT: ProductInput = Object.freeze({
   images: [],
   name: "",
@@ -21,6 +30,8 @@ export const EMPTY_INPUT: ProductInput = Object.freeze({
   description: "",
   metal: "",
   fineness: "",
+  pricingMode: "FIXED",
+  pricing: EMPTY_PRICING,
   variants: [{ key: "v1", size: "", weightGrams: "", price: "", stockStatus: "IN_STOCK" }],
   stones: [],
   docs: [],
@@ -70,7 +81,11 @@ export function productDraft(key: string, initial: ProductInput = EMPTY_INPUT): 
       const parsed = raw ? (JSON.parse(raw) as Partial<ProductDraft>) : null;
       cache = parsed
         ? {
-            input: { ...first.input, ...parsed.input },
+            input: {
+              ...first.input,
+              ...parsed.input,
+              pricing: { ...first.input.pricing, ...parsed.input?.pricing },
+            },
             done: Array.isArray(parsed.done) ? parsed.done.filter((n) => n >= 1 && n <= STEPS) : [],
             savedAt: typeof parsed.savedAt === "string" ? parsed.savedAt : null,
           }
