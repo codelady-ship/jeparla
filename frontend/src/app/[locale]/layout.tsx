@@ -23,6 +23,9 @@ const cormorant = Cormorant({
   variable: "--font-cormorant",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
+  // No preload: it would fetch every subset (Cyrillic on az pages too). The browser
+  // downloads only the subsets a page uses, so each page stays at two font files.
+  preload: false,
 });
 
 export function generateStaticParams() {
