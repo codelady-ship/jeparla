@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Cormorant } from "next/font/google";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
@@ -15,13 +15,16 @@ import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-// Headings use Playfair Display (Azerbaijani and Cyrillic covered; no manat sign, so
-// prices use the body font). Body text is the system UI font (globals.css), chosen in
-// #60: no font download on first load. Playfair is headings only and is not preloaded.
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+// Headings: Cormorant, a variable editorial serif, so one file per unicode subset
+// (Latin Extended covers Azerbaijani, plus Cyrillic). Body text uses the system font:
+// the font budget is two files per page (lighthouserc.cjs), and a second web font
+// cost mobile performance. Prices fall back to the system font for the manat sign.
+const cormorant = Cormorant({
+  variable: "--font-cormorant",
   subsets: ["latin", "latin-ext", "cyrillic"],
   display: "swap",
+  // No preload: it would fetch every subset (Cyrillic on az pages too). The browser
+  // downloads only the subsets a page uses, so each page stays at two font files.
   preload: false,
 });
 
@@ -70,7 +73,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   return (
     <html
       lang={locale}
-      className={`${playfair.variable} h-full antialiased`}
+      className={`${cormorant.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">

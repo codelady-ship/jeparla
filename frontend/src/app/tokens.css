@@ -14,6 +14,16 @@
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --reveal-distance: 24px;
   --reveal-stagger: 80ms;
+  --scene-deep: #0e1814;
+  --scene-green: #16251f;
+  --scene-ivory: #f7f3ea;
+  --scene-ivory-muted: #b9b3a6;
+  --scene-gold: #c5a15a;
+  --scene-gold-light: #e8d39a;
+  --scene-gold-deep: #8c6a26;
+  --scene-silver: #d8dce1;
+  --scene-diamond: #f7f8fa;
+  --scene-silver-text: #4a4f57;
   --background: #f7f3ea;
   --foreground: #292929;
   --card: #ffffff;

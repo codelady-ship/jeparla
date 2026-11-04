@@ -54,3 +54,6 @@ __pycache__/
 
 # --- Research screenshots of reference sites (never committed) ---
 docs/research/screens/
+
+# --- Agent skills (local, from the owner's forks; see docs/DESIGN.md) ---
+.claude/skills/

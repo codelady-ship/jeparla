@@ -28,7 +28,12 @@ Tailwind sinifləri: `bg-background`, `bg-card`, `bg-muted`, `bg-primary`, `bg-g
 **fon** kimi (üzərində `on-gold` tünd mətn) istifadə olunur. Qızılı ikon, link, xətt üçün
 `gold-text`. Qızılı heç vaxt yeganə məna daşıyıcısı deyil (ikon + mətn).
 
-**Kontrast.** `tokens.json`-dakı `pairs` siyahısındakı 57 cüt WCAG AA-dan keçir. Yoxlama:
+**Səhnə rəngləri (`--scene-*`, temadan asılı deyil).** Hero səhnələri öz işığını daşıyır:
+`deep #0E1814`, `green #16251F`, `ivory #F7F3EA`, `ivory-muted #B9B3A6`, `gold #C5A15A`,
+`gold-light #E8D39A`, `gold-deep #8C6A26`, `silver #D8DCE1`, `diamond #F7F8FA`,
+`silver-text #4A4F57`. Tailwind: `bg-scene-deep`, `text-scene-gold-light` və s.
+
+**Kontrast.** `tokens.json`-dakı `pairs` siyahısındakı 66 cüt WCAG AA-dan keçir. Yoxlama:
 `python3 tools/contrast.py docs/design/tokens.json` (CI) və `npm test` (eyni düstur,
 `src/lib/contrast.ts`). Yeni rəng əlavə edəndə cütünü də əlavə et.
 
@@ -36,20 +41,20 @@ Tailwind sinifləri: `bg-background`, `bg-card`, `bg-muted`, `bg-primary`, `bg-g
 
 `next-themes`, `class` atributu, standart `system`, seçim `localStorage`-da (`jeparla-theme`).
 Tema skripti HTML-dən əvvəl işləyir, yanıb-sönmə olmur. İkonlar CSS ilə (`dark:`) seçilir,
-hidratasiya fərqi yoxdur. Keçid düyməsi: `ThemeToggle`.
+hidratasiya fərqi yoxdur. Keçid düyməsi: `ThemeToggle`. Hero səhnələri hər iki temada eynidir.
 
 ## Tipoqrafiya
 
-| Rol                            | Şrift            | Qeyd                                       |
-| ------------------------------ | ---------------- | ------------------------------------------ |
-| Başlıq (`font-heading`, h1–h3) | Playfair Display | latin, latin-ext, cyrillic                 |
-| Mətn (`font-sans`)             | Sistem şrifti    | system-ui: Segoe UI, Roboto, SF, Noto Sans |
+| Rol                            | Şrift              | Qeyd                                         |
+| ------------------------------ | ------------------ | -------------------------------------------- |
+| Başlıq (`font-heading`, h1–h3) | Cormorant          | variable serif (300–700), italic yoxdur      |
+| Mətn (`font-sans`)             | sistem sans-serif  | şrift büdcəsi: səhifədə maks. 2 fayl         |
+| Kiçik texniki nişanlar         | sistem monospace   | `font-mono`, az istifadə (tarix, mənbə)      |
 
-Hər ikisi Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir (2026-11-03 glyph yoxlaması). Mətn üçün
-Inter-dən sistem şriftinə keçid 2026-11-03-də qərara alındı (#60): ilk yükləmədə font endirilmir,
-mobil Lighthouse 90+ hədəfi üçün.
-**Playfair Display-də manat işarəsi (₼) yoxdur:** qiymətlər həmişə `font-sans` və `tabular-nums`.
-Ölçülər: mətn 14–16px, başlıqlar 24 / 30 / 36px, sətir uzunluğu `max-w-prose`.
+Cormorant Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir. Şrift `next/font` ilə öz hostumuzdan,
+`display: swap`; yalnız səhifənin istifadə etdiyi unicode alt-dəstləri endirilir.
+**Manat işarəsi (₼) bu şriftlərdə yoxdur:** sistem şriftinə düşür; qiymətlər `tabular-nums`.
+Böyük editorial başlıqlar (hero 56–120px) yalnız `font-heading`; sətir uzunluğu `max-w-prose`.
 
 ## Spacing və radius
 
@@ -97,3 +102,11 @@ Qaydalar (Lighthouse üçün):
 shadcn/ui (`base-nova`, Base UI): Button (`gold` variantı əlavə), Badge (`gold`), Input, Label,
 Card, Dialog, Sheet. Dialog və Sheet-in bağla düyməsinin adı `closeLabel` prop-u ilə ötürülür
 (tərcümə üçün). İkonlar yalnız `lucide-react`, dekorativ ikonlarda `aria-hidden`.
+
+## Hərəkət kitabxanası
+
+Kinematik hero (3 səhnə) GSAP 3 + ScrollTrigger ilə qurulur (`gsap` npm, "Standard no charge"
+lisenziyası, kommersiya istifadəsi pulsuz). Qaydalar: yalnız ana səhifədə, hero görünəndən sonra
+dinamik import; LCP poster şəkildir, animasiyadan asılı deyil; `prefers-reduced-motion` olanda
+pin və scrub yoxdur, statik səhnələr ardıcıl göstərilir; mətn real HTML-dir, 3 dildə.
+Başqa səhifələrdə animasiya CSS ilə (`--duration-*`, `--ease-*` token-ləri).
