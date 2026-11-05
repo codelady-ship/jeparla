@@ -403,6 +403,11 @@
         visibility: hidden;
         opacity: 0;
       }
+      /* Before hydration only the first animal is on screen; the others stay out of
+         layout so their lazy images do not compete with the LCP image for bandwidth. */
+      &[data-mode="pending"] .hero-panel:not(:first-child) {
+        display: none;
+      }
       /* Entry order: tiger over the white tiger, snow leopard over both. */
       .hero-panel:nth-child(2) {
         z-index: 2;

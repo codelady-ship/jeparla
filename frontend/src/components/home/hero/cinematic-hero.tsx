@@ -33,7 +33,6 @@ export function CinematicHero() {
                   alt={t(`panels.${panel.key}.animal`)}
                   fill
                   priority={i === 0}
-                  loading={i === 0 ? undefined : "eager"}
                   placeholder="blur"
                   sizes="(min-width: 768px) 34vw, 100vw"
                   className="object-cover"
