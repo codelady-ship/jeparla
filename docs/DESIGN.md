@@ -105,8 +105,9 @@ Card, Dialog, Sheet. Dialog və Sheet-in bağla düyməsinin adı `closeLabel` p
 
 ## Hərəkət kitabxanası
 
-Kinematik hero (3 səhnə) GSAP 3 + ScrollTrigger ilə qurulur (`gsap` npm, "Standard no charge"
-lisenziyası, kommersiya istifadəsi pulsuz). Qaydalar: yalnız ana səhifədə, hero görünəndən sonra
-dinamik import; LCP poster şəkildir, animasiyadan asılı deyil; `prefers-reduced-motion` olanda
+Kinematik hero öz kiçik scroll mühərriki ilə qurulur (`src/lib/motion/scrub.ts`, bir neçə KB):
+pin CSS ilədir (hündür konteyner + `position: sticky` səhnə), JS yalnız scroll mövqeyini
+timeline-a çevirir (passive listener + requestAnimationFrame, yumşaldılmış). GSAP sınandı, amma
+250 KB skript büdcəsinə sığmadı (2026-11-04, ana səhifə 271 KB). Qaydalar: LCP poster şəkildir, animasiyadan asılı deyil; `prefers-reduced-motion` olanda
 pin və scrub yoxdur, statik səhnələr ardıcıl göstərilir; mətn real HTML-dir, 3 dildə.
 Başqa səhifələrdə animasiya CSS ilə (`--duration-*`, `--ease-*` token-ləri).
