@@ -1,0 +1,142 @@
+import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { BACKDROP, ENTER, GOLD, GOLD_LIGHT, MODELS, TIGERS, TRANSFORM, type Format } from "./layout";
+
+type Box = { left: number; top: number; width: number; height: number };
+
+const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+const easeOut = Easing.bezier(0.2, 0.7, 0.1, 1);
+const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
+
+/** How each tiger enters: white from the left, golden from the back, orange from the right. */
+const ENTRIES = [
+  { start: 0, from: { x: -1.25, scale: 1, lift: 0 } },
+  { start: 22, from: { x: 0, scale: 0.42, lift: -0.22 } },
+  { start: 10, from: { x: 1.25, scale: 1, lift: 0 } },
+];
+const WALK = 62; // frames each tiger walks
+
+function Figure({ src, box, f, style }: { src: string; box: Box; f: Format; style?: React.CSSProperties }) {
+  return (
+    <Img
+      src={staticFile(src)}
+      style={{
+        position: "absolute",
+        left: f.x + box.left * f.scale,
+        top: f.y + box.top * f.scale,
+        width: box.width * f.scale,
+        height: box.height * f.scale,
+        ...style,
+      }}
+    />
+  );
+}
+
+/** Soft contact shadow under the paws. */
+function Shadow({ box, f, opacity, scale }: { box: Box; f: Format; opacity: number; scale: number }) {
+  const w = box.width * f.scale * 0.95;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: f.x + (box.left + box.width / 2) * f.scale - w / 2,
+        top: f.y + (box.top + box.height) * f.scale - w * 0.07,
+        width: w,
+        height: w * 0.14,
+        borderRadius: "50%",
+        background: "radial-gradient(closest-side, rgba(22,37,31,0.32), rgba(22,37,31,0))",
+        opacity,
+        transform: `scale(${scale})`,
+      }}
+    />
+  );
+}
+
+export function Hero({ f }: { f: Format }) {
+  const frame = useCurrentFrame();
+
+  return (
+    <AbsoluteFill style={{ background: BACKDROP, overflow: "hidden" }}>
+      {TIGERS.map((box, i) => {
+        const e = ENTRIES[i];
+        const p = interpolate(frame, [e.start, e.start + WALK], [0, 1], { ...clamp, easing: easeOut });
+        const w = f.width;
+        const x = e.from.x * w * (1 - p);
+        const scale = e.from.scale + (1 - e.from.scale) * p;
+        const lift = e.from.lift * box.height * f.scale * (1 - p);
+        // Gait: a small step bounce that settles as the walk ends.
+        const step = Math.abs(Math.sin(((frame - e.start) / 7) * Math.PI)) * 7 * f.scale * (1 - p);
+        const sway = Math.sin(((frame - e.start) / 14) * Math.PI) * 1.2 * (1 - p);
+        const appear = interpolate(frame, [e.start, e.start + 12], [0, 1], clamp);
+        const blur = i === 1 ? (1 - p) * 6 : 0;
+
+        // Act 2: gold light sweep reveals the model, tiger dissolves behind it.
+        const t0 = ENTER + i * 14;
+        const s = interpolate(frame, [t0, t0 + TRANSFORM - 28], [0, 1], { ...clamp, easing: easeInOut });
+        const model = MODELS[i];
+        const mx = f.x + model.left * f.scale;
+        const mw = model.width * f.scale;
+        const top = Math.min(box.top, model.top);
+        const beamX = mx - mw * 0.4 + s * mw * 1.8;
+        const beam = Math.sin(s * Math.PI);
+
+        const origin = `${(box.left + box.width / 2) * f.scale + f.x}px ${(box.top + box.height) * f.scale + f.y}px`;
+        return (
+          <AbsoluteFill key={i}>
+            <AbsoluteFill style={{ transform: `translate(${x}px, ${lift - step}px) scale(${scale}) rotate(${sway}deg)`, transformOrigin: origin }}>
+              <Shadow box={box} f={f} opacity={appear * (1 - s)} scale={1 - step / 60} />
+              <Figure
+                src={`tiger-${i}.png`}
+                box={box}
+                f={f}
+                style={{
+                  opacity: appear * (1 - s * 0.9),
+                  filter: `blur(${blur + s * 3}px) brightness(${1 + beam * 0.25})`,
+                  clipPath: `inset(0 0 0 ${s * 100}%)`,
+                }}
+              />
+            </AbsoluteFill>
+            <Figure
+              src={`model-${i}.png`}
+              box={model}
+              f={f}
+              style={{
+                clipPath: `inset(0 ${(1 - s) * 100}% 0 0)`,
+                transform: `scale(${0.97 + s * 0.03})`,
+                transformOrigin: "50% 100%",
+                filter: `brightness(${1 + beam * 0.18})`,
+              }}
+            />
+            {/* The light beam itself: a soft gold column with a bright core. */}
+            <div
+              style={{
+                position: "absolute",
+                left: beamX - mw * 0.22,
+                top: f.y + top * f.scale - 40 * f.scale,
+                width: mw * 0.44,
+                height: f.height,
+                opacity: beam * 0.75,
+                background: `linear-gradient(90deg, transparent, ${GOLD} 32%, ${GOLD_LIGHT} 50%, ${GOLD} 68%, transparent)`,
+                filter: `blur(${14 * f.scale}px)`,
+                maskImage: "linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent)",
+              }}
+            />
+            {/* Bright core so the sweep reads as light, not paint. */}
+            <div
+              style={{
+                position: "absolute",
+                left: beamX - mw * 0.03,
+                top: f.y + top * f.scale - 40 * f.scale,
+                width: mw * 0.06,
+                height: f.height,
+                opacity: beam,
+                background: "#FFF8E6",
+                filter: `blur(${6 * f.scale}px)`,
+                maskImage: "linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent)",
+              }}
+            />
+          </AbsoluteFill>
+        );
+      })}
+    </AbsoluteFill>
+  );
+}
