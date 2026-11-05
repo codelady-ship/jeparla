@@ -48,12 +48,12 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
 `.claude/skills/`-də (lokal, gitignore; sahibin GitHub fork-larından, MIT):
 - `hallmark`: istiqamət, kompozisiya və "AI slop" yoxlaması (UI dəyişikliyindən əvvəl və sonra).
 - `gsap-core`, `gsap-scrolltrigger`, `gsap-react`, `gsap-timeline`, `gsap-performance`:
-  kinematik hero və scroll animasiyaları. GSAP yalnız ana səhifənin hero-sunda, dinamik import
-  ilə, `gsap.matchMedia` + `prefers-reduced-motion` ilə; `useGSAP` ilə təmizlənir.
+  scroll animasiyası prinsipləri üçün istinad. Kodda GSAP yoxdur: 250 KB skript büdcəsinə
+  sığmadı; hero öz mühərrikindədir (`src/lib/motion/scrub.ts`, CSS sticky pin).
 - `emil-design-eng`, `review-animations`, `animation-performance`: mikro-animasiya keyfiyyəti
   (yalnız `transform`/`opacity`, 60fps, layout thrash yoxdur).
 Seçilməyənlər: impeccable (ilk işə düşəndə kənardan binar endirir), react-bits və three.js
-(JS büdcəsi), framer-motion (GSAP kifayətdir).
+(JS büdcəsi), framer-motion (JS büdcəsi).
 
 ## Repo strukturu
 

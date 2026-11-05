@@ -13,7 +13,7 @@ const COPY = ["intro", "gold", "shine", "final"] as const;
  * Cinematic home hero (#27). Three big cats (silver, diamond, gold) that turn
  * into models wearing that metal, then the three stand together. All text is
  * real HTML in three languages; the animation is a progressive layer added by
- * <HeroMotion> (GSAP, loaded on demand). Without JS or with reduced motion the
+ * <HeroMotion> (scroll-scrubbed timeline, src/lib/motion/scrub.ts). Without JS or with reduced motion the
  * static frame is complete: headline, both CTAs, the three panels and their links.
  * Layout states live in globals.css under [data-hero].
  */
@@ -33,6 +33,7 @@ export function CinematicHero() {
                   alt={t(`panels.${panel.key}.animal`)}
                   fill
                   priority={i === 0}
+                  loading={i === 0 ? undefined : "eager"}
                   placeholder="blur"
                   sizes="(min-width: 768px) 34vw, 100vw"
                   className="object-cover"

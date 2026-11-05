@@ -184,13 +184,18 @@
    Cinematic home hero (<CinematicHero>, #27). The default rules are the static
    frame (no JS, reduced motion, data-mode="static"). The motion layout applies
    only while scripting is on and motion is allowed, so the first paint already
-   matches what GSAP animates and nothing jumps when it loads.
+   matches the timeline start and nothing jumps when the script runs.
    --------------------------------------------------------------------------- */
-.hero {
+.hero-track {
   position: relative;
-  isolation: isolate;
   /* Starts under the sticky header (4rem), so the first screen is exactly one viewport. */
   margin-top: -4rem;
+  background: var(--scene-deep);
+}
+.hero {
+  position: relative;
+  top: 0;
+  isolation: isolate;
   height: 100svh;
   min-height: 560px;
   max-height: 1100px;
@@ -335,7 +340,20 @@
 }
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .hero:not([data-mode="static"]) {
+  /* Tall track, sticky stage: the pin is pure CSS; JS only maps scroll to the timeline.
+     Lengths match HERO_SCROLL in hero-timeline.ts (+1 viewport for the stage). */
+  .hero-track:not([data-mode="static"]) {
+    height: 360svh;
+    .hero {
+      position: sticky;
+    }
+  }
+  @media (max-width: 767px) {
+    .hero-track:not([data-mode="static"]) {
+      height: 460svh;
+    }
+  }
+  .hero-track:not([data-mode="static"]) {
     .hero-caption {
       visibility: hidden;
       opacity: 0;
@@ -355,7 +373,7 @@
     }
   }
   @media (min-width: 768px) {
-    .hero:not([data-mode="static"]) {
+    .hero-track:not([data-mode="static"]) {
       .hero-hint {
         display: inline-flex;
       }
@@ -370,9 +388,9 @@
       }
     }
   }
-  /* Phone: one full-screen panel at a time, stacked; GSAP brings in the others. */
+  /* Phone: one full-screen panel at a time, stacked; the timeline brings in the others. */
   @media (max-width: 767px) {
-    .hero:not([data-mode="static"]) {
+    .hero-track:not([data-mode="static"]) {
       .hero-panels {
         grid-template-columns: minmax(0, 1fr);
         gap: 0;
