@@ -1,5 +1,9 @@
 import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { BACKDROP, ENTER, GOLD, GOLD_LIGHT, MODELS, TIGERS, TRANSFORM, type Format } from "./layout";
+import { loadFont } from "@remotion/google-fonts/Cormorant";
+import { BACKDROP, ENTER, GOLD, GOLD_LIGHT, INK, MODELS, TIGERS, TRANSFORM, type Format } from "./layout";
+
+// Same heading face as the site (Cormorant), loaded at render time.
+const { fontFamily } = loadFont("normal", { weights: ["500"], subsets: ["latin"] });
 
 type Box = { left: number; top: number; width: number; height: number };
 
@@ -51,11 +55,49 @@ function Shadow({ box, f, opacity, scale }: { box: Box; f: Format; opacity: numb
   );
 }
 
+/**
+ * The brand word behind the animals: centred over them, its lower part hidden by
+ * their heads. A shadow-dark ink, so it reads clearly on the cream. It rises in
+ * during act 1 and dissolves at the start of act 2 (as the scroll begins).
+ */
+function Word({ f, frame }: { f: Format; frame: number }) {
+  const span = (1007 - 275) * f.scale;
+  const size = (span * 1.12) / 3.1;
+  const cx = f.x + 641 * f.scale;
+  const headTop = f.y + Math.min(...TIGERS.map((t) => t.top)) * f.scale;
+  const enter = interpolate(frame, [4, 46], [0, 1], { ...clamp, easing: easeOut });
+  const leave = interpolate(frame, [ENTER, ENTER + 14], [0, 1], { ...clamp, easing: easeInOut });
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: cx - size * 2.5,
+        width: size * 5,
+        top: headTop - size * 0.8,
+        textAlign: "center",
+        fontFamily,
+        fontWeight: 500,
+        fontSize: size,
+        lineHeight: 1,
+        letterSpacing: `${(1 - enter) * 0.08}em`,
+        color: INK,
+        opacity: enter * (1 - leave) * 0.2,
+        transform: `translateY(${(1 - enter) * size * 0.25 - leave * size * 0.3}px)`,
+        filter: `blur(${(1 - enter) * 14 + leave * 12}px)`,
+        textShadow: `0 ${size * 0.05}px ${size * 0.1}px rgba(22, 37, 31, 0.55)`,
+      }}
+    >
+      Jeparla
+    </div>
+  );
+}
+
 export function Hero({ f }: { f: Format }) {
   const frame = useCurrentFrame();
 
   return (
     <AbsoluteFill style={{ background: BACKDROP, overflow: "hidden" }}>
+      <Word f={f} frame={frame} />
       {TIGERS.map((box, i) => {
         const e = ENTRIES[i];
         const p = interpolate(frame, [e.start, e.start + WALK], [0, 1], { ...clamp, easing: easeOut });

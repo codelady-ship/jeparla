@@ -19,10 +19,11 @@ export const frameUrl = (dir: string, i: number) => `${dir}/${String(i).padStart
 
 /**
  * Scroll phases, as fractions of the sticky track (0 = hero at the top, 1 = released):
- * the "Jeparla" word leaves first, then the light sweep plays.
+ * the scroll hint leaves first, then the light sweep plays. (The "Jeparla" word
+ * is part of the entrance video and is gone by its last frame.)
  */
 export const HERO_PHASES = {
-  wordOut: [0, 0.18],
+  hintOut: [0, 0.18],
   transform: [0.06, 0.82],
 } as const;
 

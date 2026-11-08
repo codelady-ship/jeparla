@@ -22,10 +22,6 @@ export function CinematicHero() {
 
   return (
     <HeroMotion label={t("label")} scene={t("scene")}>
-      <p aria-hidden data-hero-word className="hero-word">
-        Jeparla
-      </p>
-
       <div className="hero-copy">
         <h1 className="hero-title font-heading text-balance">{t("title")}</h1>
         <p className="hero-rv mt-4 max-w-sm text-sm text-pretty sm:text-base" style={delay(0)}>

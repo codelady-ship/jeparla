@@ -194,8 +194,6 @@
 }
 .hero {
   --hero-bg: var(--scene-ivory);
-  /* The word is a shade darker than the backdrop: darken keeps the animals in front. */
-  --hero-ghost: color-mix(in srgb, var(--hero-bg) 90%, var(--scene-gold-deep));
   position: relative;
   top: 0;
   isolation: isolate;
@@ -224,32 +222,11 @@
   opacity: 0;
 }
 
-/* The giant brand word behind the animals' heads. */
-.hero-word {
-  position: absolute;
-  z-index: 1;
-  /* Phone: just above the animals' heads (they start at ~70% of the 9:16 footage). */
-  bottom: 30%;
-  inset-inline: 0;
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-heading);
-  font-weight: 500;
-  font-size: clamp(5.5rem, 17vw, 18.75rem);
-  line-height: 0.9;
-  letter-spacing: -0.01em;
-  color: var(--hero-ghost);
-  mix-blend-mode: darken;
-  pointer-events: none;
-  user-select: none;
-  /* The lower half fades into the backdrop instead of cutting through the animals. */
-  mask-image: linear-gradient(180deg, #000 0%, #000 45%, rgb(0 0 0 / 0.35) 70%, transparent 92%);
-}
 .hero-copy {
   position: absolute;
   z-index: 2;
   inset-inline: 0;
-  /* Phone: under the header, above the word and the animals. */
+  /* Phone: under the header, above the animals. */
   top: 5.25rem;
   padding: 0 1rem;
   max-width: 26rem;
@@ -281,28 +258,11 @@
     width: min(26rem, 31vw);
     padding: 0;
   }
-  /* The footage centers the animals at 62% of the width (video/src/layout.ts). */
-  .hero-word {
-    top: max(4.5rem, 9vh);
-    bottom: auto;
-    padding-left: 24%;
-  }
   .hero-title {
     font-size: clamp(2.25rem, 3.4vw, 3.5rem);
   }
 }
 
-@keyframes hero-word-in {
-  from {
-    opacity: 0;
-    transform: translateY(4vh) scale(0.97);
-    filter: blur(14px);
-    text-shadow: 0 2.5rem 3rem rgb(22 37 31 / 0.35);
-  }
-  to {
-    text-shadow: 0 0.75rem 1.75rem rgb(22 37 31 / 0.08);
-  }
-}
 @keyframes hero-title-in {
   from {
     opacity: 0;
@@ -317,10 +277,6 @@
     height: 260svh;
     .hero {
       position: sticky;
-    }
-    .hero-word {
-      animation: hero-word-in 1.6s var(--ease-luxe) both;
-      text-shadow: 0 0.75rem 1.75rem rgb(22 37 31 / 0.08);
     }
     .hero-title {
       animation: hero-title-in 0.9s var(--ease-luxe) 0.25s both;

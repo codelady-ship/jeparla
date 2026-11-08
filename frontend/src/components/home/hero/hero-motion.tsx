@@ -22,7 +22,7 @@ const REVEAL_TIMEOUT = 6000;
  * - Act 1: the entrance video autoplays (muted, inline, no loop) and holds its
  *   last frame; when it ends the copy is revealed (.is-revealed).
  * - Act 2: scrolling the sticky track draws the transformation frames on a
- *   image and fades the "Jeparla" word out. Frames load after act 1, so they
+ *   image and fades the scroll hint out. Frames load after act 1, so they
  *   never compete with the first paint.
  * - The backdrop colour is read from the video at runtime, so page and footage
  *   share one continuous cream whatever the encoder did to it.
@@ -53,7 +53,6 @@ export function HeroMotion({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const desktop = window.matchMedia(HERO_DESKTOP_QUERY).matches;
     const media = desktop ? HERO_MEDIA.desktop : HERO_MEDIA.mobile;
-    const word = stage.querySelector<HTMLElement>("[data-hero-word]");
     const hint = stage.querySelector<HTMLElement>("[data-hero-hint]");
     const player = new FramePlayer(frames, {
       count: HERO_FRAMES,
@@ -99,14 +98,7 @@ export function HeroMotion({
         video.pause();
         land();
       }
-      const out = phase(p, HERO_PHASES.wordOut);
-      if (word) {
-        word.style.opacity = String(1 - out);
-        word.style.transform = `translateY(${-out * 8}vh)`;
-        // Blur only while it leaves; once gone it costs nothing.
-        word.style.filter = out > 0 && out < 1 ? `blur(${out * 10}px)` : "";
-        word.style.visibility = out >= 1 ? "hidden" : "";
-      }
+      const out = phase(p, HERO_PHASES.hintOut);
       if (hint) hint.style.opacity = landed ? String(1 - out) : "";
       const tf = phase(p, HERO_PHASES.transform);
       frames.style.opacity = p > 0.005 ? "1" : "0";

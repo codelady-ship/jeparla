@@ -18,6 +18,8 @@ export const MODELS = [
 /** Site cream (docs/design/tokens.json, scene ivory). */
 export const BACKDROP = "#F7F3EA";
 export const GOLD = "#C5A15A";
+/** Site dark green (scene green), used for the shadow-like brand word. */
+export const INK = "#16251F";
 export const GOLD_LIGHT = "#E8D39A";
 
 export const FPS = 30;
