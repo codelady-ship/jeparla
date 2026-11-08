@@ -1,10 +1,32 @@
-import type { Product, ProductStatus } from "@/types/api";
-import type { AdminOverview, AdminStore, ModerationItem, VerificationRequest } from "@/types/admin";
+import Big from "big.js";
+import { gramPrice, percentChange } from "@/lib/pricing";
+import type { MetalType, Product, ProductStatus } from "@/types/api";
+import type {
+  AdminCategory,
+  AdminFineness,
+  AdminMetalPrice,
+  AdminOverview,
+  AdminStore,
+  AdminUser,
+  AuditEntry,
+  ModerationItem,
+  ProductReport,
+  SynonymGroup,
+  VerificationRequest,
+} from "@/types/admin";
 import { USING_MOCK } from "./index";
-import { PRICE_DATE, PRODUCTS, STORES } from "./mock/fixtures";
+import {
+  CATEGORIES,
+  FINENESSES,
+  METAL_PRICE_HISTORY,
+  PRICE_DATE,
+  PRODUCTS,
+  STORES,
+} from "./mock/fixtures";
 
 /**
- * Admin panel reads (PLAN 5.8): GET /api/v1/admin/{overview,stores,products,verifications}.
+ * Admin panel reads (PLAN 5.8): GET /api/v1/admin/{overview,stores,products,verifications,
+ * categories,finenesses,synonyms,users,reports,audit,metal-prices}.
  * Only ADMIN tokens are accepted by the backend; the panel never decides access itself.
  */
 export interface AdminApi {
@@ -15,6 +37,15 @@ export interface AdminApi {
   product(id: number): Promise<ModerationItem | null>;
   verifications(): Promise<VerificationRequest[]>;
   verification(id: number): Promise<VerificationRequest | null>;
+  categories(): Promise<AdminCategory[]>;
+  finenesses(): Promise<AdminFineness[]>;
+  synonyms(): Promise<SynonymGroup[]>;
+  users(): Promise<AdminUser[]>;
+  user(id: number): Promise<AdminUser | null>;
+  reports(): Promise<ProductReport[]>;
+  report(id: number): Promise<ProductReport | null>;
+  audit(): Promise<AuditEntry[]>;
+  metalPrices(): Promise<AdminMetalPrice[]>;
 }
 
 // ------------------------------------------------------------------ demo data
@@ -162,6 +193,228 @@ const VERIFICATIONS: VerificationRequest[] = [
   },
 ];
 
+const ADMIN_FINENESSES: AdminFineness[] = FINENESSES.map((f) => ({
+  ...f,
+  productCount: PRODUCTS.filter((p) => p.variants.some((v) => v.fineness.id === f.id)).length,
+}));
+
+const SYNONYMS: SynonymGroup[] = [
+  { id: 1, locale: "az", term: "üzük", synonyms: ["uzuk", "üzüy"] },
+  { id: 2, locale: "az", term: "boyunbağı", synonyms: ["boyunbagi", "kulon"] },
+  { id: 3, locale: "az", term: "qolbaq", synonyms: ["qolbag", "bilərzik"] },
+  { id: 4, locale: "en", term: "necklace", synonyms: ["pendant", "chain"] },
+  { id: 5, locale: "en", term: "earrings", synonyms: ["studs", "hoops"] },
+  { id: 6, locale: "ru", term: "кольцо", synonyms: ["колечко", "перстень"] },
+  { id: 7, locale: "ru", term: "серьги", synonyms: ["сережки"] },
+];
+
+const USERS: AdminUser[] = [
+  {
+    id: 1,
+    name: "Jeparla Admin",
+    email: "admin@example.com",
+    role: "ADMIN",
+    storeName: null,
+    createdAt: "2026-08-20T09:00:00+04:00",
+  },
+  ...STORES.map((s, i) => ({
+    id: 10 + s.id,
+    name: OWNERS[i % OWNERS.length],
+    email: `seller${s.id}@example.com`,
+    role: "MERCHANT" as const,
+    storeName: s.name,
+    createdAt: s.createdAt,
+  })),
+  {
+    id: 30,
+    name: "Leyla A.",
+    email: "leyla@example.com",
+    role: "USER",
+    storeName: null,
+    createdAt: "2026-10-12T14:20:00+04:00",
+  },
+  {
+    id: 31,
+    name: "Murad İ.",
+    email: "murad@example.com",
+    role: "USER",
+    storeName: null,
+    createdAt: "2026-10-30T19:05:00+04:00",
+  },
+  {
+    id: 32,
+    name: "Günel S.",
+    email: "gunel@example.com",
+    role: "USER",
+    storeName: null,
+    createdAt: "2026-11-04T08:40:00+04:00",
+  },
+];
+
+const reported = (i: number) => {
+  const p = PRODUCTS[i];
+  return {
+    product: { id: p.id, slug: p.slug, name: p.name },
+    store: { id: p.store.id, name: p.store.name },
+  };
+};
+
+const REPORTS: ProductReport[] = [
+  {
+    id: 1,
+    ...reported(3),
+    reason: "WRONG_PRICE",
+    message: "Mağazada qiymət saytdakından 120 manat bahadır.",
+    createdAt: "2026-11-07T16:10:00+04:00",
+    status: "OPEN",
+    note: null,
+  },
+  {
+    id: 2,
+    ...reported(11),
+    reason: "WRONG_INFO",
+    message: "Çəki 3,2 q yazılıb, mağazada 2,8 q dedilər.",
+    createdAt: "2026-11-06T11:45:00+04:00",
+    status: "OPEN",
+    note: null,
+  },
+  {
+    id: 3,
+    ...reported(20),
+    reason: "FAKE",
+    message: "Şəkil başqa saytdan götürülüb.",
+    createdAt: "2026-11-05T20:30:00+04:00",
+    status: "OPEN",
+    note: null,
+  },
+  {
+    id: 4,
+    ...reported(7),
+    reason: "OTHER",
+    message: "WhatsApp nömrəsi cavab vermir.",
+    createdAt: "2026-10-29T10:00:00+04:00",
+    status: "RESOLVED",
+    note: "Mağaza nömrəni yenilədi.",
+  },
+  {
+    id: 5,
+    ...reported(15),
+    reason: "OFFENSIVE",
+    message: "Təsvirdə reklam linki var.",
+    createdAt: "2026-10-25T13:15:00+04:00",
+    status: "DISMISSED",
+    note: "Təsvirdə link tapılmadı, şikayət təsdiqlənmədi.",
+  },
+];
+
+const AUDIT: AuditEntry[] = [
+  {
+    id: 12,
+    at: "2026-11-07T12:02:00+04:00",
+    actor: "admin@example.com",
+    target: "PRODUCT",
+    targetName: PRODUCTS[2].name.az,
+    action: "approve",
+    reason: null,
+  },
+  {
+    id: 11,
+    at: "2026-11-06T17:40:00+04:00",
+    actor: "admin@example.com",
+    target: "REPORT",
+    targetName: `#4 · ${PRODUCTS[7].store.name}`,
+    action: "resolve",
+    reason: "Mağaza nömrəni yenilədi.",
+  },
+  {
+    id: 10,
+    at: "2026-11-05T09:30:00+04:00",
+    actor: "admin@example.com",
+    target: "CATALOG",
+    targetName: "üzük",
+    action: "create",
+    reason: null,
+  },
+  {
+    id: 9,
+    at: "2026-11-04T10:20:00+04:00",
+    actor: "admin@example.com",
+    target: "PRICE",
+    targetName: "PALLADIUM",
+    action: "discard",
+    reason: "AMB faylında vergül səhvi, növbəti gün düzəldildi.",
+  },
+  {
+    id: 8,
+    at: "2026-11-03T15:00:00+04:00",
+    actor: "admin@example.com",
+    target: "USER",
+    targetName: "seller6@example.com",
+    action: "roleChange",
+    reason: "Mağaza müraciəti təsdiqləndi, satıcı rolu verildi.",
+  },
+  {
+    id: 7,
+    at: "2026-11-02T18:25:00+04:00",
+    actor: "admin@example.com",
+    target: "CHECK",
+    targetName: STORES[0].name,
+    action: "verify",
+    reason: null,
+  },
+  {
+    id: 6,
+    at: "2026-10-28T17:10:00+04:00",
+    actor: "admin@example.com",
+    target: "STORE",
+    targetName: "Test Mağaza",
+    action: "reject",
+    reason: "VÖEN və ünvan uyğun gəlmir.",
+  },
+  {
+    id: 5,
+    at: "2026-10-20T10:30:00+04:00",
+    actor: "admin@example.com",
+    target: "STORE",
+    targetName: "Almaz Ev",
+    action: "block",
+    reason: "Əyar möhürü olmayan məhsullar təkrar yerləşdirilib.",
+  },
+];
+
+const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
+
+/**
+ * Latest and previous business day per metal. Palladium has a next-day quote
+ * held by the sanity check (more than 10% up), so the panel always shows one.
+ */
+const METAL_PRICES: AdminMetalPrice[] = METALS.map((metal) => {
+  const rows = METAL_PRICE_HISTORY.filter((p) => p.metal === metal);
+  const last = rows[rows.length - 1];
+  const prev = rows[rows.length - 2];
+  const heldOunce =
+    metal === "PALLADIUM"
+      ? new Big(last.pricePerOunce).times("1.124").round(2, Big.roundHalfUp).toFixed(2)
+      : null;
+  return {
+    metal,
+    date: last.date,
+    pricePerOunce: last.pricePerOunce,
+    pricePerGram: gramPrice(last.pricePerOunce),
+    previousPerOunce: prev.pricePerOunce,
+    change: percentChange(prev.pricePerOunce, last.pricePerOunce),
+    source: "CBAR" as const,
+    held: heldOunce
+      ? {
+          date: "2026-11-04",
+          pricePerOunce: heldOunce,
+          change: percentChange(last.pricePerOunce, heldOunce),
+          status: "HELD" as const,
+        }
+      : null,
+  };
+});
+
 const mockAdminApi: AdminApi = {
   async overview() {
     return {
@@ -171,6 +424,8 @@ const mockAdminApi: AdminApi = {
       stores: APPLICATIONS.filter((s) => s.status === "APPROVED").length,
       liveProducts: MODERATION.filter((p) => p.status === "APPROVED").length,
       metalPriceDate: PRICE_DATE,
+      openReports: REPORTS.filter((r) => r.status === "OPEN").length,
+      heldPrices: METAL_PRICES.filter((m) => m.held?.status === "HELD").length,
     };
   },
   async stores() {
@@ -191,6 +446,33 @@ const mockAdminApi: AdminApi = {
   async verification(id) {
     return VERIFICATIONS.find((v) => v.id === id) ?? null;
   },
+  async categories() {
+    return CATEGORIES;
+  },
+  async finenesses() {
+    return ADMIN_FINENESSES;
+  },
+  async synonyms() {
+    return SYNONYMS;
+  },
+  async users() {
+    return USERS;
+  },
+  async user(id) {
+    return USERS.find((u) => u.id === id) ?? null;
+  },
+  async reports() {
+    return REPORTS;
+  },
+  async report(id) {
+    return REPORTS.find((r) => r.id === id) ?? null;
+  },
+  async audit() {
+    return AUDIT;
+  },
+  async metalPrices() {
+    return METAL_PRICES;
+  },
 };
 
 function httpAdminApi(): AdminApi {
@@ -204,6 +486,15 @@ function httpAdminApi(): AdminApi {
     product: fail,
     verifications: fail,
     verification: fail,
+    categories: fail,
+    finenesses: fail,
+    synonyms: fail,
+    users: fail,
+    user: fail,
+    reports: fail,
+    report: fail,
+    audit: fail,
+    metalPrices: fail,
   };
 }
 
