@@ -109,8 +109,11 @@ Ana səhifə hero-su Remotion-da qurulmuş səhnədir (`video/`): 1-ci akt qısa
 autoplay, səssiz, loop yoxdur, son kadrda qalır), 2-ci akt scroll ilə canvas-da oynayan kadrlardır
 (`src/lib/motion/frames.ts`: kadrlar kobuddan incəyə yüklənir). Pin CSS ilədir (hündür konteyner +
 `position: sticky` səhnə), JS yalnız scroll mövqeyini kadra çevirir (passive listener +
-requestAnimationFrame). Arxadakı böyük "Jeparla" sözü `mix-blend-mode: darken` ilə fondan bir az
-tündür, ona görə heyvanlar onun qabağından keçir; scroll başlayanda söz yox olur. Fonun rəngi
+requestAnimationFrame). Arxadakı böyük "Jeparla" sözü videonun içindədir (başların arxasında, kölgə kimi);
+scroll başlayanda söz yox olur, modellər çıxanda isə "Jeparla" sol başlığın üstündə HTML sətri kimi
+görünür (`aria-hidden`, `data-hero-brand`). Masaüstündə video aşağıdan bərkidilib, ona görə geniş
+ekranlarda modellərin başı kəsilməsin deyə qrup kadr eninin 40%-ni tutur (`video/src/layout.ts`).
+Səhifə eni: `container-page` (maks. 90rem, axıcı kənar boşluğu `--gutter-page`). Fonun rəngi
 videodan oxunur (`--hero-bg`), səhifə və video bir krem olur. GSAP sınandı, amma 250 KB skript
 büdcəsinə sığmadı (2026-11-04). Qaydalar: LCP başlıq/söz mətnidir, video poster yoxdur; kadrlar
 1-ci aktdan sonra yüklənir; `prefers-reduced-motion` olanda pin və autoplay yoxdur, son kadr
