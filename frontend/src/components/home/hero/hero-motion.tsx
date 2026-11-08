@@ -54,6 +54,7 @@ export function HeroMotion({
     const desktop = window.matchMedia(HERO_DESKTOP_QUERY).matches;
     const media = desktop ? HERO_MEDIA.desktop : HERO_MEDIA.mobile;
     const hint = stage.querySelector<HTMLElement>("[data-hero-hint]");
+    const brand = stage.querySelector<HTMLElement>("[data-hero-brand]");
     const player = new FramePlayer(frames, {
       count: HERO_FRAMES,
       url: (i) => frameUrl(media.frames, i),
@@ -100,6 +101,11 @@ export function HeroMotion({
       }
       const out = phase(p, HERO_PHASES.hintOut);
       if (hint) hint.style.opacity = landed ? String(1 - out) : "";
+      if (brand) {
+        const b = phase(p, HERO_PHASES.brandIn);
+        brand.style.opacity = String(b);
+        brand.style.transform = `translateY(${(1 - b) * 0.75}rem)`;
+      }
       const tf = phase(p, HERO_PHASES.transform);
       frames.style.opacity = p > 0.005 ? "1" : "0";
       player.show(tf);

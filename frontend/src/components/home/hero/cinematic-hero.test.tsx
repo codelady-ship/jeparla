@@ -60,11 +60,13 @@ describe("CinematicHero", () => {
     expect(screen.getAllByRole("heading")).toHaveLength(1);
   });
 
-  it("describes the scene for screen readers (the brand word lives in the video)", () => {
+  it("describes the scene for screen readers and hides the decorative brand line", () => {
     mockMedia(true);
-    renderIn("en", en);
+    const { container } = renderIn("en", en);
     expect(screen.getByRole("img", { name: en.Hero.scene })).toBeInTheDocument();
-    expect(screen.queryByText("Jeparla")).not.toBeInTheDocument();
+    const brand = container.querySelector("[data-hero-brand]");
+    expect(brand).toHaveTextContent("Jeparla");
+    expect(brand).toHaveAttribute("aria-hidden", "true");
   });
 
   it("plays a muted inline entrance video with a phone and a desktop cut", () => {

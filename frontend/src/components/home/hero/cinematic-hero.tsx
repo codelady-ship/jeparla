@@ -9,12 +9,12 @@ import { HeroMotion } from "./hero-motion";
 const delay = (d: number) => ({ "--d": d }) as CSSProperties;
 
 /**
- * Home hero (#27): three tigers walk in from the left, the back and the right and
- * stop in the center; on scroll a gold light sweep turns each of them into a
- * model wearing silver, gold or diamond jewelry. A large "Jeparla" sits behind
- * them (mix-blend-mode: darken, so the animals pass in front of the type) and
- * fades away as the scroll begins. One slogan and two calls to action are real
- * HTML in three languages. Media and scroll logic: <HeroMotion>; layout: globals.css
+ * Home hero (#27): a white tiger, a golden tiger and a black panther walk in (an
+ * AI clip, cut out frame by frame) and stop in the center under a shadow-like
+ * "Jeparla" that is part of the footage; on scroll a gold light sweep turns each
+ * of them into a model wearing diamond, gold or silver jewelry, and the brand line
+ * appears above the headline. One slogan and two calls to action are real HTML in
+ * three languages. Media and scroll logic: <HeroMotion>; layout: globals.css
  * under .hero.
  */
 export function CinematicHero() {
@@ -23,6 +23,9 @@ export function CinematicHero() {
   return (
     <HeroMotion label={t("label")} scene={t("scene")}>
       <div className="hero-copy">
+        <p aria-hidden data-hero-brand className="hero-brand font-heading">
+          Jeparla
+        </p>
         <h1 className="hero-title font-heading text-balance">{t("title")}</h1>
         <p className="hero-rv mt-4 max-w-sm text-sm text-pretty sm:text-base" style={delay(0)}>
           {t("text")}

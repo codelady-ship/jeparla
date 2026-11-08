@@ -10,7 +10,7 @@ export const HERO_MEDIA = {
 } as const;
 
 /** Number of act 2 frames per format (00.jpg ... 37.jpg). */
-export const HERO_FRAMES = 38;
+export const HERO_FRAMES = 37;
 
 /** Media query that picks the desktop (16:9) cut; the phone cut is 9:16. */
 export const HERO_DESKTOP_QUERY = "(min-aspect-ratio: 4/5)";
@@ -25,6 +25,8 @@ export const frameUrl = (dir: string, i: number) => `${dir}/${String(i).padStart
 export const HERO_PHASES = {
   hintOut: [0, 0.18],
   transform: [0.06, 0.82],
+  /** The brand line above the headline arrives with the models. */
+  brandIn: [0.42, 0.78],
 } as const;
 
 /** Maps p into [from, to] -> 0..1, clamped. */
