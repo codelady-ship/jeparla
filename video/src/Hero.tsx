@@ -11,13 +11,35 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const easeOut = Easing.bezier(0.2, 0.7, 0.1, 1);
 const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
 
-/** How each tiger enters: white from the left, golden from the back, orange from the right. */
+/**
+ * How each animal walks in: all three face the camera and come toward it, from the
+ * back-left (white tiger), straight from the back (golden tiger) and the back-right
+ * (black panther). x is a share of the frame width, lift a share of the animal's height.
+ */
 const ENTRIES = [
-  { start: 0, from: { x: -1.25, scale: 1, lift: 0 } },
-  { start: 22, from: { x: 0, scale: 0.42, lift: -0.22 } },
-  { start: 10, from: { x: 1.25, scale: 1, lift: 0 } },
+  { start: 0, from: { x: -0.32, scale: 0.5, lift: -0.3 } },
+  { start: 14, from: { x: 0, scale: 0.4, lift: -0.38 } },
+  { start: 7, from: { x: 0.32, scale: 0.5, lift: -0.3 } },
 ];
-const WALK = 62; // frames each tiger walks
+const WALK = 74; // frames each animal walks
+const STRIDES = 5; // left+right step pairs over the walk
+/** Where the legs start, as a share of the figure height from the top. */
+const KNEE = 0.6;
+
+/**
+ * Walk cycle from walk progress p (0..1): the gait phase follows distance, so the
+ * steps slow down with the approach and the last step settles to a stand.
+ */
+function gait(p: number) {
+  const g = p * STRIDES * 2 * Math.PI;
+  const amp = Math.min(1, (1 - p) * 3.5);
+  return {
+    left: Math.max(0, Math.sin(g)) * amp, // 0..1 lift of the left leg pair
+    right: Math.max(0, -Math.sin(g)) * amp,
+    roll: Math.sin(g) * amp, // shoulders roll toward the planted side
+    bob: Math.abs(Math.sin(g)) * amp, // body rises mid-stride
+  };
+}
 
 function Figure({ src, box, f, style }: { src: string; box: Box; f: Format; style?: React.CSSProperties }) {
   return (
@@ -100,16 +122,21 @@ export function Hero({ f }: { f: Format }) {
       <Word f={f} frame={frame} />
       {TIGERS.map((box, i) => {
         const e = ENTRIES[i];
-        const p = interpolate(frame, [e.start, e.start + WALK], [0, 1], { ...clamp, easing: easeOut });
-        const w = f.width;
-        const x = e.from.x * w * (1 - p);
+        const p = interpolate(frame, [e.start, e.start + WALK], [0, 1], {
+          ...clamp,
+          easing: Easing.bezier(0.33, 0.2, 0.3, 1),
+        });
+        const x = e.from.x * f.width * (1 - p);
         const scale = e.from.scale + (1 - e.from.scale) * p;
         const lift = e.from.lift * box.height * f.scale * (1 - p);
-        // Gait: a small step bounce that settles as the walk ends.
-        const step = Math.abs(Math.sin(((frame - e.start) / 7) * Math.PI)) * 7 * f.scale * (1 - p);
-        const sway = Math.sin(((frame - e.start) / 14) * Math.PI) * 1.2 * (1 - p);
-        const appear = interpolate(frame, [e.start, e.start + 12], [0, 1], clamp);
-        const blur = i === 1 ? (1 - p) * 6 : 0;
+        const walk = gait(p);
+        const step = walk.bob * 6 * f.scale;
+        const sway = walk.roll * 1.6;
+        const appear = interpolate(frame, [e.start, e.start + 14], [0, 1], clamp);
+        // Depth of field: far away is softer.
+        const blur = (1 - p) * 4;
+        // Paw lift: the leg strip shortens from the knee, so there is no seam.
+        const legLift = (side: number) => 1 - side * 0.09;
 
         // Act 2: gold light sweep reveals the model, tiger dissolves behind it.
         const t0 = ENTER + i * 12;
@@ -131,16 +158,35 @@ export function Hero({ f }: { f: Format }) {
           <AbsoluteFill key={i}>
             <AbsoluteFill style={{ transform: `translate(${x}px, ${lift - step}px) scale(${scale}) rotate(${sway}deg)`, transformOrigin: origin }}>
               <Shadow box={box} f={f} opacity={appear * (1 - tigerCut)} scale={1 - step / 60} />
-              <Figure
-                src={`tiger-${i}.png`}
-                box={box}
-                f={f}
+              <AbsoluteFill
                 style={{
                   opacity: appear * (1 - tigerCut * 0.9),
                   filter: `blur(${blur + tigerCut * 3}px) brightness(${1 + beam * 0.25})`,
-                  clipPath: `inset(0 0 0 ${tigerCut * 100}%)`,
+                  clipPath: `inset(0 0 0 ${f.x + box.left * f.scale + tigerCut * box.width * f.scale}px)`,
                 }}
-              />
+              >
+                {/* Body and head above the knees. */}
+                <Figure
+                  src={`tiger-${i}.png`}
+                  box={box}
+                  f={f}
+                  style={{ clipPath: `inset(0 0 ${(1 - KNEE) * 100 - 0.5}% 0)` }}
+                />
+                {/* Left and right legs, lifting in turn. */}
+                {[0, 1].map((side) => (
+                  <Figure
+                    key={side}
+                    src={`tiger-${i}.png`}
+                    box={box}
+                    f={f}
+                    style={{
+                      clipPath: side === 0 ? `inset(${KNEE * 100}% 50% 0 0)` : `inset(${KNEE * 100}% 0 0 50%)`,
+                      transform: `scaleY(${side === 0 ? legLift(walk.left) : legLift(walk.right)})`,
+                      transformOrigin: `50% ${KNEE * 100}%`,
+                    }}
+                  />
+                ))}
+              </AbsoluteFill>
             </AbsoluteFill>
             <Figure
               src={`model-${i}.png`}
