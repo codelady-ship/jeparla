@@ -52,6 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
         other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION },
       }),
     },
+    // The site has its own light and dark themes; Dark Reader would invert them again
+    // (and the cream hero video would no longer match the page).
+    other: { "darkreader-lock": "true" },
   };
 }
 

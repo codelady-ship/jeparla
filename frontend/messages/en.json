@@ -883,50 +883,12 @@
     "empty": "Today's price has not arrived yet."
   },
   "Hero": {
-    "label": "Jeparla collections",
-    "intro": {
-      "title": "A world of its own shine.",
-      "text": "Azerbaijan's jewelry stores and their gold, silver and diamond collections in one place."
-    },
-    "gold": {
-      "title": "The timeless beauty of gold.",
-      "text": "585 and 750 gold: forms passed down through generations."
-    },
-    "shine": {
-      "title": "The finesse of purity and brilliance.",
-      "text": "925 silver and diamonds: a quiet sparkle that catches the light."
-    },
-    "final": {
-      "title": "Every metal has its own character.",
-      "text": "Silver, diamond and gold. Choose yours."
-    },
+    "label": "Jeparla: jewelry collections",
+    "scene": "Three tigers walk in and stop in the center, a golden light passes over them and they turn into three models wearing silver, gold and diamond jewelry.",
+    "title": "Every shade of shine, in one place.",
+    "text": "Azerbaijan’s jewelry stores and their gold, silver and diamond collections.",
     "ctaCollection": "Explore the collection",
     "ctaStores": "Browse stores",
-    "scrollHint": "Scroll down",
-    "panels": {
-      "silver": {
-        "name": "Silver",
-        "animal": "White tiger"
-      },
-      "diamond": {
-        "name": "Diamond",
-        "animal": "Snow leopard"
-      },
-      "gold": {
-        "name": "Gold",
-        "animal": "Tiger"
-      }
-    },
-    "items": {
-      "earrings": "Earrings",
-      "necklace": "Necklace",
-      "bracelet": "Bracelet",
-      "ring": "Ring",
-      "pendant": "Pendant",
-      "chain": "Chain"
-    },
-    "itemLink": "{metal}: {item}",
-    "modelSoon": "Model photo shoot in progress",
-    "credit": "Photo: {name}, Unsplash"
+    "scrollHint": "Scroll down"
   }
 }

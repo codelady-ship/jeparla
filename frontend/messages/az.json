@@ -883,50 +883,12 @@
     "empty": "Bugünkü qiymət hələ gəlməyib."
   },
   "Hero": {
-    "label": "Jeparla kolleksiyaları",
-    "intro": {
-      "title": "İşıltının öz dünyası.",
-      "text": "Azərbaycanın zərgərlik mağazaları və onların qızıl, gümüş, brilyant kolleksiyaları bir yerdə."
-    },
-    "gold": {
-      "title": "Qızılın zamansız gözəlliyi.",
-      "text": "585 və 750 əyarlı qızıl: nəsildən-nəslə keçən formalar."
-    },
-    "shine": {
-      "title": "Saflığın və parıltının incəliyi.",
-      "text": "925 gümüş və brilyant: işığı tutan, sakit parıltı."
-    },
-    "final": {
-      "title": "Hər metalın öz xarakteri var.",
-      "text": "Gümüş, brilyant və qızıl. Özünüzünkünü seçin."
-    },
+    "label": "Jeparla: zərgərlik kolleksiyaları",
+    "scene": "Üç pələng gəlib mərkəzdə dayanır, qızılı işıq keçir və onlar gümüş, qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.",
+    "title": "Parıltının hər çaları bir yerdə.",
+    "text": "Azərbaycanın zərgərlik mağazaları və onların qızıl, gümüş, brilyant kolleksiyaları.",
     "ctaCollection": "Kolleksiyanı kəşf et",
     "ctaStores": "Mağazalara bax",
-    "scrollHint": "Aşağı sürüşdürün",
-    "panels": {
-      "silver": {
-        "name": "Gümüş",
-        "animal": "Ağ pələng"
-      },
-      "diamond": {
-        "name": "Brilyant",
-        "animal": "Qar bəbiri"
-      },
-      "gold": {
-        "name": "Qızıl",
-        "animal": "Pələng"
-      }
-    },
-    "items": {
-      "earrings": "Sırğa",
-      "necklace": "Boyunbağı",
-      "bracelet": "Qolbaq",
-      "ring": "Üzük",
-      "pendant": "Asqı",
-      "chain": "Zəncir"
-    },
-    "itemLink": "{metal}: {item}",
-    "modelSoon": "Model çəkilişi hazırlanır",
-    "credit": "Foto: {name}, Unsplash"
+    "scrollHint": "Aşağı sürüşdürün"
   }
 }

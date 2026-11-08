@@ -42,46 +42,26 @@ export function nearestLoaded(index: number, loaded: ArrayLike<unknown>) {
   return -1;
 }
 
-/** Source rectangle that makes an image cover a box (like object-fit: cover). */
-export function coverRect(
-  imgW: number,
-  imgH: number,
-  boxW: number,
-  boxH: number,
-  focusX = 0.5,
-  focusY = 0.5,
-) {
-  const scale = Math.max(boxW / imgW, boxH / imgH);
-  const sw = boxW / scale;
-  const sh = boxH / scale;
-  return {
-    sx: (imgW - sw) * focusX,
-    sy: (imgH - sh) * focusY,
-    sw,
-    sh,
-  };
-}
-
 export type FrameSource = { count: number; url: (i: number) => string };
 
 /**
- * Draws a frame sequence on a canvas. Frames load in coarse-to-fine order with a
- * small concurrency limit; `show(progress)` draws the closest frame already loaded.
- * The canvas keeps its CSS size; its backing store follows devicePixelRatio (capped).
+ * Plays a frame sequence in one <img>: frames are fetched and decoded in
+ * coarse-to-fine order with a small concurrency limit, and `show(progress)`
+ * points the image at the closest frame already decoded. The browser scales it
+ * (object-fit in CSS), so no canvas backing store is needed.
  */
 export class FramePlayer {
-  private images: (HTMLImageElement | undefined)[];
+  private loaded: boolean[];
   private wanted = 0;
-  private drawn = -1;
+  private shown = -1;
   private stopped = false;
 
   constructor(
-    private canvas: HTMLCanvasElement,
+    private target: HTMLImageElement,
     private source: FrameSource,
-    private focus = { x: 0.5, y: 0.5 },
     private concurrency = 4,
   ) {
-    this.images = new Array(source.count);
+    this.loaded = new Array(source.count).fill(false);
   }
 
   start() {
@@ -91,15 +71,22 @@ export class FramePlayer {
       const i = queue.shift();
       if (i === undefined) return;
       const img = new Image();
-      img.decoding = "async";
-      img.onload = () => {
-        this.images[i] = img;
-        // Redraw if this frame is closer to the wanted one than what is shown.
-        this.draw(this.wanted);
-        next();
-      };
-      img.onerror = next;
       img.src = this.source.url(i);
+      const ready =
+        typeof img.decode === "function"
+          ? img.decode()
+          : new Promise<void>((resolve, reject) => {
+              img.onload = () => resolve();
+              img.onerror = reject;
+            });
+      ready
+        .then(() => {
+          this.loaded[i] = true;
+          // A closer frame may now be available for the current position.
+          this.render();
+        })
+        .catch(() => {})
+        .finally(next);
     };
     for (let k = 0; k < this.concurrency; k++) next();
     return this;
@@ -111,29 +98,13 @@ export class FramePlayer {
 
   show(progress: number) {
     this.wanted = frameAt(progress, this.source.count);
-    this.draw(this.wanted);
+    this.render();
   }
 
-  /** Resizes the backing store to the CSS box; call on resize. */
-  resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const { width, height } = this.canvas.getBoundingClientRect();
-    this.canvas.width = Math.round(width * dpr);
-    this.canvas.height = Math.round(height * dpr);
-    this.drawn = -1;
-    this.draw(this.wanted);
-  }
-
-  private draw(index: number) {
-    const i = nearestLoaded(index, this.images);
-    if (i < 0 || i === this.drawn) return;
-    const img = this.images[i]!;
-    const ctx = this.canvas.getContext("2d");
-    if (!ctx) return;
-    const { width: w, height: h } = this.canvas;
-    const r = coverRect(img.naturalWidth, img.naturalHeight, w, h, this.focus.x, this.focus.y);
-    ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(img, r.sx, r.sy, r.sw, r.sh, 0, 0, w, h);
-    this.drawn = i;
+  private render() {
+    const i = nearestLoaded(this.wanted, this.loaded);
+    if (i < 0 || i === this.shown) return;
+    this.target.src = this.source.url(i);
+    this.shown = i;
   }
 }

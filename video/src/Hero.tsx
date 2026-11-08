@@ -70,28 +70,33 @@ export function Hero({ f }: { f: Format }) {
         const blur = i === 1 ? (1 - p) * 6 : 0;
 
         // Act 2: gold light sweep reveals the model, tiger dissolves behind it.
-        const t0 = ENTER + i * 14;
-        const s = interpolate(frame, [t0, t0 + TRANSFORM - 28], [0, 1], { ...clamp, easing: easeInOut });
+        const t0 = ENTER + i * 12;
+        const s = interpolate(frame, [t0, t0 + TRANSFORM - 32], [0, 1], { ...clamp, easing: easeInOut });
         const model = MODELS[i];
         const mx = f.x + model.left * f.scale;
         const mw = model.width * f.scale;
         const top = Math.min(box.top, model.top);
         const beamX = mx - mw * 0.4 + s * mw * 1.8;
+        // The reveal edge follows the beam core, so nothing changes ahead of the light.
+        const cut = (left: number, width: number) =>
+          Math.min(Math.max((beamX - left) / width, 0), 1);
+        const modelCut = cut(mx, mw);
+        const tigerCut = cut(f.x + box.left * f.scale, box.width * f.scale);
         const beam = Math.sin(s * Math.PI);
 
         const origin = `${(box.left + box.width / 2) * f.scale + f.x}px ${(box.top + box.height) * f.scale + f.y}px`;
         return (
           <AbsoluteFill key={i}>
             <AbsoluteFill style={{ transform: `translate(${x}px, ${lift - step}px) scale(${scale}) rotate(${sway}deg)`, transformOrigin: origin }}>
-              <Shadow box={box} f={f} opacity={appear * (1 - s)} scale={1 - step / 60} />
+              <Shadow box={box} f={f} opacity={appear * (1 - tigerCut)} scale={1 - step / 60} />
               <Figure
                 src={`tiger-${i}.png`}
                 box={box}
                 f={f}
                 style={{
-                  opacity: appear * (1 - s * 0.9),
-                  filter: `blur(${blur + s * 3}px) brightness(${1 + beam * 0.25})`,
-                  clipPath: `inset(0 0 0 ${s * 100}%)`,
+                  opacity: appear * (1 - tigerCut * 0.9),
+                  filter: `blur(${blur + tigerCut * 3}px) brightness(${1 + beam * 0.25})`,
+                  clipPath: `inset(0 0 0 ${tigerCut * 100}%)`,
                 }}
               />
             </AbsoluteFill>
@@ -100,7 +105,9 @@ export function Hero({ f }: { f: Format }) {
               box={model}
               f={f}
               style={{
-                clipPath: `inset(0 ${(1 - s) * 100}% 0 0)`,
+                clipPath: `inset(0 ${(1 - modelCut) * 100}% 0 0)`,
+                // A fully clipped image can still leave a hairline: hide it until the sweep starts.
+                opacity: modelCut > 0 ? 1 : 0,
                 transform: `scale(${0.97 + s * 0.03})`,
                 transformOrigin: "50% 100%",
                 filter: `brightness(${1 + beam * 0.18})`,

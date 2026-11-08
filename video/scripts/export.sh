@@ -12,11 +12,12 @@ FFMPEG=$(ls node_modules/@remotion/compositor-*/ffmpeg* | head -1)
 mkdir -p out "$OUT"
 for f in desktop mobile; do
   id=$( [ "$f" = desktop ] && echo HeroDesktop || echo HeroMobile )
-  npx remotion render src/index.ts "$id" "out/full-$f.mp4" --codec=h264 --crf=14 --log=error
+  npx remotion render src/index.ts "$id" "out/full-$f.mp4" --codec=h264 --crf=14 --color-space=bt709 --log=error
   "$FFMPEG" -v error -y -i "out/full-$f.mp4" -vf "trim=end_frame=$ENTER" \
-    -an -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/enter-$f.mp4"
+    -an -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -movflags +faststart "$OUT/enter-$f.mp4"
   rm -rf "$OUT/tf-$f" && mkdir -p "$OUT/tf-$f"
-  "$FFMPEG" -v error -y -i "out/full-$f.mp4" -vf "trim=start_frame=$ENTER" \
-    -c:v mjpeg -q:v 4 -start_number 0 "$OUT/tf-$f/%02d.jpg"
+  # Remotion's ffmpeg is a minimal build (no setpts/framestep/libwebp): half rate via -r.
+  "$FFMPEG" -v error -y -i "out/full-$f.mp4" -vf "trim=start_frame=$ENTER" -r 15 \
+    -c:v mjpeg -q:v 7 -start_number 0 "$OUT/tf-$f/%02d.jpg"
 done
 ls -la "$OUT" "$OUT/tf-desktop" | head -8
