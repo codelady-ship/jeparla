@@ -450,12 +450,7 @@
     "pending": "Gözləyin",
     "showPassword": "Şifrəni göstər",
     "hidePassword": "Şifrəni gizlət",
-    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. merchant+new@ ilə başlayan ünvan isə təsdiq gözləyən yeni satıcıdır. Məlumat heç yerdə saxlanılmır.",
-    "areas": {
-      "merchant": "Mağaza kabineti",
-      "admin": "Admin paneli",
-      "soon": "Bu bölmə hazırlanır."
-    }
+    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. merchant+new@ ilə başlayan ünvan isə təsdiq gözləyən yeni satıcıdır. Məlumat heç yerdə saxlanılmır."
   },
   "Sell": {
     "title": "Satıcı kimi qoşulun",
@@ -865,6 +860,144 @@
       "moneyInvalid": "0 və ya müsbət məbləğ yazın, məsələn 12,50.",
       "percentInvalid": "0 ilə 1000 arasında faiz yazın.",
       "maxBelowMin": "Maksimum qiymət minimumdan az ola bilməz."
+    }
+  },
+  "Admin": {
+    "title": "Admin paneli",
+    "demoNote": "Demo rejimi: məlumat nümunədir; qərarlar yoxlanılır, amma serverdə saxlanılmır.",
+    "nav": {
+      "label": "Admin bölmələri"
+    },
+    "statusLabel": "Status",
+    "colSubmitted": "Göndərilib",
+    "colStatus": "Status",
+    "colActions": "Əməliyyatlar",
+    "submitted": "Göndərilib: {date}",
+    "note": "Səbəb",
+    "emptyFiltered": "Bu filtrə uyğun nəticə yoxdur.",
+    "clearFilters": "Filtrləri sıfırla",
+    "done": "{name}: {status}",
+    "overview": {
+      "title": "İcmal",
+      "intro": "Gözləyən işlər və platformanın vəziyyəti.",
+      "queues": "Gözləyən işlər",
+      "pendingStores": "Mağaza müraciəti",
+      "productsInReview": "Yoxlamada məhsul",
+      "pendingChecks": "Sənəd yoxlaması",
+      "open": "Bax",
+      "allClear": "Gözləyən iş yoxdur.",
+      "platform": "Platforma",
+      "stores": "Aktiv mağaza",
+      "liveProducts": "Aktiv məhsul",
+      "metalPrice": "Metal qiymətinin tarixi"
+    },
+    "stores": {
+      "title": "Mağazalar",
+      "intro": "Yeni satıcıların müraciətləri və mağazaların statusu.",
+      "search": "Mağaza, şəhər və ya sahib",
+      "count": "{count, plural, =0 {Mağaza yoxdur} one {# mağaza} other {# mağaza}}",
+      "colStore": "Mağaza",
+      "colOwner": "Sahib",
+      "products": "{count, plural, =0 {məhsul yoxdur} one {# məhsul} other {# məhsul}}"
+    },
+    "storeStatus": {
+      "ALL": "Hamısı",
+      "PENDING": "Gözləyir",
+      "APPROVED": "Təsdiqlənib",
+      "REJECTED": "Rədd edilib",
+      "BLOCKED": "Bloklanıb"
+    },
+    "products": {
+      "title": "Moderasiya",
+      "intro": "Satıcıların göndərdiyi məhsullar yoxlanandan sonra saytda görünür.",
+      "search": "Məhsul və ya mağaza",
+      "count": "{count, plural, =0 {Məhsul yoxdur} one {# məhsul} other {# məhsul}}",
+      "queueEmpty": "Yoxlama gözləyən məhsul yoxdur.",
+      "preview": "Saytda bax"
+    },
+    "checks": {
+      "title": "Sənəd yoxlaması",
+      "intro": "Jeparla Verified nişanı yalnız sənədlər yoxlanandan sonra verilir.",
+      "search": "Mağaza və ya şəhər",
+      "count": "{count, plural, =0 {Müraciət yoxdur} one {# müraciət} other {# müraciət}}",
+      "queueEmpty": "Yoxlama gözləyən sənəd yoxdur.",
+      "kind": {
+        "seller": "Satıcı yoxlaması",
+        "documents": "Mağaza sənədləri",
+        "expertise": "Məhsul ekspertizası"
+      },
+      "docs": "Sənədlər",
+      "view": "Sənədə bax: {name}",
+      "viewText": "Sənədlər gizli saxlanılır və hər baxışda qısa müddətli imzalı linklə açılır. Demo rejimində fayl yoxdur.",
+      "pages": "{count, plural, one {# səhifə} other {# səhifə}}"
+    },
+    "checkStatus": {
+      "ALL": "Hamısı",
+      "NONE": "Yoxdur",
+      "PENDING": "Gözləyir",
+      "VERIFIED": "Təsdiqlənib",
+      "REJECTED": "Geri qaytarılıb"
+    },
+    "docKind": {
+      "TAX_ID": "VÖEN arayışı",
+      "TRADE_LICENSE": "Fəaliyyət lisenziyası",
+      "ASSAY_CERTIFICATE": "Əyar sertifikatı",
+      "LAB_REPORT": "Laboratoriya hesabatı"
+    },
+    "actions": {
+      "approve": "Təsdiqlə",
+      "reject": "Rədd et",
+      "block": "Blokla",
+      "unblock": "Blokdan çıxar",
+      "return": "Geri qaytar",
+      "deactivate": "Saytdan götür",
+      "verify": "Təsdiqlə",
+      "named": "{action}: {name}"
+    },
+    "confirm": {
+      "approve": {
+        "title": "{name} təsdiqlənsin?",
+        "text": "Satıcıya bildiriş göndəriləcək."
+      },
+      "reject": {
+        "title": "{name} rədd edilsin?",
+        "text": "Səbəb satıcıya göndəriləcək."
+      },
+      "block": {
+        "title": "{name} bloklansın?",
+        "text": "Mağazanın bütün məhsulları saytdan gizlənəcək. Səbəb satıcıya göndəriləcək."
+      },
+      "unblock": {
+        "title": "{name} blokdan çıxarılsın?",
+        "text": "Aktiv məhsullar yenidən görünəcək."
+      },
+      "return": {
+        "title": "{name} geri qaytarılsın?",
+        "text": "Satıcı səbəbi görüb düzəliş edəcək."
+      },
+      "deactivate": {
+        "title": "{name} saytdan götürülsün?",
+        "text": "Məhsul alıcılara görünməyəcək. Səbəb satıcıya göndəriləcək."
+      },
+      "verify": {
+        "title": "{name} təsdiqlənsin?",
+        "text": "Mağaza uyğun Jeparla Verified nişanını alacaq."
+      },
+      "cancel": "Ləğv et",
+      "close": "Bağla"
+    },
+    "reason": {
+      "label": "Səbəb (satıcı görəcək)",
+      "hint": "{min}-{max} simvol."
+    },
+    "errors": {
+      "reasonRequired": "Səbəbi yazın: ən azı 10 simvol.",
+      "reasonTooLong": "Səbəb 500 simvoldan uzun ola bilməz.",
+      "conflict": "Bu element artıq dəyişib. Səhifəni yeniləyin.",
+      "sessionExpired": "Sessiya bitib. Yenidən daxil olun.",
+      "unavailable": "Xidmət hazırda əlçatan deyil.",
+      "network": "Şəbəkə xətası. Yenidən cəhd edin.",
+      "server": "Xəta baş verdi. Yenidən cəhd edin."
     }
   },
   "MetalPrices": {
