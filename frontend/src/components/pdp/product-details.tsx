@@ -62,7 +62,7 @@ export async function ProductDetails({
       v.size && t("size", { size: v.size }),
     ]
       .filter(Boolean)
-      .join(" · "),
+      .join(" ·"),
     price: formatPrice(v.price.amount, locale),
     sku: v.sku,
     stock: tp(`stock.${v.stockStatus}`),
@@ -87,7 +87,7 @@ export async function ProductDetails({
   ];
 
   return (
-    <article className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
+    <article className="container-page py-6 sm:py-10">
       <JsonLd
         data={[
           productLd(p, locale),
@@ -250,7 +250,7 @@ export async function ProductDetails({
                       <td className="py-2 pr-3">{s.clarity ?? t("na")}</td>
                       <td className="py-2 pr-3">
                         {s.certificateLab
-                          ? [s.certificateLab, s.certificateNumber].filter(Boolean).join(" ")
+                          ? [s.certificateLab, s.certificateNumber].filter(Boolean).join("")
                           : t("noCertificate")}
                       </td>
                     </tr>

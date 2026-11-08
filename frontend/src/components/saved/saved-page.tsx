@@ -32,7 +32,7 @@ export async function SavedPage({ kind, children }: { kind: Kind; children: Reac
     getMessages({ locale }),
   ]);
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="container-page py-8 sm:py-12">
       <h1 className="mb-2 text-3xl sm:text-4xl">{t(`${kind}Title`)}</h1>
       <p className="mb-8 max-w-2xl text-muted-foreground">{t(`${kind}Intro`)}</p>
       <IntlProvider

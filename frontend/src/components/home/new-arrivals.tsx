@@ -11,7 +11,7 @@ export async function NewArrivals() {
   ]);
   if (page.content.length === 0) return null;
   return (
-    <section aria-labelledby="new-arrivals" className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6">
+    <section aria-labelledby="new-arrivals" className="container-page pb-20">
       <div className="mb-6 flex items-end justify-between gap-4">
         <h2 id="new-arrivals" className="text-2xl sm:text-3xl">
           {t("newArrivals")}

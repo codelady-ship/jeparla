@@ -6,7 +6,7 @@ import { USING_MOCK } from "@/lib/api";
 export default async function MerchantLayout({ children }: { children: ReactNode }) {
   const t = await getTranslations("Merchant");
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+    <div className="container-page flex flex-1 flex-col gap-6 py-6 sm:py-10">
       <div className="flex flex-col gap-3">
         <p className="text-sm font-medium tracking-wide text-gold-text uppercase">{t("title")}</p>
         <MerchantNav

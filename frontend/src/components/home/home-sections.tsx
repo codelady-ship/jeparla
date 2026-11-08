@@ -30,7 +30,7 @@ function SeeAll({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-const WRAP = "mx-auto w-full max-w-7xl px-4 sm:px-6";
+const WRAP = "container-page";
 
 export async function HomeCategories() {
   const [t, categories] = await Promise.all([getTranslations("Home"), api.listCategories()]);

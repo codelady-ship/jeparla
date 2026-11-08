@@ -1,19 +1,31 @@
-// Figure boxes measured on the 1248x696 source frame (split.cjs output).
-export const SOURCE = { w: 1248, h: 696 };
+// Scene space: the 1280x720 AI walk-in clip (source/walk.mp4). Figure boxes are
+// measured on its last frame (scratchpad split2.cjs on the cut-out frame 120).
+export const SOURCE = { w: 1280, h: 720 };
 
-// White tiger, golden tiger, black panther (source/tigers.jpg), scaled to the models' width
-// and standing on the same floor line.
+/** Act 1: cut-out frames of the clip (public/walk/NNN.webp), 24 fps. */
+export const WALK_FRAMES = 121;
+export const WALK_FPS = 24;
+/** Played a little faster than real time, so the entrance stays short. */
+export const WALK_SPEED = 1.15;
+
+// White tiger, golden tiger, black panther as they stand in the last frame.
 export const TIGERS = [
-  { left: 275, top: 199, width: 296, height: 431 },
-  { left: 561, top: 211, width: 180, height: 419 },
-  { left: 789, top: 198, width: 218, height: 432 },
+  { left: 209, top: 105, width: 239, height: 580 },
+  { left: 524, top: 18, width: 273, height: 676 },
+  { left: 908, top: 101, width: 266, height: 593 },
 ];
 
+// The models stand as one group on the same floor line, a little taller than the
+// animals (real proportions), each centred near her animal. All three photos share
+// one scale (0.78 of the trimmed cut-outs in public/model-N.png).
 export const MODELS = [
-  { left: 275, top: 73, width: 238, height: 623 },
-  { left: 513, top: 76, width: 252, height: 620 },
-  { left: 765, top: 62, width: 242, height: 634 },
+  { left: 314, top: -175, width: 232, height: 869 },
+  { left: 541, top: -175, width: 238, height: 869 },
+  { left: 783, top: -227, width: 224, height: 921 },
 ];
+
+/** Horizontal extent of all figures, and the floor line, in scene space. */
+export const GROUP = { left: 209, right: 1174, floor: 694 };
 
 /** Site cream (docs/design/tokens.json, scene ivory). */
 export const BACKDROP = "#F7F3EA";
@@ -23,26 +35,34 @@ export const INK = "#16251F";
 export const GOLD_LIGHT = "#E8D39A";
 
 export const FPS = 30;
-/** Act 1: tigers walk in (autoplay). */
-export const ENTER = 96;
-/** Act 2: light sweep turns each tiger into a model (scroll-scrubbed). */
+/** Frames until the last clip frame is reached (scene frame -> clip frame). */
+const WALK_END = Math.ceil((WALK_FRAMES - 1) / ((WALK_FPS / FPS) * WALK_SPEED));
+/** Act 1: the animals walk in (autoplay); a short hold after they stop. */
+export const ENTER = WALK_END + 6;
+/** Act 2: light sweep turns each animal into a model (scroll-scrubbed). */
 export const TRANSFORM = 72;
+
+/** Clip frame shown at scene frame `frame` (act 1). */
+export function walkFrame(frame: number) {
+  return Math.min(WALK_FRAMES - 1, Math.floor(frame * (WALK_FPS / FPS) * WALK_SPEED));
+}
 
 export type Format = { width: number; height: number; scale: number; x: number; y: number };
 
 /**
- * Places the 1248x696 source frame in the composition. Models touch the bottom
- * edge of the source, so the source is always bottom-aligned.
+ * Places the scene in a composition: the figures take `figureShare` of the width,
+ * centred at `centerX`, and stand a little above the bottom edge.
  */
 export function format(width: number, height: number, figureShare: number, centerX = 0.5): Format {
-  const span = 1007 - 269; // figures' horizontal extent in the source
+  const span = GROUP.right - GROUP.left;
   const scale = (width * figureShare) / span;
-  const x = width * centerX - (269 + span / 2) * scale;
-  const y = height - SOURCE.h * scale;
+  const x = width * centerX - (GROUP.left + span / 2) * scale;
+  const y = height - (GROUP.floor + 10) * scale;
   return { width, height, scale, x, y };
 }
 
-/** Desktop: figures sit right of center so the copy has the left third. */
-export const DESKTOP = format(1280, 720, 0.46, 0.62);
+/** Desktop: figures sit right of center so the copy has the left third; small enough
+ * that the models keep headroom when wide screens crop the top (video is bottom-anchored). */
+export const DESKTOP = format(1920, 1080, 0.4, 0.63);
 /** Phone: narrow enough that cover-cropping on tall phones (19.5:9) keeps the outer animals. */
-export const MOBILE = format(720, 1280, 0.74);
+export const MOBILE = format(1080, 1920, 0.82);

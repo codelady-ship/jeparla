@@ -32,7 +32,7 @@ export async function SearchPage({
 }) {
   const t = await getTranslations("SearchPage");
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="container-page py-8 sm:py-12">
       <h1 className="mb-6 text-3xl sm:text-4xl">{t("title")}</h1>
       <Suspense fallback={<ProductGridSkeleton label={t("loading")} />}>
         <SearchResults tab={tab} searchParams={searchParams} />

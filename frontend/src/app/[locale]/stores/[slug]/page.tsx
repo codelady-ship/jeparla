@@ -61,7 +61,7 @@ export default async function StorePage({
   );
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="container-page py-8 sm:py-12">
       <JsonLd data={[jewelryStore(store, locale)]} />
       <header className="flex flex-col gap-6 border-b pb-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-5">
