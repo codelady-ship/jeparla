@@ -24,7 +24,7 @@ export function SiteHeader() {
       >
         {t("Common.skipToContent")}
       </a>
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:px-6">
+      <div className="container-page flex h-16 items-center gap-2">
         <MobileNav
           items={items}
           labels={{ menu: t("Nav.menu"), close: t("Common.close"), home: t("Nav.home") }}

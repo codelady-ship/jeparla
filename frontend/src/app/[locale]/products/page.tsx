@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ProductsPage({ searchParams }: PageProps<"/[locale]/products">) {
   const t = await getTranslations("Catalog");
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="container-page py-8 sm:py-12">
       <h1 className="mb-6 text-3xl sm:text-4xl">{t("title")}</h1>
       {/* Only the results depend on the query; the heading is part of the static shell. */}
       <Suspense fallback={<ProductGridSkeleton label={t("loading")} />}>

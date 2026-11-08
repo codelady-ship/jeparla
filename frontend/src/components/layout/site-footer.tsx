@@ -40,7 +40,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t bg-surface">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(4,1fr)]">
+      <div className="container-page grid gap-10 py-12 md:grid-cols-[1.5fr_repeat(4,1fr)]">
         <div className="flex flex-col items-start gap-3">
           <p translate="no" className="font-heading text-2xl font-semibold">
             Jeparla
@@ -69,9 +69,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t">
-        <p className="mx-auto max-w-7xl px-4 py-4 text-xs text-muted-foreground sm:px-6">
-          {t("Footer.rights")}
-        </p>
+        <p className="container-page py-4 text-xs text-muted-foreground">{t("Footer.rights")}</p>
       </div>
     </footer>
   );

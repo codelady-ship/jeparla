@@ -114,6 +114,18 @@
 
 /* Slow image zoom on hover: put on the <img> wrapper inside a `group` element
    that has overflow hidden. */
+/*
+ * Page container: one width for header, pages, footer and the hero copy.
+ * 90rem keeps lines and grids comfortable on 1920px screens without wide empty
+ * margins; the gutter grows with the viewport (16px on phones, 48px on desktops).
+ */
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--container-page);
+  padding-inline: var(--gutter-page);
+}
+
 @utility img-zoom {
   transition: transform var(--duration-zoom) var(--ease-luxe);
   @media (hover: hover) {
@@ -187,6 +199,11 @@
    only while scripting is on and motion is allowed. --hero-bg is replaced at
    runtime by the colour read from the video, so page and footage are one cream.
    --------------------------------------------------------------------------- */
+:root {
+  --container-page: 90rem;
+  --gutter-page: clamp(1rem, 3.5vw, 3rem);
+}
+
 .hero-track {
   position: relative;
   /* Starts under the sticky header (4rem), so the first screen is exactly one viewport. */
@@ -231,6 +248,14 @@
   padding: 0 1rem;
   max-width: 26rem;
 }
+/* "Jeparla" above the headline once the models are on stage (always shown without motion). */
+.hero-brand {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2.5rem, 11vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
 .hero-title {
   margin: 0;
   font-size: clamp(2.25rem, 9vw, 3.25rem);
@@ -253,10 +278,13 @@
   .hero-copy {
     top: 50%;
     translate: 0 -10%;
-    left: max(1.5rem, calc((100vw - 80rem) / 2 + 1.5rem));
+    left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
     right: auto;
     width: min(26rem, 31vw);
     padding: 0;
+  }
+  .hero-brand {
+    font-size: clamp(3rem, 5vw, 5rem);
   }
   .hero-title {
     font-size: clamp(2.25rem, 3.4vw, 3.5rem);
@@ -277,6 +305,10 @@
     height: 260svh;
     .hero {
       position: sticky;
+    }
+    .hero-brand {
+      opacity: 0;
+      will-change: opacity, transform;
     }
     .hero-title {
       animation: hero-title-in 0.9s var(--ease-luxe) 0.25s both;

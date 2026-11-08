@@ -6,7 +6,7 @@ import { faqPage, organization, website } from "@/lib/seo/json-ld";
 const FAQ_KEYS = ["what", "buy", "price", "verified", "sell"] as const;
 
 /**
- * Plain, quotable answers to "what is Jeparla": search engines and AI assistants use
+ * Plain, quotable answers to"what is Jeparla": search engines and AI assistants use
  * this text and the matching Organization / WebSite / FAQPage data (issue #61).
  */
 export async function AboutJeparla() {
@@ -22,7 +22,7 @@ export async function AboutJeparla() {
       <JsonLd
         data={[organization(tm("description")), website(locale, tm("description")), faqPage(faq)]}
       />
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16">
+      <div className="container-page grid gap-10 py-16 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <h2 id="about" className="mb-4 text-2xl sm:text-3xl">
             {t("title")}

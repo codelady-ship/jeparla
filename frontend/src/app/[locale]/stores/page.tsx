@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function StoresPage({ searchParams }: PageProps<"/[locale]/stores">) {
   const t = await getTranslations("Stores");
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="container-page py-8 sm:py-12">
       <h1 className="mb-2 text-3xl sm:text-4xl">{t("title")}</h1>
       <p className="mb-8 max-w-2xl text-muted-foreground">{t("intro")}</p>
       <Suspense
