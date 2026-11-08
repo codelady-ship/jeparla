@@ -30,3 +30,15 @@ export function shortDate(iso: string) {
 export const STORE_FILTERS = ["ALL", "PENDING", "APPROVED", "REJECTED", "BLOCKED"] as const;
 export const PRODUCT_FILTERS = ["ALL", "IN_REVIEW", "APPROVED", "RETURNED", "INACTIVE"] as const;
 export const CHECK_FILTERS = ["ALL", "PENDING", "VERIFIED", "REJECTED"] as const;
+export const USER_FILTERS = ["ALL", "USER", "MERCHANT", "ADMIN"] as const;
+export const REPORT_FILTERS = ["ALL", "OPEN", "RESOLVED", "DISMISSED"] as const;
+export const AUDIT_FILTERS = [
+  "ALL",
+  "STORE",
+  "PRODUCT",
+  "CHECK",
+  "USER",
+  "CATALOG",
+  "PRICE",
+  "REPORT",
+] as const;

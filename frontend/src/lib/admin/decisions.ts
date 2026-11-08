@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { CheckStatus, ProductStatus } from "@/types/api";
-import type { StoreStatus } from "@/types/admin";
+import type { QuoteStatus, ReportStatus, StoreStatus } from "@/types/admin";
 
 /**
  * What an admin may do with a store, a product or a verification request, and
@@ -12,7 +12,9 @@ import type { StoreStatus } from "@/types/admin";
 export type StoreAction = "approve" | "reject" | "block" | "unblock";
 export type ProductAction = "approve" | "return" | "deactivate";
 export type CheckAction = "verify" | "return";
-export type AdminAction = StoreAction | ProductAction | CheckAction;
+export type ReportAction = "resolve" | "dismiss";
+export type QuoteAction = "accept" | "discard";
+export type AdminAction = StoreAction | ProductAction | CheckAction | ReportAction | QuoteAction;
 
 export const STORE_ACTIONS: Record<StoreStatus, readonly StoreAction[]> = {
   PENDING: ["approve", "reject"],
@@ -51,12 +53,35 @@ const CHECK_RESULT: Record<CheckAction, CheckStatus> = {
   return: "REJECTED",
 };
 
+export const REPORT_ACTIONS: Record<ReportStatus, readonly ReportAction[]> = {
+  OPEN: ["resolve", "dismiss"],
+  RESOLVED: [],
+  DISMISSED: [],
+};
+const REPORT_RESULT: Record<ReportAction, ReportStatus> = {
+  resolve: "RESOLVED",
+  dismiss: "DISMISSED",
+};
+
+/** A held metal quote (change above the sanity limit) is applied or thrown away by hand. */
+export const QUOTE_ACTIONS: Record<QuoteStatus, readonly QuoteAction[]> = {
+  HELD: ["accept", "discard"],
+  APPLIED: [],
+  DISCARDED: [],
+};
+const QUOTE_RESULT: Record<QuoteAction, QuoteStatus> = {
+  accept: "APPLIED",
+  discard: "DISCARDED",
+};
+
 /** Decisions the seller must be told the reason for; they also get the red button. */
 export const NEEDS_REASON: ReadonlySet<AdminAction> = new Set<AdminAction>([
   "reject",
   "block",
   "return",
   "deactivate",
+  "dismiss",
+  "discard",
 ]);
 
 export const REASON_MIN = 10;
@@ -74,12 +99,14 @@ export const decisionSchema = z
 
 export type Decision = z.infer<typeof decisionSchema>;
 
-type Target = "store" | "product" | "check";
+type Target = "store" | "product" | "check" | "report" | "quote";
 
 const TABLES = {
   store: [STORE_ACTIONS, STORE_RESULT],
   product: [PRODUCT_ACTIONS, PRODUCT_RESULT],
   check: [CHECK_ACTIONS, CHECK_RESULT],
+  report: [REPORT_ACTIONS, REPORT_RESULT],
+  quote: [QUOTE_ACTIONS, QUOTE_RESULT],
 } as const;
 
 /** The status after `action`, or null when the action is not allowed from `current`. */
@@ -98,6 +125,16 @@ export function nextStatus(
   current: CheckStatus,
   action: string,
 ): CheckStatus | null;
+export function nextStatus(
+  target: "report",
+  current: ReportStatus,
+  action: string,
+): ReportStatus | null;
+export function nextStatus(
+  target: "quote",
+  current: QuoteStatus,
+  action: string,
+): QuoteStatus | null;
 export function nextStatus(target: Target, current: string, action: string): string | null {
   const [allowed, result] = TABLES[target] as unknown as [
     Record<string, readonly string[]>,

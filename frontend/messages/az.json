@@ -889,7 +889,9 @@
       "platform": "Platforma",
       "stores": "Aktiv mağaza",
       "liveProducts": "Aktiv məhsul",
-      "metalPrice": "Metal qiymətinin tarixi"
+      "metalPrice": "Metal qiymətinin tarixi",
+      "openReports": "Açıq şikayətlər",
+      "heldPrices": "Saxlanılan qiymətlər"
     },
     "stores": {
       "title": "Mağazalar",
@@ -952,7 +954,11 @@
       "return": "Geri qaytar",
       "deactivate": "Saytdan götür",
       "verify": "Təsdiqlə",
-      "named": "{action}: {name}"
+      "named": "{action}: {name}",
+      "resolve": "Həll edildi",
+      "dismiss": "Rədd et",
+      "accept": "Tətbiq et",
+      "discard": "At"
     },
     "confirm": {
       "approve": {
@@ -984,11 +990,29 @@
         "text": "Mağaza uyğun Jeparla Verified nişanını alacaq."
       },
       "cancel": "Ləğv et",
-      "close": "Bağla"
+      "close": "Bağla",
+      "resolve": {
+        "title": "Şikayət həll edilsin: {name}?",
+        "text": "Şikayət bağlanacaq. Mağaza düzəliş edib və ya məhsul götürülüb."
+      },
+      "dismiss": {
+        "title": "Şikayət rədd edilsin: {name}?",
+        "text": "Şikayət bağlanacaq. Səbəb audit jurnalında qalacaq."
+      },
+      "accept": {
+        "title": "{name} üçün yeni qiymət tətbiq edilsin?",
+        "text": "Metala bağlı bütün qiymətlər yenidən hesablanacaq."
+      },
+      "discard": {
+        "title": "{name} üçün saxlanılan qiymət atılsın?",
+        "text": "İstifadədəki qiymət dəyişməyəcək. Səbəb audit jurnalında qalacaq."
+      }
     },
     "reason": {
       "label": "Səbəb (satıcı görəcək)",
-      "hint": "{min}-{max} simvol."
+      "hint": "{min}-{max} simvol.",
+      "audit": "Səbəb (audit jurnalında qalacaq)",
+      "reporter": "Səbəb (audit jurnalında qalacaq)"
     },
     "errors": {
       "reasonRequired": "Səbəbi yazın: ən azı 10 simvol.",
@@ -997,7 +1021,181 @@
       "sessionExpired": "Sessiya bitib. Yenidən daxil olun.",
       "unavailable": "Xidmət hazırda əlçatan deyil.",
       "network": "Şəbəkə xətası. Yenidən cəhd edin.",
-      "server": "Xəta baş verdi. Yenidən cəhd edin."
+      "server": "Xəta baş verdi. Yenidən cəhd edin.",
+      "required": "Bu xananı doldurun.",
+      "tooLong": "Mətn çox uzundur.",
+      "tooMany": "Ən çoxu 10 söz.",
+      "slugFormat": "Yalnız kiçik latın hərfləri, rəqəm və defis: məsələn, qol-saatlari.",
+      "valueRange": "1 ilə 999 arasında tam ədəd yazın.",
+      "priceFormat": "Müsbət məbləğ yazın, ən çoxu 2 onluq rəqəm: məsələn, 2510.40.",
+      "taken": "Bu artıq mövcuddur.",
+      "invalid": "Bu dəyər uyğun deyil.",
+      "inUse": "İstifadədədir, silinə bilməz. Əvvəlcə məhsulları və ya alt kateqoriyaları köçürün.",
+      "self": "Öz rolunuzu dəyişə bilməzsiniz.",
+      "sameRole": "Yeni rol hazırkı ilə eynidir.",
+      "lastAdmin": "Bu yeganə admindir; əvvəlcə başqa admin təyin edin.",
+      "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin."
+    },
+    "metal": {
+      "GOLD": "Qızıl",
+      "SILVER": "Gümüş",
+      "PLATINUM": "Platin",
+      "PALLADIUM": "Palladium"
+    },
+    "role": {
+      "USER": "Alıcı",
+      "MERCHANT": "Satıcı",
+      "ADMIN": "Admin"
+    },
+    "reportStatus": {
+      "ALL": "Hamısı",
+      "OPEN": "Açıq",
+      "RESOLVED": "Həll edilib",
+      "DISMISSED": "Rədd edilib"
+    },
+    "reportReason": {
+      "WRONG_PRICE": "Səhv qiymət",
+      "WRONG_INFO": "Səhv məlumat",
+      "FAKE": "Saxta və ya oğurlanmış şəkil",
+      "OFFENSIVE": "Qaydalara zidd məzmun",
+      "OTHER": "Digər"
+    },
+    "quoteStatus": {
+      "HELD": "Saxlanılıb",
+      "APPLIED": "Tətbiq edildi",
+      "DISCARDED": "Atıldı"
+    },
+    "auditTarget": {
+      "ALL": "Hamısı",
+      "STORE": "Mağaza",
+      "PRODUCT": "Məhsul",
+      "CHECK": "Sənəd yoxlaması",
+      "USER": "İstifadəçi",
+      "CATALOG": "Kataloq",
+      "PRICE": "Metal qiyməti",
+      "REPORT": "Şikayət"
+    },
+    "auditAction": {
+      "approve": "Təsdiqləndi",
+      "reject": "Rədd edildi",
+      "block": "Bloklandı",
+      "unblock": "Blokdan çıxarıldı",
+      "return": "Geri qaytarıldı",
+      "deactivate": "Saytdan götürüldü",
+      "verify": "Yoxlanıldı",
+      "roleChange": "Rol dəyişdi",
+      "create": "Əlavə edildi",
+      "delete": "Silindi",
+      "resolve": "Həll edildi",
+      "dismiss": "Rədd edildi",
+      "accept": "Qiymət tətbiq edildi",
+      "discard": "Qiymət atıldı",
+      "override": "Qiymət əl ilə dəyişdi"
+    },
+    "catalog": {
+      "title": "Kataloq",
+      "intro": "Kateqoriyalar, əyarlar və axtarış sinonimləri.",
+      "categories": "Kateqoriyalar",
+      "categoriesIntro": "Adlar üç dildə yazılır; içində məhsul olan kateqoriya silinmir.",
+      "addCategory": "Kateqoriya əlavə et",
+      "categoryText": "Alt kateqoriya üçün üst kateqoriyanı seçin.",
+      "noCategories": "Hələ kateqoriya yoxdur.",
+      "in": "{name} içində",
+      "name": {
+        "az": "Ad (az)",
+        "en": "Ad (en)",
+        "ru": "Ad (ru)"
+      },
+      "slug": "URL adı",
+      "slugHint": "Kiçik latın hərfləri, rəqəm və defis.",
+      "parent": "Üst kateqoriya",
+      "noParent": "Yoxdur (əsas kateqoriya)",
+      "finenesses": "Əyarlar",
+      "finenessesIntro": "Satıcılar variantda yalnız bu əyarları seçə bilir.",
+      "addFineness": "Əyar əlavə et",
+      "finenessText": "Əyar mində hissə ilə yazılır: 585 = 58,5% təmiz metal.",
+      "noFinenesses": "Hələ əyar yoxdur.",
+      "metal": "Metal",
+      "value": "Əyar",
+      "valueHint": "1-999, məsələn 585.",
+      "label": "Görünən ad",
+      "labelHint": "Məsələn: 585 (14K).",
+      "synonyms": "Axtarış sinonimləri",
+      "synonymsIntro": "Qrupdakı sözlərdən hər biri ilə axtarış eyni nəticəni verir.",
+      "addSynonym": "Sinonim qrupu əlavə et",
+      "synonymText": "Əsas söz və onun yazılış variantları və ya sinonimləri.",
+      "noSynonyms": "Hələ sinonim yoxdur.",
+      "language": "Dil",
+      "lang": {
+        "az": "Azərbaycanca",
+        "en": "İngiliscə",
+        "ru": "Rusca"
+      },
+      "term": "Əsas söz",
+      "words": "Sinonimlər",
+      "wordsHint": "Vergüllə ayırın, ən çoxu 10.",
+      "save": "Yadda saxla",
+      "delete": "Sil",
+      "deleteTitle": "{name} silinsin?",
+      "deleteText": "Bu əməliyyat geri qaytarılmır və audit jurnalına yazılır.",
+      "deleted": "{name} silindi",
+      "added": "{name} əlavə edildi"
+    },
+    "users": {
+      "title": "İstifadəçilər",
+      "intro": "Hesablar və rollar. Rol dəyişikliyi səbəblə audit jurnalına yazılır.",
+      "search": "Ad, e-poçt və ya mağaza",
+      "roleLabel": "Rol",
+      "count": "{count, plural, =0 {İstifadəçi yoxdur} other {# istifadəçi}}",
+      "since": "Qeydiyyat: {date}",
+      "colUser": "İstifadəçi",
+      "colStore": "Mağaza",
+      "colSince": "Qeydiyyat",
+      "change": "Rolu dəyiş",
+      "changeTitle": "{name}: rol dəyişsin?",
+      "changeText": "Yeni rol növbəti girişdə qüvvəyə minir.",
+      "newRole": "Yeni rol",
+      "adminWarning": "Admin bütün mağazaları, məhsulları və qiymətləri idarə edə bilir."
+    },
+    "reports": {
+      "title": "Şikayətlər",
+      "intro": "Alıcıların məhsul haqqında şikayətləri.",
+      "search": "Məhsul, mağaza və ya mətn",
+      "count": "{count, plural, =0 {Şikayət yoxdur} other {# şikayət}}",
+      "queueEmpty": "Açıq şikayət yoxdur."
+    },
+    "audit": {
+      "title": "Audit jurnalı",
+      "intro": "Admin qərarlarının dəyişməz siyahısı, yenidən köhnəyə.",
+      "search": "Obyekt, admin və ya səbəb",
+      "targetLabel": "Obyekt növü",
+      "count": "{count, plural, =0 {Qeyd yoxdur} other {# qeyd}}",
+      "colTime": "Vaxt",
+      "colAction": "Əməliyyat",
+      "colTarget": "Obyekt",
+      "colActor": "Admin"
+    },
+    "prices": {
+      "title": "Metal qiymətləri",
+      "intro": "AMB qiymətləri. Gündəlik dəyişmə 10%-dən çox olanda qiymət avtomatik tətbiq edilmir.",
+      "date": "Tarix: {date}",
+      "source": {
+        "CBAR": "AMB",
+        "ADMIN": "Əl ilə"
+      },
+      "perOunce": "1 troy unsiya",
+      "perGram": "1 qram",
+      "change": "Əvvəlki iş gününə görə",
+      "held": "{date} tarixli yeni AMB qiyməti ({price}, {change}) {limit}% həddini keçdiyi üçün saxlanılıb. Mənbəni yoxlayıb tətbiq edin və ya atın.",
+      "override": "Əl ilə dəyiş",
+      "overrideTitle": "{name} qiyməti əl ilə dəyişsin?",
+      "overrideText": "İstifadədəki qiymət: {price} / unsiya. Metala bağlı bütün qiymətlər yenidən hesablanacaq.",
+      "newPrice": "Yeni qiymət, AZN / troy unsiya",
+      "priceHint": "Məsələn: 7012.50",
+      "newChange": "Dəyişmə: {change}",
+      "largeWarning": "Dəyişmə {change}, {limit}% həddindən böyükdür.",
+      "confirmLarge": "Mənbəni yoxladım, qiymət düzgündür",
+      "overridden": "{name} qiyməti dəyişdi"
     }
   },
   "MetalPrices": {

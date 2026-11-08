@@ -889,7 +889,9 @@
       "platform": "Platform",
       "stores": "Active stores",
       "liveProducts": "Live products",
-      "metalPrice": "Metal price date"
+      "metalPrice": "Metal price date",
+      "openReports": "Open complaints",
+      "heldPrices": "Held prices"
     },
     "stores": {
       "title": "Stores",
@@ -952,7 +954,11 @@
       "return": "Return",
       "deactivate": "Take down",
       "verify": "Verify",
-      "named": "{action}: {name}"
+      "named": "{action}: {name}",
+      "resolve": "Resolved",
+      "dismiss": "Dismiss",
+      "accept": "Apply",
+      "discard": "Discard"
     },
     "confirm": {
       "approve": {
@@ -984,11 +990,29 @@
         "text": "The store will get the matching Jeparla Verified badge."
       },
       "cancel": "Cancel",
-      "close": "Close"
+      "close": "Close",
+      "resolve": {
+        "title": "Mark the complaint about {name} resolved?",
+        "text": "The complaint will be closed: the store fixed it or the product was taken down."
+      },
+      "dismiss": {
+        "title": "Dismiss the complaint about {name}?",
+        "text": "The complaint will be closed. The reason stays in the audit log."
+      },
+      "accept": {
+        "title": "Apply the new {name} price?",
+        "text": "Every metal-linked price will be recalculated."
+      },
+      "discard": {
+        "title": "Discard the held {name} price?",
+        "text": "The price in use stays. The reason stays in the audit log."
+      }
     },
     "reason": {
       "label": "Reason (the seller will see it)",
-      "hint": "{min}-{max} characters."
+      "hint": "{min}-{max} characters.",
+      "audit": "Reason (kept in the audit log)",
+      "reporter": "Reason (kept in the audit log)"
     },
     "errors": {
       "reasonRequired": "Write the reason: at least 10 characters.",
@@ -997,7 +1021,181 @@
       "sessionExpired": "Your session has ended. Sign in again.",
       "unavailable": "The service is not available right now.",
       "network": "Network error. Try again.",
-      "server": "Something went wrong. Try again."
+      "server": "Something went wrong. Try again.",
+      "required": "Fill in this field.",
+      "tooLong": "The text is too long.",
+      "tooMany": "At most 10 words.",
+      "slugFormat": "Lowercase Latin letters, digits and hyphens only, e.g. watches-men.",
+      "valueRange": "Enter a whole number from 1 to 999.",
+      "priceFormat": "Enter a positive amount with at most 2 decimals, e.g. 2510.40.",
+      "taken": "This already exists.",
+      "invalid": "This value is not valid.",
+      "inUse": "In use, so it can't be deleted. Move the products or subcategories first.",
+      "self": "You can't change your own role.",
+      "sameRole": "The new role is the same as the current one.",
+      "lastAdmin": "This is the only admin; make someone else admin first.",
+      "largeChange": "The change is above the limit: confirm that you checked the source."
+    },
+    "metal": {
+      "GOLD": "Gold",
+      "SILVER": "Silver",
+      "PLATINUM": "Platinum",
+      "PALLADIUM": "Palladium"
+    },
+    "role": {
+      "USER": "Buyer",
+      "MERCHANT": "Seller",
+      "ADMIN": "Admin"
+    },
+    "reportStatus": {
+      "ALL": "All",
+      "OPEN": "Open",
+      "RESOLVED": "Resolved",
+      "DISMISSED": "Dismissed"
+    },
+    "reportReason": {
+      "WRONG_PRICE": "Wrong price",
+      "WRONG_INFO": "Wrong details",
+      "FAKE": "Fake or stolen photo",
+      "OFFENSIVE": "Against the rules",
+      "OTHER": "Other"
+    },
+    "quoteStatus": {
+      "HELD": "Held",
+      "APPLIED": "Applied",
+      "DISCARDED": "Discarded"
+    },
+    "auditTarget": {
+      "ALL": "All",
+      "STORE": "Store",
+      "PRODUCT": "Product",
+      "CHECK": "Document check",
+      "USER": "User",
+      "CATALOG": "Catalog",
+      "PRICE": "Metal price",
+      "REPORT": "Complaint"
+    },
+    "auditAction": {
+      "approve": "Approved",
+      "reject": "Rejected",
+      "block": "Blocked",
+      "unblock": "Unblocked",
+      "return": "Returned",
+      "deactivate": "Taken down",
+      "verify": "Verified",
+      "roleChange": "Role changed",
+      "create": "Added",
+      "delete": "Deleted",
+      "resolve": "Resolved",
+      "dismiss": "Dismissed",
+      "accept": "Price applied",
+      "discard": "Price discarded",
+      "override": "Price set by hand"
+    },
+    "catalog": {
+      "title": "Catalog",
+      "intro": "Categories, finenesses and search synonyms.",
+      "categories": "Categories",
+      "categoriesIntro": "Names are written in three languages; a category with products can't be deleted.",
+      "addCategory": "Add category",
+      "categoryText": "Pick a parent to add a subcategory.",
+      "noCategories": "No categories yet.",
+      "in": "in {name}",
+      "name": {
+        "az": "Name (az)",
+        "en": "Name (en)",
+        "ru": "Name (ru)"
+      },
+      "slug": "URL name",
+      "slugHint": "Lowercase Latin letters, digits and hyphens.",
+      "parent": "Parent category",
+      "noParent": "None (top level)",
+      "finenesses": "Finenesses",
+      "finenessesIntro": "Sellers can only pick these finenesses for a variant.",
+      "addFineness": "Add fineness",
+      "finenessText": "Fineness is parts per thousand: 585 = 58.5% pure metal.",
+      "noFinenesses": "No finenesses yet.",
+      "metal": "Metal",
+      "value": "Fineness",
+      "valueHint": "1-999, e.g. 585.",
+      "label": "Shown as",
+      "labelHint": "E.g. 585 (14K).",
+      "synonyms": "Search synonyms",
+      "synonymsIntro": "Searching for any word of a group gives the same results.",
+      "addSynonym": "Add synonym group",
+      "synonymText": "The main word and its spellings or synonyms.",
+      "noSynonyms": "No synonyms yet.",
+      "language": "Language",
+      "lang": {
+        "az": "Azerbaijani",
+        "en": "English",
+        "ru": "Russian"
+      },
+      "term": "Main word",
+      "words": "Synonyms",
+      "wordsHint": "Separate with commas, at most 10.",
+      "save": "Save",
+      "delete": "Delete",
+      "deleteTitle": "Delete {name}?",
+      "deleteText": "This can't be undone and is written to the audit log.",
+      "deleted": "{name} deleted",
+      "added": "{name} added"
+    },
+    "users": {
+      "title": "Users",
+      "intro": "Accounts and roles. Role changes are written to the audit log with a reason.",
+      "search": "Name, email or store",
+      "roleLabel": "Role",
+      "count": "{count, plural, =0 {No users} one {# user} other {# users}}",
+      "since": "Joined: {date}",
+      "colUser": "User",
+      "colStore": "Store",
+      "colSince": "Joined",
+      "change": "Change role",
+      "changeTitle": "Change the role of {name}?",
+      "changeText": "The new role applies from the next sign-in.",
+      "newRole": "New role",
+      "adminWarning": "An admin can manage every store, product and price."
+    },
+    "reports": {
+      "title": "Complaints",
+      "intro": "What buyers reported about products.",
+      "search": "Product, store or text",
+      "count": "{count, plural, =0 {No complaints} one {# complaint} other {# complaints}}",
+      "queueEmpty": "No open complaints."
+    },
+    "audit": {
+      "title": "Audit log",
+      "intro": "Every admin decision, newest first. Entries can't be edited.",
+      "search": "Item, admin or reason",
+      "targetLabel": "Item type",
+      "count": "{count, plural, =0 {No entries} one {# entry} other {# entries}}",
+      "colTime": "Time",
+      "colAction": "Action",
+      "colTarget": "Item",
+      "colActor": "Admin"
+    },
+    "prices": {
+      "title": "Metal prices",
+      "intro": "CBAR prices. A daily change above 10% is never applied automatically.",
+      "date": "Date: {date}",
+      "source": {
+        "CBAR": "CBAR",
+        "ADMIN": "Set by hand"
+      },
+      "perOunce": "1 troy ounce",
+      "perGram": "1 gram",
+      "change": "Against the previous business day",
+      "held": "The new CBAR price of {date} ({price}, {change}) is held because it moved more than {limit}%. Check the source, then apply or discard it.",
+      "override": "Set by hand",
+      "overrideTitle": "Set the {name} price by hand?",
+      "overrideText": "Price in use: {price} per ounce. Every metal-linked price will be recalculated.",
+      "newPrice": "New price, AZN per troy ounce",
+      "priceHint": "E.g. 7012.50",
+      "newChange": "Change: {change}",
+      "largeWarning": "The change is {change}, above the {limit}% limit.",
+      "confirmLarge": "I checked the source and the price is right",
+      "overridden": "{name} price changed"
     }
   },
   "MetalPrices": {

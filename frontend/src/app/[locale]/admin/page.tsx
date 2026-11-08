@@ -1,4 +1,4 @@
-import { ArrowRight, PackageCheck, ShieldCheck, Store } from "lucide-react";
+import { ArrowRight, Coins, Flag, PackageCheck, ShieldCheck, Store } from "lucide-react";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -39,6 +39,18 @@ async function Overview() {
       value: o.pendingChecks,
       href: "/admin/verification",
     },
+    {
+      icon: Flag,
+      label: t("openReports"),
+      value: o.openReports,
+      href: "/admin/reports",
+    },
+    {
+      icon: Coins,
+      label: t("heldPrices"),
+      value: o.heldPrices,
+      href: "/admin/prices",
+    },
   ];
   const waiting = queues.reduce((sum, q) => sum + q.value, 0);
 
@@ -49,7 +61,7 @@ async function Overview() {
           {t("queues")}
         </h2>
         {waiting === 0 && <p className="text-muted-foreground">{t("allClear")}</p>}
-        <ul className="grid gap-4 sm:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {queues.map(({ icon: Icon, label, value, href }) => (
             <li key={href}>
               <Link
