@@ -45,11 +45,11 @@ hidratasiya fərqi yoxdur. Keçid düyməsi: `ThemeToggle`. Hero səhnələri h�
 
 ## Tipoqrafiya
 
-| Rol                            | Şrift              | Qeyd                                         |
-| ------------------------------ | ------------------ | -------------------------------------------- |
-| Başlıq (`font-heading`, h1–h3) | Cormorant          | variable serif (300–700), italic yoxdur      |
-| Mətn (`font-sans`)             | sistem sans-serif  | şrift büdcəsi: səhifədə maks. 2 fayl         |
-| Kiçik texniki nişanlar         | sistem monospace   | `font-mono`, az istifadə (tarix, mənbə)      |
+| Rol                            | Şrift             | Qeyd                                    |
+| ------------------------------ | ----------------- | --------------------------------------- |
+| Başlıq (`font-heading`, h1–h3) | Cormorant         | variable serif (300–700), italic yoxdur |
+| Mətn (`font-sans`)             | sistem sans-serif | şrift büdcəsi: səhifədə maks. 2 fayl    |
+| Kiçik texniki nişanlar         | sistem monospace  | `font-mono`, az istifadə (tarix, mənbə) |
 
 Cormorant Ə İ Ş Ç Ğ Ö Ü və rus hərflərini dəstəkləyir. Şrift `next/font` ilə öz hostumuzdan,
 `display: swap`; yalnız səhifənin istifadə etdiyi unicode alt-dəstləri endirilir.
@@ -105,9 +105,14 @@ Card, Dialog, Sheet. Dialog və Sheet-in bağla düyməsinin adı `closeLabel` p
 
 ## Hərəkət kitabxanası
 
-Kinematik hero öz kiçik scroll mühərriki ilə qurulur (`src/lib/motion/scrub.ts`, bir neçə KB):
-pin CSS ilədir (hündür konteyner + `position: sticky` səhnə), JS yalnız scroll mövqeyini
-timeline-a çevirir (passive listener + requestAnimationFrame, yumşaldılmış). GSAP sınandı, amma
-250 KB skript büdcəsinə sığmadı (2026-11-04, ana səhifə 271 KB). Qaydalar: LCP poster şəkildir, animasiyadan asılı deyil; `prefers-reduced-motion` olanda
-pin və scrub yoxdur, statik səhnələr ardıcıl göstərilir; mətn real HTML-dir, 3 dildə.
+Ana səhifə hero-su Remotion-da qurulmuş səhnədir (`video/`): 1-ci akt qısa video (pələnglər gəlib dayanır,
+autoplay, səssiz, loop yoxdur, son kadrda qalır), 2-ci akt scroll ilə canvas-da oynayan kadrlardır
+(`src/lib/motion/frames.ts`: kadrlar kobuddan incəyə yüklənir). Pin CSS ilədir (hündür konteyner +
+`position: sticky` səhnə), JS yalnız scroll mövqeyini kadra çevirir (passive listener +
+requestAnimationFrame). Arxadakı böyük "Jeparla" sözü `mix-blend-mode: darken` ilə fondan bir az
+tündür, ona görə heyvanlar onun qabağından keçir; scroll başlayanda söz yox olur. Fonun rəngi
+videodan oxunur (`--hero-bg`), səhifə və video bir krem olur. GSAP sınandı, amma 250 KB skript
+büdcəsinə sığmadı (2026-11-04). Qaydalar: LCP başlıq/söz mətnidir, video poster yoxdur; kadrlar
+1-ci aktdan sonra yüklənir; `prefers-reduced-motion` olanda pin və autoplay yoxdur, son kadr
+(üç model) göstərilir; mətn real HTML-dir, 3 dildə, bir şüar.
 Başqa səhifələrdə animasiya CSS ilə (`--duration-*`, `--ease-*` token-ləri).

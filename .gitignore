@@ -57,3 +57,7 @@ docs/research/screens/
 
 # --- Agent skills (local, from the owner's forks; see docs/DESIGN.md) ---
 .claude/skills/
+
+# Remotion hero video (video/)
+video/node_modules/
+video/out/

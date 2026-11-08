@@ -1,22 +1,23 @@
-# Şəkil mənbələri
+# Şəkil və video mənbələri
 
-Saytdakı üçüncü tərəf şəkilləri və onların lisenziyası. Yeni şəkil əlavə edəndə buraya yazın.
+Saytdakı üçüncü tərəf və yaradılmış vizualların mənbəyi. Yeni şəkil və ya video əlavə edəndə
+buraya yazın.
 
-## Ana səhifə hero (`frontend/src/assets/hero/`)
+## Ana səhifə hero (`frontend/public/hero/`)
 
-Lisenziya: [Unsplash License](https://unsplash.com/license): pulsuz, kommersiya istifadəsi
-mümkündür, istinad tələb olunmur (biz yenə də göstəririk). Dəyişməmiş nüsxəni satmaq və rəqib
-stok xidməti qurmaq olmaz. Fayllar 1440x2400 portret kəsimidir (heyvanın başı mərkəzdə).
+Səhnə: ağ pələng, qızılı pələng və qara bəbir (pantera) gəlib mərkəzdə dayanır, qızılı işıq keçir və onlar gümüş,
+qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.
 
-| Fayl               | Fotoqraf          | Mənbə                                   |
-| ------------------ | ----------------- | --------------------------------------- |
-| `white-tiger.jpg`  | Tommaso Ubezio    | https://unsplash.com/photos/D7lCQtKubOA |
-| `snow-leopard.jpg` | Wildlife by Irina | https://unsplash.com/photos/4SZ6fXak7xQ |
-| `gold-tiger.jpg`   | Lambert Huang     | https://unsplash.com/photos/b3MRYUtn4cs |
+- **Mənbə şəkillər:** AI ilə yaradılıb (Vheer, "Text to Image"; modellər 2026-11-05, heyvanlar 2026-11-08):
+  `video/source/tigers.jpg` və `video/source/models.jpg`. Fonları lokal olaraq silinib
+  (`@imgly/background-removal-node`), fiqurlar `video/public/` qovluğundadır.
+- **Hərəkət:** Remotion layihəsi (`video/`), AI video deyil. `cd video && sh scripts/export.sh`
+  `enter-*.mp4` (1-ci akt) və `tf-*/NN.jpg` (2-ci akt, scroll ilə) fayllarını yaradır.
+- **İşarələmə:** sahibin qərarı ilə (2026-11-05) hero-da "AI" yazısı göstərilmir. Bu, kampaniya
+  vizualıdır, məhsul şəkli deyil: modellərin taxdığı zərgərlik kataloqdakı konkret məhsulu
+  təsvir etmir. Məhsul şəkilləri üçün AI işarəsi qaydası (`CLAUDE.md`) qüvvədədir.
+- Modellər real insan deyil; sahibin öz çəkilişi (model razılığı ilə) gələndə dəyişdirilə bilər.
 
-Endirilib: 2026-11-04. Hero-da istinad sətri desktopda görünür.
+## Köhnə hero (silinib, 2026-11-08)
 
-## Modellər
-
-Hələ yoxdur: sahibin öz çəkilişi (model razılığı ilə). O vaxta qədər hero-da
-"Model çəkilişi hazırlanır" yer tutucusu göstərilir.
+Unsplash fotoları (Tommaso Ubezio, Wildlife by Irina, Lambert Huang) artıq istifadə olunmur.

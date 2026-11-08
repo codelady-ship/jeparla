@@ -25,7 +25,8 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
 - **Clean-room:** istinad saytlarının (Mejuri, Tiffany, Swarovski və s.) kodu, şəkli, videosu,
   loqosu, mətni, şrifti və imza rəngi götürülmür. Ekran görüntüləri yalnız
   `docs/research/screens/`-də və `.gitignore`-dadır.
-- **Dürüstlük:** saxta rəy, saxta rəqəm, "100% zəmanət" yoxdur. AI ilə yaradılmış şəkil işarələnir.
+- **Dürüstlük:** saxta rəy, saxta rəqəm, "100% zəmanət" yoxdur. AI ilə yaradılmış məhsul şəkli işarələnir;
+  hero kampaniya vizualının AI mənşəyi yalnız `docs/credits.md`-də qeyd olunur (sahibin qərarı).
 - **Təhlükəsizlik:** rol və sahiblik backend-də yoxlanılır; sirlər yalnız env-də; açar repoda yoxdur.
 
 ## Texnoloji stack
@@ -46,14 +47,18 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
 ## Dizayn və animasiya skill-ləri
 
 `.claude/skills/`-də (lokal, gitignore; sahibin GitHub fork-larından, MIT):
+
 - `hallmark`: istiqamət, kompozisiya və "AI slop" yoxlaması (UI dəyişikliyindən əvvəl və sonra).
 - `gsap-core`, `gsap-scrolltrigger`, `gsap-react`, `gsap-timeline`, `gsap-performance`:
   scroll animasiyası prinsipləri üçün istinad. Kodda GSAP yoxdur: 250 KB skript büdcəsinə
   sığmadı; hero öz mühərrikindədir (`src/lib/motion/scrub.ts`, CSS sticky pin).
 - `emil-design-eng`, `review-animations`, `animation-performance`: mikro-animasiya keyfiyyəti
   (yalnız `transform`/`opacity`, 60fps, layout thrash yoxdur).
-Seçilməyənlər: impeccable (ilk işə düşəndə kənardan binar endirir), react-bits və three.js
-(JS büdcəsi), framer-motion (JS büdcəsi).
+- `remotion-best-practices`, `remotion-create`, `remotion-render`, `remotion-multimedia`,
+  `remotion-license`: hero səhnəsi (`video/`, Remotion). Rəsmi `remotion-dev/skills` repo-sundan.
+  Remotion fərdlər və kiçik şirkətlər üçün pulsuzdur; böyüyəndə lisenziyanı yoxlayın.
+  Seçilməyənlər: impeccable (ilk işə düşəndə kənardan binar endirir), react-bits və three.js
+  (JS büdcəsi), framer-motion (JS büdcəsi).
 
 ## Repo strukturu
 
@@ -61,6 +66,7 @@ Seçilməyənlər: impeccable (ilk işə düşəndə kənardan binar endirir), r
 jeparla/
 ├── frontend/        # Next.js
 ├── backend/         # Spring Boot API (Gradle)
+├── video/           # Remotion: ana səhifə hero səhnəsi (scripts/export.sh -> frontend/public/hero)
 ├── docs/            # PLAN.md, DESIGN.md, RBAC.md, deploy.md, brand.json, research/
 ├── tools/           # contrast.py, sweep.py (replica-skill, MIT)
 ├── BACKLOG.md       # epic / sub-issue backlog

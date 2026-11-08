@@ -181,18 +181,19 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Cinematic home hero (<CinematicHero>, #27). The default rules are the static
-   frame (no JS, reduced motion, data-mode="static"). The motion layout applies
-   only while scripting is on and motion is allowed, so the first paint already
-   matches the timeline start and nothing jumps when the script runs.
+   Home hero (<CinematicHero>, #27). Three tigers walk in on the site's cream,
+   then turn into three models on scroll. The default rules are the static frame
+   (no JS, reduced motion, data-mode="static"); the pinned scroll track applies
+   only while scripting is on and motion is allowed. --hero-bg is replaced at
+   runtime by the colour read from the video, so page and footage are one cream.
    --------------------------------------------------------------------------- */
 .hero-track {
   position: relative;
   /* Starts under the sticky header (4rem), so the first screen is exactly one viewport. */
   margin-top: -4rem;
-  background: var(--scene-deep);
 }
 .hero {
+  --hero-bg: var(--scene-ivory);
   position: relative;
   top: 0;
   isolation: isolate;
@@ -200,240 +201,104 @@
   min-height: 560px;
   max-height: 1100px;
   overflow: hidden;
-  background: var(--scene-deep);
-  color: var(--scene-ivory);
+  background: var(--hero-bg);
+  color: var(--scene-green);
 }
-.hero-panels {
+.hero-media {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
 }
-.hero-panels::after {
-  content: "";
+.hero-video,
+.hero-frames {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      to top,
-      color-mix(in srgb, var(--scene-deep) 94%, transparent) 0%,
-      color-mix(in srgb, var(--scene-deep) 60%, transparent) 30%,
-      transparent 62%
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--scene-deep) 55%, transparent) 0%,
-      transparent 22%
-    );
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Models stand on the bottom edge of the footage: keep it on screen. */
+  object-position: 50% 100%;
 }
-.hero-panel {
-  position: relative;
-  margin: 0;
-  overflow: hidden;
-  background: var(--scene-green);
-}
-.hero-dim {
-  position: absolute;
-  inset: 0;
-  background: var(--scene-deep);
+.hero-frames {
   opacity: 0;
-  pointer-events: none;
 }
-.hero-model {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  transform: translateX(-101%);
-}
-.hero-model-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, var(--scene-green), var(--scene-deep) 75%);
-  transform: translateX(101%);
-}
-.hero-sweep {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  width: 34%;
-  pointer-events: none;
-  visibility: hidden;
-  opacity: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--scene-gold-light) 60%, transparent),
-    transparent
-  );
-}
-.hero-caption {
-  position: absolute;
-  z-index: 2;
-  top: 5rem;
-  inset-inline: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
+
 .hero-copy {
   position: absolute;
-  z-index: 3;
+  z-index: 2;
   inset-inline: 0;
-  bottom: 0;
-  max-width: 80rem;
-  margin-inline: auto;
-  padding: 0 1rem 2.25rem;
+  /* Phone: under the header, above the animals. */
+  top: 5.25rem;
+  padding: 0 1rem;
+  max-width: 26rem;
 }
-.hero-copy-item:not([data-hero-copy="intro"]) {
-  visibility: hidden;
-  opacity: 0;
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.25rem, 9vw, 3.25rem);
+  line-height: 1;
+  font-weight: 500;
 }
 .hero-hint {
-  display: none;
-}
-.hero-credit {
-  display: none;
   position: absolute;
-  z-index: 3;
-  right: 0.75rem;
-  bottom: 0.5rem;
-  font-size: 0.625rem;
-  color: var(--scene-ivory-muted);
+  z-index: 2;
+  left: 50%;
+  bottom: 1.25rem;
+  display: none;
+  align-items: center;
+  gap: 0.375rem;
+  translate: -50% 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
 }
-@media (max-width: 767px) {
-  .hero-items {
-    display: none;
-  }
-}
-@media (min-width: 768px) {
-  .hero-credit {
-    display: block;
-  }
-  .hero-caption {
-    top: 5.5rem;
-    inset-inline: 1.5rem;
-  }
+@media (min-aspect-ratio: 4/5) {
   .hero-copy {
-    padding: 0 1.5rem 4rem;
+    top: 50%;
+    translate: 0 -10%;
+    left: max(1.5rem, calc((100vw - 80rem) / 2 + 1.5rem));
+    right: auto;
+    width: min(26rem, 31vw);
+    padding: 0;
+  }
+  .hero-title {
+    font-size: clamp(2.25rem, 3.4vw, 3.5rem);
   }
 }
 
-@keyframes hero-in-left {
+@keyframes hero-title-in {
   from {
-    transform: translateX(-7%);
-  }
-}
-@keyframes hero-in-right {
-  from {
-    transform: translateX(7%);
-  }
-}
-@keyframes hero-in-center {
-  from {
-    transform: translateY(5%) scale(1.06);
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
   }
 }
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  /* Tall track, sticky stage: the pin is pure CSS; JS only maps scroll to the timeline.
-     Lengths match HERO_SCROLL in hero-timeline.ts (+1 viewport for the stage). */
+  /* Tall track, sticky stage: the pin is pure CSS; JS only maps scroll to frames. */
   .hero-track:not([data-mode="static"]) {
-    height: 360svh;
+    height: 260svh;
     .hero {
       position: sticky;
     }
-  }
-  @media (max-width: 767px) {
-    .hero-track:not([data-mode="static"]) {
-      height: 460svh;
+    .hero-title {
+      animation: hero-title-in 0.9s var(--ease-luxe) 0.25s both;
     }
-  }
-  .hero-track:not([data-mode="static"]) {
-    .hero-caption {
-      visibility: hidden;
-      opacity: 0;
+    .hero-frames {
+      transition: opacity 0.35s var(--ease-luxe);
     }
     .hero-hint {
-      position: absolute;
-      z-index: 3;
-      left: 50%;
-      bottom: 1.25rem;
-      display: none;
-      align-items: center;
-      gap: 0.375rem;
-      translate: -50% 0;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      color: var(--scene-ivory-muted);
+      display: inline-flex;
     }
-  }
-  @media (min-width: 768px) {
-    .hero-track:not([data-mode="static"]) {
-      .hero-hint {
-        display: inline-flex;
-      }
-      .hero-panel:nth-child(1) {
-        animation: hero-in-left var(--duration-zoom) var(--ease-luxe) backwards;
-      }
-      .hero-panel:nth-child(2) {
-        animation: hero-in-center var(--duration-zoom) var(--ease-luxe) backwards;
-      }
-      .hero-panel:nth-child(3) {
-        animation: hero-in-right var(--duration-zoom) var(--ease-luxe) backwards;
-      }
+    /* Everything but the headline waits until the tigers have stopped. */
+    .hero:not(.is-revealed) .hero-rv {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(6px);
     }
-  }
-  /* Phone: one full-screen panel at a time, stacked; the timeline brings in the others. */
-  @media (max-width: 767px) {
-    .hero-track:not([data-mode="static"]) {
-      .hero-panels {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 0;
-      }
-      .hero-panel {
-        grid-area: 1 / 1;
-        transform-origin: 50% 50%;
-      }
-      .hero-panel:not(:first-child) {
-        visibility: hidden;
-        opacity: 0;
-      }
-      /* Before hydration only the first animal is on screen; the others stay out of
-         layout so their lazy images do not compete with the LCP image for bandwidth. */
-      &[data-mode="pending"] .hero-panel:not(:first-child) {
-        display: none;
-      }
-      /* Entry order: tiger over the white tiger, snow leopard over both. */
-      .hero-panel:nth-child(2) {
-        z-index: 2;
-      }
-      .hero-panel:nth-child(3) {
-        z-index: 1;
-      }
-      .hero-panel:first-child {
-        animation: hero-in-left var(--duration-zoom) var(--ease-luxe) backwards;
-      }
-      .hero-model-inner > div {
-        width: 80%;
-        max-width: none;
-        gap: 1.5rem;
-      }
-      .hero-model-inner span:first-of-type {
-        font-size: 3.75rem;
-      }
-      .hero-model-inner span:last-of-type {
-        font-size: 2.25rem;
-        line-height: 1.2;
-      }
-      .hero-model-inner svg {
-        width: 4rem;
-        height: 4rem;
-      }
+    .hero-rv {
+      transition:
+        opacity 0.9s var(--ease-luxe),
+        transform 0.9s var(--ease-luxe),
+        filter 0.9s var(--ease-luxe);
+      transition-delay: calc(var(--d, 0) * 90ms);
     }
   }
 }
