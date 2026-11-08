@@ -6,7 +6,16 @@ import type { ReactNode } from "react";
 import { IntlProvider } from "@/components/i18n/intl-provider";
 import { routing } from "@/i18n/routing";
 
-export type AdminPage = "overview" | "stores" | "products" | "checks";
+export type AdminPage =
+  | "overview"
+  | "stores"
+  | "products"
+  | "checks"
+  | "catalog"
+  | "users"
+  | "reports"
+  | "audit"
+  | "prices";
 
 /** Private area: titled per page, never indexed. */
 export async function adminMetadata(page: AdminPage): Promise<Metadata> {

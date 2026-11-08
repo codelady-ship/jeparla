@@ -1,6 +1,16 @@
 "use client";
 
-import { LayoutDashboard, PackageCheck, ShieldCheck, Store } from "lucide-react";
+import {
+  Coins,
+  Flag,
+  FolderTree,
+  History,
+  LayoutDashboard,
+  PackageCheck,
+  ShieldCheck,
+  Store,
+  Users,
+} from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "cn";
 
@@ -9,6 +19,11 @@ const ITEMS = [
   { href: "/admin/stores", key: "stores", icon: Store },
   { href: "/admin/products", key: "products", icon: PackageCheck },
   { href: "/admin/verification", key: "checks", icon: ShieldCheck },
+  { href: "/admin/reports", key: "reports", icon: Flag },
+  { href: "/admin/prices", key: "prices", icon: Coins },
+  { href: "/admin/catalog", key: "catalog", icon: FolderTree },
+  { href: "/admin/users", key: "users", icon: Users },
+  { href: "/admin/audit", key: "audit", icon: History },
 ] as const;
 
 export type AdminNavKey = (typeof ITEMS)[number]["key"];

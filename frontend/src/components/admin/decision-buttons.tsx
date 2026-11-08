@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, Check, CircleSlash, RotateCcw, Undo2, X } from "lucide-react";
+import { Ban, Check, CheckCheck, CircleSlash, RotateCcw, Trash2, Undo2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,20 +19,8 @@ import {
   REASON_MIN,
   type AdminAction,
 } from "@/lib/admin/decisions";
+import { errorKey } from "@/lib/admin/errors";
 import { sendJson } from "@/lib/merchant/client";
-
-const ERRORS = [
-  "reasonRequired",
-  "reasonTooLong",
-  "conflict",
-  "sessionExpired",
-  "unavailable",
-  "network",
-  "server",
-] as const;
-/** A server or schema error code as a message key; unknown codes read as a server error. */
-const errorKey = (code: string) =>
-  ERRORS.includes(code as (typeof ERRORS)[number]) ? (code as (typeof ERRORS)[number]) : "server";
 
 const ICONS: Record<AdminAction, typeof Check> = {
   approve: Check,
@@ -42,6 +30,10 @@ const ICONS: Record<AdminAction, typeof Check> = {
   block: Ban,
   return: Undo2,
   deactivate: CircleSlash,
+  resolve: CheckCheck,
+  dismiss: X,
+  accept: Check,
+  discard: Trash2,
 };
 
 /**
@@ -54,8 +46,11 @@ export function DecisionButtons<S extends string>({
   name,
   actions,
   onDone,
+  reasonLabel,
 }: {
   endpoint: string;
+  /** Who reads the reason; the default label says the seller does. */
+  reasonLabel?: string;
   name: string;
   actions: readonly AdminAction[];
   onDone: (result: { status: S; note: string | null }, action: AdminAction) => void;
@@ -139,7 +134,7 @@ export function DecisionButtons<S extends string>({
               {needsReason && (
                 <div className="flex flex-col gap-1">
                   <label htmlFor={reasonId} className="text-sm font-medium">
-                    {t("reason.label")}
+                    {reasonLabel ?? t("reason.label")}
                   </label>
                   <textarea
                     id={reasonId}
