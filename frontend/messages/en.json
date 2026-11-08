@@ -450,12 +450,7 @@
     "pending": "Please wait",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored.",
-    "areas": {
-      "merchant": "Store dashboard",
-      "admin": "Admin panel",
-      "soon": "This section is being built."
-    }
+    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored."
   },
   "Sell": {
     "title": "Join as a seller",
@@ -865,6 +860,144 @@
       "moneyInvalid": "Enter 0 or a positive amount, for example 12.50.",
       "percentInvalid": "Enter a percent between 0 and 1000.",
       "maxBelowMin": "The maximum price cannot be lower than the minimum."
+    }
+  },
+  "Admin": {
+    "title": "Admin panel",
+    "demoNote": "Demo mode: sample data; decisions are checked but not saved on the server.",
+    "nav": {
+      "label": "Admin sections"
+    },
+    "statusLabel": "Status",
+    "colSubmitted": "Submitted",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "submitted": "Submitted: {date}",
+    "note": "Reason",
+    "emptyFiltered": "Nothing matches these filters.",
+    "clearFilters": "Clear filters",
+    "done": "{name}: {status}",
+    "overview": {
+      "title": "Overview",
+      "intro": "Waiting work and the state of the platform.",
+      "queues": "Waiting",
+      "pendingStores": "Store applications",
+      "productsInReview": "Products in review",
+      "pendingChecks": "Document checks",
+      "open": "Open",
+      "allClear": "Nothing is waiting.",
+      "platform": "Platform",
+      "stores": "Active stores",
+      "liveProducts": "Live products",
+      "metalPrice": "Metal price date"
+    },
+    "stores": {
+      "title": "Stores",
+      "intro": "New seller applications and the status of every store.",
+      "search": "Store, city or owner",
+      "count": "{count, plural, =0 {No stores} one {# store} other {# stores}}",
+      "colStore": "Store",
+      "colOwner": "Owner",
+      "products": "{count, plural, =0 {no products} one {# product} other {# products}}"
+    },
+    "storeStatus": {
+      "ALL": "All",
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "BLOCKED": "Blocked"
+    },
+    "products": {
+      "title": "Moderation",
+      "intro": "Products sent by sellers appear on the site after review.",
+      "search": "Product or store",
+      "count": "{count, plural, =0 {No products} one {# product} other {# products}}",
+      "queueEmpty": "No products are waiting for review.",
+      "preview": "View on site"
+    },
+    "checks": {
+      "title": "Document checks",
+      "intro": "The Jeparla Verified badge is granted only after the documents are checked.",
+      "search": "Store or city",
+      "count": "{count, plural, =0 {No requests} one {# request} other {# requests}}",
+      "queueEmpty": "No documents are waiting for a check.",
+      "kind": {
+        "seller": "Seller check",
+        "documents": "Store documents",
+        "expertise": "Product expertise"
+      },
+      "docs": "Documents",
+      "view": "View document: {name}",
+      "viewText": "Documents are stored privately and open through a short-lived signed link on every view. Demo mode has no files.",
+      "pages": "{count, plural, one {# page} other {# pages}}"
+    },
+    "checkStatus": {
+      "ALL": "All",
+      "NONE": "None",
+      "PENDING": "Pending",
+      "VERIFIED": "Verified",
+      "REJECTED": "Returned"
+    },
+    "docKind": {
+      "TAX_ID": "Tax ID certificate",
+      "TRADE_LICENSE": "Trade licence",
+      "ASSAY_CERTIFICATE": "Assay certificate",
+      "LAB_REPORT": "Lab report"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "block": "Block",
+      "unblock": "Unblock",
+      "return": "Return",
+      "deactivate": "Take down",
+      "verify": "Verify",
+      "named": "{action}: {name}"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Approve {name}?",
+        "text": "The seller will be notified."
+      },
+      "reject": {
+        "title": "Reject {name}?",
+        "text": "The reason will be sent to the seller."
+      },
+      "block": {
+        "title": "Block {name}?",
+        "text": "All of the store's products will be hidden. The reason will be sent to the seller."
+      },
+      "unblock": {
+        "title": "Unblock {name}?",
+        "text": "Live products will be visible again."
+      },
+      "return": {
+        "title": "Return {name}?",
+        "text": "The seller will see the reason and fix it."
+      },
+      "deactivate": {
+        "title": "Take down {name}?",
+        "text": "Buyers will no longer see the product. The reason will be sent to the seller."
+      },
+      "verify": {
+        "title": "Verify {name}?",
+        "text": "The store will get the matching Jeparla Verified badge."
+      },
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "reason": {
+      "label": "Reason (the seller will see it)",
+      "hint": "{min}-{max} characters."
+    },
+    "errors": {
+      "reasonRequired": "Write the reason: at least 10 characters.",
+      "reasonTooLong": "The reason can't be longer than 500 characters.",
+      "conflict": "This item has already changed. Reload the page.",
+      "sessionExpired": "Your session has ended. Sign in again.",
+      "unavailable": "The service is not available right now.",
+      "network": "Network error. Try again.",
+      "server": "Something went wrong. Try again."
     }
   },
   "MetalPrices": {
