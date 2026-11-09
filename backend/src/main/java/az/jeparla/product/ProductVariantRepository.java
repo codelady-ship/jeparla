@@ -1,6 +1,7 @@
 package az.jeparla.product;
 
 import az.jeparla.common.persistence.NoDeleteRepository;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +19,14 @@ public interface ProductVariantRepository extends NoDeleteRepository<ProductVari
             where v.id = :id and v.deletedAt is null and p.store.owner.id = :ownerId
             """)
     Optional<ProductVariant> findLiveByIdAndOwnerId(@Param("id") Long id, @Param("ownerId") Long ownerId);
+
+    /**
+     * Compare page (#37): live variants of public products, with product, store and fineness in the
+     * same statement. Unknown, removed or hidden ids are simply missing.
+     */
+    @Query("select v from ProductVariant v join fetch v.product p join fetch p.store s join fetch v.fineness"
+            + " where v.id in :ids and v.deletedAt is null and " + ProductRepository.PUBLIC)
+    List<ProductVariant> findPublicLiveByIdIn(@Param("ids") Collection<Long> ids);
 
     /** SKU is unique per store among live variants (partial unique index). */
     @Query("select count(v) > 0 from ProductVariant v where v.storeId = :storeId and v.sku = :sku and v.deletedAt is null")

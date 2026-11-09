@@ -50,8 +50,8 @@ class SecurityRulesTests {
 
     @Test
     void publicCatalogGetsAreAnonymous() throws Exception {
-        // The catalog endpoints come with #37: today the answer is 404, but never 401.
-        mockMvc.perform(get("/api/v1/products")).andExpect(status().isNotFound());
+        // Anonymous visitors read the catalog (#37); an unknown store is 404, never 401.
+        mockMvc.perform(get("/api/v1/products")).andExpect(status().isOk());
         mockMvc.perform(get("/api/v1/stores/some-store")).andExpect(status().isNotFound());
     }
 

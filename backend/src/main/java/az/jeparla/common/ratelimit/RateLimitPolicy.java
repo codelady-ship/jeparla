@@ -37,7 +37,12 @@ public enum RateLimitPolicy {
     /** Product reports from one IP address (used by the report endpoint, #37). */
     REPORT_IP("report-ip", 10, Duration.ofHours(1)),
     /** Product reports by one account (#37). */
-    REPORT_ACCOUNT("report-account", 5, Duration.ofHours(1));
+    REPORT_ACCOUNT("report-account", 5, Duration.ofHours(1)),
+    /**
+     * WhatsApp contact clicks counted from one IP address (#37). Clicks over the limit are not counted
+     * (no error), so the statistics cannot be inflated by a script.
+     */
+    CONTACT_IP("contact-ip", 60, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

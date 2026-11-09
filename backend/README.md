@@ -58,6 +58,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
+| `JEPARLA_S3_PUBLIC_URL` | boş | Public bucket-in brauzer URL-i (məs. `https://img.jeparla.az`); şəkil URL-i = bu dəyər + `/` + açar. Demo şəkillər (`demo/...`) üçün lazım deyil |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
 
 ## Reverse proxy və müştəri IP-si
@@ -102,6 +103,30 @@ IP diapazonlarına qoyulur və `{remote_host}` əvəzinə `{client_ip}` yazılı
 
 Yoxlama (deploy sonrası): `Forwarded: for=...` və `X-Forwarded-For` hər sorğuda dəyişdirilərək 21
 login sorğusu göndərilir, 21-ci `429` olmalıdır.
+
+## İctimai kataloq API (#37)
+
+Hamısı anonim `GET`-dir, cavablar `frontend/src/types/api.ts` tipləri ilə eynidir (Swagger: `/swagger-ui.html`).
+
+| Endpoint | Cavab |
+| --- | --- |
+| `GET /api/v1/products` | `Page<ProductSummary>`; filtrlər `ProductFilters` ilə eyni: `q`, `category`, `store` (çoxlu), `metal`, `fineness` (çoxlu), `minWeight`/`maxWeight`, `minPrice`/`maxPrice`, `verified`, `inStock`, `city`, `shape`/`color`/`clarity` (çoxlu), `minCarat`/`maxCarat`, `sort` (`relevance`, `newest`, `price_asc`, `price_desc`, `weight_asc`), `page` (0-dan), `size` (1-96, default 24) |
+| `GET /api/v1/products?ids=1,2` | `ProductSummary[]` (seçilmişlər), soruşulan sırada, ən çox 100 |
+| `GET /api/v1/products/{slug}` | `Product` və ya 404 |
+| `GET /api/v1/variants?ids=10,20` | `CompareItem[]` (müqayisə), ən çox 4 |
+| `GET /api/v1/categories`, `/finenesses` | `Category[]` (say alt kateqoriyalarla), `Fineness[]` |
+| `GET /api/v1/stores?q=&city=`, `/stores/{slug}`, `/stores/{slug}/products` | `StoreSummary[]`, `Store`, `Page<ProductSummary>` |
+| `GET /api/v1/metal-prices/latest`, `/metal-prices/history?metal=GOLD&days=30` | `MetalPrice[]` (yalnız `APPLIED` kotirovkalar) |
+| `POST /api/v1/products/{id}/contact-click` | 204; WhatsApp klik statistikası (`product_contact_clicks`, gün üzrə), qonaq da olar |
+| `POST /api/v1/products/{id}/reports` | 204; `{reason, message?}` şikayət, qonaq da olar, `report-ip`/`report-account` limiti |
+
+- **Görünən məhsul:** `APPROVED`, silinməyib, mağazası `APPROVED`, kateqoriyası və bütün üst kateqoriyaları aktivdir və ən azı bir canlı variantı var. Qalan hər şey bütün endpoint-lərdə (siyahı, səhifə, ids, müqayisə, saylar, şikayət, klik) yoxdur və ya 404-dür. Deaktiv kateqoriyanın məhsulları gizlənir.
+- **Kart dəyərləri:** default variant ən ucuz canlı variantdır: `priceFrom`, `defaultVariantId`, `pricingMode`, `fineness`, `weightGrams` ondan gəlir; `stockStatus` variantların ən yaxşısıdır. Qiymət filtri və sıralama `priceFrom`-a görədir, çəki və əyar filtri hər hansı canlı variantla uyğunlaşır.
+- **Sabit səhifələmə:** hər sıralama sonda məhsul id-si ilə bitir; son səhifədən sonrakı səhifə boşdur, saylar qalır.
+- **Dil:** məlumat həmişə üç dildə (`{az, en, ru}`) gəlir; `Accept-Language` yalnız xəta mətnini dəyişir. Pul `{amount: "1248.50", currency}`, çəki və karat sətir kimi.
+- **Keş:** `Cache-Control: public, max-age, s-maxage, stale-while-revalidate` (CDN üçün; `CachePolicy`) və ETag (`If-None-Match` -> 304). Xətalar `no-store`-dur.
+- **Şəkil URL-i:** `demo/ring-gold-1.jpg#12-0` açarı `/demo/ring-gold-1.jpg` olur (frontend-in `public/demo` qovluğu, fraqment atılır); qalan açarlar `JEPARLA_S3_PUBLIC_URL/<açar>`, onlarda `#` ola bilməz (V9 CHECK).
+- **Kontrakt testi:** `CatalogContractTests` frontend `http.ts`-in göndərdiyi sorğunu backend-ə verir və cavabı frontend mock-unun eyni çağırışa cavabı ilə müqayisə edir (açarlar, JSON tipləri, dəyərlər). Fixture-lar frontend kodundan yaradılır: `node backend/src/test/resources/contract/generate.mjs` (repo kökündən; `frontend/node_modules` lazımdır). Tiplər, mock və ya demo məlumat dəyişəndə yenidən yaradın və commit edin.
 
 ## Giriş və icazələr
 

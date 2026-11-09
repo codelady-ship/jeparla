@@ -28,6 +28,7 @@ Qeydiyyat: `POST /api/v1/auth/register` hesabı `USER` yaradır, `POST /api/v1/a
 | `/api/v1/auth/**` (qalanı, məs. `GET /me`) | daxil olmuş istifadəçi |
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/admin/**` | `ADMIN` |
+| `POST /api/v1/products/{id}/reports`, `POST /api/v1/products/{id}/contact-click` | hamı, qonaq da (rate limit ilə, #37) |
 | `/api/v1/**` üzrə digər yazma sorğuları (`POST`, `PUT`, `PATCH`, `DELETE`) | daxil olmuş istifadəçi |
 | `/actuator/health`, `/actuator/health/**` | hamı |
 | `/actuator/**` (qalanı) | heç kim |
@@ -104,7 +105,8 @@ telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 | `register-ip` | 10 / saat | hər qeydiyyat | IP |
 | `register-account` | 5 / saat | hər qeydiyyat | e-poçt və ya telefon |
 | `refresh-ip` | 60 / 5 dəq. | hər refresh | IP (token 256 bitdir, təxmin etmək olmur) |
-| `report-ip`, `report-account` | 10 / saat, 5 / saat | | şikayət endpoint-i üçün hazırdır (#37) |
+| `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37); limit yoxlaması məhsulun varlığından əvvəldir |
+| `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
 `jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IPv6 müştəri /64 şəbəkəsi ilə sayılır
@@ -144,7 +146,7 @@ inanırdı. Caddy konfiqurasiyası: [backend/README.md](../backend/README.md#rev
   refresh-dir: yalnız `/api/v1/auth`-a, yalnız eyni saytdan (`SameSite=Strict`) gedir.
 - Başlıqlar: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
   `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (Swagger UI xaric),
-  HTTPS-də `Strict-Transport-Security`, `Cache-Control: no-store`.
+  HTTPS-də `Strict-Transport-Security`, `Cache-Control: no-store` (istisna: ictimai kataloq GET cavabları `public`, `s-maxage`, `stale-while-revalidate` və ETag ilə CDN-də keşlənir, #37).
 
 ## Audit
 

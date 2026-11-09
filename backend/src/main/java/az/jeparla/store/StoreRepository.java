@@ -24,6 +24,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("select s from Store s where s.status = az.jeparla.store.StoreStatus.APPROVED and s.city = :city")
     Page<Store> findPublicByCity(@Param("city") String city, Pageable pageable);
 
+    /** Every public store, oldest first ({@code GET /api/v1/stores} filters this list by city and words). */
+    @Query("select s from Store s where s.status = az.jeparla.store.StoreStatus.APPROVED order by s.id")
+    List<Store> findAllPublic();
+
     /** Public APPROVED stores by slug, for the multi-store catalog filter. */
     @Query("select s from Store s where s.slug in :slugs and s.status = az.jeparla.store.StoreStatus.APPROVED")
     List<Store> findPublicBySlugIn(@Param("slugs") List<String> slugs);
