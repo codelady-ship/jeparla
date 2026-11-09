@@ -1,0 +1,90 @@
+name: compose
+
+# Local stack check (#31): docker-compose.yml is valid against .env.example and the stack
+# (PostgreSQL, Redis, MinIO, bucket init, API) starts and turns healthy.
+on:
+  pull_request:
+    paths:
+      - "docker-compose.yml"
+      - ".env.example"
+      - "backend/**"
+      - ".github/workflows/compose.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docker-compose.yml"
+      - ".env.example"
+      - "backend/**"
+      - ".github/workflows/compose.yml"
+
+concurrency:
+  group: compose-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  stack:
+    name: docker compose
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Throwaway CI-only values for the variables .env.example leaves empty.
+      - name: Create .env from .env.example
+        run: |
+          cp .env.example .env
+          sed -i \
+            -e "s/^JEPARLA_DB_PASSWORD=$/JEPARLA_DB_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_REDIS_PASSWORD=$/JEPARLA_REDIS_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_S3_ACCESS_KEY=$/JEPARLA_S3_ACCESS_KEY=ci$(openssl rand -hex 6)/" \
+            -e "s/^JEPARLA_S3_SECRET_KEY=$/JEPARLA_S3_SECRET_KEY=ci$(openssl rand -hex 16)/" \
+            .env
+          if grep -E '^[A-Z_]+=$' .env; then echo "unfilled variable in .env"; exit 1; fi
+
+      - name: Validate compose file
+        run: docker compose config -q
+
+      - name: Missing secrets are refused
+        run: |
+          if docker compose --env-file .env.example config -q 2>/dev/null; then
+            echo "compose accepted empty passwords"; exit 1
+          fi
+
+      - name: Start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for the API
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/actuator/health/readiness; then echo; break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:8080/actuator/health | grep -q '"UP"'
+          docker compose ps -a
+
+      - name: Services are healthy and buckets exist
+        run: |
+          for s in postgres redis minio backend; do
+            for i in $(seq 1 12); do
+              state=$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q "$s")")
+              [ "$state" = healthy ] && break
+              sleep 5
+            done
+            echo "$s: $state"
+            [ "$state" = healthy ] || exit 1
+          done
+          code=$(docker inspect --format '{{.State.ExitCode}}' "$(docker compose ps -a -q minio-init)")
+          echo "minio-init exit code: $code"
+          [ "$code" = 0 ]
+          docker compose exec -T minio mc ls local
+
+      - name: Logs
+        if: always()
+        run: docker compose logs --no-color --tail 200
+
+      - name: Stop
+        if: always()
+        run: docker compose down -v

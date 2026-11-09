@@ -1,0 +1,151 @@
+# Jeparla local stack: PostgreSQL 16, Redis 7, S3-compatible storage (MinIO) and the API.
+#
+#   cp .env.example .env    # then fill in the passwords
+#   docker compose up -d --build
+#
+# Every port is bound to 127.0.0.1 only. Secrets come from .env (gitignored), never from this file.
+# Variables are documented in .env.example and README.md.
+
+name: jeparla
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${JEPARLA_DB_NAME:-jeparla}
+      POSTGRES_USER: ${JEPARLA_DB_USER:-jeparla}
+      POSTGRES_PASSWORD: ${JEPARLA_DB_PASSWORD:?set JEPARLA_DB_PASSWORD in .env}
+      # Store and compare timestamps in UTC (timestamptz columns).
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    # Cache and rate-limit counters only (PLAN 3a): the API keeps working without Redis.
+    command:
+      - redis-server
+      - --requirepass
+      - ${JEPARLA_REDIS_PASSWORD:?set JEPARLA_REDIS_PASSWORD in .env}
+      - --maxmemory
+      - 128mb
+      - --maxmemory-policy
+      - allkeys-lru
+    environment:
+      REDISCLI_AUTH: ${JEPARLA_REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # S3-compatible storage standing in for Cloudflare R2 locally.
+  # Upstream MinIO stopped publishing images; pgsty/minio is the maintained community fork
+  # (same API, environment variables and bundled `mc` client), multi-arch.
+  minio:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${JEPARLA_S3_ACCESS_KEY:?set JEPARLA_S3_ACCESS_KEY in .env}
+      MINIO_ROOT_PASSWORD: ${JEPARLA_S3_SECRET_KEY:?set JEPARLA_S3_SECRET_KEY in .env (8+ characters)}
+      MC_HOST_local: http://${JEPARLA_S3_ACCESS_KEY}:${JEPARLA_S3_SECRET_KEY}@127.0.0.1:9000
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API
+      - "127.0.0.1:9001:9001" # web console
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  # One-shot: creates the public (product images) and private (verification documents) buckets.
+  # Idempotent, safe on every `up`.
+  minio-init:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MC_HOST_local: http://${JEPARLA_S3_ACCESS_KEY}:${JEPARLA_S3_SECRET_KEY}@minio:9000
+      PUBLIC_BUCKET: ${JEPARLA_S3_PUBLIC_BUCKET:-jeparla-public}
+      PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mc mb --ignore-existing "local/$$PUBLIC_BUCKET"
+        mc mb --ignore-existing "local/$$PRIVATE_BUCKET"
+        mc anonymous set download "local/$$PUBLIC_BUCKET"
+        mc anonymous set none "local/$$PRIVATE_BUCKET"
+        echo "buckets ready: $$PUBLIC_BUCKET (public read), $$PRIVATE_BUCKET (private)"
+
+  backend:
+    build:
+      context: ./backend
+    image: jeparla-backend:local
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    # Hostnames point at the services above; .env keeps the localhost values for running without Docker.
+    environment:
+      PORT: "8080"
+      JEPARLA_FRONTEND_ORIGIN: ${JEPARLA_FRONTEND_ORIGIN:-http://localhost:3000}
+      JEPARLA_DB_URL: jdbc:postgresql://postgres:5432/${JEPARLA_DB_NAME:-jeparla}
+      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla}
+      JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD}
+      JEPARLA_REDIS_HOST: redis
+      JEPARLA_REDIS_PORT: "6379"
+      JEPARLA_REDIS_PASSWORD: ${JEPARLA_REDIS_PASSWORD}
+      JEPARLA_S3_ENDPOINT: http://minio:9000
+      JEPARLA_S3_PUBLIC_URL: ${JEPARLA_S3_PUBLIC_URL:-http://localhost:9000/jeparla-public}
+      JEPARLA_S3_REGION: ${JEPARLA_S3_REGION:-us-east-1}
+      JEPARLA_S3_ACCESS_KEY: ${JEPARLA_S3_ACCESS_KEY}
+      JEPARLA_S3_SECRET_KEY: ${JEPARLA_S3_SECRET_KEY}
+      JEPARLA_S3_PUBLIC_BUCKET: ${JEPARLA_S3_PUBLIC_BUCKET:-jeparla-public}
+      JEPARLA_S3_PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      # The runtime image has bash but no curl: a plain HTTP request over /dev/tcp.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf 'GET /actuator/health/readiness HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          grep -q '"UP"' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
