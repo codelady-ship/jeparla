@@ -7,12 +7,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import az.jeparla.support.WithPostgres;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
+@WithPostgres
 @SpringBootTest
 @AutoConfigureMockMvc
 class JeparlaApplicationTests {
@@ -22,7 +24,7 @@ class JeparlaApplicationTests {
 
     @Test
     void contextLoads() {
-        // Fails if the application context cannot start (no database is required yet).
+        // Fails if the application context cannot start, including the Flyway migrations.
     }
 
     @Test
