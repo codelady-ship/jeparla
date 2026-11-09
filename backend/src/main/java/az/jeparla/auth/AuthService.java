@@ -30,6 +30,9 @@ public class AuthService {
     /** BCrypt ignores everything after 72 bytes; longer passwords are rejected, never truncated. */
     static final int BCRYPT_MAX_BYTES = 72;
 
+    /** Error code of a wrong password or unknown login (the only failure a login rate limit counts). */
+    static final String INVALID_CREDENTIALS = "auth.invalid_credentials";
+
     private final UserRepository users;
     private final RoleRepository roles;
     private final PasswordEncoder passwordEncoder;
@@ -181,7 +184,7 @@ public class AuthService {
     }
 
     private static ApiException invalidCredentials() {
-        return new ApiException(HttpStatus.UNAUTHORIZED, "auth.invalid_credentials");
+        return new ApiException(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
     }
 
     /** Result of register, login and refresh: the body for the client and the cookie value. */

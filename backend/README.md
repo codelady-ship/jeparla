@@ -58,6 +58,50 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
+| `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
+
+## Reverse proxy və müştəri IP-si
+
+Rate limit və audit log müştəri IP-sini `ClientIpFilter`-dən alır (#132):
+
+- TCP qarşı tərəfi `JEPARLA_TRUSTED_PROXIES`-də deyilsə, IP onun öz ünvanıdır; `Forwarded`,
+  `X-Forwarded-*`, `X-Real-IP` başlıqları nəzərə alınmır.
+- Etibarlı proxy-dən gələndə `X-Forwarded-For` sağdan oxunur və etibarlı proxy olmayan ilk ünvan
+  müştəridir (soldakı hissəni müştəri özü yaza bilər). `X-Forwarded-Proto` (`http`/`https`) sxemi qoyur
+  (HSTS üçün).
+- Standart `Forwarded` (RFC 7239) başlığına heç vaxt inanılmır.
+- Bu başlıqlar tətbiqin qalan hissəsindən gizlədilir. `server.forward-headers-strategy: none`: Spring-in
+  `ForwardedHeaderFilter`-i hər göndərənə inanır və `Forwarded`-i `X-Forwarded-For`-dan üstün tutur.
+- IP yalnız IPv4/IPv6 literal kimi parse olunur (`IpAddresses`), host adı heç vaxt DNS-də axtarılmır.
+  IPv6 müştərilər rate limit-də /64 şəbəkəsi ilə sayılır.
+
+Prod (#45, Caddy Docker Compose-da):
+
+- `JEPARLA_TRUSTED_PROXIES` yalnız Caddy-nin ünvanı və ya onun şəbəkəsidir. Compose şəbəkəsinin
+  subnet-i sabitlənir (məs. `networks: edge: ipam: config: [{subnet: 172.30.0.0/24}]`) və
+  `JEPARLA_TRUSTED_PROXIES=172.30.0.0/24`. Bu şəbəkədə Caddy-dən başqa heç nə API-yə sorğu göndərməməlidir.
+- API portu host-da açılmır (yalnız Caddy 80/443), əks halda proxy-ni keçən sorğu öz IP-si ilə sayılır
+  (təhlükəsiz, amma Caddy-ni də keçir).
+- Caddy `X-Forwarded-For`-u özü yazır (gələni üstünə yazır) və müştərinin `Forwarded` başlığını silir:
+
+```caddyfile
+api.example.az {
+	reverse_proxy backend:8080 {
+		# Client-supplied forwarding headers never reach the API.
+		header_up -Forwarded
+		header_up -X-Real-IP
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+	}
+}
+```
+
+Caddy-nin qlobal `trusted_proxies` ayarı **qoyulmur** (Cloudflare və s. qarşıda olmadıqca): onsuz Caddy
+müştərinin `X-Forwarded-For`-unu onsuz da atır. Qarşıda CDN olsa, Caddy-də `trusted_proxies` CDN-in
+IP diapazonlarına qoyulur və `{remote_host}` əvəzinə `{client_ip}` yazılır.
+
+Yoxlama (deploy sonrası): `Forwarded: for=...` və `X-Forwarded-For` hər sorğuda dəyişdirilərək 21
+login sorğusu göndərilir, 21-ci `429` olmalıdır.
 
 ## Giriş və icazələr
 
