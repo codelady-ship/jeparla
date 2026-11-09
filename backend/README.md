@@ -1,8 +1,23 @@
 # Jeparla backend
 
 Jeparla REST API: Java 21, Spring Boot 4.1, Gradle (Kotlin DSL, wrapper repoda).
-PostgreSQL 16 məcburidir: tətbiq başlayanda Flyway `src/main/resources/db/migration` miqrasiyalarını tətbiq edir.
-JPA entity-ləri #33 ilə gəlir. Lokal baza üçün kökdəki README-yə baxın (`docker compose up -d postgres`).
+PostgreSQL 16 məcburidir: tətbiq başlayanda Flyway `src/main/resources/db/migration` miqrasiyalarını tətbiq edir,
+sonra Hibernate JPA entity-lərini sxemə qarşı yoxlayır (`ddl-auto: validate`; sxemi yalnız Flyway dəyişir).
+Lokal baza üçün kökdəki README-yə baxın (`docker compose up -d postgres`).
+
+## Demo məlumat
+
+`demo` profili boş bazaya frontend fixture-ları ilə eyni nümunə kataloqu yükləyir
+(`frontend/src/lib/api/mock/fixtures.ts`: 6 mağaza, 12 kateqoriya, 6 əyar, 60 məhsul, eyni id, slug və qiymətlər):
+
+```bash
+SPRING_PROFILES_ACTIVE=demo ./gradlew bootRun
+```
+
+Seed `src/main/resources/db/demo/R__demo_seed.sql`-dir və yalnız `demo` profilində Flyway-ə qoşulur
+(`application-demo.yml`); prod-da heç vaxt işə düşmür. Bütün məlumat uydurmadır (telefonlar `+994 50 000 00 0X`,
+VÖEN `000000000X`), demo satıcılar daxil ola bilmir. Kataloq boş deyilsə seed heç nə etmir; dəyişmiş seed-i
+yükləmək üçün bazanı yenidən yaradın (`docker compose down -v`).
 
 ## Qaldırma
 
@@ -53,5 +68,14 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 - Sxem yalnız Flyway ilə dəyişir: tətbiq olunmuş miqrasiya faylı redaktə edilmir, yeni `V<N>__<ad>.sql` əlavə olunur.
   Pul `NUMERIC(12,2)` + `currency CHAR(3)`, çəki `NUMERIC(8,3)`, vaxt `TIMESTAMPTZ`; lokallaşdırılmış mətn
   `*_az` (məcburi), `*_en`, `*_ru` sütunlarıdır. Məhsul silinmir (`status` + `deleted_at`, DB trigger-i qoruyur).
+- JPA: entity-lər öz funksiya paketindədir (`auth`, `store`, `product`, `pricing`, `verification`, `admin`).
+  Pul/çəki `BigDecimal` sütunun scale-i ilə (`Decimals`: artıq onluq rəqəm yuvarlaqlaşdırılmır, xəta verir),
+  valyuta `java.util.Currency` (`CHAR(3)`), lokallaşdırılmış mətn `@Embeddable LocalizedText`, enum-lar
+  `@Enumerated(STRING)`, `search_text` yalnız oxunur, vaxt `Instant`. Məhsul, variant, qiymət tarixçəsi və audit log
+  repository-lərində delete metodu yoxdur (`NoDeleteRepository`); məhsul `Product.softDelete` ilə "silinir".
+- Sahiblik: `findByIdAndOwnerId` / `findByIdAndStoreOwnerId` sorğuları başqa satıcının resursu üçün boş qaytarır.
+- Kataloq siyahısı N+1 etmir: mağaza və kateqoriya `join fetch`, şəkillər və variantlar
+  `hibernate.default_batch_fetch_size` ilə paketlə yüklənir (`ProductRepositoryTests` sorğu sayını yoxlayır).
+  `spring.jpa.open-in-view: false`: entity-lər `@Transactional` servisdə DTO-ya çevrilir.
 - Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir. Docker olmayan maşında
   bu testlər keçilir (skipped), CI-da isə məcburi işləyir (`DockerInCiTests`).

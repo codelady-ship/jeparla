@@ -1,0 +1,7 @@
+# Demo profile (#33): SPRING_PROFILES_ACTIVE=demo loads the invented demo catalog
+# (db/demo/R__demo_seed.sql, the same data as the frontend fixtures) on an empty database.
+# Never enable it in production.
+
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/demo
