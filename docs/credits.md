@@ -25,3 +25,29 @@ qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.
 ## Köhnə hero (silinib, 2026-11-08)
 
 Unsplash fotoları (Tommaso Ubezio, Wildlife by Irina, Lambert Huang) artıq istifadə olunmur.
+
+## Demo kataloq şəkilləri (`frontend/public/demo/`)
+
+Backend gələnə qədər nümunə məhsulların (`src/lib/api/mock/fixtures.ts`) şəkilləridir. Hamısı
+[Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil), 800x1000
+kəsilib (2026-11-09). Real fotodur, AI deyil, amma kataloqdakı nümunə məhsulun özünü göstərmir:
+məhsul təsviri "nümunə məhsul, real deyil" deyir. Real mağaza şəkilləri gələndə silinəcək.
+
+| Fayl | Müəllif | Mənbə |
+|---|---|---|
+| `ring-gold-1.jpg` | JESUS ECA | https://unsplash.com/photos/wewzzx11ShI |
+| `ring-silver-1.jpg` | César O'neill | https://unsplash.com/photos/BdavhWCihfw |
+| `ring-silver-3.jpg` | Salvador Escalante | https://unsplash.com/photos/bj60QB8xBl8 |
+| `earrings-gold-1.jpg` | Diego Castañeda | https://unsplash.com/photos/q4uRpPcvF88 |
+| `earrings-gold-2.jpg` | Oscar Ramirez | https://unsplash.com/photos/77vl4dH6KKQ |
+| `earrings-gold-3.jpg` | JESUS ECA | https://unsplash.com/photos/DRbPrVTyTyA |
+| `earrings-silver-1.jpg` | César O'neill | https://unsplash.com/photos/uvK9BqN_pvY |
+| `necklace-gold-1.jpg` | Paul Lora | https://unsplash.com/photos/HiGJ04wtX4w |
+| `necklace-gold-2.jpg` | Andrey Ilkevich | https://unsplash.com/photos/0ziihuUXMcs |
+| `necklace-gold-3.jpg` | Andrey Ilkevich | https://unsplash.com/photos/L-rNkUK2SZU |
+| `necklace-silver-1.jpg` | Sabrianna | https://unsplash.com/photos/u1Hv_erOQH0 |
+| `necklace-silver-2.jpg` | Hanna Balan | https://unsplash.com/photos/diLY227UOvg |
+| `necklace-silver-3.jpg` | Chiara Monti | https://unsplash.com/photos/rnxMMjscvdc |
+| `bracelet-gold-2.jpg` | Diego Castañeda | https://unsplash.com/photos/Jno26Xf1-WI |
+| `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
+| `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
