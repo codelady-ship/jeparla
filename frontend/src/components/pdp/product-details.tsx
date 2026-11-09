@@ -223,7 +223,13 @@ export async function ProductDetails({
             <h2 id="stones" className="mb-3 text-xl">
               {t("stonesTitle")}
             </h2>
-            <div className="overflow-x-auto">
+            {/* Scrolls sideways on phones: focusable so keyboard users can scroll it too. */}
+            <div
+              className="overflow-x-auto rounded-sm focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+              tabIndex={0}
+              role="region"
+              aria-labelledby="stones"
+            >
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
                   <tr className="border-b">
