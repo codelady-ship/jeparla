@@ -19,7 +19,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const locale = await rootLocale();
   const p = await api.getProduct(slug);
-  if (!p || !hasLocale(routing.locales, locale)) return {};
+  // The page streams (cacheComponents), so a notFound() in the page body can come after a 200
+  // was sent. Metadata is resolved before the response for crawlers: they get a real 404.
+  if (!p) notFound();
+  if (!hasLocale(routing.locales, locale)) return {};
   const name = p.name[locale];
   return {
     title: name,

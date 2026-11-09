@@ -249,7 +249,8 @@ async function EmptyState({
   return (
     <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-14 text-center">
       <SearchX aria-hidden className="size-8 text-muted-foreground" />
-      <h2 className="text-xl">{title}</h2>
+      {/* The title quotes the query: a long unbroken query must wrap, not widen the page. */}
+      <h2 className="max-w-full text-xl wrap-anywhere">{title}</h2>
       <p className="max-w-md text-sm text-muted-foreground">{text}</p>
       {categories.length > 0 && (
         <>
