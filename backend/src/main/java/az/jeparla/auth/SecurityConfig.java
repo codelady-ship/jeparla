@@ -52,6 +52,10 @@ public class SecurityConfig {
         "/api/v1/auth/refresh", "/api/v1/auth/logout"
     };
 
+    private static final String[] PUBLIC_PRODUCT_POSTS = {
+        "/api/v1/products/{id}/reports", "/api/v1/products/{id}/contact-click"
+    };
+
     private static final String[] API_DOCS = {"/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
 
     @Bean
@@ -86,6 +90,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/merchant/**").hasRole(RoleName.MERCHANT.name())
                         // Public catalog: products, stores, categories, search, metal prices.
                         .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                        // Guests may report a product and are counted when they open WhatsApp (#37);
+                        // both are rate limited in the controller.
+                        .requestMatchers(HttpMethod.POST, PUBLIC_PRODUCT_POSTS).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))

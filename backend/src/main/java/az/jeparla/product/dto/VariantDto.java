@@ -1,0 +1,35 @@
+package az.jeparla.product.dto;
+
+import az.jeparla.common.dto.Decimal;
+import az.jeparla.common.dto.MoneyDto;
+import az.jeparla.product.PricingMode;
+import az.jeparla.product.ProductVariant;
+import az.jeparla.product.StockStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+ * A sellable variant ({@code Variant} in frontend/src/types/api.ts). {@code pricing} is set only for
+ * METAL_LINKED variants.
+ */
+@Schema(name = "Variant", requiredProperties = {"id", "sku", "fineness", "weightGrams", "size", "price",
+        "pricingMode", "pricing", "stockStatus", "priceUpdatedAt"})
+public record VariantDto(
+        long id,
+        String sku,
+        FinenessDto fineness,
+        @Schema(example = "3.250") String weightGrams,
+        @Schema(nullable = true, example = "17") String size,
+        MoneyDto price,
+        PricingMode pricingMode,
+        @Schema(nullable = true) PricingRuleDto pricing,
+        StockStatus stockStatus,
+        @Schema(format = "date-time") String priceUpdatedAt) {
+
+    public static VariantDto of(ProductVariant variant) {
+        return new VariantDto(variant.getId(), variant.getSku(), FinenessDto.of(variant.getFineness()),
+                Decimal.of(variant.getWeightGrams()), variant.getSize(),
+                MoneyDto.of(variant.getPrice(), variant.getCurrency()), variant.getPricingMode(),
+                variant.getPricingMode() == PricingMode.METAL_LINKED ? PricingRuleDto.of(variant) : null,
+                variant.getStockStatus(), variant.getPriceUpdatedAt().toString());
+    }
+}

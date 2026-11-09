@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -77,6 +78,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             violations.add(new FieldViolation(null, message(error)));
         }
         return validationProblem(ex, violations, headers, request);
+    }
+
+    /** A query or path parameter of the wrong type ({@code page=abc}, {@code metal=COPPER}): 400 with the field. */
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+            TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messages.getMessage("typeMismatch", null, locale);
+        return validationProblem(ex, List.of(new FieldViolation(ex.getPropertyName(), message)), headers, request);
     }
 
     /** Expected errors with a code: 401 bad credentials, 409 email taken, 429 rate limit ... */
