@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import az.jeparla.common.TestEndpoints;
+import az.jeparla.support.WithPostgres;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
+@WithPostgres
 @SpringBootTest(properties = "jeparla.cors.allowed-origins=https://jeparla.example")
 @AutoConfigureMockMvc
 @Import(TestEndpoints.class)

@@ -1,6 +1,6 @@
 # Jeparla API configuration.
 # Secrets and environment-specific values come only from environment variables.
-# The datasource, Flyway and JPA are added in later issues (#32, #33); the app starts without a database.
+# PostgreSQL is required: Flyway applies db/migration at startup. JPA comes with #33.
 
 spring:
   application:
@@ -13,6 +13,18 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  datasource:
+    url: ${JEPARLA_DB_URL:jdbc:postgresql://localhost:5432/jeparla}
+    username: ${JEPARLA_DB_USER:jeparla}
+    password: ${JEPARLA_DB_PASSWORD:}
+    hikari:
+      # Small pool: the API, PostgreSQL and Redis share one free-tier VM.
+      maximum-pool-size: 10
+  flyway:
+    locations: classpath:db/migration
+    # Never wipe a database from the application.
+    clean-disabled: true
+    validate-migration-naming: true
 
 server:
   port: ${PORT:8080}
