@@ -64,6 +64,8 @@ class AuditServiceTests {
 
     @Test
     void withoutUserItIsASystemEntry() {
+        // A scheduled job: no request (Spring's test listener installs a mock one by default).
+        RequestContextHolder.resetRequestAttributes();
         AuditLog entry = audit.record("PRICES_APPLIED", AuditTargetType.PRICE, null, null, null, null);
         assertThat(entry.getActor()).isNull();
         assertThat(entry.getActorRole()).isEqualTo(ActorRole.SYSTEM);
