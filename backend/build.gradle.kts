@@ -26,8 +26,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
-    // PostgreSQL + Flyway migrations at startup (#32). JPA comes with #33.
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    // PostgreSQL + Flyway migrations at startup (#32); JPA entities are validated against them (#33).
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
