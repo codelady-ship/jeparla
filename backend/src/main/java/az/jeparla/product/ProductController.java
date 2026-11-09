@@ -3,6 +3,7 @@ package az.jeparla.product;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.dto.PageDto;
 import az.jeparla.common.error.RateLimitExceededException;
+import az.jeparla.common.net.IpAddresses;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
 import az.jeparla.common.web.CachePolicy;
@@ -106,7 +107,7 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Unknown or not listed")
     public ResponseEntity<Void> contactClick(@PathVariable long id, HttpServletRequest request) {
         try {
-            rateLimits.check(RateLimitPolicy.CONTACT_IP, request.getRemoteAddr());
+            rateLimits.check(RateLimitPolicy.CONTACT_IP, IpAddresses.rateLimitKey(request.getRemoteAddr()));
         } catch (RateLimitExceededException overLimit) {
             catalog.requireListed(id);
             return ResponseEntity.noContent().build();
@@ -126,7 +127,7 @@ public class ProductController {
     public ResponseEntity<Void> report(@PathVariable long id, @Valid @RequestBody ProductReportRequest body,
             HttpServletRequest request) {
         Optional<Long> userId = CurrentUser.idIfPresent();
-        rateLimits.check(RateLimitPolicy.REPORT_IP, request.getRemoteAddr());
+        rateLimits.check(RateLimitPolicy.REPORT_IP, IpAddresses.rateLimitKey(request.getRemoteAddr()));
         if (userId.isPresent()) {
             rateLimits.check(RateLimitPolicy.REPORT_ACCOUNT, "user:" + userId.get());
         }

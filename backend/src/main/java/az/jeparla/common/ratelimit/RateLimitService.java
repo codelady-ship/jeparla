@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Locale;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,25 +54,74 @@ public class RateLimitService {
      */
     public void check(RateLimitPolicy policy, String key) {
         Limit limit = properties.limitOf(policy);
-        String counterKey = policy.id() + ":" + digest(key);
-        Window window = hit(counterKey, limit.window());
+        Window window = use(counter -> counter.hit(counterKey(policy, key), limit.window()));
         if (window.count() > limit.limit()) {
             log.info("Rate limit {} exceeded", policy.id());
             throw new RateLimitExceededException(ceilSeconds(window.resetIn()));
         }
     }
 
-    private Window hit(String key, Duration window) {
+    /**
+     * Counts one event (e.g. a failed login) for {@code key} without refusing anything. Pair with
+     * {@link #blockedFor} or {@link #requireUnder}, which check the count before the next attempt.
+     */
+    public void count(RateLimitPolicy policy, String key) {
+        Limit limit = properties.limitOf(policy);
+        use(counter -> counter.hit(counterKey(policy, key), limit.window()));
+    }
+
+    /**
+     * Seconds until {@code key} is allowed again under {@code policy}, or 0 when the limit is not
+     * used up. Counts nothing.
+     */
+    public long blockedFor(RateLimitPolicy policy, String key) {
+        Limit limit = properties.limitOf(policy);
+        Window window = use(counter -> counter.peek(counterKey(policy, key)));
+        return window.count() >= limit.limit() ? ceilSeconds(window.resetIn()) : 0;
+    }
+
+    /**
+     * Refuses when {@link #count} has used up the limit of {@code key}. Counts nothing.
+     *
+     * @throws RateLimitExceededException when the limit is used up
+     */
+    public void requireUnder(RateLimitPolicy policy, String key) {
+        long seconds = blockedFor(policy, key);
+        if (seconds > 0) {
+            log.info("Rate limit {} exceeded", policy.id());
+            throw new RateLimitExceededException(seconds);
+        }
+    }
+
+    /** Whether {@code key} was counted in the current window of {@code policy}. */
+    public boolean isCounted(RateLimitPolicy policy, String key) {
+        return use(counter -> counter.peek(counterKey(policy, key))).count() > 0;
+    }
+
+    /** Clears the counter of {@code key}, e.g. after a successful login. */
+    public void reset(RateLimitPolicy policy, String key) {
+        use(counter -> {
+            counter.reset(counterKey(policy, key));
+            return null;
+        });
+    }
+
+    private static String counterKey(RateLimitPolicy policy, String key) {
+        return policy.id() + ":" + digest(key);
+    }
+
+    /** Runs {@code action} on Redis, or on the in-memory counters while Redis is unavailable. */
+    private <T> T use(Function<RateLimitCounter, T> action) {
         if (primary != null && !clock.instant().isBefore(primaryRetryAt)) {
             try {
-                return primary.hit(key, window);
+                return action.apply(primary);
             } catch (RuntimeException e) {
                 primaryRetryAt = clock.instant().plusSeconds(REDIS_RETRY_SECONDS);
                 log.warn("Rate-limit store unavailable, using in-memory counters for {}s: {}",
                         REDIS_RETRY_SECONDS, e.getClass().getSimpleName());
             }
         }
-        return fallback.hit(key, window);
+        return action.apply(fallback);
     }
 
     private static long ceilSeconds(Duration duration) {

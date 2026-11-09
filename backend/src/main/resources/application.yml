@@ -54,7 +54,10 @@ spring:
 server:
   port: ${PORT:8080}
   shutdown: graceful
-  forward-headers-strategy: framework
+  # Forwarding headers are handled only by ClientIpFilter (jeparla.client-ip below), which believes
+  # them from trusted proxies only. "framework" (Spring's ForwardedHeaderFilter) would trust any
+  # sender and prefer a client's own Forwarded header (#132).
+  forward-headers-strategy: none
   error:
     include-stacktrace: never
     include-message: never
@@ -63,6 +66,11 @@ jeparla:
   cors:
     # Comma-separated list of exact frontend origins. "*" is rejected at startup.
     allowed-origins: ${JEPARLA_FRONTEND_ORIGIN:http://localhost:3000}
+  client-ip:
+    # Reverse proxies (CIDR, comma-separated) whose X-Forwarded-For names the client. Requests from
+    # anyone else are keyed by their TCP peer address. Empty: trust nothing. In production set it to
+    # the Caddy container network (backend/README.md, "Reverse proxy").
+    trusted-proxies: ${JEPARLA_TRUSTED_PROXIES:127.0.0.1/32,::1/128}
   auth:
     # HS256 key of the access tokens, 32+ bytes (openssl rand -hex 32). Required: no default.
     jwt-secret: ${JEPARLA_JWT_SECRET:}

@@ -96,20 +96,47 @@ Sabit pəncərə, sayğaclar Redis-də (bütün instansiyalar üçün ortaq). Re
 işləməyə davam edir: sayğaclar 30 saniyəlik fasilələrlə yaddaşa keçir. Açarlar (IP, e-poçt,
 telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 
-| Siyasət | Default | Açar |
-| --- | --- | --- |
-| `login-ip` | 20 / 5 dəq. | IP |
-| `login-account` | 10 / 15 dəq. | e-poçt və ya telefon (yazılışından asılı olmayaraq) |
-| `register-ip` | 10 / saat | IP |
-| `register-account` | 5 / saat | e-poçt və ya telefon |
-| `refresh-ip` | 60 / 5 dəq. | IP (token 256 bitdir, təxmin etmək olmur) |
-| `report-ip`, `report-account` | 10 / saat, 5 / saat | IP, user id: `POST /products/{id}/reports` (#37); limit yoxlaması məhsulun varlığından əvvəldir |
-| `contact-ip` | 60 / saat | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
+| Siyasət | Default | Nə sayılır | Açar |
+| --- | --- | --- | --- |
+| `login-ip` | 20 / 5 dəq. | hər login cəhdi | IP |
+| `login-account-ip` | 5 / 15 dəq. | yalnız **uğursuz** login (yanlış şifrə, naməlum login) | hesab + IP |
+| `login-account` | 50 / saat | yalnız **uğursuz** login, bütün IP-lərdən | e-poçt və ya telefon (yazılışından asılı olmayaraq) |
+| `login-known-address` | 30 gün | uğurlu girişin IP-si (nişan, limit yoxdur) | hesab + IP |
+| `register-ip` | 10 / saat | hər qeydiyyat | IP |
+| `register-account` | 5 / saat | hər qeydiyyat | e-poçt və ya telefon |
+| `refresh-ip` | 60 / 5 dəq. | hər refresh | IP (token 256 bitdir, təxmin etmək olmur) |
+| `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37); limit yoxlaması məhsulun varlığından əvvəldir |
+| `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
-`jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IP `request.getRemoteAddr()`-dır:
-prod-da Caddy `X-Forwarded-For`-u özü yazır (`server.forward-headers-strategy: framework`), API-yə
-birbaşa çıxış yoxdur.
+`jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IPv6 müştəri /64 şəbəkəsi ilə sayılır
+(bir abunəçi bütün /64-ü dəyişə bilir).
+
+### Login: hesabı kənardan bloklamaq olmur (#133)
+
+Satıcının login-i açıq telefon nömrəsidir, ona görə hesab limiti yalnız **uğursuz şifrələri** sayır
+(şifrə yoxlamasından sonra). Sorğu göndərmək hesabı bloklamır.
+
+1. `login-ip`: bir IP-dən hər cəhd (çox hesabı yoxlamaq).
+2. `login-account-ip`: bir hesaba bir IP-dən 5 yanlış şifrədən sonra həmin IP bu hesab üçün şifrə
+   yoxlanılmadan `429` alır. Uğurlu giriş bu sayğacı sıfırlayır. Başqa IP-lər (sahibin IP-si) təsirlənmir.
+3. `login-account`: hesaba bütün IP-lərdən 50 yanlış şifrə/saat: hesab "hücum altında"dır. Bu vaxt
+   yalnız hesabın tanış ünvanlarından (son 30 gündə uğurlu giriş olmuş IP) giriş olur, yeni IP şifrə
+   yoxlanılmadan `429` alır, ona görə paylanmış təxmin də dayanır. Sahib tanış ünvandan həmişə daxil olur;
+   yeni ünvandan isə pəncərə bitənədək gözləyir (`Retry-After`).
+
+Açarlar yalnız göndərilənə (login və IP) bağlıdır, hesabın olub-olmamasına yox; `429` şifrə
+yoxlamasından əvvəl verilir. Mövcud və naməlum hesablar eyni cavabı eyni müddətdə alır. Bloklanmış
+hesabın `403`-ü uğursuz cəhd sayılmır (yalnız düzgün şifrədən sonra gəlir).
+
+### Müştəri IP-si (#132)
+
+IP yalnız `ClientIpFilter`-dən gəlir (`az.jeparla.common.net`): `X-Forwarded-For` yalnız TCP
+qarşı tərəfi `JEPARLA_TRUSTED_PROXIES`-dəki proxy (Caddy) olanda oxunur və sağdan ilk etibarsız
+ünvan müştəridir. Standart `Forwarded` başlığına heç vaxt inanılmır (Caddy onu yazmır, müştərininkini
+ötürür). Başqa hər kəs üçün IP TCP ünvanıdır, başlıqlar nəzərə alınmır. Spring-in
+`ForwardedHeaderFilter`-i söndürülüb (`server.forward-headers-strategy: none`): o, hər göndərənə
+inanırdı. Caddy konfiqurasiyası: [backend/README.md](../backend/README.md#reverse-proxy-və-müştəri-ip-si).
 
 ## CORS, CSRF və başlıqlar
 
@@ -124,7 +151,8 @@ birbaşa çıxış yoxdur.
 ## Audit
 
 `AuditService.record(...)` admin və satıcı əməliyyatlarını `audit_logs`-a yazır: kim (id, ad, rol),
-nə, hansı obyekt, IP. Çağıranın tranzaksiyasında işləyir (dəyişiklik geri qaytarılsa, qeyd də yazılmır).
+nə, hansı obyekt, IP. IP yalnız IPv4/IPv6 literal kimi parse olunur (DNS sorğusu heç vaxt olmur);
+başqa dəyər (məs. host adı) `null` yazılır. Çağıranın tranzaksiyasında işləyir (dəyişiklik geri qaytarılsa, qeyd də yazılmır).
 Şifrə, token və sənəd məzmunu heç vaxt yazılmır. İstifadə edənlər: #39 (satıcı), #40 (admin).
 
 ## Loglar

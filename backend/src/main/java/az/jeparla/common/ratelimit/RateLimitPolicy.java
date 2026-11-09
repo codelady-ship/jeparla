@@ -10,8 +10,24 @@ public enum RateLimitPolicy {
 
     /** Login attempts from one IP address (password guessing over many accounts). */
     LOGIN_IP("login-ip", 20, Duration.ofMinutes(5)),
-    /** Login attempts for one email or phone (guessing one account from many addresses). */
-    LOGIN_ACCOUNT("login-account", 10, Duration.ofMinutes(15)),
+    /**
+     * Failed logins for one email or phone from one IP address (guessing one account). Over the
+     * limit that address gets 429 for this account before the password is checked; a successful
+     * login clears it. Other addresses, including the owner's, are not affected.
+     */
+    LOGIN_ACCOUNT_IP("login-account-ip", 5, Duration.ofMinutes(15)),
+    /**
+     * Failed logins for one email or phone from all addresses (distributed guessing). Only failures
+     * count, so nobody can lock an account by sending requests. Over the limit the account is under
+     * attack: it can still sign in from a {@link #LOGIN_KNOWN_ADDRESS known address}, any other
+     * address gets 429 before the password is checked until the window ends.
+     */
+    LOGIN_ACCOUNT("login-account", 50, Duration.ofHours(1)),
+    /**
+     * Addresses an account signed in from successfully (marker per account and address, the limit
+     * is unused). They keep working while the account is under attack ({@link #LOGIN_ACCOUNT}).
+     */
+    LOGIN_KNOWN_ADDRESS("login-known-address", 1, Duration.ofDays(30)),
     /** Sign-ups from one IP address. */
     REGISTER_IP("register-ip", 10, Duration.ofHours(1)),
     /** Sign-up attempts with one email or phone (probing which ones exist). */

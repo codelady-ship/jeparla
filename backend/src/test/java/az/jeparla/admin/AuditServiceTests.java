@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import az.jeparla.auth.User;
+import az.jeparla.common.net.RecordingResolverProvider;
 import az.jeparla.store.Store;
 import az.jeparla.support.JpaTest;
 import az.jeparla.support.TestData;
@@ -60,6 +61,33 @@ class AuditServiceTests {
         assertThat(entry.getActorLabel()).contains(merchant.getEmail());
         assertThat(entry.getTargetId()).isEqualTo(String.valueOf(store.getId()));
         assertThat(entry.getIpAddress().getHostAddress()).isEqualTo("203.0.113.7");
+    }
+
+    @Test
+    void aHostNameIsStoredAsNoIpAndNeverLookedUp() {
+        User merchant = data.merchant();
+        Store store = data.store(merchant);
+        signIn(merchant, "MERCHANT");
+        for (String address : new String[] {"face.cafe", "beef.cafe", "unknown"}) {
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setRemoteAddr(address);
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+            AuditLog entry = audit.record("STORE_UPDATED", AuditTargetType.STORE, store.getId(), store.getName(),
+                    null, null);
+
+            assertThat(entry.getIpAddress()).as(address).isNull();
+        }
+        assertThat(RecordingResolverProvider.lookups()).doesNotContain("face.cafe", "beef.cafe", "unknown");
+    }
+
+    @Test
+    void anIpv6AddressIsStored() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("2001:db8::7");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        AuditLog entry = audit.record("PRICES_APPLIED", AuditTargetType.PRICE, null, null, null, null);
+        assertThat(entry.getIpAddress().getHostAddress()).isEqualTo("2001:db8:0:0:0:0:0:7");
     }
 
     @Test

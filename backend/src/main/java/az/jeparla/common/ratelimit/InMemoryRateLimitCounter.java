@@ -32,6 +32,21 @@ public class InMemoryRateLimitCounter implements RateLimitCounter {
         return new Window(entry.count(), Duration.between(now, entry.end()));
     }
 
+    @Override
+    public Window peek(String key) {
+        Instant now = clock.instant();
+        Entry entry = windows.get(key);
+        if (entry == null || !entry.end().isAfter(now)) {
+            return Window.EMPTY;
+        }
+        return new Window(entry.count(), Duration.between(now, entry.end()));
+    }
+
+    @Override
+    public void reset(String key) {
+        windows.remove(key);
+    }
+
     private record Entry(Instant end, long count) {
     }
 }
