@@ -44,6 +44,10 @@ tasks.test {
     maxHeapSize = "512m"
 }
 
+tasks.bootJar {
+    archiveFileName = "jeparla-backend.jar"
+}
+
 tasks.jar {
     // Only the executable boot jar is built.
     enabled = false
