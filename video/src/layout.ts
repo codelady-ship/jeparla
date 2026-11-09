@@ -15,14 +15,16 @@ export const TIGERS = [
   { left: 908, top: 101, width: 266, height: 593 },
 ];
 
-// The models stand as one group on the same floor line, a little taller than the
-// animals (real proportions), each centred near her animal. All three photos share
-// one scale (0.78 of the trimmed cut-outs in public/model-N.png).
-export const MODELS = [
-  { left: 314, top: -175, width: 232, height: 869 },
-  { left: 541, top: -175, width: 238, height: 869 },
-  { left: 783, top: -227, width: 224, height: 921 },
-];
+/**
+ * Act 2 models: knee-up studio portraits (public/model-N.png, 832x1248 cut-outs whose
+ * bottom edge is the crop line). They are not placed in scene space: the group stands
+ * close together, cropped by the bottom of the frame, sized by `Format.modelHeight`.
+ */
+export const MODEL_SOURCE = { w: 832, h: 1248 };
+/** Centre of each model relative to the group centre, in model heights (overlapping shoulders). */
+export const MODEL_OFFSETS = [-0.35, 0, 0.35];
+/** Paint order: the outer models first, the centre one in front. */
+export const MODEL_ORDER = [0, 2, 1];
 
 /** Horizontal extent of all figures, and the floor line, in scene space. */
 export const GROUP = { left: 209, right: 1174, floor: 694 };
@@ -47,22 +49,50 @@ export function walkFrame(frame: number) {
   return Math.min(WALK_FRAMES - 1, Math.floor(frame * (WALK_FPS / FPS) * WALK_SPEED));
 }
 
-export type Format = { width: number; height: number; scale: number; x: number; y: number };
+export type Format = {
+  width: number;
+  height: number;
+  scale: number;
+  x: number;
+  y: number;
+  /** Act 2: height of one model photo in px, and the group centre. */
+  modelHeight: number;
+  modelCenterX: number;
+};
 
 /**
- * Places the scene in a composition: the figures take `figureShare` of the width,
- * centred at `centerX`, and stand a little above the bottom edge.
+ * Places the scene in a composition: the animals take `figureShare` of the width,
+ * centred at `centerX`, and stand a little above the bottom edge. The models are
+ * `modelShare` of the frame height, cropped by its bottom edge.
  */
-export function format(width: number, height: number, figureShare: number, centerX = 0.5): Format {
+export function format(
+  width: number,
+  height: number,
+  figureShare: number,
+  modelShare: number,
+  centerX = 0.5,
+): Format {
   const span = GROUP.right - GROUP.left;
   const scale = (width * figureShare) / span;
   const x = width * centerX - (GROUP.left + span / 2) * scale;
   const y = height - (GROUP.floor + 10) * scale;
-  return { width, height, scale, x, y };
+  return { width, height, scale, x, y, modelHeight: height * modelShare, modelCenterX: width * centerX };
 }
 
-/** Desktop: figures sit right of center so the copy has the left third; small enough
- * that the models keep headroom when wide screens crop the top (video is bottom-anchored). */
-export const DESKTOP = format(1920, 1080, 0.4, 0.63);
-/** Phone: narrow enough that cover-cropping on tall phones (19.5:9) keeps the outer animals. */
-export const MOBILE = format(1080, 1920, 0.82);
+/** Box of model `i` in composition px. */
+export function modelBox(f: Format, i: number) {
+  const height = f.modelHeight;
+  const width = (height * MODEL_SOURCE.w) / MODEL_SOURCE.h;
+  return {
+    left: f.modelCenterX + MODEL_OFFSETS[i] * height - width / 2,
+    top: f.height - height,
+    width,
+    height,
+  };
+}
+
+/** Desktop: figures sit right of center so the copy has the left third. The video is
+ * bottom-anchored, so wide screens crop its top: the models stay below ~1/3 of the height (short laptop screens). */
+export const DESKTOP = format(1920, 1080, 0.4, 0.66, 0.64);
+/** Phone: narrow enough that cover-cropping on tall phones (19.5:9) keeps the outer figures. */
+export const MOBILE = format(1080, 1920, 0.82, 0.41);
