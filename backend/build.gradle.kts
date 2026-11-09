@@ -31,6 +31,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
+    // Auth (#34): Spring Security, JWT access tokens (resource server, HS256 via Nimbus), and Redis
+    // for the rate-limit counters (the API falls back to in-memory counters when Redis is down).
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -39,6 +44,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
+    testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -49,7 +55,7 @@ tasks.withType<JavaCompile> {
 
 tasks.test {
     useJUnitPlatform()
-    maxHeapSize = "512m"
+    maxHeapSize = "768m"
     // Print every test with its result, so CI logs show that the Testcontainers tests ran
     // (they are skipped on machines without Docker).
     testLogging {

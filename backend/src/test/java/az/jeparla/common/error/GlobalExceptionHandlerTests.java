@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,7 +35,9 @@ class GlobalExceptionHandlerTests {
     private MockMvc mockMvc;
 
     private ResultActions postInvalid(String language) throws Exception {
-        var request = post("/api/v1/test/echo").contentType(MediaType.APPLICATION_JSON).content(INVALID_BODY);
+        // POST endpoints need a signed-in user; jwt() stands in for a verified access token.
+        var request = post("/api/v1/test/echo").with(jwt())
+                .contentType(MediaType.APPLICATION_JSON).content(INVALID_BODY);
         if (language != null) {
             request.header(HttpHeaders.ACCEPT_LANGUAGE, language);
         }
@@ -82,6 +85,7 @@ class GlobalExceptionHandlerTests {
     @Test
     void malformedJsonIsProblemDetail() throws Exception {
         mockMvc.perform(post("/api/v1/test/echo")
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content("{not json"))

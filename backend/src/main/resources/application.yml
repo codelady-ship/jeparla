@@ -21,6 +21,17 @@ spring:
     hikari:
       # Small pool: the API, PostgreSQL and Redis share one free-tier VM.
       maximum-pool-size: 10
+  data:
+    redis:
+      # Rate-limit counters (#34) and later caches. The API keeps working without Redis.
+      host: ${JEPARLA_REDIS_HOST:localhost}
+      port: ${JEPARLA_REDIS_PORT:6379}
+      password: ${JEPARLA_REDIS_PASSWORD:}
+      # Fail fast: while Redis is down, rate limiting falls back to in-memory counters.
+      connect-timeout: 500ms
+      timeout: 500ms
+      repositories:
+        enabled: false
   flyway:
     locations: classpath:db/migration
     # Never wipe a database from the application.
@@ -52,12 +63,27 @@ jeparla:
   cors:
     # Comma-separated list of exact frontend origins. "*" is rejected at startup.
     allowed-origins: ${JEPARLA_FRONTEND_ORIGIN:http://localhost:3000}
+  auth:
+    # HS256 key of the access tokens, 32+ bytes (openssl rand -hex 32). Required: no default.
+    jwt-secret: ${JEPARLA_JWT_SECRET:}
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+    cookie-secure: ${JEPARLA_COOKIE_SECURE:true}
+  rate-limit:
+    # redis (shared counters, in-memory fallback while Redis is down) or memory.
+    store: redis
+    # Defaults are in RateLimitPolicy; override one with e.g.
+    # policies.login-ip.limit: 20 and policies.login-ip.window: 5m
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+  health:
+    redis:
+      # Redis is optional (PLAN 3a): its outage must not mark the API as down.
+      enabled: false
   endpoint:
     health:
       show-details: never

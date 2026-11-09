@@ -15,6 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -71,6 +77,58 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             violations.add(new FieldViolation(null, message(error)));
         }
         return validationProblem(ex, violations, headers, request);
+    }
+
+    /** Expected errors with a code: 401 bad credentials, 409 email taken, 429 rate limit ... */
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Object> handleApi(ApiException ex, WebRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.addAll(ex.headers());
+        ProblemDetail problem = ProblemDetail.forStatus(ex.status());
+        if (ex instanceof RateLimitExceededException limited) {
+            headers.set(HttpHeaders.RETRY_AFTER, String.valueOf(limited.retryAfterSeconds()));
+            problem.setProperty("retryAfter", limited.retryAfterSeconds());
+        }
+        ResponseEntity<Object> response = handleExceptionInternal(ex, problem, headers, ex.status(), request);
+        String detail = text(ex.messageKey(), "error.detail." + ex.status().value());
+        problem.setDetail(detail);
+        problem.setProperty("code", ex.code());
+        if (ex.field() != null) {
+            problem.setProperty("errors", List.of(new FieldViolation(ex.field(), detail)));
+        }
+        return response;
+    }
+
+    /**
+     * 401: no token, or an invalid, expired or wrongly signed one. Also used by the security filter
+     * chain (see {@code ProblemSecurityHandlers}), so filter errors have the same format.
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthentication(AuthenticationException ex, WebRequest request) {
+        String code = ex instanceof OAuth2AuthenticationException ? "auth.invalid_token" : "auth.unauthenticated";
+        return securityProblem(ex, HttpStatus.UNAUTHORIZED, code, request);
+    }
+
+    /** 403 for a signed-in user without the role or ownership; 401 when nobody is signed in. */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return securityProblem(ex, HttpStatus.UNAUTHORIZED, "auth.unauthenticated", request);
+        }
+        return securityProblem(ex, HttpStatus.FORBIDDEN, "auth.forbidden", request);
+    }
+
+    private ResponseEntity<Object> securityProblem(Exception ex, HttpStatus status, String code, WebRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        if (status == HttpStatus.UNAUTHORIZED) {
+            headers.set(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+        }
+        ProblemDetail problem = ProblemDetail.forStatus(status);
+        ResponseEntity<Object> response = handleExceptionInternal(ex, problem, headers, status, request);
+        problem.setDetail(text("error." + code, "error.detail." + status.value()));
+        problem.setProperty("code", code);
+        return response;
     }
 
     /** Last resort: anything not handled above becomes a generic 500 without internal details. */
