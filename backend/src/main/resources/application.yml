@@ -69,6 +69,10 @@ jeparla:
     access-token-ttl: 15m
     refresh-token-ttl: 30d
     cookie-secure: ${JEPARLA_COOKIE_SECURE:true}
+  storage:
+    # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
+    # do not need it: they are served by the frontend from /demo.
+    public-url: ${JEPARLA_S3_PUBLIC_URL:}
   rate-limit:
     # redis (shared counters, in-memory fallback while Redis is down) or memory.
     store: redis

@@ -4,6 +4,9 @@
 jeparla:
   auth:
     jwt-secret: test-test-test-test-test-test-test-test
+  # Public bucket URL for image URLs of non-demo keys (as in docker-compose.yml).
+  storage:
+    public-url: http://localhost:9000/jeparla-public
   # Tests without a Redis container count in memory; @AuthIntegrationTest switches to Redis.
   rate-limit:
     store: memory
