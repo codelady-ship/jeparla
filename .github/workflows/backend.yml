@@ -1,6 +1,7 @@
 name: backend
 
-# Minimal backend check (#30). Testcontainers, sweep and gitleaks come with #35.
+# Backend check (#30). Testcontainers tests (PostgreSQL 16) run in `gradlew build`: the runner has Docker.
+# Sweep and gitleaks come with #35.
 on:
   pull_request:
     paths:

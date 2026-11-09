@@ -1,11 +1,12 @@
 # Jeparla backend
 
 Jeparla REST API: Java 21, Spring Boot 4.1, Gradle (Kotlin DSL, wrapper repoda).
-Hələlik verilənlər bazası yoxdur: PostgreSQL, Flyway və JPA #31, #32, #33 ilə gəlir.
+PostgreSQL 16 məcburidir: tətbiq başlayanda Flyway `src/main/resources/db/migration` miqrasiyalarını tətbiq edir.
+JPA entity-ləri #33 ilə gəlir. Lokal baza üçün kökdəki README-yə baxın (`docker compose up -d postgres`).
 
 ## Qaldırma
 
-JDK 21 lazımdır (`JAVA_HOME`).
+JDK 21 lazımdır (`JAVA_HOME`) və işləyən PostgreSQL 16 (`JEPARLA_DB_*` dəyişənləri).
 
 ```bash
 cd backend
@@ -23,7 +24,9 @@ Docker (Docker olan maşında, `backend/` qovluğundan; amd64 və arm64 üçün)
 
 ```bash
 docker build -t jeparla-backend .
-docker run --rm -p 8080:8080 -e JEPARLA_FRONTEND_ORIGIN=http://localhost:3000 jeparla-backend
+docker run --rm -p 8080:8080 -e JEPARLA_FRONTEND_ORIGIN=http://localhost:3000 \
+  -e JEPARLA_DB_URL=jdbc:postgresql://host.docker.internal:5432/jeparla \
+  -e JEPARLA_DB_USER=jeparla -e JEPARLA_DB_PASSWORD=... jeparla-backend
 ```
 
 ## Mühit dəyişənləri
@@ -34,6 +37,9 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | --- | --- | --- |
 | `PORT` | `8080` | HTTP portu |
 | `JEPARLA_FRONTEND_ORIGIN` | `http://localhost:3000` | `/api/**` üçün icazəli frontend origin-ləri, vergüllə (məs. `https://jeparla.az,https://www.jeparla.az`). `*`, path və ya http(s) olmayan dəyər tətbiqi başlatmır |
+| `JEPARLA_DB_URL` | `jdbc:postgresql://localhost:5432/jeparla` | PostgreSQL JDBC URL |
+| `JEPARLA_DB_USER` | `jeparla` | Baza istifadəçisi (miqrasiyalar üçün bazanın sahibi olmalıdır) |
+| `JEPARLA_DB_PASSWORD` | boş | Baza şifrəsi |
 
 ## Qaydalar
 
@@ -44,3 +50,8 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
   massivi (`field`, `message`) olur. Mətnlər `src/main/resources/messages*.properties`-dədir,
   üç fayl sinxron saxlanılır.
 - Pul və çəki yalnız `BigDecimal` (DB-də `NUMERIC`); `float`/`double` qadağandır.
+- Sxem yalnız Flyway ilə dəyişir: tətbiq olunmuş miqrasiya faylı redaktə edilmir, yeni `V<N>__<ad>.sql` əlavə olunur.
+  Pul `NUMERIC(12,2)` + `currency CHAR(3)`, çəki `NUMERIC(8,3)`, vaxt `TIMESTAMPTZ`; lokallaşdırılmış mətn
+  `*_az` (məcburi), `*_en`, `*_ru` sütunlarıdır. Məhsul silinmir (`status` + `deleted_at`, DB trigger-i qoruyur).
+- Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir. Docker olmayan maşında
+  bu testlər keçilir (skipped), CI-da isə məcburi işləyir (`DockerInCiTests`).
