@@ -1,7 +1,10 @@
 package az.jeparla;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -27,5 +30,22 @@ class JeparlaApplicationTests {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("UP"));
+    }
+
+    @Test
+    void openApiDocumentIsServed() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("Jeparla API"));
+    }
+
+    @Test
+    void swaggerUiOpens() throws Exception {
+        mockMvc.perform(get("/swagger-ui.html"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/swagger-ui/index.html"));
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("swagger-ui")));
     }
 }
