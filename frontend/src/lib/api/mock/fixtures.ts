@@ -224,6 +224,51 @@ function diamond(i: number): Stone {
   };
 }
 
+// ---------------------------------------------------------------- demo photos
+/**
+ * Free Unsplash photos (public/demo, authors in docs/credits.md) so the demo catalog looks
+ * like jewelry. Real photos, not AI, and not of these products: the description says so.
+ */
+type Kind = "ring" | "earrings" | "necklace" | "bracelet";
+const DEMO_PHOTOS: Record<Kind, { gold: string[]; silver: string[] }> = {
+  ring: { gold: ["ring-gold-1"], silver: ["ring-silver-1", "ring-silver-3"] },
+  earrings: {
+    gold: ["earrings-gold-1", "earrings-gold-2", "earrings-gold-3"],
+    silver: ["earrings-silver-1"],
+  },
+  necklace: {
+    gold: ["necklace-gold-1", "necklace-gold-2", "necklace-gold-3"],
+    silver: ["necklace-silver-1", "necklace-silver-2", "necklace-silver-3"],
+  },
+  bracelet: { gold: ["bracelet-gold-2", "bracelet-gold-3"], silver: ["bracelet-silver-1"] },
+};
+/** Leaf category -> photo kind (brooches and sets borrow necklaces, kids' jewelry earrings). */
+const KIND_OF: Record<number, Kind> = {
+  2: "ring",
+  3: "ring",
+  4: "earrings",
+  6: "necklace",
+  7: "necklace",
+  8: "bracelet",
+  9: "necklace",
+  10: "necklace",
+  11: "ring",
+  12: "earrings",
+};
+
+function demoPhotos(i: number, categoryId: number, metal: MetalType, alt: LocalizedText) {
+  const pool = DEMO_PHOTOS[KIND_OF[categoryId] ?? "necklace"][metal === "GOLD" ? "gold" : "silver"];
+  const pick = (n: number) => ({
+    url: `/demo/${pool[n % pool.length]}.jpg`,
+    alt,
+    width: 800,
+    height: 1000,
+    aiGenerated: false,
+  });
+  // Every third product has a second shot (when the pool has one), so both card states are covered.
+  return i % 3 === 0 && pool.length > 1 ? [pick(i), pick(i + 1)] : [pick(i)];
+}
+
 function buildProduct(i: number): Product {
   const id = i + 1;
   const categoryId = LEAVES[i % LEAVES.length];
@@ -280,21 +325,7 @@ function buildProduct(i: number): Product {
     pricingMode,
     fineness: fineness.value,
     weightGrams: weight,
-    images: [
-      { url: "/placeholders/product.svg", alt: name, width: 800, height: 1000, aiGenerated: false },
-      // Every third product has a second shot, so cards without one are covered too.
-      ...(i % 3 === 0
-        ? [
-            {
-              url: "/placeholders/product-alt.svg",
-              alt: name,
-              width: 800,
-              height: 1000,
-              aiGenerated: false,
-            },
-          ]
-        : []),
-    ],
+    images: demoPhotos(i, categoryId, metal, name),
     hasStones: withStone,
     verification,
     stockStatus,
