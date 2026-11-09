@@ -95,9 +95,27 @@ class RateLimitServiceTests {
     @Test
     void fallsBackToMemoryWhenRedisFailsAndRetriesLater() {
         AtomicInteger redisCalls = new AtomicInteger();
-        RateLimitCounter broken = (key, window) -> {
-            redisCalls.incrementAndGet();
-            throw new IllegalStateException("connection refused");
+        RateLimitCounter broken = new RateLimitCounter() {
+
+            @Override
+            public Window hit(String key, Duration window) {
+                return fail();
+            }
+
+            @Override
+            public Window peek(String key) {
+                return fail();
+            }
+
+            @Override
+            public void reset(String key) {
+                fail();
+            }
+
+            private Window fail() {
+                redisCalls.incrementAndGet();
+                throw new IllegalStateException("connection refused");
+            }
         };
         RateLimitService service = new RateLimitService(loginIp(2, "PT5M"), broken, new InMemoryRateLimitCounter(clock),
                 clock);
@@ -113,5 +131,40 @@ class RateLimitServiceTests {
         clock.advance(Duration.ofSeconds(RateLimitService.REDIS_RETRY_SECONDS));
         service.check(RateLimitPolicy.LOGIN_IP, "10.0.0.9");
         assertThat(redisCalls).hasValue(2);
+    }
+
+    @Test
+    void countedEventsBlockOnlyAfterTheLimitAndResetClearsThem() {
+        RateLimitService service = new RateLimitService(new RateLimitProperties(RateLimitProperties.Store.MEMORY,
+                Map.of("login-account-ip", new RateLimitProperties.Limit(2, Duration.ofMinutes(15)))), null,
+                new InMemoryRateLimitCounter(clock), clock);
+        String key = "aysel@jeparla.test|10.0.0.1";
+
+        // Checking counts nothing: any number of checks stays allowed.
+        for (int i = 0; i < 5; i++) {
+            service.requireUnder(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        }
+        assertThat(service.isCounted(RateLimitPolicy.LOGIN_ACCOUNT_IP, key)).isFalse();
+
+        service.count(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        assertThat(service.blockedFor(RateLimitPolicy.LOGIN_ACCOUNT_IP, key)).isZero();
+        service.count(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        clock.advance(Duration.ofMinutes(5));
+        assertThat(service.blockedFor(RateLimitPolicy.LOGIN_ACCOUNT_IP, key)).isEqualTo(600);
+        RateLimitExceededException refused = catchThrowableOfType(RateLimitExceededException.class,
+                () -> service.requireUnder(RateLimitPolicy.LOGIN_ACCOUNT_IP, key));
+        assertThat(refused.retryAfterSeconds()).isEqualTo(600);
+        // Another key is not affected.
+        assertThatCode(() -> service.requireUnder(RateLimitPolicy.LOGIN_ACCOUNT_IP, "other|10.0.0.1"))
+                .doesNotThrowAnyException();
+
+        service.reset(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        assertThat(service.blockedFor(RateLimitPolicy.LOGIN_ACCOUNT_IP, key)).isZero();
+
+        // The window still ends on time.
+        service.count(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        service.count(RateLimitPolicy.LOGIN_ACCOUNT_IP, key);
+        clock.advance(Duration.ofMinutes(15));
+        assertThat(service.blockedFor(RateLimitPolicy.LOGIN_ACCOUNT_IP, key)).isZero();
     }
 }

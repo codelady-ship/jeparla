@@ -7,6 +7,7 @@ import az.jeparla.auth.dto.MerchantRegisterRequest;
 import az.jeparla.auth.dto.RegisterRequest;
 import az.jeparla.auth.dto.UserResponse;
 import az.jeparla.common.error.ApiException;
+import az.jeparla.common.net.IpAddresses;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,11 +43,22 @@ public class AuthController {
     private final AuthService auth;
     private final AuthProperties properties;
     private final RateLimitService rateLimits;
+    private final LoginThrottle loginThrottle;
 
-    public AuthController(AuthService auth, AuthProperties properties, RateLimitService rateLimits) {
+    public AuthController(AuthService auth, AuthProperties properties, RateLimitService rateLimits,
+            LoginThrottle loginThrottle) {
         this.auth = auth;
         this.properties = properties;
         this.rateLimits = rateLimits;
+        this.loginThrottle = loginThrottle;
+    }
+
+    /**
+     * Rate-limit key of the client: the address {@code ClientIpFilter} resolved (X-Forwarded-For
+     * only from trusted proxies), an IPv6 client by its /64 network.
+     */
+    private static String clientKey(HttpServletRequest request) {
+        return IpAddresses.rateLimitKey(request.getRemoteAddr());
     }
 
     /** The same account in any spelling: lowercase email, or the E.164 phone. */
@@ -58,7 +70,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest body, HttpServletRequest request) {
-        rateLimits.check(RateLimitPolicy.REGISTER_IP, request.getRemoteAddr());
+        rateLimits.check(RateLimitPolicy.REGISTER_IP, clientKey(request));
         rateLimits.check(RateLimitPolicy.REGISTER_ACCOUNT, body.email());
         return respond(HttpStatus.CREATED, auth.registerUser(body, LocaleContextHolder.getLocale()));
     }
@@ -66,17 +78,31 @@ public class AuthController {
     @PostMapping("/register/merchant")
     public ResponseEntity<AuthResponse> registerMerchant(@Valid @RequestBody MerchantRegisterRequest body,
             HttpServletRequest request) {
-        rateLimits.check(RateLimitPolicy.REGISTER_IP, request.getRemoteAddr());
+        rateLimits.check(RateLimitPolicy.REGISTER_IP, clientKey(request));
         rateLimits.check(RateLimitPolicy.REGISTER_ACCOUNT, PhoneNumbers.normalize(body.phone()));
         return respond(HttpStatus.CREATED, auth.registerMerchant(body, LocaleContextHolder.getLocale()));
     }
 
-    /** Limited per IP and per account before the password is checked. */
+    /**
+     * Limited per IP (every attempt) and per account (failed attempts only), see {@link LoginThrottle}:
+     * a stranger's wrong passwords never block the owner's right one.
+     */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest body, HttpServletRequest request) {
-        rateLimits.check(RateLimitPolicy.LOGIN_IP, request.getRemoteAddr());
-        rateLimits.check(RateLimitPolicy.LOGIN_ACCOUNT, accountKey(body.login()));
-        return respond(HttpStatus.OK, auth.login(body));
+        String address = clientKey(request);
+        String account = accountKey(body.login());
+        loginThrottle.beforeAttempt(account, address);
+        Session session;
+        try {
+            session = auth.login(body);
+        } catch (ApiException e) {
+            if (AuthService.INVALID_CREDENTIALS.equals(e.code())) {
+                loginThrottle.failed(account, address);
+            }
+            throw e;
+        }
+        loginThrottle.succeeded(account, address);
+        return respond(HttpStatus.OK, session);
     }
 
     /**
@@ -86,7 +112,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(
             @CookieValue(name = REFRESH_COOKIE, required = false) String refreshToken, HttpServletRequest request) {
-        rateLimits.check(RateLimitPolicy.REFRESH_IP, request.getRemoteAddr());
+        rateLimits.check(RateLimitPolicy.REFRESH_IP, clientKey(request));
         try {
             return respond(HttpStatus.OK, auth.refresh(refreshToken));
         } catch (ApiException e) {
