@@ -1,0 +1,9 @@
+# Test-only settings, loaded on top of src/main/resources/application.yml.
+# The JWT key below is a placeholder for tests (32+ bytes, deliberately not random): production
+# reads JEPARLA_JWT_SECRET from the environment and has no default.
+jeparla:
+  auth:
+    jwt-secret: test-test-test-test-test-test-test-test
+  # Tests without a Redis container count in memory; @AuthIntegrationTest switches to Redis.
+  rate-limit:
+    store: memory

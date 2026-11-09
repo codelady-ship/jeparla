@@ -55,6 +55,34 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_DB_URL` | `jdbc:postgresql://localhost:5432/jeparla` | PostgreSQL JDBC URL |
 | `JEPARLA_DB_USER` | `jeparla` | Baza istifadəçisi (miqrasiyalar üçün bazanın sahibi olmalıdır) |
 | `JEPARLA_DB_PASSWORD` | boş | Baza şifrəsi |
+| `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
+| `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
+| `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
+
+## Giriş və icazələr
+
+Ətraflı: [docs/RBAC.md](../docs/RBAC.md).
+
+| Endpoint | Təsvir |
+| --- | --- |
+| `POST /api/v1/auth/register` | alıcı: `{name, email, password}`, 201 |
+| `POST /api/v1/auth/register/merchant` | satıcı: `{name, phone, email?, password}`, 201 |
+| `POST /api/v1/auth/login` | `{login, password}`; `login` e-poçt və ya telefon |
+| `POST /api/v1/auth/refresh` | refresh cookie ilə yeni access token, cookie rotasiya olunur |
+| `POST /api/v1/auth/logout` | sessiyanı ləğv edir, cookie-ni silir, 204 |
+| `GET /api/v1/auth/me` | daxil olmuş istifadəçi |
+
+Uğurlu cavab: `{accessToken, tokenType: "Bearer", expiresIn, user: {id, name, email, phone, role, roles, locale}}`
+və `Set-Cookie: jeparla_refresh=...; Path=/api/v1/auth; HttpOnly; Secure; SameSite=Strict`.
+Xətalarda ProblemDetail-də `code` sahəsi var (`auth.invalid_credentials`, `auth.email_taken`,
+`auth.refresh_invalid`, `auth.forbidden`, `rate_limited` ...); 429-da `Retry-After`.
+
+Lokal sınaq (Git Bash):
+
+```bash
+curl -i -X POST localhost:8080/api/v1/auth/register -H 'Content-Type: application/json' \
+  -d '{"name":"Aysel","email":"aysel@example.az","password":"parol123"}'
+```
 
 ## Qaydalar
 
@@ -77,5 +105,10 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 - Kataloq siyahısı N+1 etmir: mağaza və kateqoriya `join fetch`, şəkillər və variantlar
   `hibernate.default_batch_fetch_size` ilə paketlə yüklənir (`ProductRepositoryTests` sorğu sayını yoxlayır).
   `spring.jpa.open-in-view: false`: entity-lər `@Transactional` servisdə DTO-ya çevrilir.
-- Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir. Docker olmayan maşında
+- Rol və sahiblik backend-də: URL qaydaları (`SecurityConfig`), servisdə `@PreAuthorize`, satıcı
+  resursları üçün `StoreAccess.requireOwner(id)` / `ProductAccess.requireOwner(id)` (403 başqasının, 404 yoxdur).
+  İstifadəçi id-si yalnız `CurrentUser.id()`-dən (token `sub`). Admin və satıcı əməliyyatları `AuditService.record`.
+- Gözlənilən xətalar `ApiException` (status + `code`, mətn `error.<code>` açarından 3 dildə).
+- Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir; `@AuthIntegrationTest`
+  üstəlik Redis 7 konteyneri və qorunan test endpoint-ləri qoşur. Test JWT açarı `src/test/resources/config/application.yml`-dədir. Docker olmayan maşında
   bu testlər keçilir (skipped), CI-da isə məcburi işləyir (`DockerInCiTests`).

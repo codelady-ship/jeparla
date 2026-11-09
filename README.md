@@ -23,7 +23,8 @@ tools/      contrast.py (WCAG), sweep.py (köhnə ad yoxlaması)
 ## Lokal mühit
 
 Bütün dəyişənlər [`.env.example`](./.env.example)-dadır. Əvvəlcə surətini çıxarın və boş qalan
-şifrə və açarları doldurun (yalnız hərf və rəqəm; S3 secret ən azı 8 simvol):
+şifrə və açarları doldurun (yalnız hərf və rəqəm; S3 secret ən azı 8 simvol; `JEPARLA_JWT_SECRET`
+ən azı 32 simvol, məsələn `openssl rand -hex 32`):
 
 ```bash
 cp .env.example .env

@@ -115,6 +115,8 @@ services:
     environment:
       PORT: "8080"
       JEPARLA_FRONTEND_ORIGIN: ${JEPARLA_FRONTEND_ORIGIN:-http://localhost:3000}
+      JEPARLA_JWT_SECRET: ${JEPARLA_JWT_SECRET:?set JEPARLA_JWT_SECRET in .env (openssl rand -hex 32)}
+      JEPARLA_COOKIE_SECURE: ${JEPARLA_COOKIE_SECURE:-true}
       JEPARLA_DB_URL: jdbc:postgresql://postgres:5432/${JEPARLA_DB_NAME:-jeparla}
       JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla}
       JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD}
