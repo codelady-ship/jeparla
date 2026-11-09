@@ -12,7 +12,8 @@ qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.
   `video/source/walk.mp4` (başlanğıc kadr `video/source/walk-start.jpg`). Hər kadrın fonu lokal olaraq
   silinib (`@imgly/background-removal-node`), kadrlar `video/public/walk/NNN.webp`-dir və Remotion-da
   sayt kremi üzərində oynayır. Pələnglər (2-ci akt) klipin son kadrından kəsilib (`video/public/tiger-N.png`).
-- **Modellər:** AI ilə yaradılıb (Vheer, "Text to Image", 2026-11-08), hər biri ayrıca tam boy çəkiliş;
+- **Modellər:** AI ilə yaradılıb (Vheer, "Text to Image", 2026-11-08), hər biri ayrıca dizdən yuxarı
+  portret, zinət əşyası önə çəkilmiş pozada (mənbələr `video/source/models/m0..2.jpg`);
   fonları lokal olaraq silinib, `video/public/model-N.png`. Köhnə mənbələr (`tigers.jpg`, `models.jpg`)
   arxiv kimi `video/source/`-da qalır.
 - **Kompozisiya:** Remotion layihəsi (`video/`). `cd video && sh scripts/export.sh`

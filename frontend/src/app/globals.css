@@ -250,7 +250,8 @@
 }
 /* "Jeparla" above the headline once the models are on stage (always shown without motion). */
 .hero-brand {
-  margin: 0 0 0.75rem;
+  /* Clear air between the brand and the headline: they read as two lines, not one block. */
+  margin: 0 0 clamp(1.25rem, 3vw, 2.5rem);
   font-size: clamp(2.5rem, 11vw, 3.5rem);
   font-weight: 500;
   line-height: 1;

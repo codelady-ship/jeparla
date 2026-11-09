@@ -7,7 +7,8 @@ import {
   GOLD_LIGHT,
   GROUP,
   INK,
-  MODELS,
+  MODEL_ORDER,
+  modelBox,
   SOURCE,
   TIGERS,
   TRANSFORM,
@@ -132,14 +133,15 @@ export function Hero({ f }: { f: Format }) {
         </>
       )}
       {frame >= ENTER &&
-        TIGERS.map((box, i) => {
+        MODEL_ORDER.map((i) => {
+          const box = TIGERS[i];
           // Act 2: gold light sweep reveals the model, the animal dissolves behind it.
           const t0 = ENTER + i * 12;
           const s = interpolate(frame, [t0, t0 + TRANSFORM - 32], [0, 1], { ...clamp, easing: easeInOut });
-          const model = MODELS[i];
-          const mx = f.x + model.left * f.scale;
-          const mw = model.width * f.scale;
-          const top = Math.min(box.top, model.top);
+          const mb = modelBox(f, i);
+          const mx = mb.left;
+          const mw = mb.width;
+          const beamTop = Math.min(f.y + box.top * f.scale, mb.top) - 40 * f.scale;
           // The beam crosses both the animal and the model, which do not stand on exactly
           // the same spot, so nothing of the animal is left when it has passed.
           const tx = f.x + box.left * f.scale;
@@ -166,11 +168,14 @@ export function Hero({ f }: { f: Format }) {
                   clipPath: `inset(0 0 0 ${tigerCut * 100}%)`,
                 }}
               />
-              <Figure
-                src={`model-${i}.png`}
-                box={model}
-                f={f}
+              <Img
+                src={staticFile(`model-${i}.png`)}
                 style={{
+                  position: "absolute",
+                  left: mb.left,
+                  top: mb.top,
+                  width: mb.width,
+                  height: mb.height,
                   clipPath: `inset(0 ${(1 - modelCut) * 100}% 0 0)`,
                   // A fully clipped image can still leave a hairline: hide it until the sweep starts.
                   opacity: modelCut > 0 ? 1 : 0,
@@ -184,7 +189,7 @@ export function Hero({ f }: { f: Format }) {
                 style={{
                   position: "absolute",
                   left: beamX - mw * 0.22,
-                  top: f.y + top * f.scale - 40 * f.scale,
+                  top: beamTop,
                   width: mw * 0.44,
                   height: f.height,
                   opacity: beam * 0.75,
@@ -198,7 +203,7 @@ export function Hero({ f }: { f: Format }) {
                 style={{
                   position: "absolute",
                   left: beamX - mw * 0.03,
-                  top: f.y + top * f.scale - 40 * f.scale,
+                  top: beamTop,
                   width: mw * 0.06,
                   height: f.height,
                   opacity: beam,
