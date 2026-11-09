@@ -9,11 +9,11 @@ coverage/
 
 # --- Java / Backend ---
 .gradle/
-!**/gradle/wrapper/gradle-wrapper.jar
 *.class
 *.jar
 *.war
 *.ear
+!**/gradle/wrapper/gradle-wrapper.jar
 hs_err_pid*
 
 # --- Environment / Secrets ---

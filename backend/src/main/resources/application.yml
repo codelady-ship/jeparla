@@ -1,0 +1,46 @@
+# Jeparla API configuration.
+# Secrets and environment-specific values come only from environment variables.
+# The datasource, Flyway and JPA are added in later issues (#32, #33); the app starts without a database.
+
+spring:
+  application:
+    name: jeparla-backend
+  messages:
+    basename: messages
+    encoding: UTF-8
+    # Never fall back to the server OS locale: az is the default via messages.properties.
+    fallback-to-system-locale: false
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  forward-headers-strategy: framework
+  error:
+    include-stacktrace: never
+    include-message: never
+
+jeparla:
+  cors:
+    # Comma-separated list of exact frontend origins. "*" is rejected at startup.
+    allowed-origins: ${JEPARLA_FRONTEND_ORIGIN:http://localhost:3000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  paths-to-match: /api/**
