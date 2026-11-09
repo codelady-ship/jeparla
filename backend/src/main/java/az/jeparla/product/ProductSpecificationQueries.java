@@ -12,4 +12,10 @@ public interface ProductSpecificationQueries {
 
     /** Products matching {@code spec}, e.g. {@code isPublic().and(inCategories(ids))}. */
     Page<Product> findAllMatching(Specification<Product> spec, Pageable pageable);
+
+    /**
+     * Products matching {@code spec} in a catalog order that may sort by variant prices or weights
+     * (subqueries, which a {@code Sort} cannot express). The sort of {@code pageable} is ignored.
+     */
+    Page<Product> findAllMatching(Specification<Product> spec, ProductOrder order, Pageable pageable);
 }

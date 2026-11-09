@@ -47,6 +47,25 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     @Query("select p.category.id, count(p) from Product p join p.store s where " + PUBLIC + " group by p.category.id")
     List<Object[]> countPublicByCategory();
 
+    /**
+     * JPQL condition of a listed product (#37): public and with at least one live variant, so it has
+     * a price. {@code p} is the product.
+     */
+    String HAS_LIVE_VARIANT = "exists (select v.id from ProductVariant v where v.product = p and v.deletedAt is null)";
+
+    /**
+     * {@code [categoryId, count]} of listed products (public, with a live variant) per category.
+     * The catalog API adds the counts of subcategories and drops hidden categories.
+     */
+    @Query("select p.category.id, count(p) from Product p join p.store s where " + PUBLIC + " and " + HAS_LIVE_VARIANT
+            + " group by p.category.id")
+    List<Object[]> countListedByCategory();
+
+    /** {@code [storeId, count]} of listed products in the given (visible) categories, per store. */
+    @Query("select s.id, count(p) from Product p join p.store s where " + PUBLIC + " and " + HAS_LIVE_VARIANT
+            + " and p.category.id in :categoryIds group by s.id")
+    List<Object[]> countListedByStore(@Param("categoryIds") Collection<Long> categoryIds);
+
     // ------------------------------------------------------------------ merchant (#34, #39)
 
     /** Ownership check: empty when the product does not exist or its store belongs to someone else. */

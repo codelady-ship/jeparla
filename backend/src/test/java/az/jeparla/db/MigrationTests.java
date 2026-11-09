@@ -69,7 +69,7 @@ class MigrationTests {
                 "users", "roles", "user_roles", "stores", "categories", "finenesses", "products",
                 "product_images", "product_variants", "product_stones", "favorites", "product_reports",
                 "audit_logs", "verification_documents", "metal_price_snapshots", "price_history",
-                "refresh_tokens");
+                "refresh_tokens", "product_contact_clicks");
         assertThat(jdbc.queryForList("SELECT name FROM roles ORDER BY name", String.class))
                 .containsExactly("ADMIN", "MERCHANT", "USER");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM pg_extension WHERE extname = 'pg_trgm'", Integer.class))
