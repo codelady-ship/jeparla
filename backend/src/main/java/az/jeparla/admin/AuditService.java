@@ -4,8 +4,8 @@ import az.jeparla.auth.CurrentUser;
 import az.jeparla.auth.RoleName;
 import az.jeparla.auth.User;
 import az.jeparla.auth.UserRepository;
+import az.jeparla.common.net.IpAddresses;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,20 +70,16 @@ public class AuditService {
         return ActorRole.USER;
     }
 
+    /**
+     * The client address set by {@code ClientIpFilter} (proxy-verified). Parsed as an IP literal
+     * only: anything else (e.g. the host name {@code face.cafe}) is stored as null, and nothing is
+     * ever looked up in DNS.
+     */
     private static InetAddress clientIp() {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (!(attributes instanceof ServletRequestAttributes servlet)) {
             return null;
         }
-        String address = servlet.getRequest().getRemoteAddr();
-        // Only IP literals reach here (never a host name), so no DNS lookup happens.
-        if (address == null || !address.matches("[0-9a-fA-F:.]+")) {
-            return null;
-        }
-        try {
-            return InetAddress.getByName(address);
-        } catch (UnknownHostException e) {
-            return null;
-        }
+        return IpAddresses.parse(servlet.getRequest().getRemoteAddr());
     }
 }
