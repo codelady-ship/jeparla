@@ -63,7 +63,7 @@ class JpaMappingTests {
                 SELECT table_name FROM information_schema.tables
                 WHERE table_schema = 'public' AND table_type = 'BASE TABLE' AND table_name <> 'flyway_schema_history'
                 """, String.class);
-        assertThat(tables).hasSize(16);
+        assertThat(tables).hasSize(17);
         assertThat(mapped).containsExactlyInAnyOrderElementsOf(tables);
     }
 
