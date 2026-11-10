@@ -84,7 +84,7 @@ class FavoriteApiTests extends MerchantApiTestBase {
 
         long product = listedProduct("90.00");
         mvc.perform(put(FAVORITES + "/" + product).with(buyer(buyer))).andExpect(status().isNoContent());
-        jdbc.update("UPDATE products SET deleted_at = now() WHERE id = ?", product);
+        jdbc.update("UPDATE products SET status = 'INACTIVE', deleted_at = now() WHERE id = ?", product);
         mvc.perform(get(FAVORITES).with(buyer(buyer))).andExpect(jsonPath("$.length()").value(0));
         // A row saved before V17 has no saved price: null, not zero.
         long old = listedProduct("75.00");

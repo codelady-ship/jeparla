@@ -65,7 +65,7 @@ class AdminListsApiTests extends MerchantApiTestBase {
         long fineness = fineness(Metal.GOLD);
         createProduct(seller, goldProduct(category, fineness, "100.00"));
         long removed = createProduct(seller, goldProduct(category, fineness, "120.00"));
-        jdbc.update("UPDATE products SET deleted_at = now() WHERE id = ?", removed);
+        jdbc.update("UPDATE products SET status = 'INACTIVE', deleted_at = now() WHERE id = ?", removed);
         mvc.perform(get(STORES + "/" + seller.storeId()).with(AdminTestTokens.admin(adminId)))
                 .andExpect(jsonPath("$.productCount").value(1));
         mvc.perform(get(STORES).param("size", "100").with(AdminTestTokens.admin(adminId)))
