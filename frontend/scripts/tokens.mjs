@@ -1,6 +1,8 @@
-// Generates src/app/tokens.css from docs/design/tokens.json (the single source of truth).
-// Usage: npm run tokens          write the file
-//        npm run tokens -- --check  exit 1 if the file is out of date
+// Generates src/app/tokens.css and src/lib/brand-colors.json from docs/design/tokens.json
+// (the single source of truth). The JSON serves places that cannot read CSS variables:
+// the web app manifest, the theme-color meta tag and the offline page.
+// Usage: npm run tokens          write the files
+//        npm run tokens -- --check  exit 1 if a file is out of date
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +10,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 export const TOKENS_JSON = resolve(here, "../../docs/design/tokens.json");
 export const TOKENS_CSS = resolve(here, "../src/app/tokens.css");
+export const BRAND_COLORS_JSON = resolve(here, "../src/lib/brand-colors.json");
 
 // shadcn/ui variable -> Jeparla role
 const SHADCN = {
@@ -94,15 +97,36 @@ export function buildCss(tokens) {
   ].join("\n");
 }
 
+/** Light, dark and scene palettes as JSON, without the `$description` notes. */
+export function buildBrandColors(tokens) {
+  const strip = (palette) =>
+    Object.fromEntries(Object.entries(palette).filter(([k]) => !k.startsWith("$")));
+  const { light, dark, scene } = tokens.color;
+  const colors = { light: strip(light), dark: strip(dark), scene: strip(scene) };
+  return JSON.stringify(colors, null, 2) + "\n";
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const css = buildCss(JSON.parse(readFileSync(TOKENS_JSON, "utf8")));
+  const tokens = JSON.parse(readFileSync(TOKENS_JSON, "utf8"));
+  const outputs = [
+    [TOKENS_CSS, buildCss(tokens)],
+    [BRAND_COLORS_JSON, buildBrandColors(tokens)],
+  ];
   if (process.argv.includes("--check")) {
-    if (readFileSync(TOKENS_CSS, "utf8") !== css) {
-      console.error("tokens.css is out of date. Run: npm run tokens");
-      process.exit(1);
+    for (const [file, content] of outputs) {
+      let current = "";
+      try {
+        current = readFileSync(file, "utf8");
+      } catch {}
+      if (current !== content) {
+        console.error(`${file} is out of date. Run: npm run tokens`);
+        process.exit(1);
+      }
     }
   } else {
-    writeFileSync(TOKENS_CSS, css);
-    console.log("wrote", TOKENS_CSS);
+    for (const [file, content] of outputs) {
+      writeFileSync(file, content);
+      console.log("wrote", file);
+    }
   }
 }
