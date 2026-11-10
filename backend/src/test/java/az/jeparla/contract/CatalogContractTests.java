@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -23,6 +24,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Contract between this API and the frontend (#37, #41): for every case in
@@ -43,6 +46,9 @@ import tools.jackson.databind.json.JsonMapper;
  *       reports the store's status. Store-level verification is compared.</li>
  *   <li>Metal price history: the demo seed stores only the latest day (the mock's 30-day wave uses
  *       {@code Math.sin}), so only the shape is compared.</li>
+ *   <li>Search (#38) ranks every group, the mock keeps the catalog order: those cases are
+ *       {@code unordered} (groups compared as sets, see {@link #groupsAsSets}). Suggestions keep only
+ *       the top 5, so a query with more than 5 matches is compared by shape.</li>
  * </ul>
  */
 @CatalogApiTest
@@ -62,15 +68,16 @@ class CatalogContractTests {
         List<Arguments> cases = new ArrayList<>();
         for (JsonNode c : root.get("cases")) {
             cases.add(Arguments.of(c.get("name").stringValue(), c.get("request").stringValue(), c.get("status").intValue(),
-                    "values".equals(c.get("compare").stringValue()), c.get("mock")));
+                    c.get("compare").stringValue(), c.get("mock")));
         }
         return cases.stream();
     }
 
     @ParameterizedTest(name = "{0}: GET {1}")
     @MethodSource("cases")
-    void backendAnswersLikeTheFrontendMock(String name, String request, int status, boolean values, JsonNode mock)
+    void backendAnswersLikeTheFrontendMock(String name, String request, int status, String compare, JsonNode mock)
             throws Exception {
+        boolean values = !"shape".equals(compare);
         MockHttpServletResponse response = mvc.perform(get(URI.create(request)).accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
@@ -80,6 +87,10 @@ class CatalogContractTests {
         }
         assertThat(response.getContentType()).startsWith(MediaType.APPLICATION_JSON_VALUE);
         JsonNode actual = JSON.readTree(response.getContentAsString(StandardCharsets.UTF_8));
+        if ("unordered".equals(compare)) {
+            mock = groupsAsSets(mock);
+            actual = groupsAsSets(actual);
+        }
         List<String> differences = JsonContract.differences(mock, actual, values, ignoredValues(request));
         assertThat(differences).as("differences from the frontend mock for GET " + request).isEmpty();
     }
@@ -97,7 +108,38 @@ class CatalogContractTests {
                 .anyMatch(r -> r.matches("/api/v1/stores/[a-z0-9-]+"))
                 .anyMatch(r -> r.matches("/api/v1/stores/[a-z0-9-]+/products.*"))
                 .anyMatch(r -> r.equals("/api/v1/metal-prices/latest"))
-                .anyMatch(r -> r.startsWith("/api/v1/metal-prices/history"));
+                .anyMatch(r -> r.startsWith("/api/v1/metal-prices/history"))
+                .anyMatch(r -> r.startsWith("/api/v1/search?"))
+                .anyMatch(r -> r.startsWith("/api/v1/search/suggest"));
+    }
+
+    /**
+     * Search ranks every group, the mock keeps the catalog order: the groups of a search result
+     * ({@code stores}, {@code categories}, {@code products} or {@code products.content}) sorted by id
+     * (or slug) on both sides, so they are compared as sets.
+     */
+    static JsonNode groupsAsSets(JsonNode result) {
+        ObjectNode copy = (ObjectNode) result.deepCopy();
+        for (String group : List.of("stores", "categories", "products")) {
+            JsonNode node = copy.get(group);
+            if (node != null && node.isArray()) {
+                copy.set(group, sorted(node));
+            } else if (node != null && node.isObject() && node.get("content") != null) {
+                ((ObjectNode) node).set("content", sorted(node.get("content")));
+            }
+        }
+        return copy;
+    }
+
+    private static ArrayNode sorted(JsonNode array) {
+        List<JsonNode> items = new ArrayList<>();
+        array.forEach(items::add);
+        items.sort(Comparator.comparing(item -> item.has("id")
+                ? String.format("%020d", item.get("id").longValue())
+                : item.get("slug").stringValue()));
+        ArrayNode out = JSON.createArrayNode();
+        items.forEach(out::add);
+        return out;
     }
 
     /** Product-level {@code verification.documents} differs on purpose (see the class comment). */

@@ -62,7 +62,8 @@ async function requestOf(call) {
 
 /**
  * compare: "values" = same shape and values (decimals compared numerically, date-times as
- * instants); "shape" = same keys and JSON types only (data that differs on purpose, listed in
+ * instants); "unordered" = the same, but the result groups are compared as sets (search ranks them,
+ * the mock does not); "shape" = same keys and JSON types only (data that differs on purpose, listed in
  * backend/src/test/java/az/jeparla/contract/CatalogContractTests.java).
  */
 const cases = [];
@@ -120,6 +121,23 @@ await add("stores matching a word", (api) => api.listStores({ q: "zerger" }));
 await add("store page", (api) => api.getStore("ayzer-zerger"));
 await add("unknown store", (api) => api.getStore("no-such-store"), { status: 404 });
 await add("store products by price", (api) => api.listStoreProducts("lale-atelye", { sort: "price_asc" }));
+
+// Search (#38). The API ranks every group (best first) while the mock keeps the catalog order, so
+// "unordered" compares the groups as sets (sorted by id or slug on both sides). The cases use
+// queries where the mock's word-start match and the API's ranked, typo-tolerant match find the same
+// items; typo, synonym and Russian matches the mock cannot do are tested in SearchApiTests.
+await add("search a store by its name", (api) => api.search("Ayzər"), { compare: "unordered" });
+await add("search a category word", (api) => api.search("sırğa"), { compare: "unordered" });
+await add("search a word without diacritics", (api) => api.search("nisan"), { compare: "unordered" });
+await add("search stores only", (api) => api.search("zərgər", "stores"), { compare: "unordered" });
+await add("search categories only", (api) => api.search("üzük", "categories"), { compare: "unordered" });
+await add("search products only, after the last page", (api) => api.search("Ayzər", "products", 1));
+await add("search without a match", (api) => api.search("zzzqqq"));
+await add("search with a blank query", (api) => api.search(""));
+await add("suggest a store", (api) => api.suggest("Ayzər"));
+await add("suggest a category", (api) => api.suggest("toy"));
+await add("suggest a blank query", (api) => api.suggest(""));
+await add("suggest more than five products", (api) => api.suggest("sırğa"), { compare: "shape" });
 
 // Metal prices: the demo seed has only the latest day; the mock has 30 days of history.
 await add("latest metal prices", (api) => api.latestMetalPrices());
