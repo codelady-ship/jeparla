@@ -59,6 +59,8 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
 | `JEPARLA_S3_PUBLIC_URL` | boş | Public bucket-in brauzer URL-i (məs. `https://img.jeparla.az`); şəkil URL-i = bu dəyər + `/` + açar. Demo şəkillər (`demo/...`) üçün lazım deyil |
+| `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
+| `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
 
 ## Reverse proxy və müştəri IP-si
@@ -127,6 +129,55 @@ Hamısı anonim `GET`-dir, cavablar `frontend/src/types/api.ts` tipləri ilə ey
 - **Keş:** `Cache-Control: public, max-age, s-maxage, stale-while-revalidate` (CDN üçün; `CachePolicy`) və ETag (`If-None-Match` -> 304). Xətalar `no-store`-dur.
 - **Şəkil URL-i:** `demo/ring-gold-1.jpg#12-0` açarı `/demo/ring-gold-1.jpg` olur (frontend-in `public/demo` qovluğu, fraqment atılır); qalan açarlar `JEPARLA_S3_PUBLIC_URL/<açar>`, onlarda `#` ola bilməz (V9 CHECK).
 - **Kontrakt testi:** `CatalogContractTests` frontend `http.ts`-in göndərdiyi sorğunu backend-ə verir və cavabı frontend mock-unun eyni çağırışa cavabı ilə müqayisə edir (açarlar, JSON tipləri, dəyərlər). Fixture-lar frontend kodundan yaradılır: `node backend/src/test/resources/contract/generate.mjs` (repo kökündən; `frontend/node_modules` lazımdır). Tiplər, mock və ya demo məlumat dəyişəndə yenidən yaradın və commit edin.
+
+## Metal qiymətləri və avtomatik qiymət (#43, #44)
+
+**Mənbə (10.11.2026-da yoxlanılıb):** `https://www.cbar.az/currencies/DD.MM.YYYY.xml`. Kök `ValCurs Date="06.11.2026"`
+(bülletenin qüvvədə olduğu iş günü), `ValType Type="Bank metalları"` içində `Valute Code="XAU|XAG|XPT|XPD"`,
+`Nominal` = `1 t.u.` (troy unsiya), `Value` = AZN, 3-4 onluq (`6877.435`). Həftəsonu və bayram günü istənən tarixə
+son bülleten öz tarixi ilə gəlir (31.10.2026 -> `30.10.2026`); mümkün olmayan tarix (`32.13.2026`) 302 ilə ana
+səhifəyə yönləndirilir. Nümunələr: `src/test/resources/cbar/`.
+
+- **Job** (`MetalPriceJob`): `jeparla.metal-prices.cron` (default 10:15, 13:15, 17:15, `Asia/Baku`; `-` söndürür).
+  Bakı vaxtı ilə bu günün bülletenini alır, `metal_price_snapshots`-a yazır (`price_per_gram` = unsiya / 31.1034768,
+  4 onluq), sonra hər metalın istifadədəki kotirovkası ilə bütün canlı METAL_LINKED variantları yenidən qiymətləndirir.
+  ShedLock (`shedlock` cədvəli, V11, baza vaxtı) iki instansiyanın eyni anda işləməsinə imkan vermir; kilid
+  tutulubsa run heç nə etmir. Hər run bir xülasə log sətri (`Metal price job (...)`) və Micrometer sayğacları
+  (`jeparla.metal_prices.fetch|quotes|repriced`) yazır.
+- **İdempotent:** bir metalın bir günlük CBAR kotirovkası bir dəfə saxlanılır (unikal indeks); həmin kotirovka ilə
+  artıq qiymətlənmiş variant ötürülür. İkinci run heç nəyi dəyişmir, ikinci `price_history` sətri yazmır.
+- **Yoxlama:** bülletendə metal yoxdursa, təkrarlanırsa, `0`/mənfi/qeyri-adi format, başqa vahid, gələcək və ya
+  30 gündən köhnə tarix varsa bütün bülleten rədd edilir, son düzgün qiymət qalır. Şəbəkə xətası, 5xx və 429
+  `attempts` dəfə (default 3) artan fasilə ilə təkrarlanır; redirect izlənmir; timeout-lar `connect-timeout`,
+  `read-timeout`. User-Agent: `Jeparla/1.0 (metal price service; +https://jeparla.az)`.
+- **Sanity check:** istifadədəki qiymətə nisbətən dəyişmə (bir onluq, admin panelindəki kimi) `max-daily-change-percent`-dən
+  (10) böyükdürsə kotirovka `HELD` saxlanılır, `METAL PRICE HELD` xəbərdarlığı loglanır, heç nə qiymətləndirmir və
+  ictimai API-də görünmür, admin qərar verənə qədər köhnə qiymət qalır.
+- **Formula** (`PricingEngine`, `frontend/src/lib/pricing.ts` ilə eyni): metal = çəki x (əyar/1000) x qram qiyməti,
+  işçilik = çəki x qram başına + sabit, qiymət = (metal + işçilik + daş) x (1 + əlavə/100), sonra min, sonra max,
+  sonda `HALF_UP` 2 onluq. Yalnız `BigDecimal`. Paritet: `node backend/src/test/resources/pricing/generate.mjs`
+  `pricing.ts`-in özünü işlədib `pricing-cases.json` yaradır (428 hal), `PricingEngineParityTests` hər hissəni
+  müqayisə edir. `pricing.ts` dəyişəndə yenidən yaradın və commit edin.
+- **Qiymət tarixçəsi:** qiyməti dəyişən variant üçün `price_history` (`METAL_PRICE`, kotirovka, əvvəlki qiymət);
+  dəyişməyən variant yalnız yeni kotirovkaya və "son yenilənmə" vaxtına keçir. FIXED variantlara toxunulmur.
+  Hesablana bilməyən variant (məs. başqa valyuta) `failed` sayılır və köhnə qiymətini saxlayır; bazada xəta verən
+  batch variant-variant təkrarlanır. Satıcı qaydanı dəyişəndə (#39) qiyməti `PricingEngine` ilə dərhal hesablamalıdır:
+  job eyni kotirovka ilə qiymətlənmiş variantı ötürür.
+- **Keş:** server keşi yoxdur; kataloq cavablarının CDN keşi `s-maxage=300`, metal qiymətləri `s-maxage=3600` ilə köhnəlir.
+
+| Endpoint | Təsvir |
+| --- | --- |
+| `GET /api/v1/admin/metal-prices` | ADMIN: hər metalın istifadədəki qiyməti, əvvəlki, dəyişmə, `held` kotirovka (`AdminMetalPrice`) |
+| `PATCH /api/v1/admin/metal-prices/{metal}/held` | ADMIN: `{action: accept\|discard, reason}`; discard üçün səbəb 10-500 simvol; tətbiq edilib dərhal yenidən qiymətləndirir; audit |
+| `PUT /api/v1/admin/metal-prices/{metal}` | ADMIN: `{pricePerOunce, reason, confirmLarge}` əl ilə qiymət (`source: ADMIN`, bu günün tarixi); limitdən böyük dəyişmə `confirmLarge` olmadan 409 `metal_prices.large_change`; eyni gün təkrar düzəltmək olar (ən yenisi qüvvədədir); növbəti CBAR bülleteni onu əvəz edir; audit |
+| `POST /internal/jobs/metal-prices` | `X-Jeparla-Job-Token: $JEPARLA_INTERNAL_JOB_TOKEN` ilə job-u indi işlədir (idempotent, eyni kilid); token yoxdursa 404, səhvdirsə 401, job işləyirsə 409. Reverse proxy `/internal/*`-i API-yə ötürməlidir |
+
+**Mənbə dəyəri:** `MetalPrice.source` `CBAR` (gündəlik bülleten) və ya `ADMIN` (əl ilə override) ola bilər; frontend
+tipində hələ yalnız `"CBAR"` var (#41-də `"CBAR" | "ADMIN"` olmalıdır).
+
+**Gündəlik yoxlama** (`.github/workflows/metal-prices-check.yml`, hər gün 14:30 Bakı): repo dəyişəni `JEPARLA_API_URL`
+və secret `JEPARLA_INTERNAL_JOB_TOKEN` ilə `latest` tarixini AMB bülleteninin tarixi ilə müqayisə edir, köhnədirsə
+endpoint-i çağırır, yenə köhnədirsə və ya admin təsdiqi gözləyən qiymət varsa issue açır (açıq olanı yeniləyir).
 
 ## Giriş və icazələr
 
