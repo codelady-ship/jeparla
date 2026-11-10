@@ -24,7 +24,7 @@ export function SiteHeader() {
       >
         {t("Common.skipToContent")}
       </a>
-      <div className="container-page flex h-16 items-center gap-2">
+      <div className="container-page flex h-16 items-center gap-1 min-[22.5rem]:gap-2">
         <MobileNav
           items={items}
           labels={{ menu: t("Nav.menu"), close: t("Common.close"), home: t("Nav.home") }}
@@ -47,7 +47,8 @@ export function SiteHeader() {
             ))}
           </ul>
         </nav>
-        <div className="ml-auto flex items-center gap-1">
+        {/* 320px phones: no gaps between the icons, so the row fits without sideways scroll. */}
+        <div className="ml-auto flex items-center min-[22.5rem]:gap-1">
           <SearchLauncher
             labels={{
               open: t("Search.open"),

@@ -150,6 +150,10 @@
       opacity: 1;
     }
   }
+  /* Touch screens never show it: not rendered, so the lazy image is never fetched (#160). */
+  @media (hover: none) {
+    display: none;
+  }
 }
 
 /* Invisible hit area of at least 44x44px around a smaller control (WCAG 2.5.5, #148).
@@ -241,19 +245,31 @@
   overflow: hidden;
   background: var(--hero-bg);
   color: var(--scene-green);
+  /* Phone and tablet (portrait cut): copy on top, the figures in the space left below. */
+  display: flex;
+  flex-direction: column;
 }
+/* The stage for the figures: whatever height the copy leaves free (#160, owner feedback). */
 .hero-media {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  /* First in the DOM (painted under the copy), shown below it. */
+  order: 1;
 }
+/* The figures fill the bottom 41% of the 9:16 footage (heads at 59%; the rest is the
+   plain backdrop). The video box is the stage height / 0.43 tall and anchored to its
+   bottom, so with `contain` the figures (plus a little air) always fit inside the stage:
+   on short phones the footage scales down and the cream backdrop continues at the
+   sides; on tall ones it fills the width and leaves cream above. The box reaches up
+   behind the copy, where the footage is empty backdrop. Keep in sync with HERO_FIGURES. */
 .hero-video,
 .hero-frames {
   position: absolute;
-  inset: 0;
+  inset: auto 0 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Models stand on the bottom edge of the footage: keep it on screen. */
+  height: calc(100% / 0.43);
+  object-fit: contain;
   object-position: 50% 100%;
 }
 .hero-frames {
@@ -261,13 +277,36 @@
 }
 
 .hero-copy {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  inset-inline: 0;
-  /* Phone: under the header, above the animals. */
-  top: 5.25rem;
-  padding: 0 1rem;
-  max-width: 26rem;
+  flex: none;
+  /* Phone: under the header (4rem), above the figures. */
+  padding: 5.25rem 1rem 1rem;
+  max-width: 28rem;
+}
+.hero-ctas {
+  display: grid;
+  gap: 0.75rem;
+}
+/* Narrow phones: both calls to action full width, stacked; wider: side by side. */
+@media (min-width: 23.5rem) {
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+/* Short phones: tighter type and spacing so the figures keep a usable stage. */
+@media (max-height: 44rem) and (max-aspect-ratio: 4/5) {
+  .hero-copy {
+    padding-top: 4.75rem;
+  }
+  .hero-brand {
+    margin-bottom: 0.75rem;
+    font-size: clamp(2rem, 9vw, 2.5rem);
+  }
+  .hero-title {
+    font-size: clamp(1.875rem, 8vw, 2.25rem);
+  }
 }
 /* "Jeparla" above the headline once the models are on stage (always shown without motion). */
 .hero-brand {
@@ -297,12 +336,25 @@
   letter-spacing: 0.08em;
 }
 @media (min-aspect-ratio: 4/5) {
+  /* Landscape cut: the figures stand right of center, the copy sits in the left column. */
+  .hero-media {
+    position: absolute;
+    inset: 0;
+  }
+  .hero-video,
+  .hero-frames {
+    inset: 0;
+    height: 100%;
+    object-fit: cover;
+  }
   .hero-copy {
+    position: absolute;
     top: 50%;
     translate: 0 -10%;
     left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
     right: auto;
     width: min(26rem, 31vw);
+    max-width: none;
     padding: 0;
   }
   .hero-brand {
@@ -310,6 +362,31 @@
   }
   .hero-title {
     font-size: clamp(2.25rem, 3.4vw, 3.5rem);
+  }
+}
+/* Landscape phones: the stage is one short screen, so the copy is smaller, centered in
+   the space under the header and a little wider (fewer lines). */
+@media (min-aspect-ratio: 4/5) and (max-height: 32rem) {
+  .hero {
+    min-height: 20rem;
+  }
+  .hero-copy {
+    top: calc(4rem + (100% - 4rem) / 2);
+    translate: 0 -50%;
+    width: min(26rem, 38vw);
+  }
+  .hero-brand {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+  }
+  .hero-title {
+    font-size: 1.75rem;
+  }
+  .hero-text {
+    margin-top: 0.5rem;
+  }
+  .hero-ctas {
+    margin-top: 1rem;
   }
 }
 

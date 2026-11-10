@@ -29,6 +29,17 @@ export const HERO_PHASES = {
   brandIn: [0.42, 0.78],
 } as const;
 
+/**
+ * Where the figures stand in each cut, as fractions of the footage (measured on the
+ * exported frames: tigers, the "Jeparla" shadow word and the models). globals.css
+ * sizes the phone stage from `mobile.top` (0.43 = 1 - top + a little air), and the
+ * e2e check keeps the copy and the calls to action off this box.
+ */
+export const HERO_FIGURES = {
+  mobile: { top: 0.59, left: 0.08, right: 0.97 },
+  desktop: { top: 0.34, left: 0.42, right: 0.84 },
+} as const;
+
 /** Maps p into [from, to] -> 0..1, clamped. */
 export function phase(p: number, [from, to]: readonly [number, number]) {
   return Math.min(Math.max((p - from) / (to - from), 0), 1);
