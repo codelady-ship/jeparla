@@ -16,7 +16,9 @@ spring:
       enabled: true
   datasource:
     url: ${JEPARLA_DB_URL:jdbc:postgresql://localhost:5432/jeparla}
-    username: ${JEPARLA_DB_USER:jeparla}
+    # Runtime role (#165): not a superuser, owns nothing; SELECT and INSERT only on the evidence tables
+    # (V16). DatabaseRoleCheck stops the API at startup when it connects with more rights than that.
+    username: ${JEPARLA_DB_USER:jeparla_app}
     password: ${JEPARLA_DB_PASSWORD:}
     hikari:
       # Small pool: the API, PostgreSQL and Redis share one free-tier VM.
@@ -34,6 +36,12 @@ spring:
         enabled: false
   flyway:
     locations: classpath:db/migration
+    # Migration role (#165): owns the schema; only Flyway connects with it, on the datasource URL.
+    user: ${JEPARLA_DB_MIGRATION_USER:jeparla_owner}
+    password: ${JEPARLA_DB_MIGRATION_PASSWORD:}
+    placeholders:
+      # V16 grants the runtime role its rights; it must exist and differ from the migration role.
+      runtimerole: ${spring.datasource.username}
     # Never wipe a database from the application.
     clean-disabled: true
     validate-migration-naming: true

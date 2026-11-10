@@ -27,19 +27,22 @@ public class MetalPriceJobTestSupport {
     private final TransactionTemplate tx;
     private final TestData data;
     private final EntityManager em;
+    private final DatabaseSuperuser superuser;
 
     public MetalPriceJobTestSupport(JdbcTemplate jdbc, PlatformTransactionManager transactionManager, TestData data,
-            EntityManager em) {
+            EntityManager em, DatabaseSuperuser superuser) {
         this.jdbc = jdbc;
         this.tx = new TransactionTemplate(transactionManager);
         this.data = data;
         this.em = em;
+        this.superuser = superuser;
     }
 
     /** Empty quotes, products (with variants and price history) and audit log; the job lock released. */
     public void clean() {
         MetalPriceJobTest.STUB.reset();
-        jdbc.execute("TRUNCATE products, metal_price_snapshots, audit_logs CASCADE");
+        // The audit log is evidence (#165): only the superuser can empty it, never the application.
+        superuser.truncate("products, metal_price_snapshots, audit_logs");
         // Release the job lock. The row stays: ShedLock remembers it inserted it and only updates it later.
         jdbc.update("UPDATE shedlock SET lock_until = now() - interval '1 second'");
     }
@@ -116,5 +119,10 @@ public class MetalPriceJobTestSupport {
 
     public JdbcTemplate jdbc() {
         return jdbc;
+    }
+
+    /** The superuser, for fixtures the runtime role may not create (triggers, #165). */
+    public JdbcTemplate superuserJdbc() {
+        return superuser.jdbc();
     }
 }
