@@ -135,6 +135,8 @@ services:
       JEPARLA_COOKIE_SECURE: ${JEPARLA_COOKIE_SECURE:-true}
       # No proxy in front locally: only loopback is trusted, published-port clients are keyed by their address.
       JEPARLA_TRUSTED_PROXIES: ${JEPARLA_TRUSTED_PROXIES:-127.0.0.1/32,::1/128}
+      # Optional shared secret of the frontend server (#41); empty ignores X-Jeparla-Client-Ip.
+      JEPARLA_FRONTEND_TOKEN: ${JEPARLA_FRONTEND_TOKEN:-}
       # Optional shared secret of POST /internal/jobs/metal-prices; empty turns the endpoint off.
       JEPARLA_INTERNAL_JOB_TOKEN: ${JEPARLA_INTERNAL_JOB_TOKEN:-}
       JEPARLA_DB_URL: jdbc:postgresql://postgres:5432/${JEPARLA_DB_NAME:-jeparla}
