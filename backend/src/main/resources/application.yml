@@ -119,6 +119,12 @@ jeparla:
       # Life of the presigned URL an admin opens a document with (every view is audited).
       view-url-ttl: 5m
       cleanup-lock-at-most-for: 15m
+  support:
+    # Contact at the end of every notification that asks the seller to contact support (#138), also in the
+    # email. Empty both: the in-app help page (help-path) is named instead.
+    email: ${JEPARLA_SUPPORT_EMAIL:}
+    url: ${JEPARLA_SUPPORT_URL:}
+    help-path: /help
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
     email-cron: ${JEPARLA_EMAIL_OUTBOX_CRON:0 * * * * *}

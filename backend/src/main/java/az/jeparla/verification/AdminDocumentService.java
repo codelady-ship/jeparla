@@ -7,6 +7,7 @@ import az.jeparla.auth.User;
 import az.jeparla.auth.UserRepository;
 import az.jeparla.common.dto.PageDto;
 import az.jeparla.common.error.ApiException;
+import az.jeparla.common.i18n.Language;
 import az.jeparla.common.storage.ObjectStorage;
 import az.jeparla.common.storage.ObjectStorage.PresignedDownload;
 import az.jeparla.notification.NotificationKind;
@@ -144,10 +145,11 @@ public class AdminDocumentService {
             default -> NotificationKind.DOCUMENT_CHANGES_REQUESTED;
         };
         RejectReason reason = request.reason();
-        String subject = product != null ? product.getName().az() : store.getName();
+        // The product's name in the seller's language when it has one (Azerbaijani otherwise).
         notifications.notify(store.getOwner(), kind, locale -> new Object[] {
             reason == null ? "" : messages.getMessage("verification.reason." + reason.name(), null, locale),
-            document.getFileName(), subject}, note, SELLER_LINK);
+            document.getFileName(),
+            product != null ? product.getName().in(Language.of(locale)) : store.getName()}, note, SELLER_LINK);
         return AdminDocumentDto.of(document);
     }
 

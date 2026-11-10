@@ -300,7 +300,11 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .startsWith("К сожалению, мы не смогли принять ваш документ.")
                 .contains("Причина: Срок действия документа истёк.")
                 .contains("VÖEN çıxarışı 2024-cü ildəndir")
-                .contains("voen.pdf");
+                .contains("voen.pdf")
+                // Where to write (#138): no support address configured in tests, so the help page.
+                .endsWith("Поддержка: страница помощи на сайте, /help")
+                // No review deadline is promised while there is no appeal flow.
+                .doesNotContain("14 дней");
         assertThat(notification.get("link")).isEqualTo("/merchant/documents");
         Map<String, Object> email = jdbc.queryForMap(
                 "SELECT to_address, language, subject, status FROM email_outbox WHERE notification_id = ?",
@@ -381,9 +385,14 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .isEqualTo("PENDING");
         // The store's documents check is not touched by a product certificate.
         assertThat(documentsStatus(seller)).isEqualTo("NONE");
+        // The seller reads English; the product has an English name.
+        jdbc.update("UPDATE users SET preferred_locale = 'en' WHERE id = ?", seller.userId());
+        jdbc.update("UPDATE products SET name_en = 'Gold ring in English' WHERE id = ?", product);
         decide(adminId, id, "{\"decision\": \"APPROVE\"}");
         assertThat(jdbc.queryForObject("SELECT expertise_status FROM products WHERE id = ?", String.class, product))
                 .isEqualTo("VERIFIED");
+        assertThat(jdbc.queryForObject("SELECT body FROM notifications WHERE user_id = ? AND kind = 'DOCUMENT_APPROVED'",
+                String.class, seller.userId())).endsWith("eyar.pdf, Gold ring in English.");
     }
 
     @Test
@@ -460,7 +469,8 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REJECTED"));
         assertThat(jdbc.queryForObject("SELECT body FROM notifications WHERE user_id = ? AND kind = 'STORE_REJECTED'",
-                String.class, seller.userId())).contains("VÖEN reyestrdə tapılmadı");
+                String.class, seller.userId())).contains("VÖEN reyestrdə tapılmadı")
+                .endsWith("Dəstək: saytdakı kömək səhifəsi, /help");
         mvc.perform(json(post("/api/v1/admin/stores/" + seller.storeId() + "/seller-check"),
                         "{\"decision\": \"VERIFIED\"}").with(admin(adminId)))
                 .andExpect(status().isOk())
