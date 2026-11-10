@@ -4,6 +4,7 @@ import az.jeparla.common.persistence.NoDeleteRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -19,8 +20,12 @@ import org.springframework.data.repository.query.Param;
  */
 public interface ProductRepository extends NoDeleteRepository<Product, Long>, ProductSpecificationQueries {
 
-    /** JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. */
+    /**
+     * JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. FASHION products
+     * are not public yet ({@link Product#isPublic}, #128).
+     */
     String PUBLIC = "p.status = az.jeparla.product.ProductStatus.APPROVED and p.deletedAt is null"
+            + " and p.materialKind = az.jeparla.product.MaterialKind.PRECIOUS"
             + " and s.status = az.jeparla.store.StoreStatus.APPROVED";
 
     // ------------------------------------------------------------------ public (#37)
@@ -79,6 +84,19 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     @Query(value = "select p from Product p join fetch p.category where p.store.id = :storeId and p.deletedAt is null",
             countQuery = "select count(p) from Product p where p.store.id = :storeId and p.deletedAt is null")
     Page<Product> findByStoreId(@Param("storeId") Long storeId, Pageable pageable);
+
+    /** Merchant product list without paging (#39): not deleted, last changed first. */
+    @Query("select p from Product p join fetch p.category where p.store.id = :storeId and p.deletedAt is null"
+            + " order by p.updatedAt desc, p.id desc")
+    List<Product> findLiveByStoreId(@Param("storeId") Long storeId);
+
+    /** A double-submitted create request (#39): the product its Idempotency-Key created. */
+    Optional<Product> findByStoreIdAndIdempotencyKey(Long storeId, UUID idempotencyKey);
+
+    /** Products of a kind the store still lists (a seller kind change must keep them allowed, #128). */
+    @Query("select count(p) from Product p where p.store.id = :storeId and p.deletedAt is null"
+            + " and p.materialKind = :kind")
+    long countLiveByStoreIdAndMaterialKind(@Param("storeId") Long storeId, @Param("kind") MaterialKind kind);
 
     /** Merchant dashboard: {@code [status, count]} of the store's products, deleted ones excluded. */
     @Query("select p.status, count(p) from Product p where p.store.id = :storeId and p.deletedAt is null group by p.status")

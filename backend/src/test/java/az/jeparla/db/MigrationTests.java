@@ -171,9 +171,8 @@ class MigrationTests {
 
     @Test
     void skuIsUniqueWithinAStoreOnly() {
-        long owner = merchant();
-        long storeA = store(owner);
-        long storeB = store(owner);
+        long storeA = store(merchant());
+        long storeB = store(merchant());
         long fineness = fineness();
         long productA1 = product(storeA);
         long productA2 = product(storeA);
@@ -192,9 +191,8 @@ class MigrationTests {
 
     @Test
     void variantStoreMustMatchItsProduct() {
-        long owner = merchant();
-        long product = product(store(owner));
-        long otherStore = store(owner);
+        long product = product(store(merchant()));
+        long otherStore = store(merchant());
         assertThatThrownBy(() -> jdbc.update("""
                 INSERT INTO product_variants (product_id, store_id, sku, fineness_id, weight_grams, price)
                 VALUES (?, ?, 'X-1', ?, 1.000, 1.00)

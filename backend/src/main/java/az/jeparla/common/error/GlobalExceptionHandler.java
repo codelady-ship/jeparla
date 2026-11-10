@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -139,6 +140,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problem.setDetail(text("error." + code, "error.detail." + status.value()));
         problem.setProperty("code", code);
         return response;
+    }
+
+    /**
+     * A database constraint the service checks could not see coming, typically two requests racing for the
+     * same unique value (a double-submitted store, an SKU): 409 {@code conflict}, never the constraint text.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleConflict(DataIntegrityViolationException ex, WebRequest request) {
+        log.warn("Database constraint violated: {}", ex.getMostSpecificCause().getMessage());
+        return handleApi(new ApiException(HttpStatus.CONFLICT, "conflict"), request);
     }
 
     /** Last resort: anything not handled above becomes a generic 500 without internal details. */

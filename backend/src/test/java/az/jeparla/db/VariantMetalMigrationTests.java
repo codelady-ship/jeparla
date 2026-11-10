@@ -40,10 +40,14 @@ class VariantMetalMigrationTests {
 
         assertThat(db.jdbc.queryForList("SELECT metal FROM product_variants WHERE id IN (?, ?) ORDER BY id",
                 String.class, goldVariant, silverVariant)).containsExactly("GOLD", "SILVER");
-        assertThat(db.jdbc.queryForObject("""
-                SELECT is_nullable FROM information_schema.columns
-                WHERE table_name = 'product_variants' AND column_name = 'metal'
-                """, String.class)).isEqualTo("NO");
+        // V13 (#128): existing products and variants are PRECIOUS, whose CHECK keeps metal required; only
+        // FASHION variants have none, so the column itself is nullable since then.
+        assertThat(db.jdbc.queryForList("SELECT material_kind FROM product_variants WHERE id IN (?, ?)",
+                String.class, goldVariant, silverVariant)).containsOnly("PRECIOUS");
+        assertThat(db.jdbc.queryForList("SELECT material_kind FROM products WHERE id IN (?, ?)",
+                String.class, goldProduct, silverProduct)).containsOnly("PRECIOUS");
+        assertThatThrownBy(() -> db.jdbc.update("UPDATE product_variants SET fineness_id = NULL WHERE id = ?",
+                goldVariant)).hasMessageContaining("product_variants_by_kind");
     }
 
     @Test

@@ -22,6 +22,8 @@ repositories {
 val springdocVersion = "3.2.0"
 // ShedLock 7.x targets Spring Framework 7 / Boot 4.
 val shedlockVersion = "7.10.1"
+// AWS SDK v2 for S3-compatible storage (Cloudflare R2, MinIO locally): presigned uploads and object checks (#39).
+val awsSdkVersion = "2.56.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -41,6 +43,15 @@ dependencies {
     // Daily metal price job (#44): one run across instances (ShedLock, JDBC lock table from V12).
     implementation("net.javacrumbs.shedlock:shedlock-core:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
+    // Product image uploads (#39): presigned PUT URLs, then HEAD and a ranged GET to check the stored file.
+    // The JDK URLConnection client only: no Netty or Apache HTTP client on the classpath.
+    implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
+    implementation("software.amazon.awssdk:s3") {
+        exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
+        exclude(group = "software.amazon.awssdk", module = "apache-client")
+        exclude(group = "software.amazon.awssdk", module = "apache5-client")
+    }
+    implementation("software.amazon.awssdk:url-connection-client")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

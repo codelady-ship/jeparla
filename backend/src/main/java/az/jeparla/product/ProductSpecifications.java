@@ -25,11 +25,15 @@ public final class ProductSpecifications {
     private ProductSpecifications() {
     }
 
-    /** APPROVED, not deleted, of an APPROVED store: the only products the public sees. */
+    /**
+     * APPROVED, not deleted, PRECIOUS, of an APPROVED store: the only products the public sees (FASHION ones
+     * wait for their own catalog section, #128).
+     */
     public static Specification<Product> isPublic() {
         return (root, query, cb) -> cb.and(
                 cb.equal(root.get("status"), ProductStatus.APPROVED),
                 cb.isNull(root.get("deletedAt")),
+                cb.equal(root.get("materialKind"), MaterialKind.PRECIOUS),
                 cb.equal(root.get("store").get("status"), StoreStatus.APPROVED));
     }
 

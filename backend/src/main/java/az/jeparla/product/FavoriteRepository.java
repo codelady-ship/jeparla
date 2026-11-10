@@ -12,12 +12,8 @@ public interface FavoriteRepository extends Repository<Favorite, Long> {
     Favorite save(Favorite favorite);
 
     /** The user's list, newest first; only products that are still public. */
-    @Query("""
-            select f from Favorite f join fetch f.product p join fetch p.store s
-            where f.user.id = :userId and p.status = az.jeparla.product.ProductStatus.APPROVED
-              and p.deletedAt is null and s.status = az.jeparla.store.StoreStatus.APPROVED
-            order by f.createdAt desc, f.id desc
-            """)
+    @Query("select f from Favorite f join fetch f.product p join fetch p.store s where f.user.id = :userId and "
+            + ProductRepository.PUBLIC + " order by f.createdAt desc, f.id desc")
     List<Favorite> findPublicByUserId(@Param("userId") Long userId);
 
     boolean existsByUserIdAndProductId(Long userId, Long productId);

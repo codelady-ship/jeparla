@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.hibernate.annotations.SQLRestriction;
 
 /**
@@ -66,9 +68,32 @@ public class Product extends TimestampedEntity {
     })
     private LocalizedText description;
 
+    /** PRECIOUS or FASHION (#128); fixed at creation (the variants copy it, V13). */
     @Enumerated(EnumType.STRING)
-    @Column(name = "metal", nullable = false)
+    @Column(name = "material_kind", nullable = false, updatable = false)
+    private MaterialKind materialKind = MaterialKind.PRECIOUS;
+
+    /** The precious metal; null for a FASHION product (CHECK {@code products_metal_by_kind}). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "metal")
     private Metal metal;
+
+    /** Main material of a FASHION product; null for PRECIOUS. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "material")
+    private FashionMaterial material;
+
+    /** When the seller confirmed "this is not a precious metal" (FASHION only). */
+    @Column(name = "not_precious_confirmed_at")
+    private Instant notPreciousConfirmedAt;
+
+    /** The seller hid this APPROVED product; only then may the seller show it again without a review. */
+    @Column(name = "hidden_by_seller", nullable = false)
+    private boolean hiddenBySeller;
+
+    /** Idempotency-Key of the request that created the product (#39), or null. */
+    @Column(name = "idempotency_key", updatable = false)
+    private UUID idempotencyKey;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -117,14 +142,34 @@ public class Product extends TimestampedEntity {
         this.category = category;
         this.slug = slug;
         this.name = name;
-        this.metal = metal;
+        this.metal = Objects.requireNonNull(metal, "metal");
+    }
+
+    /**
+     * A bijouterie or handmade product (#128): no metal and no fineness, a material, FIXED prices only. The
+     * seller confirmed at {@code confirmedAt} that it is not a precious metal.
+     */
+    public static Product fashion(Store store, Category category, String slug, LocalizedText name,
+            FashionMaterial material, Instant confirmedAt) {
+        Product product = new Product();
+        product.store = store;
+        product.category = category;
+        product.slug = slug;
+        product.name = name;
+        product.materialKind = MaterialKind.FASHION;
+        product.material = Objects.requireNonNull(material, "material");
+        product.notPreciousConfirmedAt = Objects.requireNonNull(confirmedAt, "confirmedAt");
+        return product;
     }
 
     // ------------------------------------------------------------------ lifecycle
 
-    /** Visible in the public catalog. */
+    /**
+     * Visible in the public catalog. FASHION products stay out of it until the catalog shows them in their
+     * own section with a clear badge (#128 frontend part): the public product type still requires a metal.
+     */
     public boolean isPublic() {
-        return status == ProductStatus.APPROVED && deletedAt == null;
+        return status == ProductStatus.APPROVED && deletedAt == null && materialKind == MaterialKind.PRECIOUS;
     }
 
     public boolean isDeleted() {
@@ -135,6 +180,14 @@ public class Product extends TimestampedEntity {
         requireNotDeleted();
         this.status = ProductStatus.IN_REVIEW;
         this.submittedAt = now;
+        this.hiddenBySeller = false;
+    }
+
+    /** Back to a private draft: the seller withdrew it from review, or edited a product hidden earlier. */
+    public void backToDraft() {
+        requireNotDeleted();
+        this.status = ProductStatus.DRAFT;
+        this.hiddenBySeller = false;
     }
 
     /** Publishes the product. The first publication date is kept on re-approval. */
@@ -142,9 +195,30 @@ public class Product extends TimestampedEntity {
         requireNotDeleted();
         this.status = ProductStatus.APPROVED;
         this.reviewNote = null;
+        this.hiddenBySeller = false;
         if (publishedAt == null) {
             this.publishedAt = now;
         }
+    }
+
+    /** The seller hides an APPROVED product (INACTIVE); {@link #showAgain} reverses it without a review. */
+    public void hideBySeller() {
+        requireNotDeleted();
+        if (status != ProductStatus.APPROVED) {
+            throw new IllegalStateException("Only an APPROVED product can be hidden, product " + getId() + " is " + status);
+        }
+        this.status = ProductStatus.INACTIVE;
+        this.hiddenBySeller = true;
+    }
+
+    /** Shows a product its seller hid, as it was approved. Never a product an admin deactivated. */
+    public void showAgain() {
+        requireNotDeleted();
+        if (status != ProductStatus.INACTIVE || !hiddenBySeller) {
+            throw new IllegalStateException("Product " + getId() + " was not hidden by its seller");
+        }
+        this.status = ProductStatus.APPROVED;
+        this.hiddenBySeller = false;
     }
 
     public void returnToSeller(String note) {
@@ -153,14 +227,17 @@ public class Product extends TimestampedEntity {
         this.reviewNote = note;
     }
 
+    /** Admin decision: the product is taken down; its seller cannot simply show it again. */
     public void deactivate(String note) {
         this.status = ProductStatus.INACTIVE;
         this.reviewNote = note;
+        this.hiddenBySeller = false;
     }
 
     /** "Deleting" a product: INACTIVE + {@code deleted_at}. Idempotent. */
     public void softDelete(Instant now) {
         this.status = ProductStatus.INACTIVE;
+        this.hiddenBySeller = false;
         if (deletedAt == null) {
             this.deletedAt = now;
         }
@@ -184,7 +261,7 @@ public class Product extends TimestampedEntity {
     }
 
     public void addVariant(ProductVariant variant) {
-        requireMetalOf(variant.getFineness());
+        requireFitting(variant.getFineness(), variant.getPricingMode());
         variant.attachTo(this);
         variants.add(variant);
     }
@@ -266,19 +343,66 @@ public class Product extends TimestampedEntity {
     }
 
     /**
-     * Changes the metal. Every live variant must move to a fineness of the new metal in the same
-     * transaction: the database checks the pair at commit (V10, deferred foreign key).
+     * Changes the metal of a PRECIOUS product. Every live variant must move to a fineness of the new metal in
+     * the same transaction: the database checks the pair at commit (V10, deferred foreign key).
      */
     public void setMetal(Metal metal) {
-        this.metal = metal;
+        if (materialKind != MaterialKind.PRECIOUS) {
+            throw new IllegalStateException("A FASHION product has no metal: product " + getId());
+        }
+        this.metal = Objects.requireNonNull(metal, "metal");
     }
 
-    /** A variant's fineness must be of this product's metal (#122; the database enforces it too). */
-    void requireMetalOf(Fineness fineness) {
+    /**
+     * A variant's fineness must be of this product's metal (#122; the database enforces it too). The
+     * variants of a FASHION product have no fineness and a FIXED price (#128, V13).
+     */
+    void requireFitting(Fineness fineness, PricingMode pricingMode) {
+        if (materialKind == MaterialKind.FASHION) {
+            if (fineness != null || pricingMode != PricingMode.FIXED) {
+                throw new IllegalArgumentException("A FASHION product has no fineness and FIXED prices only");
+            }
+            return;
+        }
+        if (fineness == null) {
+            throw new IllegalArgumentException("A variant of a PRECIOUS product needs a fineness");
+        }
         if (fineness.getMetal() != metal) {
             throw new IllegalArgumentException(
                     "Fineness " + fineness.getLabel() + " is " + fineness.getMetal() + ", the product is " + metal);
         }
+    }
+
+    public MaterialKind getMaterialKind() {
+        return materialKind;
+    }
+
+    public FashionMaterial getMaterial() {
+        return material;
+    }
+
+    /** The material of a FASHION product. */
+    public void setMaterial(FashionMaterial material) {
+        if (materialKind != MaterialKind.FASHION) {
+            throw new IllegalStateException("Only a FASHION product has a material: product " + getId());
+        }
+        this.material = Objects.requireNonNull(material, "material");
+    }
+
+    public Instant getNotPreciousConfirmedAt() {
+        return notPreciousConfirmedAt;
+    }
+
+    public boolean isHiddenBySeller() {
+        return hiddenBySeller;
+    }
+
+    public UUID getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(UUID idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 
     public ProductStatus getStatus() {
@@ -293,7 +417,11 @@ public class Product extends TimestampedEntity {
         return expertiseStatus;
     }
 
+    /** Refused for a FASHION product (#128): there is nothing to certify, so it never shows that badge. */
     public void setExpertiseStatus(CheckStatus expertiseStatus) {
+        if (materialKind == MaterialKind.FASHION && expertiseStatus != CheckStatus.NONE) {
+            throw new IllegalStateException("A FASHION product has no expertise check: product " + getId());
+        }
         this.expertiseStatus = expertiseStatus;
     }
 

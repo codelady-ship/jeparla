@@ -59,6 +59,11 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
 | `JEPARLA_S3_PUBLIC_URL` | boş | Public bucket-in brauzer URL-i (məs. `https://img.jeparla.az`); şəkil URL-i = bu dəyər + `/` + açar. Demo şəkillər (`demo/...`) üçün lazım deyil |
+| `JEPARLA_S3_ENDPOINT` | boş | Satıcı şəkilləri üçün S3 uyğun API (R2: `https://<account>.r2.cloudflarestorage.com`, lokal MinIO). Boş və ya açar yoxdursa yükləmə endpoint-ləri `503 storage.unavailable` qaytarır, qalan API işləyir |
+| `JEPARLA_S3_PRESIGN_ENDPOINT` | boş (`JEPARLA_S3_ENDPOINT`) | Presigned URL-ə yazılan host (brauzer açır). Docker Compose-da `http://localhost:9000`, çünki API MinIO-ya `minio:9000` ilə gedir |
+| `JEPARLA_S3_REGION` | `us-east-1` | R2 üçün `auto` |
+| `JEPARLA_S3_ACCESS_KEY` / `JEPARLA_S3_SECRET_KEY` | boş | Bucket açarları (yalnız env-də; logda maskalanır) |
+| `JEPARLA_S3_PUBLIC_BUCKET` | `jeparla-public` | Məhsul şəkillərinin bucket-i |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
@@ -191,6 +196,30 @@ endpoint-i çağırır, yenə köhnədirsə və ya admin təsdiqi gözləyən qi
 - **Yalnız ictimai olan:** kataloqdakı kimi (görünən məhsul, `APPROVED` mağaza, görünən kateqoriya). Boş (və ya hərfsiz) `q`: hər şey kataloq sırası ilə (frontend mock kimi).
 - **Limitlər:** `q` ən çox 100 simvol, `page` 0-10000, `size` 1-96; səhv dəyər 400 ProblemDetail (`errors`, 3 dildə). `search-ip` rate limit (300 / dəq., [RBAC.md](../docs/RBAC.md)). Cavablar CDN üçün keşlənir (`CachePolicy.CATALOG`, ETag).
 - **Sinonimlər:** `search_synonyms (term, synonym)`, iki istiqamətdə işləyir, hər tərəf bir sözdür. V11 kiçik az/ru/tr dəsti əlavə edir; admin idarəsi #40-dadır.
+
+## Satıcı API (#39, #128)
+
+Hamısı `/api/v1/merchant` altında, rol `MERCHANT`, sahiblik hər sorğuda yoxlanılır ([RBAC.md](../docs/RBAC.md)).
+Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[].field` ilə).
+
+| Endpoint | Təsvir |
+| --- | --- |
+| `POST /stores` | Mağaza müraciəti (hesaba bir mağaza): `PENDING`, satıcı yoxlaması `PENDING`. 201; eyni `Idempotency-Key` ilə təkrar 200 (həmin mağaza); başqa halda 409 `merchant.store_exists` |
+| `GET /store`, `PUT /store` | Profil. `legalType`, `taxId` və slug burada dəyişmir (sənəd yoxlaması onlara bağlıdır, #40). Mağaza yoxdursa 404 `merchant.no_store` |
+| `GET /dashboard` | Status üzrə məhsul sayı, son 30 günün WhatsApp klikləri. `views` hələ `null`-dur: baxış sayılmır, uydurma rəqəm verilmir |
+| `GET /products`, `POST /products` | Silinməmiş məhsullar; yeni məhsul `DRAFT` (variantlar, daşlar ilə). `Idempotency-Key` təkrarı 200 |
+| `GET/PUT/DELETE /products/{id}` | Redaktə formu (id-li variant dəyişir, id-siz əlavə olunur, olmayan silinir); `DELETE` = `INACTIVE` + `deleted_at`, sonra hər yerdə 404 |
+| `PATCH /products/{id}/status` | `DRAFT`/`RETURNED`/`INACTIVE` -> `IN_REVIEW` (şəkil, variant, `APPROVED` mağaza və `VERIFIED` satıcı lazımdır); `IN_REVIEW` -> `DRAFT`; `APPROVED` -> `INACTIVE` (gizlət); satıcının gizlətdiyi `INACTIVE` -> `APPROVED`. Başqası 409 `merchant.status_transition` |
+| `POST /products/{id}/variants`, `PUT/DELETE .../variants/{variantId}` | Variant (ən çox 10). Siyahıdakı məhsulun son variantı silinmir |
+| `POST /products/{id}/images/uploads` | Presigned PUT (10 dəq.), JPEG/PNG/WebP, ən çox 15 MB, məhsulda ən çox 8 şəkil. Açar `products/<store>/<product>/<uuid>.<ext>` |
+| `POST /products/{id}/images` | Yüklənmiş faylı qoşur: obyekt var, ölçü limitdədir, ilk baytları (magic number) açarın tipi ilə eynidir, tərəfi <= 12000 px; uyğun deyilsə fayl silinir. `aiGenerated` işarəsi saxlanılır. Eyni açar təkrar 200 |
+| `PUT /products/{id}/images/order`, `DELETE /products/{id}/images/{imageId}` | Sıra (birinci üz qabığıdır); silinən şəklin faylı commit-dən sonra silinir |
+
+- **Moderasiya:** satılanı dəyişən redaktə (ad, təsvir, kateqoriya, metal, material, daşlar, əyar, çəki, yeni variant və ya şəkil) `APPROVED` məhsulu yenidən `IN_REVIEW`-ə (satıcı artıq yoxlanılmayıbsa `DRAFT`-a), gizlədilmiş və ya deaktiv məhsulu `DRAFT`-a qaytarır. Qiymət, stok, ölçü, SKU statusu dəyişmir.
+- **Qiymət:** `METAL_LINKED` variant dərhal `PricingEngine` ilə son `APPLIED` kotirovkadan hesablanır (gündəlik job-la eyni hesab); kotirovka yoxdursa 409 `merchant.no_metal_price`. Hər qiymət `price_history`-yə `MERCHANT` səbəbi ilə yazılır. Pul və çəki `@Digits` ilə (qiymət 2, çəki 3 onluq), `BigDecimal`.
+- **SKU:** mağaza daxilində unikal (409 `merchant.sku_taken`); verilməyəndə `JP<id>-xxxxxx` yaradılır.
+- **Bijuteriya (#128, V13):** mağazanın `sellerKind`-i `PRECIOUS`, `FASHION` və ya `MIXED`; məhsulun `materialKind`-i `PRECIOUS` və ya `FASHION` (yaradılandan sonra dəyişmir). `FASHION` məhsulda metal, əyar, çəki və metal qiyməti yoxdur, yalnız `FIXED` qiymət, `material` (`BEADS`, `STAINLESS_STEEL`, `SILVER_PLATED` ...) və satıcının "qiymətli metal deyil" təsdiqi məcburidir; ad və təsvirdə qızıl/gümüş/brilyant/əyar iddiası (örtük sözü olmadan) 400 `merchant.fashion_claim`; daş yalnız sertifikatsız sirkon. Baza da yoxlayır: `FASHION` məhsulun ekspertizası və `FASHION` mağazanın sənəd statusu `NONE`-dan başqa ola bilməz (heç vaxt "sənədlər yoxlanılıb" nişanı yoxdur). `FASHION` məhsullar frontend bölməsi hazır olana qədər ictimai kataloqda, axtarışda və seçilmişlərdə görünmür.
+- **Fayllar:** API faylı ötürmür; brauzer birbaşa bucket-ə PUT edir. R2/MinIO bucket-ində frontend origin-i üçün `PUT` CORS qaydası lazımdır (`.env.example`).
 
 ## Giriş və icazələr
 

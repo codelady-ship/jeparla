@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Import;
 
 /**
  * Security and auth tests over HTTP (MockMvc): PostgreSQL 16 and Redis 7 in containers, rate-limit
- * counters in Redis (as in production) with small limits, and the protected test endpoints of
- * {@link SecuredTestEndpoints}. All classes with this annotation share one application context.
+ * counters in Redis (as in production) with small limits, the protected test endpoints of
+ * {@link SecuredTestEndpoints}, and an in-memory bucket ({@link FakeObjectStorage}) for photo uploads. All classes with this annotation share one application context.
  * Skipped without Docker, mandatory in CI.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @WithPostgres
-@Import({RedisContainerConfig.class, SecuredTestEndpoints.class})
+@Import({RedisContainerConfig.class, SecuredTestEndpoints.class, FakeObjectStorage.Config.class})
 @SpringBootTest(properties = {
         "jeparla.rate-limit.store=redis",
         "jeparla.rate-limit.policies.login-ip.limit=" + AuthIntegrationTest.LOGIN_IP_LIMIT,
