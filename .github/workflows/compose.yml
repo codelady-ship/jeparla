@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - "docker-compose.yml"
+      - "docker/**"
       - ".env.example"
       - "backend/**"
       - ".github/workflows/compose.yml"
@@ -13,6 +14,7 @@ on:
     branches: [main]
     paths:
       - "docker-compose.yml"
+      - "docker/**"
       - ".env.example"
       - "backend/**"
       - ".github/workflows/compose.yml"
@@ -37,6 +39,8 @@ jobs:
         run: |
           cp .env.example .env
           sed -i \
+            -e "s/^JEPARLA_DB_ADMIN_PASSWORD=$/JEPARLA_DB_ADMIN_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_DB_MIGRATION_PASSWORD=$/JEPARLA_DB_MIGRATION_PASSWORD=ci$(openssl rand -hex 12)/" \
             -e "s/^JEPARLA_DB_PASSWORD=$/JEPARLA_DB_PASSWORD=ci$(openssl rand -hex 12)/" \
             -e "s/^JEPARLA_REDIS_PASSWORD=$/JEPARLA_REDIS_PASSWORD=ci$(openssl rand -hex 12)/" \
             -e "s/^JEPARLA_JWT_SECRET=$/JEPARLA_JWT_SECRET=$(openssl rand -hex 32)/" \
@@ -83,6 +87,33 @@ jobs:
           docker compose exec -T minio mc ls local
           # Uploads never attached expire from the private bucket's staging/ prefix (#154).
           docker compose exec -T minio mc ilm rule ls local/jeparla-private | tee /dev/stderr | grep -q 'staging/'
+
+      # #165: the API connects as a role that is no superuser, owns nothing and cannot remove evidence.
+      - name: Database roles are least privilege
+        run: |
+          set -a; . ./.env; set +a
+          sql() { docker compose exec -T -e PGPASSWORD="$2" postgres \
+            psql -h 127.0.0.1 -U "$1" -d "$JEPARLA_DB_NAME" -v ON_ERROR_STOP=1 -tAc "$3"; }
+          echo "API connects as: $(docker compose exec -T backend printenv JEPARLA_DB_USER)"
+          [ "$(docker compose exec -T backend printenv JEPARLA_DB_USER | tr -d '\r')" = "$JEPARLA_DB_USER" ]
+          [ "$(sql "$JEPARLA_DB_USER" "$JEPARLA_DB_PASSWORD" "SELECT rolsuper FROM pg_roles WHERE rolname = current_user")" = f ]
+          [ "$(sql "$JEPARLA_DB_USER" "$JEPARLA_DB_PASSWORD" \
+            "SELECT tableowner FROM pg_tables WHERE tablename = 'seller_declarations'")" = "$JEPARLA_DB_MIGRATION_USER" ]
+          for statement in \
+            "TRUNCATE seller_declarations" \
+            "TRUNCATE audit_logs" \
+            "DELETE FROM seller_declarations" \
+            "UPDATE audit_logs SET reason = NULL" \
+            "ALTER TABLE seller_declarations DISABLE TRIGGER ALL" \
+            "SET session_replication_role = replica"; do
+            if sql "$JEPARLA_DB_USER" "$JEPARLA_DB_PASSWORD" "$statement" >/dev/null 2>&1; then
+              echo "runtime role was allowed: $statement"; exit 1
+            fi
+            echo "refused as expected: $statement"
+          done
+          # The migration role is no superuser either.
+          [ "$(sql "$JEPARLA_DB_MIGRATION_USER" "$JEPARLA_DB_MIGRATION_PASSWORD" \
+            "SELECT rolsuper FROM pg_roles WHERE rolname = current_user")" = f ]
 
       - name: Logs
         if: always()
