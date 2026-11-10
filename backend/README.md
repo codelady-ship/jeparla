@@ -65,7 +65,8 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_S3_ACCESS_KEY` / `JEPARLA_S3_SECRET_KEY` | boş | Bucket açarları (yalnız env-də; logda maskalanır) |
 | `JEPARLA_S3_PUBLIC_BUCKET` | `jeparla-public` | Məhsul şəkillərinin bucket-i (public oxunur) |
 | `JEPARLA_S3_PRIVATE_BUCKET` | `jeparla-private` | Private bucket: yüklənən şəkil yoxlanana qədər `staging/` altında gözləyir (#154), sənədlər (#40). Public bucket ilə eyni olsa tətbiq başlamır; boşdursa yükləmə `503` |
-| `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin təmizlənməsi (hər 30 dəq.); `-` söndürür |
+| `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin (şəkil və sənəd) təmizlənməsi (hər 30 dəq.); `-` söndürür |
+| `JEPARLA_EMAIL_OUTBOX_CRON` | `0 * * * * *` | E-poçt növbəsinin göndərilməsi (#138). Provayder seçilənə qədər (#131) heç nə göndərilmir, məktublar `PENDING` qalır; `-` söndürür |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
@@ -229,6 +230,49 @@ Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[
   - **Təmizləmə:** hər presign `image_upload_slots` cədvəlində sətirdir (V14). `ImageUploadCleanupJob` (ShedLock kilidi `image-upload-cleanup`, `JEPARLA_UPLOAD_CLEANUP_CRON`) URL-in vaxtı 1 saatdan çox əvvəl keçmiş, qoşulmamış yükləmələrin staging faylını silir və 2 gündən köhnə sətirləri təmizləyir. Storage əlçatan deyilsə növbəti işə qədər gözləyir.
   - **Lifecycle qaydası (ehtiyat):** private bucket-də `staging/` prefiksi üçün 1 gündən köhnə obyektləri silən qayda olmalıdır. R2: Dashboard -> R2 -> `jeparla-private` -> Settings -> Object lifecycle rules -> prefix `staging/`, "Delete objects" 1 gün (və ya `wrangler r2 bucket lifecycle add`). Sənədlər (`staging/`-dən kənarda) bu qaydaya düşmür. Lokal MinIO-da `minio-init` eyni qaydanı `mc ilm import` ilə qoyur.
   - **Açarlar:** R2 API tokeni hər iki bucket-ə `Object Read & Write` icazəsi ilə; yalnız env-də.
+
+## Yoxlama sənədləri, moderasiya və bildirişlər (#40, #138)
+
+Sənəd yalnız qiymətli metal satan mağazadan (`PRECIOUS`, `MIXED`) və yalnız `PRECIOUS` məhsul üçün qəbul
+olunur. Bijuteriya (`FASHION`) satıcısı və məhsulu heç vaxt sənəd yükləmir (`403 verification.not_precious`),
+onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admin qərarıdır (`seller-check`).
+
+| Endpoint | Nə edir |
+| --- | --- |
+| `GET /api/v1/merchant/documents` | Mağazanın sənədləri və yoxlama nəticəsi (açar və URL yoxdur) |
+| `GET /api/v1/merchant/documents/declaration` | Təsdiqlənəcək bəyanat: `version`, `language`, `text`, `draft` |
+| `POST /api/v1/merchant/documents/uploads` | Bir sənəd üçün presigned PUT (`checkKind` `DOCUMENTS`: `TAX_ID`, `TRADE_LICENSE`; `EXPERTISE`: `ASSAY_CERTIFICATE`, `LAB_REPORT` + `productId`). PDF, JPEG, PNG, ən çox 10 MB |
+| `POST /api/v1/merchant/documents` | `{key, declarationAccepted: true, declarationVersion, declarationLanguage?}`: faylı yoxlayır, `201` `PENDING` sənəd |
+| `GET /api/v1/admin/documents?status=` | Yoxlama növbəsi (default `PENDING`, köhnələr əvvəl) |
+| `GET /api/v1/admin/documents/{id}` | Detal: SHA-256 və satıcının təsdiqlədiyi bəyanat |
+| `POST /api/v1/admin/documents/{id}/view` | 5 dəqiqəlik presigned GET (`attachment`), `DOCUMENT_VIEWED` auditi |
+| `POST /api/v1/admin/documents/{id}/decision` | `APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada `reason` (`UNREADABLE`, `EXPIRED`, `MISMATCH`, `WRONG_TYPE`, `HALLMARK_MISSING`, `AUTHENTICITY`) və istəyə görə `note` |
+| `GET /api/v1/admin/stores?status=`, `GET /api/v1/admin/stores/{id}` | Mağaza müraciətləri (default `PENDING`) |
+| `POST /api/v1/admin/stores/{id}/status` | `APPROVED`, `REJECTED`, `BLOCKED` (son ikisi ən az 10 simvol səbəblə) |
+| `POST /api/v1/admin/stores/{id}/seller-check` | Satıcı yoxlaması: `VERIFIED` və ya `REJECTED` (səbəblə) |
+| `GET /api/v1/admin/products?status=` | Yoxlamada olan məhsullar (default `IN_REVIEW`) |
+| `POST /api/v1/admin/products/{id}/decision` | `APPROVE` (mağaza `APPROVED`, `PRECIOUS` üçün satıcı bəyanatı lazımdır: `409 admin.declaration_missing`), `RETURN`, `DEACTIVATE` (səbəblə) |
+| `GET /api/v1/admin/audit?targetType=&targetId=` | Audit jurnalı, yenilər əvvəl |
+| `GET /api/v1/notifications`, `GET /notifications/unread-count`, `POST /notifications/{id}/read`, `POST /notifications/read-all` | Daxil olmuş istifadəçinin öz bildirişləri |
+
+- **Bəyanat (#138):** hər yükləmə `docs/legal/sellers-liability.md` 2b-dəki mətnlə təsdiqlənir (hüquqşünas
+  təsdiqləyənə qədər **qaralama**, #57; `DeclarationText.VERSION`). Mətn dəyişəndə versiya da dəyişir və köhnə
+  versiya ilə göndəriş `409 verification.declaration_outdated` olur. `seller_declarations` cədvəli (V15)
+  göstərilən mətni, versiyanı, dili, istifadəçini, vaxtı və IP-ni saxlayır; trigger onu dəyişməyə və silməyə
+  qoymur (yalnız hesab silinəndə `user_id` `NULL` olur).
+- **Fayl:** brauzer private bucket-ə `staging/documents/<store>/<uuid>.<ext>` altına PUT edir. Təsdiqdə API
+  faylın ilk baytlarını (PDF, PNG, JPEG imzası), ölçüsünü və SHA-256-ını yoxlayır, eyni faylın təkrarını
+  (`409 verification.document_duplicate`) rədd edir və onu **eyni private bucket-də** `documents/...` altına
+  köçürür. Sənəd public bucket-ə heç vaxt düşmür; `staging/` lifecycle qaydası `documents/`-ə toxunmur.
+  `DocumentUploadCleanupJob` (kilid `document-upload-cleanup`) qoşulmamış yükləmələri şəkillərdəki kimi təmizləyir.
+- **Status:** yoxlama yalnız admin ən az bir sənədi təsdiqləyəndə `VERIFIED` olur; gözləyən sənəd varsa
+  `PENDING`, hamısı rədd edilibsə `REJECTED`. İctimai API yalnız bu statusu göstərir.
+- **Bildirişlər:** qərar (sənəd, məhsul, mağaza, satıcı yoxlaması) satıcıya onun dilində (`users.preferred_locale`)
+  nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Mətn hadisə anında yazılır (`notifications`).
+  E-poçtu olan istifadəçi üçün eyni tranzaksiyada `email_outbox` sətri yaranır; `EmailOutboxJob`
+  (kilid `email-outbox`) onu `EmailSender` ilə göndərir. Provayder hələ yoxdur (#131): `NoEmailSender`
+  heç nə göndərmir və məktubu "göndərildi" saymır. Provayder açarları yalnız env-də olacaq.
+- **Maraq toqquşması:** admin öz mağazası haqqında qərar vermir (403).
 
 ## Giriş və icazələr
 
