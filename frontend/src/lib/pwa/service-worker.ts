@@ -97,7 +97,10 @@ async function cacheFirst(req) {
   return res;
 }
 
-/** The cached copy answers at once; the network refreshes the cache for the next load. */
+/**
+ * The cached copy answers at once; the network refreshes the cache for the next load.
+ * Offline with nothing in this cache, any cache answers (the offline page's icon).
+ */
 function staleWhileRevalidate(event) {
   const req = event.request;
   const network = fetch(req).then((res) => ({ res, copy: cacheable(res) ? res.clone() : null }));
@@ -115,7 +118,13 @@ function staleWhileRevalidate(event) {
     caches
       .open(ASSET_CACHE)
       .then((cache) => cache.match(req))
-      .then((hit) => hit || network.then(({ res }) => res)),
+      .then(
+        (hit) =>
+          hit ||
+          network
+            .then(({ res }) => res)
+            .catch(async () => (await caches.match(req)) || Response.error()),
+      ),
   );
 }
 

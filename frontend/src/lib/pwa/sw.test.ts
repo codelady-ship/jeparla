@@ -77,7 +77,12 @@ class FakeCache {
   }
 }
 
-function runWorker(version: string, store: Map<string, FakeCache>, server: Map<string, string>) {
+function runWorker(
+  version: string,
+  store: Map<string, FakeCache>,
+  server: Map<string, string>,
+  net = { online: true },
+) {
   const listeners: Record<string, (event: unknown) => void> = {};
   const caches = {
     open: async (name: string) => {
@@ -86,8 +91,15 @@ function runWorker(version: string, store: Map<string, FakeCache>, server: Map<s
     },
     keys: async () => [...store.keys()],
     delete: async (name: string) => store.delete(name),
+    match: async (req: Request) => {
+      for (const cache of store.values()) {
+        const hit = await cache.match(req);
+        if (hit) return hit;
+      }
+    },
   };
   const fetch = async (req: Request) => {
+    if (!net.online) throw new TypeError("Failed to fetch");
     const body = server.get(new URL(req.url).pathname);
     if (body === undefined) return new Response("", { status: 404 });
     const res = new Response(body, { status: 200 });
@@ -178,5 +190,15 @@ describe("service worker caching", () => {
     expect([...store.keys()].sort()).toEqual(["jeparla-offline-b2", "jeparla-static-v1"]);
     expect([...legacy.entries.keys()]).toEqual([`${ORIGIN}/_next/static/chunks/a.js`]);
     expect(await sw.load("/icons/icon-192.png")).toBe("new logo");
+  });
+
+  it("serves the offline page's icon from the install cache when the network is gone", async () => {
+    const net = { online: true };
+    const sw = runWorker("b1", new Map(), new Map(), net);
+    await sw.lifecycle("install");
+    await sw.lifecycle("activate");
+    net.online = false;
+    // addAll in the fake stores "offline" as the body of every precached URL.
+    expect(await sw.load("/icons/icon-192.png")).toBe("offline");
   });
 });
