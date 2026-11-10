@@ -48,7 +48,13 @@ public enum RateLimitPolicy {
      * the header box (also behind a shared mobile carrier address), but a script cannot run ranked
      * queries without limit. CDN hits never reach the API, so they are not counted.
      */
-    SEARCH_IP("search-ip", 300, Duration.ofMinutes(1));
+    SEARCH_IP("search-ip", 300, Duration.ofMinutes(1)),
+    /**
+     * Presigned photo uploads asked for by one seller account (#154): every presign lets the browser
+     * write up to 15 MB, so a script cannot fill the storage. The 8-photo limit per product and the
+     * daily limit per store apply as well.
+     */
+    IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

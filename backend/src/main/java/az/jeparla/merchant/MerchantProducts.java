@@ -8,6 +8,8 @@ import az.jeparla.product.ProductStatus;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreStatus;
 import az.jeparla.verification.CheckStatus;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import java.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +22,12 @@ class MerchantProducts {
 
     private final ProductAccess access;
     private final ProductRepository products;
+    private final EntityManager entityManager;
 
-    MerchantProducts(ProductAccess access, ProductRepository products) {
+    MerchantProducts(ProductAccess access, ProductRepository products, EntityManager entityManager) {
         this.access = access;
         this.products = products;
+        this.entityManager = entityManager;
     }
 
     /** The seller's product, not deleted: 403 another seller's, 404 missing or deleted. */
@@ -59,6 +63,14 @@ class MerchantProducts {
         } else if (product.getStatus() == ProductStatus.INACTIVE) {
             product.backToDraft();
         }
+    }
+
+    /**
+     * Locks the product's store row ({@code SELECT ... FOR UPDATE}) until the end of the transaction, so
+     * concurrent requests of one store that count something (e.g. open photo uploads) take turns.
+     */
+    void lockStore(Product product) {
+        entityManager.find(Store.class, product.getStore().getId(), LockModeType.PESSIMISTIC_WRITE);
     }
 
     void flush() {

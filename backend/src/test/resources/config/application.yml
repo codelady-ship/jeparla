@@ -12,6 +12,10 @@ jeparla:
     store: memory
   # No scheduled runs and no calls to cbar.az in tests: job tests start it themselves against a local
   # stub (support/CbarStub), without waiting between retries.
+  # Upload cleanup tests start the job themselves.
+  merchant:
+    images:
+      cleanup-cron: "-"
   metal-prices:
     cron: "-"
     source-url: http://127.0.0.1:9/currencies/{date}.xml

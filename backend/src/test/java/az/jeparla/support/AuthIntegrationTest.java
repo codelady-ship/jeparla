@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Import;
         "jeparla.rate-limit.policies.login-account-ip.limit=" + AuthIntegrationTest.LOGIN_ACCOUNT_IP_LIMIT,
         "jeparla.rate-limit.policies.login-account.limit=" + AuthIntegrationTest.LOGIN_ACCOUNT_LIMIT,
         "jeparla.rate-limit.policies.register-ip.limit=" + AuthIntegrationTest.REGISTER_IP_LIMIT,
+        "jeparla.rate-limit.policies.image-upload-account.limit=" + AuthIntegrationTest.IMAGE_UPLOAD_LIMIT,
         // 192.0.2.0/24 stands for the Caddy network: X-Forwarded-For is believed only from there.
         "jeparla.client-ip.trusted-proxies=127.0.0.1/32,::1/128," + AuthIntegrationTest.TRUSTED_PROXIES,
 })
@@ -36,5 +37,6 @@ public @interface AuthIntegrationTest {
     int LOGIN_ACCOUNT_IP_LIMIT = 3;
     int LOGIN_ACCOUNT_LIMIT = 8;
     int REGISTER_IP_LIMIT = 5;
+    int IMAGE_UPLOAD_LIMIT = 15;
     String TRUSTED_PROXIES = "192.0.2.0/24";
 }

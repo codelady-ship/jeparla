@@ -1,5 +1,8 @@
 package az.jeparla.merchant;
 
+import az.jeparla.auth.CurrentUser;
+import az.jeparla.common.ratelimit.RateLimitPolicy;
+import az.jeparla.common.ratelimit.RateLimitService;
 import az.jeparla.merchant.dto.ImageAttachRequest;
 import az.jeparla.merchant.dto.ImageOrderRequest;
 import az.jeparla.merchant.dto.ImageUploadDto;
@@ -41,10 +44,13 @@ public class MerchantProductController {
 
     private final MerchantProductService products;
     private final MerchantImageService images;
+    private final RateLimitService rateLimits;
 
-    public MerchantProductController(MerchantProductService products, MerchantImageService images) {
+    public MerchantProductController(MerchantProductService products, MerchantImageService images,
+            RateLimitService rateLimits) {
         this.products = products;
         this.images = images;
+        this.rateLimits = rateLimits;
     }
 
     // ------------------------------------------------------------------ products
@@ -112,8 +118,12 @@ public class MerchantProductController {
     // ------------------------------------------------------------------ photos
 
     @PostMapping("/{id}/images/uploads")
-    @Operation(summary = "Presigned upload URL for one photo (JPEG, PNG or WebP, up to 15 MB)")
+    @Operation(summary = "Presigned upload URL for one photo (JPEG, PNG or WebP, up to 15 MB)",
+            description = "Rate limited per seller (image-upload-account, 429 with Retry-After) and per store per"
+                    + " day; 409 merchant.image_limit when attached photos and open uploads reach 8")
     public ImageUploadDto upload(@PathVariable long id, @Valid @RequestBody ImageUploadRequest request) {
+        // Counted before anything else: each presign lets the browser write up to 15 MB (#154).
+        rateLimits.check(RateLimitPolicy.IMAGE_UPLOAD_ACCOUNT, "user:" + CurrentUser.id());
         return images.upload(id, request);
     }
 

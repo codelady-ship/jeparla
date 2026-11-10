@@ -5,6 +5,7 @@ import static az.jeparla.merchant.ProductRequestChecks.invalid;
 import az.jeparla.admin.AuditService;
 import az.jeparla.admin.AuditTargetType;
 import az.jeparla.common.error.ApiException;
+import az.jeparla.common.error.RateLimitExceededException;
 import az.jeparla.common.i18n.LocalizedText;
 import az.jeparla.common.storage.ImageProbe;
 import az.jeparla.common.storage.ImageProbe.ImageInfo;
@@ -22,6 +23,7 @@ import az.jeparla.product.ProductImage;
 import az.jeparla.product.ProductStatus;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -39,11 +41,18 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Product photos (#39, PLAN 5.13). The file goes from the browser straight to the public bucket through a
- * presigned PUT; the API never streams it. Before a file is attached the API checks the stored object
- * itself: it exists under this product's key, its size is within the limit, and its first bytes are a
- * JPEG, PNG or WebP of the type its key names (magic numbers, not the client's {@code Content-Type}). A
- * file that fails the check is deleted.
+ * Product photos (#39, #154, PLAN 5.13). The file goes from the browser through a presigned PUT into the
+ * private staging area ({@link ObjectStorage}); the API never streams it. Before a file is attached the API
+ * checks the staged object itself: it was issued for this product and is not too old, it exists, its size
+ * is within the limit, and its first bytes are a JPEG, PNG or WebP of the type its key names (magic numbers,
+ * not the client's {@code Content-Type}). Only then is it copied to the public bucket. A file that fails the
+ * check is deleted; a file that is never attached is never public and is deleted by
+ * {@link ImageUploadCleanupJob}.
+ *
+ * <p>Limits on presigns (#154): the rate-limit policy {@code image-upload-account} per seller (controller),
+ * at most {@value #MAX_IMAGES} attached photos plus open uploads per product (409
+ * {@code merchant.image_limit}), and {@link MerchantImageProperties#dailyUploadsPerStore} per store in 24
+ * hours (429 with {@code Retry-After}).
  */
 @Service
 @PreAuthorize("hasRole('MERCHANT')")
@@ -57,27 +66,40 @@ public class MerchantImageService {
     /** Longest side accepted; larger photos are refused rather than resized here. */
     public static final int MAX_SIDE = 12_000;
     static final Duration UPLOAD_TTL = Duration.ofMinutes(10);
+    /** A file uploaded just before its URL expired can still be attached for this long. */
+    static final Duration ATTACH_GRACE = Duration.ofMinutes(30);
+    /** Window of the daily limit per store. */
+    static final Duration DAILY_WINDOW = Duration.ofHours(24);
 
     /** Accepted types and the key extension of each. */
     static final Map<String, String> EXTENSIONS = Map.of("image/jpeg", "jpg", "image/png", "png", "image/webp", "webp");
 
     private final MerchantProducts productService;
+    private final ImageUploadSlotRepository slots;
     private final ObjectStorage storage;
     private final MerchantViews views;
     private final AuditService audit;
+    private final MerchantImageProperties properties;
     private final Clock clock;
 
-    public MerchantImageService(MerchantProducts productService, ObjectStorage storage, MerchantViews views,
-            AuditService audit, Clock clock) {
+    public MerchantImageService(MerchantProducts productService, ImageUploadSlotRepository slots,
+            ObjectStorage storage, MerchantViews views, AuditService audit, MerchantImageProperties properties,
+            Clock clock) {
         this.productService = productService;
+        this.slots = slots;
         this.storage = storage;
         this.views = views;
         this.audit = audit;
+        this.properties = properties;
         this.clock = clock;
     }
 
-    /** A presigned upload for one photo of the product: 400 for another type or a larger file. */
-    @Transactional(readOnly = true)
+    /**
+     * A presigned upload for one photo of the product: 400 for another type or a larger file, 409 when the
+     * attached photos and the open uploads of the product reach {@value #MAX_IMAGES}, 429 over the daily
+     * limit of the store.
+     */
+    @Transactional
     public ImageUploadDto upload(long productId, ImageUploadRequest request) {
         Product product = productService.ownedWritable(productId);
         String type = request.contentType().strip().toLowerCase(Locale.ROOT);
@@ -88,9 +110,25 @@ public class MerchantImageService {
         if (request.sizeBytes() > MAX_BYTES) {
             throw invalid("merchant.image_size", "sizeBytes");
         }
-        requireRoom(product);
+        // Requests of one store count one after another: two at once cannot both take the last place.
+        productService.lockStore(product);
+        Instant now = clock.instant();
+        if (product.getImages().size() + slots.countOpen(product.getId(), now) >= MAX_IMAGES) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
+        }
+        long storeId = product.getStore().getId();
+        Instant dayAgo = now.minus(DAILY_WINDOW);
+        if (slots.countByStoreIdAndCreatedAtAfter(storeId, dayAgo) >= properties.dailyUploadsPerStore()) {
+            Instant oldest = slots.findFirstByStoreIdAndCreatedAtAfterOrderByCreatedAtAsc(storeId, dayAgo)
+                    .map(ImageUploadSlot::getCreatedAt).orElse(now);
+            log.info("Daily photo upload limit reached by store {}", storeId);
+            throw new RateLimitExceededException(
+                    Math.max(1, Duration.between(now, oldest.plus(DAILY_WINDOW)).toSeconds() + 1));
+        }
         String key = prefix(product) + UUID.randomUUID() + "." + extension;
-        PresignedUpload upload = storage.presignUpload(key, type, request.sizeBytes(), UPLOAD_TTL);
+        Instant expiresAt = now.plus(UPLOAD_TTL);
+        slots.save(new ImageUploadSlot(key, product.getId(), storeId, now, expiresAt));
+        PresignedUpload upload = storage.presignStagedUpload(key, type, request.sizeBytes(), UPLOAD_TTL);
         return new ImageUploadDto(key, upload.url(), upload.method(), upload.headers(), upload.expiresAt(), MAX_BYTES);
     }
 
@@ -101,6 +139,8 @@ public class MerchantImageService {
     @Transactional
     public Created<MerchantImageDto> attach(long productId, ImageAttachRequest request) {
         Product product = productService.ownedWritable(productId);
+        // A double submit waits here and then finds the image the first request attached.
+        productService.lockStore(product);
         String key = request.key().strip();
         Optional<ProductImage> attached = product.getImages().stream()
                 .filter(image -> image.getStorageKey().equals(key)).findFirst();
@@ -110,21 +150,28 @@ public class MerchantImageService {
         if (!keyPattern(product).matcher(key).matches()) {
             throw invalid("merchant.image_key", "key");
         }
-        requireRoom(product);
-        StoredObject stored = storage.head(key).orElseThrow(() -> invalid("merchant.image_missing", "key"));
+        if (product.getImages().size() >= MAX_IMAGES) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
+        }
+        Instant now = clock.instant();
+        ImageUploadSlot slot = slots.findByStorageKey(key)
+                .filter(s -> s.getProductId() == product.getId() && s.isOpen()
+                        && now.isBefore(s.getExpiresAt().plus(ATTACH_GRACE)))
+                .orElseThrow(() -> invalid("merchant.image_missing", "key"));
+        StoredObject stored = storage.headStaged(key).orElseThrow(() -> invalid("merchant.image_missing", "key"));
         if (stored.sizeBytes() <= 0 || stored.sizeBytes() > MAX_BYTES) {
-            discard(key);
+            discardStaged(key);
             throw invalid("merchant.image_size", "key");
         }
         String expected = EXTENSIONS.entrySet().stream()
                 .filter(entry -> key.endsWith("." + entry.getValue())).map(Map.Entry::getKey).findFirst().orElseThrow();
-        Optional<ImageInfo> info = ImageProbe.probe(storage.readStart(key, ImageProbe.HEADER_BYTES));
+        Optional<ImageInfo> info = ImageProbe.probe(storage.readStagedStart(key, ImageProbe.HEADER_BYTES));
         if (info.isEmpty() || !info.get().contentType().equals(expected)) {
-            discard(key);
+            discardStaged(key);
             throw invalid("merchant.image_type", "key");
         }
         if (info.get().width() > MAX_SIDE || info.get().height() > MAX_SIDE) {
-            discard(key);
+            discardStaged(key);
             throw invalid("merchant.image_dimensions", "key");
         }
         int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
@@ -136,10 +183,21 @@ public class MerchantImageService {
                     blankToNull(request.altRu())));
         }
         product.addImage(image);
-        productService.afterChange(product, true, clock.instant());
+        slot.attached(now);
+        productService.afterChange(product, true, now);
         productService.flush();
         audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
+        // Public only now, after the check and the rows; a failed copy rolls the attach back.
+        storage.publishStaged(key);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (status != STATUS_COMMITTED) {
+                    discard(key);
+                }
+            }
+        });
         return new Created<>(views.image(image), true);
     }
 
@@ -184,12 +242,6 @@ public class MerchantImageService {
         return views.product(product);
     }
 
-    private static void requireRoom(Product product) {
-        if (product.getImages().size() >= MAX_IMAGES) {
-            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
-        }
-    }
-
     /** Keys are generated by {@link #upload}: {@code products/<store>/<product>/<uuid>.<ext>}. */
     private static String prefix(Product product) {
         return "products/" + product.getStore().getId() + "/" + product.getId() + "/";
@@ -200,12 +252,21 @@ public class MerchantImageService {
                 + "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png|webp)");
     }
 
-    /** Best effort: a file left behind is only storage, never shown (no row points at it). */
+    /** Best effort: a public file left behind is only storage, never shown (no row points at it). */
     private void discard(String key) {
         try {
             storage.delete(key);
         } catch (RuntimeException e) {
             log.warn("Could not delete stored object {}: {}", key, e.toString());
+        }
+    }
+
+    /** Best effort: a staged file left behind is private and removed by the cleanup job. */
+    private void discardStaged(String key) {
+        try {
+            storage.deleteStaged(key);
+        } catch (RuntimeException e) {
+            log.warn("Could not delete staged upload {}: {}", key, e.toString());
         }
     }
 

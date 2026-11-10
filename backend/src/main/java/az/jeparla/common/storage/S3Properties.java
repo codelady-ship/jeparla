@@ -16,11 +16,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @param region          signing region ({@code JEPARLA_S3_REGION}; R2 uses {@code auto})
  * @param accessKey       {@code JEPARLA_S3_ACCESS_KEY}
  * @param secretKey       {@code JEPARLA_S3_SECRET_KEY}
- * @param publicBucket    bucket of the product images ({@code JEPARLA_S3_PUBLIC_BUCKET})
+ * @param publicBucket    bucket of the product images, public read ({@code JEPARLA_S3_PUBLIC_BUCKET})
+ * @param privateBucket   private bucket ({@code JEPARLA_S3_PRIVATE_BUCKET}): photo uploads wait under
+ *                        {@code staging/} until their check (#154), verification documents (#40). Must
+ *                        differ from the public bucket
  */
 @ConfigurationProperties("jeparla.storage.s3")
 public record S3Properties(String endpoint, String presignEndpoint, String region, String accessKey,
-        String secretKey, String publicBucket) {
+        String secretKey, String publicBucket, String privateBucket) {
 
     public S3Properties {
         endpoint = blankToNull(endpoint);
@@ -29,6 +32,12 @@ public record S3Properties(String endpoint, String presignEndpoint, String regio
         accessKey = blankToNull(accessKey);
         secretKey = blankToNull(secretKey);
         publicBucket = blankToNull(publicBucket);
+        privateBucket = blankToNull(privateBucket);
+        if (publicBucket != null && publicBucket.equals(privateBucket)) {
+            throw new IllegalArgumentException(
+                    "JEPARLA_S3_PRIVATE_BUCKET must differ from JEPARLA_S3_PUBLIC_BUCKET: an upload must not"
+                            + " be public before its check");
+        }
         if (endpoint != null) {
             requireHttpUrl(endpoint, "JEPARLA_S3_ENDPOINT");
         }
@@ -37,9 +46,10 @@ public record S3Properties(String endpoint, String presignEndpoint, String regio
         }
     }
 
-    /** Endpoint, keys and bucket are all set. */
+    /** Endpoint, keys and both buckets are all set. */
     public boolean configured() {
-        return endpoint != null && accessKey != null && secretKey != null && publicBucket != null;
+        return endpoint != null && accessKey != null && secretKey != null && publicBucket != null
+                && privateBucket != null;
     }
 
     /** Endpoint of presigned URLs. */
@@ -51,7 +61,8 @@ public record S3Properties(String endpoint, String presignEndpoint, String regio
     public String toString() {
         return "S3Properties[endpoint=" + endpoint + ", presignEndpoint=" + presignEndpoint + ", region=" + region
                 + ", accessKey=" + (accessKey == null ? "unset" : "***") + ", secretKey="
-                + (secretKey == null ? "unset" : "***") + ", publicBucket=" + publicBucket + "]";
+                + (secretKey == null ? "unset" : "***") + ", publicBucket=" + publicBucket + ", privateBucket="
+                + privateBucket + "]";
     }
 
     private static String blankToNull(String value) {
