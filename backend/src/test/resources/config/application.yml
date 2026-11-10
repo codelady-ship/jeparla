@@ -7,6 +7,11 @@ jeparla:
   # Public bucket URL for image URLs of non-demo keys (as in docker-compose.yml).
   storage:
     public-url: http://localhost:9000/jeparla-public
+  # Tests change the catalog with SQL inside rolled-back transactions; a cached search would hide that.
+  # SearchCacheTests covers the cache itself.
+  search:
+    cache:
+      ttl: 0s
   # Tests without a Redis container count in memory; @AuthIntegrationTest switches to Redis.
   rate-limit:
     store: memory

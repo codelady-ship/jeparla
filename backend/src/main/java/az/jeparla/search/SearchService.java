@@ -35,7 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
  * everything in the catalog order, like the frontend mock; suggestions are empty for it.
  *
  * <p>Cost: a fixed number of statements whatever the page size (synonyms, one ranked statement per
- * group, then the cards in batches as in the catalog).
+ * group, then the cards in batches as in the catalog). A query asked again within the cache time
+ * ({@link SearchCache}, #151) costs only the cards (search) or nothing (suggestions).
  */
 @Service
 @Transactional(readOnly = true)
@@ -53,31 +54,44 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public SearchService(SearchSynonymRepository synonyms, ProductCatalogService catalog, StoreCatalogService stores) {
+    private final SearchCache cache;
+
+    public SearchService(SearchSynonymRepository synonyms, ProductCatalogService catalog, StoreCatalogService stores,
+            SearchCache cache) {
         this.synonyms = synonyms;
         this.catalog = catalog;
         this.stores = stores;
+        this.cache = cache;
     }
 
-    /** {@code GET /search}: the groups of {@code type} (others empty), products paged. */
+    /**
+     * {@code GET /search}: the groups of {@code type} (others empty), products paged. The ranking (which ids,
+     * in which order) may come from the {@link SearchCache}; the cards are always loaded fresh.
+     */
     public SearchResultDto search(String q, SearchType type, int page, int size) {
-        SearchTerms terms = terms(q);
+        List<String> words = SearchTerms.foldedWords(q);
+        Ranking ranking = cache.get(new RankingKey(words, type, page, size), () -> rank(words, type, page, size));
         PageDto<ProductSummaryDto> products = type.includes(SearchType.PRODUCTS)
-                ? products(terms, page, size) : PageDto.empty(page, size);
+                ? products(ranking, page, size) : PageDto.empty(page, size);
         List<StoreSummaryDto> storeCards = type.includes(SearchType.STORES)
-                ? stores.summaries(ids(new SearchSql(terms), sql -> sql.storeIds(MAX_GROUP))) : List.of();
+                ? stores.summaries(ranking.storeIds()) : List.of();
         List<CategoryDto> categories = type.includes(SearchType.CATEGORIES)
-                ? categories(terms) : List.of();
+                ? categories(ranking.categoryIds()) : List.of();
         return new SearchResultDto(q == null ? "" : q, products, storeCards, categories);
     }
 
-    /** {@code GET /search/suggest}: up to {@value #SUGGESTIONS} per group, best first. */
+    /** {@code GET /search/suggest}: up to {@value #SUGGESTIONS} per group, best first (cached per query). */
     public SuggestionsDto suggest(String q) {
         String query = q == null ? "" : q;
         List<String> words = SearchTerms.foldedWords(q);
         if (words.isEmpty()) {
             return new SuggestionsDto(query, List.of(), List.of(), List.of());
         }
+        SuggestionsDto found = cache.get(new SuggestKey(words), () -> suggestions(words));
+        return new SuggestionsDto(query, found.stores(), found.categories(), found.products());
+    }
+
+    private SuggestionsDto suggestions(List<String> words) {
         SearchTerms terms = terms(words);
         List<StoreSuggestion> storeRows = rows(new SearchSql(terms), sql -> sql.storeSuggestions(SUGGESTIONS)).stream()
                 .map(r -> new StoreSuggestion((String) r[0], (String) r[1], (String) r[2]))
@@ -91,30 +105,41 @@ public class SearchService {
                 .map(r -> new ProductSuggestion((String) r[0], text(r[1], r[2], r[3]),
                         MoneyDto.of((BigDecimal) r[4], Currency.getInstance(r[5].toString().strip()))))
                 .toList();
-        return new SuggestionsDto(query, storeRows, categoryRows, productRows);
+        return new SuggestionsDto("", storeRows, categoryRows, productRows);
     }
 
     // ------------------------------------------------------------------ groups
 
-    private PageDto<ProductSummaryDto> products(SearchTerms terms, int page, int size) {
-        long offset = (long) page * size;
-        List<Object[]> rows = rows(new SearchSql(terms), sql -> sql.productPage(size, offset));
-        long total;
-        if (!rows.isEmpty()) {
-            total = ((Number) rows.getFirst()[1]).longValue();
-        } else if (page > 0) {
-            total = ((Number) single(new SearchSql(terms), SearchSql::productCount)).longValue();
-        } else {
-            total = 0;
+    /** The ranked ids of the groups of {@code type}: what the cache keeps for {@code GET /search}. */
+    private Ranking rank(List<String> words, SearchType type, int page, int size) {
+        SearchTerms terms = terms(words);
+        List<Long> productIds = List.of();
+        long total = 0;
+        if (type.includes(SearchType.PRODUCTS)) {
+            long offset = (long) page * size;
+            List<Object[]> rows = rows(new SearchSql(terms), sql -> sql.productPage(size, offset));
+            if (!rows.isEmpty()) {
+                total = ((Number) rows.getFirst()[1]).longValue();
+            } else if (page > 0) {
+                total = ((Number) single(new SearchSql(terms), SearchSql::productCount)).longValue();
+            }
+            productIds = rows.stream().map(r -> ((Number) r[0]).longValue()).toList();
         }
-        List<Long> ids = rows.stream().map(r -> ((Number) r[0]).longValue()).toList();
-        List<ProductSummaryDto> content = ids.isEmpty() ? List.of() : catalog.byIds(ids);
+        List<Long> storeIds = type.includes(SearchType.STORES)
+                ? ids(new SearchSql(terms), sql -> sql.storeIds(MAX_GROUP)) : List.of();
+        List<Long> categoryIds = type.includes(SearchType.CATEGORIES)
+                ? ids(new SearchSql(terms), sql -> sql.categoryIds(MAX_GROUP)) : List.of();
+        return new Ranking(productIds, total, storeIds, categoryIds);
+    }
+
+    private PageDto<ProductSummaryDto> products(Ranking ranking, int page, int size) {
+        List<ProductSummaryDto> content = ranking.productIds().isEmpty() ? List.of() : catalog.byIds(ranking.productIds());
+        long total = ranking.productTotal();
         int totalPages = (int) ((total + size - 1) / size);
         return new PageDto<>(content, page, size, total, totalPages);
     }
 
-    private List<CategoryDto> categories(SearchTerms terms) {
-        List<Long> ids = ids(new SearchSql(terms), sql -> sql.categoryIds(MAX_GROUP));
+    private List<CategoryDto> categories(List<Long> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }
@@ -124,10 +149,6 @@ public class SearchService {
     }
 
     // ------------------------------------------------------------------ internals
-
-    private SearchTerms terms(String q) {
-        return terms(SearchTerms.foldedWords(q));
-    }
 
     private SearchTerms terms(List<String> words) {
         if (words.isEmpty()) {
@@ -160,5 +181,20 @@ public class SearchService {
 
     private static LocalizedTextDto text(Object az, Object en, Object ru) {
         return LocalizedTextDto.of(LocalizedText.of((String) az, (String) en, (String) ru));
+    }
+
+    /** Cache key of a search: the folded words (so "Üzük" and "uzuk" share it), the groups and the page. */
+    private record RankingKey(List<String> words, SearchType type, int page, int size) {
+    }
+
+    /** Cache key of the suggestions for the folded words. */
+    private record SuggestKey(List<String> words) {
+    }
+
+    /**
+     * What {@code GET /search} ranked: product ids of the page with the total, store and category ids, best
+     * first; empty for groups not asked for.
+     */
+    private record Ranking(List<Long> productIds, long productTotal, List<Long> storeIds, List<Long> categoryIds) {
     }
 }

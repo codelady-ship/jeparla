@@ -23,9 +23,15 @@ spring:
     hikari:
       # Small pool: the API, PostgreSQL and Redis share one free-tier VM.
       maximum-pool-size: 10
+      # Search (#151): the word-similarity operator (%>) of the GIN-indexed pre-filter uses this threshold.
+      # It is SearchSql.PREFILTER_THRESHOLD, a little below the 0.5 of the score, so the index finds every
+      # typo match; the exact word_similarity check then runs on those rows only. Must stay <= 0.5.
+      connection-init-sql: SET pg_trgm.word_similarity_threshold = 0.45
   data:
     redis:
-      # Rate-limit counters (#34) and later caches. The API keeps working without Redis.
+      # Rate-limit counters only (#34): search results are cached in the API (#151), so nothing else
+      # competes with the counters for Redis memory (docker-compose.yml: noeviction). The API keeps
+      # working without Redis.
       host: ${JEPARLA_REDIS_HOST:localhost}
       port: ${JEPARLA_REDIS_PORT:6379}
       password: ${JEPARLA_REDIS_PASSWORD:}
@@ -153,6 +159,12 @@ jeparla:
     # Shared secret of POST /internal/jobs/metal-prices (header X-Jeparla-Job-Token), 32+ bytes.
     # Empty: the endpoint answers 404.
     job-token: ${JEPARLA_INTERNAL_JOB_TOKEN:}
+  search:
+    cache:
+      # Ranked search results and header suggestions per query (#151), in the API's memory. Emptied when a
+      # product, variant, store, category or synonym changes; 0s turns the cache off.
+      ttl: 60s
+      max-entries: 5000
   rate-limit:
     # redis (shared counters, in-memory fallback while Redis is down) or memory.
     store: redis
