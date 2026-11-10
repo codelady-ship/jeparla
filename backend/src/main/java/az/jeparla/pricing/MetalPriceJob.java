@@ -114,7 +114,7 @@ public class MetalPriceJob {
         // A scheduled run keeps the lock a little longer than it needs, so a second instance that fires
         // the same cron a moment later finds it taken; manual runs release it at once.
         Duration atLeast = trigger == Trigger.SCHEDULE ? properties.lockAtLeastFor() : Duration.ZERO;
-        // ShedLock's own clock: the lock row itself is written with database time (usingDbTime).
+        // ShedLock's clock (UTC instants, as written to the TIMESTAMPTZ lock columns).
         LockConfiguration lock = new LockConfiguration(ClockProvider.now(), LOCK_NAME, properties.lockAtMostFor(),
                 atLeast);
         try {

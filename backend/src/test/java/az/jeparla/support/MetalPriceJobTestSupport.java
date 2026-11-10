@@ -36,10 +36,12 @@ public class MetalPriceJobTestSupport {
         this.em = em;
     }
 
-    /** Empty quotes, products (with variants and price history), audit log and locks. */
+    /** Empty quotes, products (with variants and price history) and audit log; the job lock released. */
     public void clean() {
         MetalPriceJobTest.STUB.reset();
-        jdbc.execute("TRUNCATE products, metal_price_snapshots, audit_logs, shedlock CASCADE");
+        jdbc.execute("TRUNCATE products, metal_price_snapshots, audit_logs CASCADE");
+        // Release the job lock. The row stays: ShedLock remembers it inserted it and only updates it later.
+        jdbc.update("UPDATE shedlock SET lock_until = now() - interval '1 second'");
     }
 
     /** An APPLIED quote, as if fetched before. */

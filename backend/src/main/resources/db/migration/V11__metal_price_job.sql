@@ -1,7 +1,7 @@
 -- Daily metal price job (#43, #44).
 
 -- 1. ShedLock: the job runs on one instance at a time (net.javacrumbs.shedlock, JdbcTemplateLockProvider
---    with database time). One row per lock name; the row is updated, never deleted.
+--    with UTC instants from the JVM clock). One row per lock name; the row is updated, never deleted.
 CREATE TABLE shedlock
 (
     name       VARCHAR(64)  NOT NULL PRIMARY KEY,

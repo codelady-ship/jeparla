@@ -141,7 +141,7 @@ səhifəyə yönləndirilir. Nümunələr: `src/test/resources/cbar/`.
 - **Job** (`MetalPriceJob`): `jeparla.metal-prices.cron` (default 10:15, 13:15, 17:15, `Asia/Baku`; `-` söndürür).
   Bakı vaxtı ilə bu günün bülletenini alır, `metal_price_snapshots`-a yazır (`price_per_gram` = unsiya / 31.1034768,
   4 onluq), sonra hər metalın istifadədəki kotirovkası ilə bütün canlı METAL_LINKED variantları yenidən qiymətləndirir.
-  ShedLock (`shedlock` cədvəli, V11, baza vaxtı) iki instansiyanın eyni anda işləməsinə imkan vermir; kilid
+  ShedLock (`shedlock` cədvəli, V12) iki instansiyanın eyni anda işləməsinə imkan vermir; kilid
   tutulubsa run heç nə etmir. Hər run bir xülasə log sətri (`Metal price job (...)`) və Micrometer sayğacları
   (`jeparla.metal_prices.fetch|quotes|repriced`) yazır.
 - **İdempotent:** bir metalın bir günlük CBAR kotirovkası bir dəfə saxlanılır (unikal indeks); həmin kotirovka ilə
