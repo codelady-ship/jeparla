@@ -53,7 +53,7 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_PRODUCT_POSTS = {
-        "/api/v1/products/{id}/reports", "/api/v1/products/{id}/contact-click"
+        "/api/v1/products/{id}/reports", "/api/v1/products/{id}/contact-click", "/api/v1/stores/{id}/reports"
     };
 
     private static final String[] API_DOCS = {"/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
@@ -89,11 +89,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole(RoleName.ADMIN.name())
                         .requestMatchers("/api/v1/merchant/**").hasRole(RoleName.MERCHANT.name())
                         // A user's own notifications (#138): never part of the public GET catalog.
-                        .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()
-                        // Public catalog: products, stores, categories, search, metal prices.
+                        .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()                        // Public catalog: products, stores, categories, search, metal prices.
                         .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
-                        // Guests may report a product and are counted when they open WhatsApp (#37);
-                        // both are rate limited in the controller.
+                        // Guests may report a product or a store and are counted when they open WhatsApp
+                        // (#37, #40); all are rate limited in the controller.
                         .requestMatchers(HttpMethod.POST, PUBLIC_PRODUCT_POSTS).permitAll()
                         // Internal jobs (#44) check their own shared secret (InternalJobController).
                         .requestMatchers(HttpMethod.POST, "/internal/jobs/metal-prices").permitAll()
