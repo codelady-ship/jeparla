@@ -32,7 +32,7 @@ export function LocaleSwitcher() {
         value={locale}
         onChange={onChange}
         disabled={isPending}
-        className="h-8 rounded-md border border-input bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60"
+        className="h-8 rounded-md border border-input bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60 pointer-coarse:h-11"
       >
         {routing.locales.map((l) => (
           <option key={l} value={l} lang={l}>

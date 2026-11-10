@@ -165,7 +165,7 @@ export function AuthForm({
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? labels.hidePassword : labels.showPassword}
                   aria-pressed={showPassword}
-                  className="absolute top-1/2 right-1 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="absolute top-1/2 right-1 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none after:absolute after:-inset-1 after:content-[''] hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   {showPassword ? (
                     <EyeOff aria-hidden className="size-4" />

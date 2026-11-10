@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { RotateCcw } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { cn } from "cn";
 
 export function SavedEmpty({
   icon: Icon,
@@ -19,7 +20,13 @@ export function SavedEmpty({
       <Icon aria-hidden className="size-8 text-muted-foreground" />
       <h2 className="text-xl">{title}</h2>
       <p className="max-w-md text-sm text-muted-foreground">{text}</p>
-      <Link href="/products" className={buttonVariants({ variant: "outline" })}>
+      <Link
+        href="/products"
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "pointer-coarse:h-11 pointer-coarse:px-4",
+        )}
+      >
         {cta}
       </Link>
     </div>
