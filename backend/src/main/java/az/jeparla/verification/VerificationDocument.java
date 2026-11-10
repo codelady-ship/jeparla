@@ -79,6 +79,16 @@ public class VerificationDocument {
     @Column(name = "review_note")
     private String reviewNote;
 
+    /** Set for REJECTED and CHANGES_REQUESTED. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reject_reason")
+    private RejectReason rejectReason;
+
+    /** The declaration confirmed for this upload (#138); required by the API, NULL only for older rows. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "declaration_id", updatable = false)
+    private SellerDeclaration declaration;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", updatable = false)
     private User uploadedBy;
@@ -112,11 +122,29 @@ public class VerificationDocument {
         this.uploadedBy = uploadedBy;
     }
 
-    public void review(DocumentStatus decision, String note, User admin, Instant now) {
+    /** An admin decision; {@code reason} is required for REJECTED and CHANGES_REQUESTED and null otherwise. */
+    public void review(DocumentStatus decision, RejectReason reason, String note, User admin, Instant now) {
+        boolean refused = decision == DocumentStatus.REJECTED || decision == DocumentStatus.CHANGES_REQUESTED;
+        if (decision == DocumentStatus.PENDING || refused != (reason != null)) {
+            throw new IllegalArgumentException("Decision " + decision + " with reason " + reason);
+        }
         this.status = decision;
+        this.rejectReason = reason;
         this.reviewNote = note;
         this.reviewedBy = admin;
         this.reviewedAt = now;
+    }
+
+    public RejectReason getRejectReason() {
+        return rejectReason;
+    }
+
+    public SellerDeclaration getDeclaration() {
+        return declaration;
+    }
+
+    public void setDeclaration(SellerDeclaration declaration) {
+        this.declaration = declaration;
     }
 
     public UUID getId() {

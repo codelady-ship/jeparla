@@ -54,7 +54,12 @@ public enum RateLimitPolicy {
      * write up to 15 MB, so a script cannot fill the storage. The 8-photo limit per product and the
      * daily limit per store apply as well.
      */
-    IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1));
+    IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1)),
+    /**
+     * Presigned verification document uploads asked for by one seller account (#40): each lets the browser write
+     * up to 10 MB into the private bucket. The open and daily limits per store apply as well.
+     */
+    DOCUMENT_UPLOAD_ACCOUNT("document-upload-account", 20, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

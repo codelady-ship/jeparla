@@ -8,5 +8,7 @@ public enum AuditTargetType {
     USER,
     CATALOG,
     PRICE,
-    REPORT
+    REPORT,
+    /** A verification document (#40, #138); the id is its UUID. */
+    DOCUMENT
 }

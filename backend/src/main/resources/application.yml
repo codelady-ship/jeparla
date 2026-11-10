@@ -102,6 +102,18 @@ jeparla:
       # Deletes staged uploads that were never attached (ShedLock). "-" turns the schedule off.
       cleanup-cron: ${JEPARLA_UPLOAD_CLEANUP_CRON:0 7/30 * * * *}
       cleanup-lock-at-most-for: 15m
+  verification:
+    documents:
+      # Verification documents of precious sellers (#40): private bucket only. Per seller account the
+      # rate-limit policy document-upload-account applies (20 per hour).
+      open-uploads-per-store: 10
+      daily-uploads-per-store: 50
+      # Life of the presigned URL an admin opens a document with (every view is audited).
+      view-url-ttl: 5m
+      cleanup-lock-at-most-for: 15m
+  notifications:
+    # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
+    email-cron: ${JEPARLA_EMAIL_OUTBOX_CRON:0 * * * * *}
   metal-prices:
     # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
     # holidays CBAR answers with the last bulletin (its own date), which is already stored.
