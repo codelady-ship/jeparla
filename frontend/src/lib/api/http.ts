@@ -60,7 +60,7 @@ type Problem = { code?: string; detail?: string; errors?: { field: string; messa
 
 /** One call to `/api/v1{path}`; JSON in, JSON out, `null` for 204. Throws ApiError. */
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", query, body, token, locale, headers = {}, timeoutMs = 10_000 } = options;
+  const { method = "GET", query, body, token, locale, headers = {}, timeoutMs = 6_000 } = options;
   const url = `${API_BASE}/api/v1${path}${toSearchParams(query)}`;
   let res: Response;
   try {
