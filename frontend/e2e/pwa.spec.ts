@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, expectNoA11yViolations, isPhone, test } from "./fixtures";
+import { expect, expectNoA11yViolations, isPhone, test, waitForHydration } from "./fixtures";
 
 const RING = "/az/products/toy-uzukleri-silver-925-2";
 const RING_2 = "/az/products/nisan-uzukleri-gold-585-1";
@@ -133,7 +133,9 @@ test.describe("share button", () => {
       });
     });
     await page.goto("/az/products?metal=SILVER");
-    await page.getByRole("button", { name: "Linki kopyala" }).click();
+    const copy = page.getByRole("button", { name: "Linki kopyala" });
+    await waitForHydration(copy);
+    await copy.click();
     await expect(page.getByRole("status")).toContainText("Link kopyalandı");
     const copied = await page.evaluate(() => (window as unknown as { __copied: string }).__copied);
     expect(new URL(copied).pathname + new URL(copied).search).toBe("/az/products?metal=SILVER");
@@ -149,7 +151,9 @@ test.describe("share button", () => {
       });
     });
     await page.goto("/az/stores/ayzer-zerger");
-    await page.getByRole("button", { name: "Paylaş" }).click();
+    const share = page.getByRole("button", { name: "Paylaş" });
+    await waitForHydration(share);
+    await share.click();
     await expect
       .poll(() => page.evaluate(() => (window as unknown as { __shared?: ShareData }).__shared))
       .toMatchObject({
