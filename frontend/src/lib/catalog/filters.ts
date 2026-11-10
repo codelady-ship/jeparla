@@ -12,7 +12,12 @@ export const SORTS: ProductSort[] = ["newest", "price_asc", "price_desc", "weigh
 export const SHAPES = ["ROUND", "OVAL", "PRINCESS", "EMERALD", "CUSHION", "PEAR"] as const;
 export const COLORS = ["D", "E", "F", "G", "H", "I", "J", "K"] as const;
 export const CLARITIES = ["FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "I1"] as const;
-export const PAGE_SIZE = 24;
+/**
+ * Products per catalog page. 12 = three rows on desktop, six on phones; more pages
+ * via the pagination links (real URLs with ?page=). 24 cards made the first load of
+ * /products about twice as heavy as a category page on phones (#160).
+ */
+export const PAGE_SIZE = 12;
 
 const DECIMAL = /^\d{1,9}(\.\d{1,3})?$/;
 const SLUG = /^[a-z0-9-]{1,80}$/;
