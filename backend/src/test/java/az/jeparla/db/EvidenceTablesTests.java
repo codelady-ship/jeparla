@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -70,7 +71,7 @@ class EvidenceTablesTests {
         assertThat(new DatabaseRoleCheck(superuser).problems()).anyMatch(p -> p.contains("superuser"));
         // No new objects in the schema.
         assertThatThrownBy(() -> app.execute("CREATE TABLE app_made (id INT)"))
-                .isInstanceOf(DataAccessException.class).hasMessageContaining("permission denied");
+                .isInstanceOf(DataAccessException.class).rootCause().hasMessageContaining("permission denied");
     }
 
     @Test
@@ -93,7 +94,7 @@ class EvidenceTablesTests {
     void theApplicationCannotChangeOrDeleteADeclaration(String statement) {
         Fixture f = fixture();
         assertThatThrownBy(() -> app.update(statement.formatted(f.declaration())))
-                .isInstanceOf(DataAccessException.class).hasMessageContaining("permission denied");
+                .isInstanceOf(DataAccessException.class).rootCause().hasMessageContaining("permission denied");
         assertThat(app.queryForObject("SELECT count(*) FROM seller_declarations WHERE id = ? AND text = 'I confirm'"
                 + " AND user_id IS NOT NULL AND ip_address IS NOT NULL", Integer.class, f.declaration())).isOne();
     }
@@ -107,7 +108,7 @@ class EvidenceTablesTests {
     void theApplicationCannotChangeOrDeleteAnAuditRow(String statement) {
         Fixture f = fixture();
         assertThatThrownBy(() -> app.update(statement.formatted(f.audit())))
-                .isInstanceOf(DataAccessException.class).hasMessageContaining("permission denied");
+                .isInstanceOf(DataAccessException.class).rootCause().hasMessageContaining("permission denied");
         assertThat(app.queryForObject("SELECT count(*) FROM audit_logs WHERE id = ? AND reason = 'evidence'",
                 Integer.class, f.audit())).isOne();
     }
@@ -132,7 +133,7 @@ class EvidenceTablesTests {
         Fixture f = fixture();
         // "permission denied" (no privilege) or "must be owner" (ALTER, DROP).
         assertThatThrownBy(() -> app.execute(statement)).isInstanceOf(DataAccessException.class)
-                .satisfies(e -> assertThat(e.getMessage()).containsAnyOf("permission denied", "must be owner"));
+                .satisfies(e -> assertThat(NestedExceptionUtils.getMostSpecificCause(e).getMessage()).containsAnyOf("permission denied", "must be owner"));
         assertThat(app.queryForObject("SELECT count(*) FROM seller_declarations WHERE id = ?", Integer.class,
                 f.declaration())).isOne();
         assertThat(app.queryForObject("SELECT count(*) FROM audit_logs WHERE id = ?", Integer.class, f.audit()))
@@ -149,10 +150,10 @@ class EvidenceTablesTests {
                 PostgresContainerConfig.RUNTIME_USER, PostgresContainerConfig.RUNTIME_PASSWORD, true));
         Fixture f = fixture();
         assertThatThrownBy(() -> session.execute("SET session_replication_role = replica"))
-                .isInstanceOf(DataAccessException.class).hasMessageContaining("permission denied");
+                .isInstanceOf(DataAccessException.class).rootCause().hasMessageContaining("permission denied");
         assertThat(session.queryForObject("SHOW session_replication_role", String.class)).isEqualTo("origin");
         assertThatThrownBy(() -> session.update("DELETE FROM seller_declarations WHERE id = ?", f.declaration()))
-                .isInstanceOf(DataAccessException.class).hasMessageContaining("permission denied");
+                .isInstanceOf(DataAccessException.class).rootCause().hasMessageContaining("permission denied");
         assertThat(session.queryForObject("SELECT count(*) FROM seller_declarations WHERE id = ?", Integer.class,
                 f.declaration())).isOne();
     }
@@ -184,18 +185,18 @@ class EvidenceTablesTests {
     void theOwnerIsStoppedByTheTriggersToo() {
         Fixture f = fixture();
         assertThatThrownBy(() -> owner.execute("TRUNCATE seller_declarations CASCADE"))
-                .hasMessageContaining("never truncated");
+                .rootCause().hasMessageContaining("never truncated");
         assertThatThrownBy(() -> owner.execute("TRUNCATE audit_logs"))
-                .hasMessageContaining("never truncated");
+                .rootCause().hasMessageContaining("never truncated");
         assertThatThrownBy(() -> owner.update("UPDATE audit_logs SET reason = 'x' WHERE id = ?", f.audit()))
-                .hasMessageContaining("append-only");
+                .rootCause().hasMessageContaining("append-only");
         assertThatThrownBy(() -> owner.update("DELETE FROM audit_logs WHERE id = ?", f.audit()))
-                .hasMessageContaining("append-only");
+                .rootCause().hasMessageContaining("append-only");
         assertThatThrownBy(() -> owner.update("UPDATE seller_declarations SET text = 'x' WHERE id = ?",
-                f.declaration())).hasMessageContaining("append-only");
+                f.declaration())).rootCause().hasMessageContaining("append-only");
         // Retention shorter than the proposed minimum (sellers-liability.md 3.6) is refused.
         assertThatThrownBy(() -> owner.queryForObject("SELECT jeparla_purge_audit_logs(INTERVAL '1 year')",
-                Long.class)).hasMessageContaining("at least 5 years");
+                Long.class)).rootCause().hasMessageContaining("at least 5 years");
     }
 
     @Test
@@ -211,7 +212,7 @@ class EvidenceTablesTests {
                 .isOne();
         // The flag the function sets does not open the table to a direct DELETE of a recent row.
         assertThatThrownBy(() -> owner.execute("SET jeparla.audit_purge = 'on'; DELETE FROM audit_logs WHERE id = "
-                + f.audit())).hasMessageContaining("append-only");
+                + f.audit())).rootCause().hasMessageContaining("append-only");
     }
 
     @Test
@@ -221,7 +222,7 @@ class EvidenceTablesTests {
             app.update("INSERT INTO later_table (note) VALUES ('x')");
             assertThat(app.update("UPDATE later_table SET note = 'y'")).isOne();
             assertThat(app.update("DELETE FROM later_table")).isOne();
-            assertThatThrownBy(() -> app.execute("TRUNCATE later_table")).hasMessageContaining("permission denied");
+            assertThatThrownBy(() -> app.execute("TRUNCATE later_table")).rootCause().hasMessageContaining("permission denied");
         } finally {
             owner.execute("DROP TABLE later_table");
         }
