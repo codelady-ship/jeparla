@@ -49,6 +49,9 @@ docker compose ps          # hamısı healthy olmalıdır, minio-init isə "exit
 | redis | `localhost:6379` | Redis 7, yalnız keş və rate limit |
 | minio | http://localhost:9000 (S3), http://localhost:9001 (konsol) | R2-nin lokal əvəzi; `minio-init` public və private bucket-ləri yaradır |
 
+PostgreSQL boş volume ilə ilk dəfə başlayanda `docker/postgres/10-jeparla-roles.sh` miqrasiya və iş rollarını
+yaradır (#165); API superuser kimi qoşulmur. Köhnə (tək istifadəçili) volume üçün `docker compose down -v`.
+
 Portlar yalnız `127.0.0.1`-ə bağlanır, şəbəkədən görünmür. Faydalı əmrlər:
 
 ```bash
@@ -61,12 +64,18 @@ docker compose down -v                    # dayandır və bütün verilənləri 
 ### Docker-siz
 
 1. JDK 21, PostgreSQL 16 (`pg_trgm` üçün contrib paketi ilə) və istəyə görə Redis 7 quraşdırın.
-2. `.env`-dəki ad və şifrə ilə istifadəçi və baza yaradın:
+2. `.env`-dəki ad və şifrələrlə iki rol və baza yaradın: miqrasiya rolu (bazanın sahibi, yalnız Flyway) və
+   API-nin iş rolu (superuser deyil, heç nəyin sahibi deyil; #165, [backend/README.md](./backend/README.md)
+   "Verilənlər bazası rolları"):
 
    ```bash
-   psql -U postgres -c "CREATE ROLE jeparla LOGIN PASSWORD '...';"
-   psql -U postgres -c "CREATE DATABASE jeparla OWNER jeparla;"
+   psql -U postgres -c "CREATE ROLE jeparla_owner LOGIN NOSUPERUSER PASSWORD '...';"
+   psql -U postgres -c "CREATE ROLE jeparla_app LOGIN NOSUPERUSER PASSWORD '...';"
+   psql -U postgres -c "CREATE DATABASE jeparla OWNER jeparla_owner;"
    ```
+
+   V15-ə qədər tək `jeparla` istifadəçisi ilə qurulmuş bazanı yenidən yaradın və ya backend README-dəki keçid
+   addımlarını edin: miqrasiya iş rolu olmadan dayanır.
 
 3. `.env`-i yükləyib API-ni qaldırın (Git Bash, Linux, macOS):
 

@@ -41,7 +41,8 @@ Docker (Docker olan maşında, `backend/` qovluğundan; amd64 və arm64 üçün)
 docker build -t jeparla-backend .
 docker run --rm -p 8080:8080 -e JEPARLA_FRONTEND_ORIGIN=http://localhost:3000 \
   -e JEPARLA_DB_URL=jdbc:postgresql://host.docker.internal:5432/jeparla \
-  -e JEPARLA_DB_USER=jeparla -e JEPARLA_DB_PASSWORD=... jeparla-backend
+  -e JEPARLA_DB_MIGRATION_USER=jeparla_owner -e JEPARLA_DB_MIGRATION_PASSWORD=... \
+  -e JEPARLA_DB_USER=jeparla_app -e JEPARLA_DB_PASSWORD=... jeparla-backend
 ```
 
 ## Mühit dəyişənləri
@@ -53,8 +54,9 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `PORT` | `8080` | HTTP portu |
 | `JEPARLA_FRONTEND_ORIGIN` | `http://localhost:3000` | `/api/**` üçün icazəli frontend origin-ləri, vergüllə (məs. `https://jeparla.az,https://www.jeparla.az`). `*`, path və ya http(s) olmayan dəyər tətbiqi başlatmır |
 | `JEPARLA_DB_URL` | `jdbc:postgresql://localhost:5432/jeparla` | PostgreSQL JDBC URL |
-| `JEPARLA_DB_USER` | `jeparla` | Baza istifadəçisi (miqrasiyalar üçün bazanın sahibi olmalıdır) |
-| `JEPARLA_DB_PASSWORD` | boş | Baza şifrəsi |
+| `JEPARLA_DB_MIGRATION_USER` / `JEPARLA_DB_MIGRATION_PASSWORD` | `jeparla_owner` / boş | Miqrasiya rolu: sxemin sahibi, yalnız Flyway qoşulur (`spring.flyway.user`). Superuser olmamalıdır. Aşağıda: "Verilənlər bazası rolları" |
+| `JEPARLA_DB_USER` / `JEPARLA_DB_PASSWORD` | `jeparla_app` / boş | API-nin iş rolu: superuser deyil, heç nəyin sahibi deyil, sübut cədvəllərində yalnız `SELECT`, `INSERT` (V16). Miqrasiya rolu ilə eyni olsa, superuser və ya sahib olsa API başlamır |
+| `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsinin yolu (`/help`) yazılır. Səhv dəyər tətbiqi başlatmır |
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
@@ -70,6 +72,72 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
+
+## Verilənlər bazası rolları (#165)
+
+API bazaya cədvəllərin sahibi və ya superuser kimi qoşulmur: satıcı bəyanatı (`seller_declarations`) və
+audit log hüquqi sübutdur, sahib isə trigger-i söndürə (`ALTER TABLE ... DISABLE TRIGGER`), superuser bütün
+trigger-ləri keçə (`SET session_replication_role = replica`) bilər. Qaydalar və cədvəl: [docs/RBAC.md](../docs/RBAC.md),
+"Verilənlər bazası rolları".
+
+- **Miqrasiya rolu** (`JEPARLA_DB_MIGRATION_USER`, default `jeparla_owner`): bazanın (və `public` sxeminin) sahibi,
+  superuser deyil. Yalnız Flyway onunla, eyni `JEPARLA_DB_URL`-ə qoşulur.
+- **İş rolu** (`JEPARLA_DB_USER`, default `jeparla_app`): `LOGIN`, `NOSUPERUSER`, heç nəyin sahibi deyil. Hüquqlarını
+  V16 verir (Flyway placeholder-i `runtimerole` = `spring.datasource.username`): adi cədvəllərdə CRUD, sübut
+  cədvəllərində yalnız `SELECT`, `INSERT`; sonrakı miqrasiyaların cədvəlləri default privileges ilə gəlir.
+- V16 rol yoxdursa, miqrasiya rolu ilə eynidirsə, superuser-dirsə və ya cədvəl sahibidirsə dayanır; API başlayanda
+  `DatabaseRoleCheck` eyni şeyi yoxlayır (log: `Database runtime role checked`).
+
+**Docker Compose:** `docker/postgres/10-jeparla-roles.sh` boş volume-un ilk başlanğıcında hər iki rolu yaradır
+(`.env`: `JEPARLA_DB_ADMIN_PASSWORD` konteynerin `postgres` superuser-i üçün, `JEPARLA_DB_MIGRATION_PASSWORD`,
+`JEPARLA_DB_PASSWORD`). Backend konteyneri superuser parolunu almır.
+
+**Docker-siz** (superuser kimi, parollar `.env`-dən):
+
+```sql
+CREATE ROLE jeparla_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';
+CREATE ROLE jeparla_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';
+CREATE DATABASE jeparla OWNER jeparla_owner;
+REVOKE ALL ON DATABASE jeparla FROM PUBLIC;
+GRANT CONNECT, TEMPORARY ON DATABASE jeparla TO jeparla_app;
+```
+
+**Prod (#45, Oracle VM, Docker Compose):** eyni compose faylı; üç parol serverdəki `.env`-də (600) və GitHub
+Secrets-dədir, bir-birindən fərqlidir. Superuser parolu yalnız `postgres` servisinə verilir. Backup (#56)
+miqrasiya rolu və ya superuser ilə alınır və bərpa olunur; bərpadan sonra cədvəllərin sahibi yenə miqrasiya
+rolu olmalıdır (`pg_restore --no-owner --role=jeparla_owner`).
+Deploy-dan sonra yoxlama: `SELECT rolsuper FROM pg_roles WHERE rolname = current_user` iş rolu ilə `f`,
+`TRUNCATE seller_declarations` iş rolu ilə `permission denied` (compose CI eyni yoxlamanı edir).
+
+**Mövcud baza (V15-ə qədər tək istifadəçi ilə qurulub):** lokal bazanı yenidən yaratmaq kifayətdir
+(`docker compose down -v`, sonra `up`). Saxlanmalı bazada köhnə istifadəçi (o vaxtkı `JEPARLA_DB_USER`, Docker-də
+superuser) ilə bir dəfə:
+
+```sql
+CREATE ROLE jeparla_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';
+CREATE ROLE jeparla_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';
+ALTER DATABASE jeparla OWNER TO jeparla_owner;
+REVOKE ALL ON DATABASE jeparla FROM PUBLIC;
+GRANT CONNECT, TEMPORARY ON DATABASE jeparla TO jeparla_app;
+-- Cədvəllər (identity sequence-ləri onlarla birlikdə keçir) və Jeparla funksiyaları yeni sahibə.
+DO $$
+DECLARE o record;
+BEGIN
+    FOR o IN SELECT c.oid::regclass AS name FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+             WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p') LOOP
+        EXECUTE format('ALTER TABLE %s OWNER TO jeparla_owner', o.name);
+    END LOOP;
+    FOR o IN SELECT p.oid::regprocedure AS name FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+             WHERE n.nspname = 'public'
+               AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.objid = p.oid AND d.deptype = 'e') LOOP
+        EXECUTE format('ALTER ROUTINE %s OWNER TO jeparla_owner', o.name);
+    END LOOP;
+END $$;
+```
+
+Sonra `.env`-də `JEPARLA_DB_MIGRATION_USER/PASSWORD` və `JEPARLA_DB_USER=jeparla_app` / `JEPARLA_DB_PASSWORD`
+yazılır, API yenidən başladılır: Flyway V16-nı sahib rolu ilə tətbiq edir. Köhnə istifadəçi həmin volume-un
+superuser-i olaraq qalır, onun parolu `JEPARLA_DB_ADMIN_PASSWORD`-dur və API-yə verilmir.
 
 ## Reverse proxy və müştəri IP-si
 
@@ -258,8 +326,10 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 - **Bəyanat (#138):** hər yükləmə `docs/legal/sellers-liability.md` 2b-dəki mətnlə təsdiqlənir (hüquqşünas
   təsdiqləyənə qədər **qaralama**, #57; `DeclarationText.VERSION`). Mətn dəyişəndə versiya da dəyişir və köhnə
   versiya ilə göndəriş `409 verification.declaration_outdated` olur. `seller_declarations` cədvəli (V15)
-  göstərilən mətni, versiyanı, dili, istifadəçini, vaxtı və IP-ni saxlayır; trigger onu dəyişməyə və silməyə
-  qoymur (yalnız hesab silinəndə `user_id` `NULL` olur).
+  göstərilən mətni, versiyanı, dili, istifadəçini, vaxtı və IP-ni saxlayır. API-nin baza rolu onu yalnız oxuyur
+  və əlavə edir; trigger sahib rolu üçün də dəyişməyi, silməyi və `TRUNCATE`-i rədd edir (yalnız hesab silinəndə
+  `user_id` `NULL` olur; "Verilənlər bazası rolları", #165). IP və istifadəçi etiketinin saxlama müddəti və
+  psevdonimləşdirmə planı: `docs/legal/sellers-liability.md` 3.6 (təklif, #57).
 - **Fayl:** brauzer private bucket-ə `staging/documents/<store>/<uuid>.<ext>` altına PUT edir. Təsdiqdə API
   faylın ilk baytlarını (PDF, PNG, JPEG imzası), ölçüsünü və SHA-256-ını yoxlayır, eyni faylın təkrarını
   (`409 verification.document_duplicate`) rədd edir və onu **eyni private bucket-də** `documents/...` altına
@@ -268,7 +338,10 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 - **Status:** yoxlama yalnız admin ən az bir sənədi təsdiqləyəndə `VERIFIED` olur; gözləyən sənəd varsa
   `PENDING`, hamısı rədd edilibsə `REJECTED`. İctimai API yalnız bu statusu göstərir.
 - **Bildirişlər:** qərar (sənəd, məhsul, mağaza, satıcı yoxlaması) satıcıya onun dilində (`users.preferred_locale`)
-  nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Mətn hadisə anında yazılır (`notifications`).
+  nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Məhsulun adı satıcının dilindədir (tərcüməsi yoxdursa
+  Azərbaycanca). "Dəstəyə yazın" deyən bildirişlər `Dəstək: <JEPARLA_SUPPORT_EMAIL>, <JEPARLA_SUPPORT_URL>` sətri
+  ilə bitir, ikisi də yoxdursa kömək səhifəsinin yolu (`/help`) ilə. Apellyasiya yolu hazır olana qədər
+  "14 gün ərzində yenidən baxılma" vəd edilmir. Mətn hadisə anında yazılır (`notifications`).
   E-poçtu olan istifadəçi üçün eyni tranzaksiyada `email_outbox` sətri yaranır; `EmailOutboxJob`
   (kilid `email-outbox`) onu `EmailSender` ilə göndərir. Provayder hələ yoxdur (#131): `NoEmailSender`
   heç nə göndərmir və məktubu "göndərildi" saymır. Provayder açarları yalnız env-də olacaq.
@@ -325,7 +398,10 @@ curl -i -X POST localhost:8080/api/v1/auth/register -H 'Content-Type: applicatio
   İstifadəçi id-si yalnız `CurrentUser.id()`-dən (token `sub`). Admin və satıcı əməliyyatları `AuditService.record`.
 - Gözlənilən xətalar `ApiException` (status + `code`, mətn `error.<code>` açarından 3 dildə).
 - Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir; `@AuthIntegrationTest`
-  üstəlik Redis 7 konteyneri və qorunan test endpoint-ləri qoşur. Test JWT açarı `src/test/resources/config/application.yml`-dədir. Docker olmayan maşında
+  üstəlik Redis 7 konteyneri və qorunan test endpoint-ləri qoşur. Konteynerdə prod-dakı iki rol var
+  (`src/test/resources/db/test-roles.sql`): Flyway sahib rolu ilə miqrasiya edir, tətbiq və testlərin
+  `JdbcTemplate`-i iş rolu ilə qoşulur; iş rolunun edə bilmədiyi fixture-lar (cədvəli boşaltmaq, test trigger-i)
+  `DatabaseSuperuser` ilə edilir. Test JWT açarı `src/test/resources/config/application.yml`-dədir. Docker olmayan maşında
   bu testlər keçilir (skipped), CI-da isə məcburi işləyir (`DockerInCiTests`).
 - Variantın əyarı məhsulun metalındandır (V10, #122): `product_variants.metal` əyardan trigger ilə doldurulur,
   kompozit FK-lar onu `finenesses (id, metal)` və `products (id, metal)` ilə eyni saxlayır. Məhsulun metalını
