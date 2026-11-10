@@ -1,18 +1,30 @@
 name: backend
 
-# Backend check (#30). Testcontainers tests (PostgreSQL 16) run in `gradlew build`: the runner has Docker.
-# Sweep and gitleaks come with #35.
+# Backend checks (#30, #35):
+#   build    Gradle build with every test. The Testcontainers tests (PostgreSQL 16, Redis) run on
+#            the runner's Docker; a skipped test fails the job (DockerInCiTests + junit_summary.py).
+#   sweep    no old or reference brand names in backend/ (tools/sweep.py, docs/brand.json).
+#   secrets  gitleaks over the commits of the push or pull request (.gitleaks.toml).
 on:
   pull_request:
     paths:
       - "backend/**"
+      - "tools/sweep.py"
+      - "docs/brand.json"
+      - ".gitleaks.toml"
+      - ".github/scripts/junit_summary.py"
       - ".github/workflows/backend.yml"
   push:
     branches: [main]
     paths:
       - "backend/**"
+      - "tools/sweep.py"
+      - "docs/brand.json"
+      - ".gitleaks.toml"
+      - ".github/scripts/junit_summary.py"
       - ".github/workflows/backend.yml"
 
+# A new push to the same branch or pull request cancels the run it supersedes.
 concurrency:
   group: backend-${{ github.ref }}
   cancel-in-progress: true
@@ -24,7 +36,7 @@ jobs:
   build:
     name: gradle build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: backend
@@ -34,5 +46,67 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+      # Caches the Gradle wrapper, dependencies and build cache. Only main writes the cache;
+      # pull requests read it.
       - uses: gradle/actions/setup-gradle@v4
+      - name: Docker is available for Testcontainers
+        run: docker info --format 'Docker {{.ServerVersion}}'
       - run: ./gradlew build --no-daemon
+      - name: Test summary (fails on skipped tests)
+        if: ${{ !cancelled() }}
+        run: python3 ../.github/scripts/junit_summary.py build/test-results/test --no-skips
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: backend-test-results
+          path: |
+            backend/build/test-results/test/*.xml
+            backend/build/reports/tests/test/
+          retention-days: 14
+          if-no-files-found: warn
+
+  sweep:
+    name: old-name sweep
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No old or reference brand names in backend
+        run: python3 tools/sweep.py backend --config docs/brand.json
+
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks ${{ env.GITLEAKS_VERSION }}
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLo "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$archive"
+          echo "$GITLEAKS_SHA256  $RUNNER_TEMP/$archive" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" version
+      # Pull request: its own commits (base..head). Push to main: the pushed commits.
+      - name: Scan the new commits
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            range="$HEAD"
+          else
+            range="$BASE..$HEAD"
+          fi
+          echo "Scanning $range"
+          "$RUNNER_TEMP/gitleaks" git . --config .gitleaks.toml --log-opts="$range" \
+            --redact --verbose --exit-code 1

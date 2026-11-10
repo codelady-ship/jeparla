@@ -1,0 +1,17 @@
+# gitleaks configuration (#35): the default rules plus one narrow allowlist.
+# Used by the backend workflow (pinned gitleaks binary) and the frontend workflow (gitleaks-action),
+# both of which read .gitleaks.toml from the repository root.
+
+title = "Jeparla"
+
+[extend]
+useDefault = true
+
+# .env.example names every secret and leaves its value empty on purpose ("JEPARLA_JWT_SECRET=").
+# Only those empty assignments are allowed; a real value in .env.example is still reported.
+[[allowlists]]
+description = "Empty variables in .env.example"
+condition = "AND"
+paths = ['''(^|/)\.env\.example$''']
+regexTarget = "line"
+regexes = ['''^[A-Z][A-Z0-9_]*=\s*$''']
