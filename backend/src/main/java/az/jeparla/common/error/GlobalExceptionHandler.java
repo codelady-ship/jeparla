@@ -101,7 +101,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             problem.setProperty("retryAfter", limited.retryAfterSeconds());
         }
         ResponseEntity<Object> response = handleExceptionInternal(ex, problem, headers, ex.status(), request);
-        String detail = text(ex.messageKey(), "error.detail." + ex.status().value());
+        String detail = text(ex.messageKey(), "error.detail." + ex.status().value(), ex.args());
         problem.setDetail(detail);
         problem.setProperty("code", ex.code());
         if (ex.field() != null) {
@@ -204,8 +204,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private String text(String code, String fallbackCode) {
+        return text(code, fallbackCode, null);
+    }
+
+    private String text(String code, String fallbackCode, Object[] args) {
         Locale locale = LocaleContextHolder.getLocale();
         String fallback = messages.getMessage(fallbackCode, null, locale);
-        return messages.getMessage(code, null, fallback, locale);
+        return messages.getMessage(code, args, fallback, locale);
     }
 }

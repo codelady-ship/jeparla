@@ -168,6 +168,13 @@ class MerchantProductApiTests extends MerchantApiTestBase {
                 "merchant.not_precious_confirmation", "notPreciousConfirmed");
         expectInvalid(seller, beadsProduct(categoryId, "Qızıl üzük"), "merchant.fashion_claim", "name");
         expectInvalid(seller, beadsProduct(categoryId, "Ring 14K gold"), "merchant.fashion_claim", "name");
+        // The error names the phrase as the seller wrote it (#157); colour names stay allowed.
+        mvc.perform(json(post(PRODUCTS), beadsProduct(categoryId, "Rose gold sırğa, 585-ci əyar")).with(seller.token()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("merchant.fashion_claim"))
+                .andExpect(jsonPath("$.detail").value(Matchers.containsString("«585-ci əyar»")))
+                .andExpect(jsonPath("$.errors[0].message").value(Matchers.containsString("«585-ci əyar»")));
+        createProduct(seller, beadsProduct(categoryId, "Rose gold sırğa, qızılı rəngdə"));
         expectInvalid(seller, beads.replace("\"price\": \"25.00\"",
                         "\"price\": \"25.00\", \"finenessId\": " + fineness(Metal.SILVER)),
                 "merchant.fashion_metal", "variants[0].finenessId");

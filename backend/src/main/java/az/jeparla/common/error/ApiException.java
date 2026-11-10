@@ -16,6 +16,7 @@ public class ApiException extends RuntimeException {
     private final String code;
     private final String field;
     private final transient HttpHeaders headers = new HttpHeaders();
+    private transient Object[] args;
 
     public ApiException(HttpStatus status, String code) {
         this(status, code, null);
@@ -32,6 +33,20 @@ public class ApiException extends RuntimeException {
     public ApiException withHeader(String name, String value) {
         headers.add(name, value);
         return this;
+    }
+
+    /**
+     * Arguments of the localized detail ({@code {0}} ... in {@code error.<code>}), e.g. the phrase that
+     * triggered the error. Returns this exception.
+     */
+    public ApiException withArgs(Object... args) {
+        this.args = args.clone();
+        return this;
+    }
+
+    /** Arguments of the localized detail, or null. */
+    public Object[] args() {
+        return args == null ? null : args.clone();
     }
 
     /** Extra response headers. */
