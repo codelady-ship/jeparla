@@ -91,6 +91,17 @@ jeparla:
       access-key: ${JEPARLA_S3_ACCESS_KEY:}
       secret-key: ${JEPARLA_S3_SECRET_KEY:}
       public-bucket: ${JEPARLA_S3_PUBLIC_BUCKET:jeparla-public}
+      # Private bucket: uploads wait under staging/ until their check and only then are copied to the
+      # public bucket (#154); verification documents (#40). Must differ from the public bucket.
+      private-bucket: ${JEPARLA_S3_PRIVATE_BUCKET:jeparla-private}
+  merchant:
+    images:
+      # Presigned photo uploads per store in 24 hours, attached or not (#154). Per seller account the
+      # rate-limit policy image-upload-account applies (60 per hour).
+      daily-uploads-per-store: 300
+      # Deletes staged uploads that were never attached (ShedLock). "-" turns the schedule off.
+      cleanup-cron: ${JEPARLA_UPLOAD_CLEANUP_CRON:0 7/30 * * * *}
+      cleanup-lock-at-most-for: 15m
   metal-prices:
     # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
     # holidays CBAR answers with the last bulletin (its own date), which is already stored.

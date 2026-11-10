@@ -81,6 +81,8 @@ jobs:
           echo "minio-init exit code: $code"
           [ "$code" = 0 ]
           docker compose exec -T minio mc ls local
+          # Uploads never attached expire from the private bucket's staging/ prefix (#154).
+          docker compose exec -T minio mc ilm rule ls local/jeparla-private | tee /dev/stderr | grep -q 'staging/'
 
       - name: Logs
         if: always()

@@ -36,17 +36,27 @@ public class StorageConfig {
         }
 
         @Override
-        public PresignedUpload presignUpload(String key, String contentType, long sizeBytes, Duration ttl) {
+        public PresignedUpload presignStagedUpload(String key, String contentType, long sizeBytes, Duration ttl) {
             throw unavailable();
         }
 
         @Override
-        public Optional<StoredObject> head(String key) {
+        public Optional<StoredObject> headStaged(String key) {
             throw unavailable();
         }
 
         @Override
-        public byte[] readStart(String key, int maxBytes) {
+        public byte[] readStagedStart(String key, int maxBytes) {
+            throw unavailable();
+        }
+
+        @Override
+        public void publishStaged(String key) {
+            throw unavailable();
+        }
+
+        @Override
+        public void deleteStaged(String key) {
             throw unavailable();
         }
 

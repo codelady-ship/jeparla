@@ -97,7 +97,11 @@ services:
         mc mb --ignore-existing "local/$$PRIVATE_BUCKET"
         mc anonymous set download "local/$$PUBLIC_BUCKET"
         mc anonymous set none "local/$$PRIVATE_BUCKET"
-        echo "buckets ready: $$PUBLIC_BUCKET (public read), $$PRIVATE_BUCKET (private)"
+        # Photo uploads wait under staging/ until their check (#154); the API's cleanup job deletes the
+        # ones never attached, this rule is the backstop (same rule as on R2, backend/README.md).
+        echo '{"Rules":[{"ID":"expire-staging","Status":"Enabled","Filter":{"Prefix":"staging/"},"Expiration":{"Days":1}}]}' \
+          | mc ilm import "local/$$PRIVATE_BUCKET"
+        echo "buckets ready: $$PUBLIC_BUCKET (public read), $$PRIVATE_BUCKET (private, staging/ expires after 1 day)"
 
   backend:
     build:
