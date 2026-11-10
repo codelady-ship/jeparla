@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
  *
  * <ol>
  * <li>{@code login-ip}: every attempt from one address (guessing many accounts).</li>
- * <li>{@code login-account-ip}: failures for one account from one address. That pair is refused
- * before the password is checked; a successful login clears it.</li>
+ * <li>{@code login-account-ip}: attempts for one account from one address. Each attempt reserves a
+ * place atomically before the password is checked (#134), so parallel requests cannot all pass a
+ * check of the old count; over the limit the pair is refused. A successful login clears it, so in
+ * effect only failures add up.</li>
  * <li>{@code login-account}: failures for one account from all addresses. Over the limit the
  * account is under attack and only its known addresses (successful logins in the last 30 days)
  * may still sign in; others get 429 before the password is checked.</li>
@@ -39,16 +41,20 @@ class LoginThrottle {
     void beforeAttempt(String account, String address) {
         limits.check(RateLimitPolicy.LOGIN_IP, address);
         String pair = pair(account, address);
-        limits.requireUnder(RateLimitPolicy.LOGIN_ACCOUNT_IP, pair);
+        // Counted before the password check (an atomic INCR in Redis): of N parallel wrong guesses from one
+        // address at most the limit reach BCrypt. succeeded() gives the places back.
+        limits.check(RateLimitPolicy.LOGIN_ACCOUNT_IP, pair);
         long underAttack = limits.blockedFor(RateLimitPolicy.LOGIN_ACCOUNT, account);
         if (underAttack > 0 && !limits.isCounted(RateLimitPolicy.LOGIN_KNOWN_ADDRESS, pair)) {
             throw new RateLimitExceededException(underAttack);
         }
     }
 
-    /** A wrong password (or unknown login). */
+    /**
+     * A wrong password (or unknown login). The pair's place was already taken by {@link #beforeAttempt}; only
+     * the account-wide failure counter grows here.
+     */
     void failed(String account, String address) {
-        limits.count(RateLimitPolicy.LOGIN_ACCOUNT_IP, pair(account, address));
         limits.count(RateLimitPolicy.LOGIN_ACCOUNT, account);
     }
 
