@@ -250,6 +250,52 @@ class AuthFlowTests {
     }
 
     @Test
+    void aSessionEndsNinetyDaysAfterItsLoginHoweverOftenItWasRefreshed() throws Exception {
+        String email = uniqueEmail();
+        String first = refreshCookie(client.register("Aysel", email, PASSWORD));
+        double days = jdbc.queryForObject("""
+                SELECT extract(epoch FROM family_expires_at - created_at) / 86400 FROM refresh_tokens WHERE token_hash = ?
+                """, Double.class, RefreshTokenService.hash(first));
+        assertThat(days).isBetween(89.99, 90.01);
+        String second = refreshCookie(client.refresh(first));
+
+        // The family started 91 days ago; its current token is fresh (refreshed yesterday).
+        jdbc.update("""
+                UPDATE refresh_tokens SET created_at = now() - interval '91 days', family_expires_at = now() - interval '1 day',
+                       expires_at = now() - interval '1 day'
+                WHERE token_hash = ?
+                """, RefreshTokenService.hash(first));
+        jdbc.update("""
+                UPDATE refresh_tokens SET created_at = now() - interval '1 day', family_expires_at = now() - interval '1 second',
+                       expires_at = now() - interval '1 second'
+                WHERE token_hash = ?
+                """, RefreshTokenService.hash(second));
+        MockHttpServletResponse ended = client.refresh(second);
+        assertThat(ended.getStatus()).isEqualTo(401);
+        assertThat((String) JsonPath.read(ended.getContentAsString(), "$.code")).isEqualTo("auth.refresh_invalid");
+        // Signing in again starts a new session.
+        assertThat(client.refresh(refreshCookie(client.login(email, PASSWORD))).getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    void aTokenNeverOutlivesItsFamily() throws Exception {
+        String token = refreshCookie(client.register("Aysel", uniqueEmail(), PASSWORD));
+        // Two days of the family left: the next token gets two days, not thirty.
+        jdbc.update("""
+                UPDATE refresh_tokens SET created_at = now() - interval '88 days', family_expires_at = now() + interval '2 days',
+                       expires_at = now() + interval '1 day'
+                WHERE token_hash = ?
+                """, RefreshTokenService.hash(token));
+        MockHttpServletResponse refreshed = client.refresh(token);
+        assertThat(refreshed.getStatus()).isEqualTo(200);
+        String next = refreshCookie(refreshed);
+        assertThat(jdbc.queryForObject("""
+                SELECT expires_at = family_expires_at FROM refresh_tokens WHERE token_hash = ?
+                """, Boolean.class, RefreshTokenService.hash(next))).isTrue();
+        assertThat(refreshed.getHeader(HttpHeaders.SET_COOKIE)).containsPattern("Max-Age=1[0-9]{5}");
+    }
+
+    @Test
     void refreshOfABlockedAccountIs401() throws Exception {
         String email = uniqueEmail();
         String token = refreshCookie(client.register("Aysel", email, PASSWORD));

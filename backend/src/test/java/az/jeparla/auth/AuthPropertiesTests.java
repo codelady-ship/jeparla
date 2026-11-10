@@ -50,12 +50,23 @@ class AuthPropertiesTests {
     @Test
     void refreshMustOutliveAccessToken() {
         assertThatIllegalArgumentException().isThrownBy(() ->
-                new AuthProperties(GOOD_SECRET, Duration.ofHours(1), Duration.ofMinutes(30), true));
+                new AuthProperties(GOOD_SECRET, Duration.ofHours(1), Duration.ofMinutes(30), Duration.ofDays(90), true));
+    }
+
+    @Test
+    void aSessionEndsNinetyDaysAfterLoginByDefault() {
+        context.withPropertyValues("jeparla.auth.jwt-secret=" + GOOD_SECRET).run(app ->
+                assertThat(app.getBean(AuthProperties.class).refreshFamilyTtl()).isEqualTo(Duration.ofDays(90)));
+        // The family cannot end before its first token.
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                new AuthProperties(GOOD_SECRET, Duration.ofMinutes(15), Duration.ofDays(30), Duration.ofDays(7), true))
+                .withMessageContaining("refresh-family-ttl");
     }
 
     @Test
     void toStringHidesTheSecret() {
-        AuthProperties properties = new AuthProperties(GOOD_SECRET, Duration.ofMinutes(15), Duration.ofDays(30), true);
+        AuthProperties properties = new AuthProperties(GOOD_SECRET, Duration.ofMinutes(15), Duration.ofDays(30),
+                Duration.ofDays(90), true);
         assertThat(properties.toString()).doesNotContain(GOOD_SECRET).contains("***");
     }
 }

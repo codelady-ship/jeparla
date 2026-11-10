@@ -84,6 +84,8 @@ jeparla:
     jwt-secret: ${JEPARLA_JWT_SECRET:}
     access-token-ttl: 15m
     refresh-token-ttl: 30d
+    # Absolute lifetime of a session (refresh token family, #134): rotation never extends it past this.
+    refresh-family-ttl: 90d
     cookie-secure: ${JEPARLA_COOKIE_SECURE:true}
   storage:
     # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
