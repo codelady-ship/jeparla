@@ -1221,5 +1221,24 @@
     "ctaCollection": "Kolleksiyanı kəşf et",
     "ctaStores": "Mağazalara bax",
     "scrollHint": "Aşağı sürüşdürün"
+  },
+  "Pwa": {
+    "installTitle": "Jeparla telefonunuzda",
+    "installText": "Əsas ekrana əlavə edin: mağazalar və bugünkü qiymətlər bir toxunuşla açılsın.",
+    "install": "Əlavə et",
+    "notNow": "İndi yox",
+    "iosText": "Safari-də iki addım:",
+    "iosStep1": "Paylaş düyməsinə toxunun (yeni iOS-da ⋯ menyusunda)",
+    "iosStep2": "Siyahıdan «Add to Home Screen» seçin",
+    "gotIt": "Aydındır",
+    "offlineTitle": "İnternet yoxdur",
+    "offlineText": "Bağlantı bərpa olunan kimi səhifə özü yenilənəcək. Qiymətləri yalnız onlayn göstəririk ki, həmişə təzə olsun.",
+    "retry": "Yenidən yoxla"
+  },
+  "Share": {
+    "share": "Paylaş",
+    "copy": "Linki kopyala",
+    "copied": "Link kopyalandı",
+    "copyFailed": "Linki kopyalamaq alınmadı"
   }
 }
