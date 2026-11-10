@@ -42,7 +42,13 @@ public enum RateLimitPolicy {
      * WhatsApp contact clicks counted from one IP address (#37). Clicks over the limit are not counted
      * (no error), so the statistics cannot be inflated by a script.
      */
-    CONTACT_IP("contact-ip", 60, Duration.ofHours(1));
+    CONTACT_IP("contact-ip", 60, Duration.ofHours(1)),
+    /**
+     * Searches and suggestions from one IP address (#38, PLAN 5.13): generous for people typing in
+     * the header box (also behind a shared mobile carrier address), but a script cannot run ranked
+     * queries without limit. CDN hits never reach the API, so they are not counted.
+     */
+    SEARCH_IP("search-ip", 300, Duration.ofMinutes(1));
 
     private final String id;
     private final int defaultLimit;

@@ -107,6 +107,7 @@ telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 | `refresh-ip` | 60 / 5 dəq. | hər refresh | IP (token 256 bitdir, təxmin etmək olmur) |
 | `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37); limit yoxlaması məhsulun varlığından əvvəldir |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
+| `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
 `jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IPv6 müştəri /64 şəbəkəsi ilə sayılır
