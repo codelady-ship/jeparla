@@ -271,6 +271,44 @@ class MerchantProductApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void variantsAndPhotosOfTheSellersOtherProductAreNotFound() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, true);
+        long finenessId = fineness(Metal.GOLD);
+        long first = createProduct(seller, goldProduct(category(), finenessId, "500.00"));
+        long second = createProduct(seller, goldProduct(category(), finenessId, "600.00"));
+        long secondImage = attachPng(seller, second);
+        long secondVariant = jdbc.queryForObject("SELECT id FROM product_variants WHERE product_id = ?", Long.class,
+                second);
+        String variant = """
+                {"finenessId": %d, "weightGrams": "2.00", "pricingMode": "FIXED", "price": "1.00",
+                 "stockStatus": "IN_STOCK"}
+                """.formatted(finenessId);
+        String base = PRODUCTS + "/" + first;
+        MockHttpServletRequestBuilder[] requests = {
+                json(put(base + "/variants/" + secondVariant), variant),
+                delete(base + "/variants/" + secondVariant),
+                delete(base + "/images/" + secondImage),
+        };
+        for (MockHttpServletRequestBuilder request : requests) {
+            mvc.perform(request.with(seller.token()))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.code").value("not_found"));
+        }
+        // The first product has no photo, so another product's photo is not a valid order either.
+        mvc.perform(json(put(base + "/images/order"), "{\"imageIds\": [" + secondImage + "]}").with(seller.token()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("merchant.image_order"));
+        // Nothing changed on the second product.
+        mvc.perform(get(PRODUCTS + "/" + second).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.images.length()").value(1))
+                .andExpect(jsonPath("$.images[0].id").value((int) secondImage))
+                .andExpect(jsonPath("$.variants.length()").value(1))
+                .andExpect(jsonPath("$.variants[0].id").value((int) secondVariant))
+                .andExpect(jsonPath("$.variants[0].price.amount").value("600.00"));
+    }
+
+    @Test
     void missingAndDeletedProductsAreNotFound() throws Exception {
         Seller seller = seller(SellerKind.FASHION, false);
         mvc.perform(get(PRODUCTS + "/999999999").with(seller.token()))
