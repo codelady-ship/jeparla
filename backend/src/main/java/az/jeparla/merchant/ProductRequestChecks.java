@@ -125,13 +125,16 @@ class ProductRequestChecks {
         if (!Boolean.TRUE.equals(request.notPreciousConfirmed())) {
             throw invalid("merchant.not_precious_confirmation", "notPreciousConfirmed");
         }
+        // The error names the phrase (#157), so the seller knows what to change.
         var name = request.name();
-        if (claim(name.az(), name.en(), name.ru()).isPresent()) {
-            throw invalid("merchant.fashion_claim", "name");
+        Optional<String> found = claim(name.az(), name.en(), name.ru());
+        if (found.isPresent()) {
+            throw invalid("merchant.fashion_claim", "name").withArgs(found.get());
         }
         var description = request.description();
-        if (description != null && claim(description.az(), description.en(), description.ru()).isPresent()) {
-            throw invalid("merchant.fashion_claim", "description");
+        found = description == null ? Optional.empty() : claim(description.az(), description.en(), description.ru());
+        if (found.isPresent()) {
+            throw invalid("merchant.fashion_claim", "description").withArgs(found.get());
         }
     }
 

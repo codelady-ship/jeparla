@@ -46,12 +46,12 @@ public class StorageConfig {
         }
 
         @Override
-        public byte[] readStagedStart(String key, int maxBytes) {
+        public byte[] readStagedStart(String key, StoredObject checked, int maxBytes) {
             throw unavailable();
         }
 
         @Override
-        public void publishStaged(String key) {
+        public void publishStaged(String key, StoredObject checked) {
             throw unavailable();
         }
 
