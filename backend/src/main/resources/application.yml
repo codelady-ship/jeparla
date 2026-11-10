@@ -81,6 +81,16 @@ jeparla:
     # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
     # do not need it: they are served by the frontend from /demo.
     public-url: ${JEPARLA_S3_PUBLIC_URL:}
+    # S3-compatible API for product photo uploads (#39): presigned PUT URLs, then a check of the stored
+    # file. Without endpoint, keys and bucket the upload endpoints answer 503 and everything else works.
+    s3:
+      endpoint: ${JEPARLA_S3_ENDPOINT:}
+      # Endpoint in presigned URLs, as the browser reaches it (default: endpoint).
+      presign-endpoint: ${JEPARLA_S3_PRESIGN_ENDPOINT:}
+      region: ${JEPARLA_S3_REGION:us-east-1}
+      access-key: ${JEPARLA_S3_ACCESS_KEY:}
+      secret-key: ${JEPARLA_S3_SECRET_KEY:}
+      public-bucket: ${JEPARLA_S3_PUBLIC_BUCKET:jeparla-public}
   metal-prices:
     # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
     # holidays CBAR answers with the last bulletin (its own date), which is already stored.

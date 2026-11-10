@@ -1,0 +1,58 @@
+package az.jeparla.common.storage;
+
+import az.jeparla.common.error.ApiException;
+import java.time.Duration;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+
+/**
+ * The {@link ObjectStorage} bean: S3 when {@code jeparla.storage.s3} is configured, otherwise a stand-in
+ * whose every call answers 503 {@code storage.unavailable} (the catalog, auth and merchant API without
+ * images keep working, e.g. in tests and on a machine without MinIO).
+ */
+@Configuration(proxyBeanMethods = false)
+public class StorageConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(StorageConfig.class);
+
+    @Bean
+    ObjectStorage objectStorage(S3Properties properties) {
+        if (properties.configured()) {
+            return new S3ObjectStorage(properties);
+        }
+        log.warn("Object storage is not configured (JEPARLA_S3_*): image uploads answer 503");
+        return new Unavailable();
+    }
+
+    /** Storage that is not configured. */
+    static final class Unavailable implements ObjectStorage {
+
+        private static ApiException unavailable() {
+            return new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "storage.unavailable");
+        }
+
+        @Override
+        public PresignedUpload presignUpload(String key, String contentType, long sizeBytes, Duration ttl) {
+            throw unavailable();
+        }
+
+        @Override
+        public Optional<StoredObject> head(String key) {
+            throw unavailable();
+        }
+
+        @Override
+        public byte[] readStart(String key, int maxBytes) {
+            throw unavailable();
+        }
+
+        @Override
+        public void delete(String key) {
+            throw unavailable();
+        }
+    }
+}
