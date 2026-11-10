@@ -61,11 +61,43 @@ public interface ObjectStorage {
     /** Removes a public object; nothing happens when it does not exist. */
     void delete(String key);
 
+    // ------------------------------------------------------------------ private documents (#40, #138)
+
+    /**
+     * Lowercase hex SHA-256 of a staged upload, read in full while it is still the object {@code checked}
+     * describes ({@code If-Match}).
+     *
+     * @throws StagedUploadChangedException when the staged object was replaced or removed
+     */
+    String sha256Staged(String key, StoredObject checked);
+
+    /**
+     * Moves a checked staged upload to {@code key} in the <b>private</b> bucket (verification documents): a
+     * server-side copy under the same ETag guard as {@link #publishStaged}, then the staged copy is deleted.
+     * Nothing ever reaches the public bucket.
+     *
+     * @throws StagedUploadChangedException when the staged object was replaced or removed; nothing is copied
+     */
+    void keepStagedPrivate(String key, StoredObject checked);
+
+    /**
+     * A URL that reads one private object for {@code ttl} (an admin viewing a document). The response is a
+     * download ({@code Content-Disposition: attachment}) of the given type, whatever the object says.
+     */
+    PresignedDownload presignPrivateDownload(String key, String contentType, String fileName, Duration ttl);
+
+    /** Removes a private object (not a staged one); nothing happens when it does not exist. */
+    void deletePrivate(String key);
+
     /** A presigned upload: the browser sends {@code method} to {@code url} with {@code headers}. */
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {
     }
 
     /** A stored object as a HEAD sees it; {@code etag} is null when the storage sends none. */
     record StoredObject(long sizeBytes, String contentType, String etag) {
+    }
+
+    /** A presigned read of a private object. */
+    record PresignedDownload(String url, Instant expiresAt) {
     }
 }
