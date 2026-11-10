@@ -104,6 +104,8 @@ async function Tabs({ tab, q, result }: { tab: SearchTab; q: string; result: Sea
           <li key={key}>
             <Link
               href={`${tabPath(key)}?q=${encodeURIComponent(q)}`}
+              // Tabs and "see all" re-run the search: fetched on click, not while loading (#160).
+              prefetch={false}
               aria-current={key === tab ? "page" : undefined}
               className={cn(
                 "-mb-px inline-flex h-11 items-center gap-2 border-b-2 px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -158,6 +160,7 @@ async function TabPanel({
   const seeAll = (key: SearchTab, count: number) => (
     <Link
       href={`${tabPath(key)}?q=${encodeURIComponent(q)}`}
+      prefetch={false}
       className="inline-flex items-center gap-1 link-underline text-sm font-medium"
     >
       {t("seeAll", { count })}

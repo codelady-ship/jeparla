@@ -31,6 +31,7 @@ export function SiteHeader() {
         />
         <Link
           href="/"
+          prefetch={false}
           translate="no"
           className="touch-target relative font-heading text-2xl font-semibold tracking-tight"
         >
@@ -67,7 +68,8 @@ export function SiteHeader() {
               close: t("Common.close"),
             }}
           />
-          <Link href="/favorites" className={`${icon} relative`}>
+          {/* Header links are on every page: no prefetch during the first load (#160). */}
+          <Link href="/favorites" prefetch={false} className={`${icon} relative`}>
             <Heart aria-hidden />
             <span className="sr-only">{t("Nav.favorites")}</span>
             <SavedCount list="favorites" />
