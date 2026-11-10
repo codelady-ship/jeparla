@@ -72,6 +72,7 @@ export function Gallery({
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               preload={i === 0}
+              fetchPriority={i === 0 ? "high" : undefined}
               unoptimized={svg(img.url)}
               className="object-cover"
             />

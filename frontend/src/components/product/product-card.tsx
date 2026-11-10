@@ -38,6 +38,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
               fill
               sizes={CARD_SIZES}
               preload={preload}
+              fetchPriority={preload ? "high" : undefined}
               unoptimized={svg(main.url)}
               className="img-zoom object-cover"
             />
@@ -50,7 +51,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
             fill
             sizes={CARD_SIZES}
             unoptimized={svg(second.url)}
-            className="object-cover img-swap"
+            className="img-swap object-cover"
           />
         )}
         <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
