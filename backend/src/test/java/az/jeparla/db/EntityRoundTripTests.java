@@ -380,6 +380,18 @@ class EntityRoundTripTests {
                 .rootCause().hasMessageContaining("metal_price_snapshots_metal_date_source_key");
     }
 
+    @Test
+    void adminMayOverrideTwiceOnOneDay() {
+        // V11: only CBAR quotes are unique per day; a mistyped override is fixed by a newer one.
+        LocalDate day = LocalDate.of(2031, 1, 1).plusDays(TestData.next());
+        em.persist(new MetalPriceSnapshot(Metal.SILVER, day, BigDecimal.TEN, BigDecimal.ONE, QuoteSource.CBAR, NOW));
+        em.persist(new MetalPriceSnapshot(Metal.SILVER, day, BigDecimal.TEN, BigDecimal.ONE, QuoteSource.ADMIN, NOW));
+        em.persist(new MetalPriceSnapshot(Metal.SILVER, day, BigDecimal.ONE, BigDecimal.ONE, QuoteSource.ADMIN, NOW));
+        em.flush();
+        assertThat(em.createQuery("select count(q) from MetalPriceSnapshot q where q.quoteDate = :day", Long.class)
+                .setParameter("day", day).getSingleResult()).isEqualTo(3);
+    }
+
     // ------------------------------------------------------------------ favorites, reports, documents, audit
 
     @Test

@@ -1,13 +1,36 @@
 package az.jeparla.common.config;
 
+import javax.sql.DataSource;
+import net.javacrumbs.shedlock.core.DefaultLockingTaskExecutor;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.core.LockingTaskExecutor;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Enables {@code @Scheduled} jobs. Every job must be idempotent: until ShedLock arrives (#44) it may
- * run on each instance.
+ * Enables {@code @Scheduled} jobs. Every job must be idempotent, and a job that must not run on two
+ * instances at once takes a ShedLock lock (table {@code shedlock}, V11) through
+ * {@link LockingTaskExecutor}. Lock times come from the database clock, so instances with drifting
+ * clocks still agree.
  */
 @Configuration(proxyBeanMethods = false)
 @EnableScheduling
 public class SchedulingConfig {
+
+    @Bean
+    LockProvider lockProvider(DataSource dataSource) {
+        return new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
+                .withJdbcTemplate(new JdbcTemplate(dataSource))
+                .withTableName("shedlock")
+                .usingDbTime()
+                .build());
+    }
+
+    @Bean
+    LockingTaskExecutor lockingTaskExecutor(LockProvider lockProvider) {
+        return new DefaultLockingTaskExecutor(lockProvider);
+    }
 }

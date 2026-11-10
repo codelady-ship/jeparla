@@ -20,6 +20,8 @@ repositories {
 
 // springdoc-openapi 3.x targets Spring Boot 4; 3.2.0 is built against Boot 4.1.2.
 val springdocVersion = "3.2.0"
+// ShedLock 7.x targets Spring Framework 7 / Boot 4.
+val shedlockVersion = "7.10.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -36,6 +38,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    // Daily metal price job (#44): one run across instances (ShedLock, JDBC lock table from V11).
+    implementation("net.javacrumbs.shedlock:shedlock-core:$shedlockVersion")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

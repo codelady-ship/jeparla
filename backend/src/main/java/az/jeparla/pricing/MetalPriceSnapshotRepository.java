@@ -9,7 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MetalPriceSnapshotRepository extends JpaRepository<MetalPriceSnapshot, Long> {
 
-    /** The quote in use for a metal: the latest APPLIED one. */
+    /**
+     * The quote in use for a metal: the latest APPLIED one (newest day, then newest row, so a later admin
+     * override of the same day wins). With HELD: the newest quote waiting for an admin.
+     */
     Optional<MetalPriceSnapshot> findFirstByMetalAndStatusOrderByQuoteDateDescIdDesc(Metal metal, QuoteStatus status);
 
     /** History chart: APPLIED quotes of a metal in a date range, oldest first. */

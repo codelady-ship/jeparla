@@ -61,8 +61,10 @@ class JpaMappingTests {
 
         List<String> tables = jdbc.queryForList("""
                 SELECT table_name FROM information_schema.tables
-                WHERE table_schema = 'public' AND table_type = 'BASE TABLE' AND table_name <> 'flyway_schema_history'
+                WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                  AND table_name NOT IN ('flyway_schema_history', 'shedlock')
                 """, String.class);
+        // shedlock (V11) is the job lock table of ShedLock, used through JDBC only (no entity).
         assertThat(tables).hasSize(18);
         assertThat(mapped).containsExactlyInAnyOrderElementsOf(tables);
     }

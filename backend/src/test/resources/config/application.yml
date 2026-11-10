@@ -10,3 +10,11 @@ jeparla:
   # Tests without a Redis container count in memory; @AuthIntegrationTest switches to Redis.
   rate-limit:
     store: memory
+  # No scheduled runs and no calls to cbar.az in tests: job tests start it themselves against a local
+  # stub (support/CbarStub), without waiting between retries.
+  metal-prices:
+    cron: "-"
+    source-url: http://127.0.0.1:9/currencies/{date}.xml
+    backoff: 0s
+    connect-timeout: 2s
+    read-timeout: 5s

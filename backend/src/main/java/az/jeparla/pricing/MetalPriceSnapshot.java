@@ -15,7 +15,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -25,13 +24,12 @@ import org.hibernate.type.SqlTypes;
 
 /**
  * Daily CBAR metal quote (PLAN 5.10, #43): AZN per troy ounce and per gram
- * ({@code NUMERIC(14,4)}). One row per metal, business date and source; only APPLIED quotes
- * price products.
+ * ({@code NUMERIC(14,4)}). One CBAR row per metal and business date (partial unique index
+ * {@code metal_price_snapshots_metal_date_source_key}, V11); ADMIN overrides may repeat on a day,
+ * the newest one wins. Only APPLIED quotes price products.
  */
 @Entity
-@Table(name = "metal_price_snapshots",
-        uniqueConstraints = @UniqueConstraint(name = "metal_price_snapshots_metal_date_source_key",
-                columnNames = {"metal", "quote_date", "source"}))
+@Table(name = "metal_price_snapshots")
 public class MetalPriceSnapshot extends CreatedEntity {
 
     @Enumerated(EnumType.STRING)
