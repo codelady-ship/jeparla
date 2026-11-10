@@ -14,6 +14,7 @@ import type {
   SynonymGroup,
   VerificationRequest,
 } from "@/types/admin";
+import { httpAdminApi } from "./admin-http";
 import { USING_MOCK } from "./index";
 import {
   CATEGORIES,
@@ -36,7 +37,7 @@ export interface AdminApi {
   products(): Promise<ModerationItem[]>;
   product(id: number): Promise<ModerationItem | null>;
   verifications(): Promise<VerificationRequest[]>;
-  verification(id: number): Promise<VerificationRequest | null>;
+  verification(id: string): Promise<VerificationRequest | null>;
   categories(): Promise<AdminCategory[]>;
   finenesses(): Promise<AdminFineness[]>;
   synonyms(): Promise<SynonymGroup[]>;
@@ -148,7 +149,7 @@ const ref = (id: number) => ({ id, name: at(id).name, city: at(id).city });
 
 const VERIFICATIONS: VerificationRequest[] = [
   {
-    id: 1,
+    id: "1",
     store: ref(6),
     check: "seller",
     documents: [
@@ -160,7 +161,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 2,
+    id: "2",
     store: ref(3),
     check: "documents",
     documents: [
@@ -171,7 +172,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 3,
+    id: "3",
     store: ref(5),
     check: "expertise",
     documents: [
@@ -183,7 +184,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 4,
+    id: "4",
     store: ref(1),
     check: "documents",
     documents: [{ id: "d6", kind: "TRADE_LICENSE", fileName: "lisenziya.pdf", pages: 2 }],
@@ -475,27 +476,4 @@ const mockAdminApi: AdminApi = {
   },
 };
 
-function httpAdminApi(): AdminApi {
-  // Connected with the backend auth (Day 6, issue #40); until then the panel runs on the mock.
-  const fail = () => Promise.reject(new Error("Admin API is not connected yet"));
-  return {
-    overview: fail,
-    stores: fail,
-    store: fail,
-    products: fail,
-    product: fail,
-    verifications: fail,
-    verification: fail,
-    categories: fail,
-    finenesses: fail,
-    synonyms: fail,
-    users: fail,
-    user: fail,
-    reports: fail,
-    report: fail,
-    audit: fail,
-    metalPrices: fail,
-  };
-}
-
-export const adminApi: AdminApi = USING_MOCK ? mockAdminApi : httpAdminApi();
+export const adminApi: AdminApi = USING_MOCK ? mockAdminApi : httpAdminApi;

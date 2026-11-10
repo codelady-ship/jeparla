@@ -21,12 +21,15 @@ export async function adminContext(): Promise<{ session: Session; api: AdminApi 
 /**
  * Shared start of every admin write route: availability, role and the body,
  * parsed with the given schema. Returns the session and the data, or the error response.
+ * `live`: the route also works on the real API (stores, products, documents, metal prices).
  */
 export async function readAdmin<T extends z.ZodType>(
   request: Request,
   schema: T,
+  { live = false }: { live?: boolean } = {},
 ): Promise<{ session: Session; data: z.infer<T> } | Response> {
-  if (!USING_MOCK) return unavailable();
+  // Sections without an admin API yet stay read-only demos: nothing is pretended saved.
+  if (!USING_MOCK && !live) return unavailable();
   const session = await readSession();
   if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
   if (session.role !== "ADMIN") return Response.json({ error: "forbidden" }, { status: 403 });
@@ -45,9 +48,10 @@ export function readId(raw: string): number | null {
 export async function readDecision(
   request: Request,
   rawId: string,
+  options: { live?: boolean } = {},
 ): Promise<{ id: number; decision: Decision } | Response> {
   const id = readId(rawId);
-  const read = await readAdmin(request, decisionSchema);
+  const read = await readAdmin(request, decisionSchema, options);
   if (read instanceof Response) return read;
   if (id === null) return notFound();
   return { id, decision: read.data };

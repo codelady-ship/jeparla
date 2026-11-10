@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, ShieldCheck } from "lucide-react";
+import { ExternalLink, FileText, Loader2, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CHECK_ACTIONS } from "@/lib/admin/decisions";
+import { CHECK_ACTIONS, DOCUMENT_REASONS } from "@/lib/admin/decisions";
+import { sendJson } from "@/lib/merchant/client";
 import { CHECK_FILTERS, filterList, shortDate } from "@/lib/admin/filter";
 import { notices } from "@/lib/notice";
 import type { CheckStatus } from "@/types/api";
@@ -39,7 +40,10 @@ export function VerificationList({
   rows: initial,
   initialQuery,
   initialStatus,
+  live = false,
 }: {
+  /** Real API: documents open through a signed link and refusals need a reason code. */
+  live?: boolean;
   rows: VerificationRequest[];
   initialQuery: string;
   initialStatus: Filter;
@@ -79,10 +83,15 @@ export function VerificationList({
                     {t(`checks.kind.${row.check}`)}
                   </p>
                   <h2 className="text-xl break-words">{row.store.name}</h2>
+                  {row.product && (
+                    <p className="text-sm break-words">
+                      {t("checks.product", { name: row.product.name })}
+                    </p>
+                  )}
                   <p className="text-sm text-muted-foreground">
-                    {row.store.city}
-                    {" · "}
-                    {t("submitted", { date: shortDate(row.submittedAt) })}
+                    {[row.store.city, t("submitted", { date: shortDate(row.submittedAt) })]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                 </div>
                 <Badge variant={VARIANT[row.status]}>{t(`checkStatus.${row.status}`)}</Badge>
@@ -93,7 +102,7 @@ export function VerificationList({
                 <ul className="flex flex-col gap-2">
                   {row.documents.map((doc) => (
                     <li key={doc.id}>
-                      <DocumentLink doc={doc} />
+                      {live ? <LiveDocumentLink doc={doc} /> : <DocumentLink doc={doc} />}
                     </li>
                   ))}
                 </ul>
@@ -105,6 +114,17 @@ export function VerificationList({
                 endpoint={`/api/admin/verifications/${row.id}`}
                 name={row.store.name}
                 actions={CHECK_ACTIONS[row.status]}
+                codes={
+                  live
+                    ? {
+                        label: t("rejectReason.label"),
+                        options: DOCUMENT_REASONS.map((r) => ({
+                          value: r,
+                          label: t(`rejectReason.${r}`),
+                        })),
+                      }
+                    : undefined
+                }
                 onDone={({ status, note }) => {
                   setRows((all) => all.map((r) => (r.id === row.id ? { ...r, status, note } : r)));
                   notices.show(
@@ -143,9 +163,9 @@ function DocumentLink({ doc }: { doc: VerificationDocument }) {
         <span className="flex min-w-0 flex-col">
           <span className="font-medium">{label}</span>
           <span className="truncate text-xs text-muted-foreground">
-            {doc.fileName}
-            {" · "}
-            {t("checks.pages", { count: doc.pages })}
+            {doc.pages === null
+              ? doc.fileName
+              : `${doc.fileName} · ${t("checks.pages", { count: doc.pages })}`}
           </span>
         </span>
       </DialogTrigger>
@@ -159,5 +179,61 @@ function DocumentLink({ doc }: { doc: VerificationDocument }) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * Opens a real document: asks the API for a short-lived signed link (the view is written
+ * to the audit log) and opens it in a new tab. The link is never stored in the page.
+ */
+function LiveDocumentLink({ doc }: { doc: VerificationDocument }) {
+  const t = useTranslations("Admin");
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const label = t(`docKind.${doc.kind}`);
+
+  async function open() {
+    setBusy(true);
+    setFailed(false);
+    // Opened before the await so the browser does not treat it as a pop-up.
+    const tab = window.open("about:blank", "_blank");
+    const result = await sendJson<{ url: string }>(
+      "POST",
+      `/api/admin/documents/${doc.id}/view`,
+      {},
+    );
+    setBusy(false);
+    if (!result.ok || !tab) {
+      tab?.close();
+      setFailed(true);
+      return;
+    }
+    tab.opener = null;
+    tab.location.href = result.data.url;
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <Button
+        variant="outline"
+        size="lg"
+        className="h-auto w-full justify-start py-2 text-left"
+        aria-label={t("checks.view", { name: label })}
+        disabled={busy}
+        onClick={() => void open()}
+      >
+        {busy ? <Loader2 aria-hidden className="animate-spin" /> : <FileText aria-hidden />}
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="font-medium">{label}</span>
+          <span className="truncate text-xs text-muted-foreground">{doc.fileName}</span>
+        </span>
+        <ExternalLink aria-hidden className="size-4" />
+      </Button>
+      {failed && (
+        <p role="alert" className="text-xs text-destructive">
+          {t("checks.viewFailed")}
+        </p>
+      )}
+    </div>
   );
 }

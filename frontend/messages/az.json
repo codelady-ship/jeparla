@@ -1000,7 +1000,9 @@
       "docs": "Sənədlər",
       "view": "Sənədə bax: {name}",
       "viewText": "Sənədlər gizli saxlanılır və hər baxışda qısa müddətli imzalı linklə açılır. Demo rejimində fayl yoxdur.",
-      "pages": "{count, plural, one {# səhifə} other {# səhifə}}"
+      "pages": "{count, plural, one {# səhifə} other {# səhifə}}",
+      "product": "Məhsul: {name}",
+      "viewFailed": "Sənəd açılmadı. Yenidən cəhd edin."
     },
     "checkStatus": {
       "ALL": "Hamısı",
@@ -1103,7 +1105,9 @@
       "self": "Öz rolunuzu dəyişə bilməzsiniz.",
       "sameRole": "Yeni rol hazırkı ilə eynidir.",
       "lastAdmin": "Bu yeganə admindir; əvvəlcə başqa admin təyin edin.",
-      "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin."
+      "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin.",
+      "codeRequired": "Səbəb növünü seçin.",
+      "rateLimited": "Çox sorğu göndərildi. Bir az sonra yenidən cəhd edin."
     },
     "metal": {
       "GOLD": "Qızıl",
@@ -1142,7 +1146,8 @@
       "USER": "İstifadəçi",
       "CATALOG": "Kataloq",
       "PRICE": "Metal qiyməti",
-      "REPORT": "Şikayət"
+      "REPORT": "Şikayət",
+      "DOCUMENT": "Sənəd"
     },
     "auditAction": {
       "approve": "Təsdiqləndi",
@@ -1265,6 +1270,48 @@
       "largeWarning": "Dəyişmə {change}, {limit}% həddindən böyükdür.",
       "confirmLarge": "Mənbəni yoxladım, qiymət düzgündür",
       "overridden": "{name} qiyməti dəyişdi"
+    },
+    "notConnected": "Bu bölmə hələ API-yə qoşulmayıb. Nümunə məlumatı göstərmirik ki, real qərarla qarışmasın.",
+    "rejectReason": {
+      "label": "Səbəb növü",
+      "pick": "Seçin",
+      "UNREADABLE": "Oxunmur",
+      "EXPIRED": "Müddəti bitib",
+      "MISMATCH": "Mağaza məlumatı ilə uyğun deyil",
+      "WRONG_TYPE": "Səhv sənəd növü",
+      "HALLMARK_MISSING": "Əyar möhürü görünmür",
+      "AUTHENTICITY": "Həqiqiliyi təsdiqlənmədi"
+    },
+    "auditCode": {
+      "STORE_CREATED": "Mağaza yaradıldı",
+      "STORE_UPDATED": "Mağaza dəyişdirildi",
+      "STORE_APPROVED": "Mağaza təsdiqləndi",
+      "STORE_REJECTED": "Mağaza rədd edildi",
+      "STORE_BLOCKED": "Mağaza bloklandı",
+      "STORE_PENDING": "Mağaza yenidən yoxlamaya qaytarıldı",
+      "SELLER_VERIFIED": "Satıcı yoxlandı",
+      "SELLER_REJECTED": "Satıcı yoxlaması rədd edildi",
+      "DECLARATION_CONFIRMED": "Satıcı bəyannaməni təsdiqlədi",
+      "PRODUCT_CREATED": "Məhsul yaradıldı",
+      "PRODUCT_UPDATED": "Məhsul dəyişdirildi",
+      "PRODUCT_DELETED": "Məhsul silindi",
+      "PRODUCT_STATUS_CHANGED": "Məhsulun statusu dəyişdi",
+      "PRODUCT_APPROVED": "Məhsul təsdiqləndi",
+      "PRODUCT_RETURNED": "Məhsul qaytarıldı",
+      "PRODUCT_DEACTIVATED": "Məhsul yayından çıxarıldı",
+      "VARIANT_ADDED": "Variant əlavə edildi",
+      "VARIANT_UPDATED": "Variant dəyişdirildi",
+      "VARIANT_REMOVED": "Variant silindi",
+      "IMAGE_ADDED": "Şəkil əlavə edildi",
+      "IMAGE_REMOVED": "Şəkil silindi",
+      "DOCUMENT_UPLOADED": "Sənəd yükləndi",
+      "DOCUMENT_VIEWED": "Sənədə baxıldı",
+      "DOCUMENT_APPROVED": "Sənəd təsdiqləndi",
+      "DOCUMENT_REJECTED": "Sənəd rədd edildi",
+      "DOCUMENT_CHANGES_REQUESTED": "Sənəd yenidən istənildi",
+      "METAL_PRICE_ACCEPTED": "Metal qiyməti tətbiq edildi",
+      "METAL_PRICE_DISCARDED": "Metal qiyməti atıldı",
+      "METAL_PRICE_OVERRIDDEN": "Metal qiyməti əllə təyin edildi"
     }
   },
   "MetalPrices": {

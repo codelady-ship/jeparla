@@ -1000,7 +1000,9 @@
       "docs": "Документы",
       "view": "Открыть документ: {name}",
       "viewText": "Документы хранятся закрыто и открываются по краткосрочной подписанной ссылке при каждом просмотре. В демо-режиме файлов нет.",
-      "pages": "{count, plural, one {# страница} few {# страницы} many {# страниц} other {# страницы}}"
+      "pages": "{count, plural, one {# страница} few {# страницы} many {# страниц} other {# страницы}}",
+      "product": "Товар: {name}",
+      "viewFailed": "Документ не открылся. Попробуйте ещё раз."
     },
     "checkStatus": {
       "ALL": "Все",
@@ -1103,7 +1105,9 @@
       "self": "Нельзя изменить собственную роль.",
       "sameRole": "Новая роль совпадает с текущей.",
       "lastAdmin": "Это единственный админ; сначала назначьте другого.",
-      "largeChange": "Изменение выше порога: подтвердите, что проверили источник."
+      "largeChange": "Изменение выше порога: подтвердите, что проверили источник.",
+      "codeRequired": "Выберите тип причины.",
+      "rateLimited": "Слишком много запросов. Попробуйте чуть позже."
     },
     "metal": {
       "GOLD": "Золото",
@@ -1142,7 +1146,8 @@
       "USER": "Пользователь",
       "CATALOG": "Каталог",
       "PRICE": "Цена металла",
-      "REPORT": "Жалоба"
+      "REPORT": "Жалоба",
+      "DOCUMENT": "Документ"
     },
     "auditAction": {
       "approve": "Одобрено",
@@ -1265,6 +1270,48 @@
       "largeWarning": "Изменение {change}, больше порога {limit}%.",
       "confirmLarge": "Я проверил источник, цена верна",
       "overridden": "Цена изменена: {name}"
+    },
+    "notConnected": "Этот раздел ещё не подключён к API. Примерные данные здесь не показываются, чтобы их не приняли за реальное решение.",
+    "rejectReason": {
+      "label": "Тип причины",
+      "pick": "Выберите",
+      "UNREADABLE": "Не читается",
+      "EXPIRED": "Срок истёк",
+      "MISMATCH": "Не совпадает с данными магазина",
+      "WRONG_TYPE": "Неверный тип документа",
+      "HALLMARK_MISSING": "Проба не видна",
+      "AUTHENTICITY": "Подлинность не подтверждена"
+    },
+    "auditCode": {
+      "STORE_CREATED": "Магазин создан",
+      "STORE_UPDATED": "Магазин изменён",
+      "STORE_APPROVED": "Магазин одобрен",
+      "STORE_REJECTED": "Магазин отклонён",
+      "STORE_BLOCKED": "Магазин заблокирован",
+      "STORE_PENDING": "Магазин возвращён на проверку",
+      "SELLER_VERIFIED": "Продавец проверен",
+      "SELLER_REJECTED": "Проверка продавца отклонена",
+      "DECLARATION_CONFIRMED": "Продавец подтвердил декларацию",
+      "PRODUCT_CREATED": "Товар создан",
+      "PRODUCT_UPDATED": "Товар изменён",
+      "PRODUCT_DELETED": "Товар удалён",
+      "PRODUCT_STATUS_CHANGED": "Статус товара изменён",
+      "PRODUCT_APPROVED": "Товар одобрен",
+      "PRODUCT_RETURNED": "Товар возвращён",
+      "PRODUCT_DEACTIVATED": "Товар снят с публикации",
+      "VARIANT_ADDED": "Вариант добавлен",
+      "VARIANT_UPDATED": "Вариант изменён",
+      "VARIANT_REMOVED": "Вариант удалён",
+      "IMAGE_ADDED": "Фото добавлено",
+      "IMAGE_REMOVED": "Фото удалено",
+      "DOCUMENT_UPLOADED": "Документ загружен",
+      "DOCUMENT_VIEWED": "Документ просмотрен",
+      "DOCUMENT_APPROVED": "Документ одобрен",
+      "DOCUMENT_REJECTED": "Документ отклонён",
+      "DOCUMENT_CHANGES_REQUESTED": "Запрошен новый документ",
+      "METAL_PRICE_ACCEPTED": "Цена металла применена",
+      "METAL_PRICE_DISCARDED": "Цена металла отброшена",
+      "METAL_PRICE_OVERRIDDEN": "Цена металла задана вручную"
     }
   },
   "MetalPrices": {

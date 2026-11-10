@@ -1000,7 +1000,9 @@
       "docs": "Documents",
       "view": "View document: {name}",
       "viewText": "Documents are stored privately and open through a short-lived signed link on every view. Demo mode has no files.",
-      "pages": "{count, plural, one {# page} other {# pages}}"
+      "pages": "{count, plural, one {# page} other {# pages}}",
+      "product": "Product: {name}",
+      "viewFailed": "The document did not open. Try again."
     },
     "checkStatus": {
       "ALL": "All",
@@ -1103,7 +1105,9 @@
       "self": "You can't change your own role.",
       "sameRole": "The new role is the same as the current one.",
       "lastAdmin": "This is the only admin; make someone else admin first.",
-      "largeChange": "The change is above the limit: confirm that you checked the source."
+      "largeChange": "The change is above the limit: confirm that you checked the source.",
+      "codeRequired": "Choose the reason type.",
+      "rateLimited": "Too many requests. Try again in a moment."
     },
     "metal": {
       "GOLD": "Gold",
@@ -1142,7 +1146,8 @@
       "USER": "User",
       "CATALOG": "Catalog",
       "PRICE": "Metal price",
-      "REPORT": "Complaint"
+      "REPORT": "Complaint",
+      "DOCUMENT": "Document"
     },
     "auditAction": {
       "approve": "Approved",
@@ -1265,6 +1270,48 @@
       "largeWarning": "The change is {change}, above the {limit}% limit.",
       "confirmLarge": "I checked the source and the price is right",
       "overridden": "{name} price changed"
+    },
+    "notConnected": "This section is not connected to the API yet. Sample data is not shown here, so it can't be mistaken for a real decision.",
+    "rejectReason": {
+      "label": "Reason type",
+      "pick": "Choose",
+      "UNREADABLE": "Not readable",
+      "EXPIRED": "Expired",
+      "MISMATCH": "Does not match the store details",
+      "WRONG_TYPE": "Wrong document type",
+      "HALLMARK_MISSING": "Hallmark not visible",
+      "AUTHENTICITY": "Authenticity not confirmed"
+    },
+    "auditCode": {
+      "STORE_CREATED": "Store created",
+      "STORE_UPDATED": "Store edited",
+      "STORE_APPROVED": "Store approved",
+      "STORE_REJECTED": "Store rejected",
+      "STORE_BLOCKED": "Store blocked",
+      "STORE_PENDING": "Store sent back to review",
+      "SELLER_VERIFIED": "Seller verified",
+      "SELLER_REJECTED": "Seller check rejected",
+      "DECLARATION_CONFIRMED": "Seller confirmed the declaration",
+      "PRODUCT_CREATED": "Product created",
+      "PRODUCT_UPDATED": "Product edited",
+      "PRODUCT_DELETED": "Product deleted",
+      "PRODUCT_STATUS_CHANGED": "Product status changed",
+      "PRODUCT_APPROVED": "Product approved",
+      "PRODUCT_RETURNED": "Product returned",
+      "PRODUCT_DEACTIVATED": "Product taken down",
+      "VARIANT_ADDED": "Variant added",
+      "VARIANT_UPDATED": "Variant edited",
+      "VARIANT_REMOVED": "Variant removed",
+      "IMAGE_ADDED": "Image added",
+      "IMAGE_REMOVED": "Image removed",
+      "DOCUMENT_UPLOADED": "Document uploaded",
+      "DOCUMENT_VIEWED": "Document viewed",
+      "DOCUMENT_APPROVED": "Document approved",
+      "DOCUMENT_REJECTED": "Document rejected",
+      "DOCUMENT_CHANGES_REQUESTED": "New document requested",
+      "METAL_PRICE_ACCEPTED": "Metal price applied",
+      "METAL_PRICE_DISCARDED": "Metal price discarded",
+      "METAL_PRICE_OVERRIDDEN": "Metal price set by hand"
     }
   },
   "MetalPrices": {

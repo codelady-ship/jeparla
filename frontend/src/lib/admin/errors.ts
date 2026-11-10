@@ -20,6 +20,8 @@ export const ADMIN_ERRORS = [
   "sameRole",
   "lastAdmin",
   "largeChange",
+  "codeRequired",
+  "rateLimited",
 ] as const;
 
 export type AdminError = (typeof ADMIN_ERRORS)[number];
