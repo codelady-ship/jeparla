@@ -18,17 +18,21 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const easeOut = Easing.bezier(0.16, 1, 0.3, 1);
 const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
 
-/** Timeline in frames (30 fps). Tune to the voice file once it exists. */
+/**
+ * Timeline in frames (30 fps), timed to the voice file (pauses measured in public/social/voice.wav):
+ * questions 0.38 / 2.14 / 3.44 s, "Jeparla saytına gir" 4.92 s, "Mağazanı seç" 6.5 s,
+ * "Vatsapla yaz" ~8.8 s, "Qızılın bugünkü qiyməti" 10.24 s, "Link bioda" 12.14 s.
+ */
 const T = {
-  q: [6, 54, 102],
-  shrink: 165,
-  shrinkLen: 26,
-  home: 190,
-  store: 228,
-  product: 268,
-  wa: 300,
-  metal: 336,
-  end: 392,
+  q: [8, 62, 101],
+  shrink: 134,
+  shrinkLen: 24,
+  home: 150,
+  store: 195,
+  product: 231,
+  wa: 262,
+  metal: 305,
+  end: 360,
 };
 
 // Corner box of the clip after it shrinks (9:16, like the frame).
@@ -207,7 +211,7 @@ export function Reel({ voice }: ReelProps) {
       <Question text="Qızıl üzük axtarırsan?" from="top" start={T.q[0]} top={96} align="center" />
       <Question text="Hansı mağazada var?" from="right" start={T.q[1]} top={1080} align="right" />
       <Question text="Qiyməti nə qədərdir?" from="left" start={T.q[2]} top={1300} align="left" />
-      <Caption start={T.shrink + T.shrinkLen - 4} end={T.store}>
+      <Caption start={T.shrink + 16} end={T.store}>
         <Gold>Jeparla</Gold> saytına gir.
       </Caption>
       <Caption start={T.store} end={T.metal}>
