@@ -2,12 +2,16 @@ package az.jeparla.admin;
 
 import az.jeparla.admin.dto.AdminCategoryDto;
 import az.jeparla.admin.dto.AdminFinenessDto;
+import az.jeparla.admin.dto.AdminSynonymDto;
 import az.jeparla.admin.dto.CategoryRequest;
 import az.jeparla.admin.dto.FinenessRequest;
+import az.jeparla.admin.dto.SynonymRequest;
+import az.jeparla.common.dto.PageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +23,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Catalog settings (#40, PLAN 5.8): categories and finenesses. ADMIN only, every write audited. */
+/**
+ * Catalog settings (#40, PLAN 5.8): categories, finenesses and search synonyms. ADMIN only, every write audited.
+ */
 @RestController
 @RequestMapping("/api/v1/admin")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin: catalog settings", description = "Categories and finenesses (ADMIN)")
+@Tag(name = "Admin: catalog settings", description = "Categories, finenesses and search synonyms (ADMIN)")
 public class AdminCatalogController {
 
     private final AdminCatalogService catalog;
@@ -103,6 +110,43 @@ public class AdminCatalogController {
     @ApiResponse(responseCode = "409", description = "admin.fineness_in_use: a variant (removed ones too) uses it")
     public ResponseEntity<Void> deleteFineness(@PathVariable long id) {
         catalog.deleteFineness(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ------------------------------------------------------------------ search synonyms
+
+    @GetMapping("/synonyms")
+    @Operation(summary = "Search synonym pairs, newest first; q filters by a part of either side")
+    public PageDto<AdminSynonymDto> synonyms(@RequestParam(required = false) @Size(max = 60) String q,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+        return catalog.synonyms(q, page, size);
+    }
+
+    @PostMapping("/synonyms")
+    @Operation(summary = "Add a synonym pair",
+            description = "Used by /search and /search/suggest from the next request (no in-app cache); public "
+                    + "search responses stay in the CDN for up to 5 minutes.")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiResponse(responseCode = "400", description = "admin.synonym_invalid: not one word each, or the same word")
+    @ApiResponse(responseCode = "409", description = "admin.synonym_exists (also in the other order)")
+    public ResponseEntity<AdminSynonymDto> createSynonym(@Valid @RequestBody SynonymRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(catalog.createSynonym(request));
+    }
+
+    @PutMapping("/synonyms/{id}")
+    @Operation(summary = "Replace a synonym pair")
+    @ApiResponse(responseCode = "200", description = "Saved")
+    @ApiResponse(responseCode = "400", description = "admin.synonym_invalid")
+    @ApiResponse(responseCode = "409", description = "admin.synonym_exists")
+    public AdminSynonymDto updateSynonym(@PathVariable long id, @Valid @RequestBody SynonymRequest request) {
+        return catalog.updateSynonym(id, request);
+    }
+
+    @DeleteMapping("/synonyms/{id}")
+    @Operation(summary = "Delete a synonym pair")
+    @ApiResponse(responseCode = "204", description = "Deleted")
+    public ResponseEntity<Void> deleteSynonym(@PathVariable long id) {
+        catalog.deleteSynonym(id);
         return ResponseEntity.noContent().build();
     }
 }

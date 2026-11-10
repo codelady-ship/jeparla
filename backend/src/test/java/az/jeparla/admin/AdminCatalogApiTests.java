@@ -27,6 +27,7 @@ class AdminCatalogApiTests extends MerchantApiTestBase {
 
     private static final String CATEGORIES = "/api/v1/admin/categories";
     private static final String FINENESSES = "/api/v1/admin/finenesses";
+    private static final String SYNONYMS = "/api/v1/admin/synonyms";
 
     private static String categoryJson(String slug, Long parentId, boolean active) {
         return """
@@ -152,6 +153,64 @@ class AdminCatalogApiTests extends MerchantApiTestBase {
                         """.formatted(value)).with(AdminTestTokens.admin(adminId)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("admin.fineness_in_use"));
+    }
+
+    @Test
+    void synonymsAreManagedAndTheSearchUsesThemAtOnce() throws Exception {
+        long adminId = newBuyer();
+        tx.executeWithoutResult(status -> data.publicProduct(data.approvedStore(data.merchant()), data.category(),
+                data.fineness(Metal.GOLD), "250.00"));
+        // No trigram in common with any catalog word, so only the synonym can make it match.
+        String word = "qxjv" + TestData.next();
+        mvc.perform(get("/api/v1/search").param("q", word).param("type", "products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.products.totalElements").value(0));
+
+        MvcResult created = mvc.perform(json(post(SYNONYMS), """
+                        {"term": "%s", "synonym": "üzük"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.term").value(word))
+                .andExpect(jsonPath("$.synonym").value("üzük"))
+                .andReturn();
+        long id = id(created);
+        assertThat(auditCount("SYNONYM_CREATED", id)).isEqualTo(1);
+        mvc.perform(get("/api/v1/search").param("q", word).param("type", "products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.products.totalElements").value(org.hamcrest.Matchers.greaterThan(0)));
+
+        // The same pair in the other order, folded ("UZUK" = "üzük"), is a duplicate.
+        mvc.perform(json(post(SYNONYMS), """
+                        {"term": "UZUK", "synonym": "%s"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("admin.synonym_exists"));
+        // Two words, one letter, the same word folded: 400.
+        for (String invalid : List.of("{\"term\": \"iki söz\", \"synonym\": \"üzük\"}",
+                "{\"term\": \"a\", \"synonym\": \"üzük\"}", "{\"term\": \"Üzük\", \"synonym\": \"uzuk\"}")) {
+            mvc.perform(json(post(SYNONYMS), invalid).with(AdminTestTokens.admin(adminId)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("admin.synonym_invalid"));
+        }
+
+        mvc.perform(get(SYNONYMS).param("q", word.toUpperCase()).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].id").value(id));
+
+        mvc.perform(json(put(SYNONYMS + "/" + id), """
+                        {"term": "%s", "synonym": "sırğa"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.synonym").value("sırğa"));
+        assertThat(auditCount("SYNONYM_UPDATED", id)).isEqualTo(1);
+
+        mvc.perform(delete(SYNONYMS + "/" + id).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isNoContent());
+        assertThat(auditCount("SYNONYM_DELETED", id)).isEqualTo(1);
+        mvc.perform(get("/api/v1/search").param("q", word).param("type", "products"))
+                .andExpect(jsonPath("$.products.totalElements").value(0));
+        mvc.perform(get(SYNONYMS).with(buyer(newBuyer()))).andExpect(status().isForbidden());
     }
 
     @Test

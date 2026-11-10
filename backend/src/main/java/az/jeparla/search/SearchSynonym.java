@@ -35,6 +35,12 @@ public class SearchSynonym extends CreatedEntity {
         this.synonym = Objects.requireNonNull(synonym);
     }
 
+    /** Admin edit (#40); the folded forms are generated again by PostgreSQL. */
+    public void replace(String term, String synonym) {
+        this.term = Objects.requireNonNull(term);
+        this.synonym = Objects.requireNonNull(synonym);
+    }
+
     public String getTerm() {
         return term;
     }
