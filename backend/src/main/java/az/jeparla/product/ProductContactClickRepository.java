@@ -18,6 +18,13 @@ public interface ProductContactClickRepository extends Repository<ProductContact
             """, nativeQuery = true)
     void increment(@Param("productId") long productId, @Param("day") LocalDate day);
 
+    /** WhatsApp clicks on every product of a store since {@code from} (merchant dashboard, #39). */
+    @Query("""
+            select coalesce(sum(c.clicks), 0) from ProductContactClick c, Product p
+            where p.id = c.id.productId and p.store.id = :storeId and c.id.day >= :from
+            """)
+    long sumByStoreSince(@Param("storeId") Long storeId, @Param("from") LocalDate from);
+
     /** Counters of one product, oldest first (merchant dashboard, #39). */
     @Query("select c from ProductContactClick c where c.id.productId = :productId order by c.id.day")
     List<ProductContactClick> findByProductId(@Param("productId") Long productId);

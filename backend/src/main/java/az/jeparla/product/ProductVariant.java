@@ -47,9 +47,15 @@ public class ProductVariant extends TimestampedEntity {
     @Column(name = "sku", nullable = false)
     private String sku;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "fineness_id", nullable = false)
+    /** The fineness of a PRECIOUS product's variant; null for FASHION (#128, CHECK {@code product_variants_by_kind}). */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fineness_id")
     private Fineness fineness;
+
+    /** Copy of the product's kind, written by the trigger {@code product_variants_material_kind} (V13). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "material_kind", insertable = false, updatable = false)
+    private MaterialKind materialKind;
 
     /**
      * Copy of the fineness metal, written by the database trigger {@code product_variants_metal} (V10)
@@ -59,7 +65,8 @@ public class ProductVariant extends TimestampedEntity {
     @Column(name = "metal", insertable = false, updatable = false)
     private Metal metal;
 
-    @Column(name = "weight_grams", nullable = false, precision = 8, scale = 3)
+    /** Required for PRECIOUS variants, optional for FASHION ones. */
+    @Column(name = "weight_grams", precision = 8, scale = 3)
     private BigDecimal weightGrams;
 
     @Column(name = "size")
@@ -157,6 +164,9 @@ public class ProductVariant extends TimestampedEntity {
     /** METAL_LINKED inputs (PLAN 5.10). The price itself is set by the pricing engine (#44). */
     public void setMetalLinkedRule(BigDecimal laborPerGram, BigDecimal laborFixed, BigDecimal stonePrice,
             BigDecimal markupPercent, BigDecimal minPrice, BigDecimal maxPrice) {
+        if (product != null) {
+            product.requireFitting(fineness, PricingMode.METAL_LINKED);
+        }
         this.pricingMode = PricingMode.METAL_LINKED;
         this.laborPerGram = money(laborPerGram);
         this.laborFixed = money(laborFixed);
@@ -197,12 +207,17 @@ public class ProductVariant extends TimestampedEntity {
         return fineness;
     }
 
-    /** A fineness of the product's metal; the database rejects any other (V10). */
+    /** A fineness of the product's metal, or none for FASHION; the database rejects any other (V10, V13). */
     public void setFineness(Fineness fineness) {
         if (product != null) {
-            product.requireMetalOf(fineness);
+            product.requireFitting(fineness, pricingMode);
         }
         this.fineness = fineness;
+    }
+
+    /** The product's kind as the database stored it; null on a new variant until it is flushed and loaded again. */
+    public MaterialKind getMaterialKind() {
+        return materialKind;
     }
 
     /**

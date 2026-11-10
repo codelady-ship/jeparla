@@ -36,6 +36,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("""
             select p.store.id, count(p) from Product p
             where p.status = az.jeparla.product.ProductStatus.APPROVED and p.deletedAt is null
+              and p.materialKind = az.jeparla.product.MaterialKind.PRECIOUS
               and p.store.status = az.jeparla.store.StoreStatus.APPROVED
             group by p.store.id
             """)
@@ -44,6 +45,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     // ------------------------------------------------------------------ merchant (#34, #39)
 
     List<Store> findByOwnerIdOrderByCreatedAtAsc(Long ownerId);
+
+    /** The merchant's store: one per account (unique index {@code stores_owner_key}, V13). */
+    Optional<Store> findByOwnerId(Long ownerId);
 
     /** Ownership check: empty when the store does not exist or belongs to someone else. */
     Optional<Store> findByIdAndOwnerId(Long id, Long ownerId);
