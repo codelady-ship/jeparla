@@ -21,20 +21,26 @@ Qeydiyyat: `POST /api/v1/auth/register` hesabı `USER` yaradır, `POST /api/v1/a
 
 ## URL qaydaları (birinci qat)
 
+Qaydalar `SecurityConfig.RULES`-dadır, yuxarıdan aşağı ilk uyğun gələn qərar verir. **Default deny (#134):**
+heç bir qaydaya uyğun gəlməyən sorğu rədd olunur (anonim 401, daxil olmuş 403), məlumat heç vaxt qaytarılmır.
+Yeni endpoint öz qaydası olmadan işləmir; `SecurityRuleCoverageTests` bütün controller-ləri gəzir və qaydası
+olmayan endpoint-i adı ilə göstərib düşür.
+
 | Yol | Kim |
 | --- | --- |
-| `GET /api/v1/**` (kataloq, axtarış, metal qiymətləri) | hamı, anonim |
-| `POST /api/v1/auth/register`, `/register/merchant`, `/login`, `/refresh`, `/logout` | hamı (rate limit ilə) |
-| `/api/v1/auth/**` (qalanı, məs. `GET /me`) | daxil olmuş istifadəçi |
-| `/api/v1/merchant/**` | `MERCHANT` |
-| `/api/v1/admin/**` | `ADMIN` |
-| `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
-| `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
-| `POST /api/v1/products/{id}/reports`, `POST /api/v1/stores/{id}/reports`, `POST /api/v1/products/{id}/contact-click` | hamı, qonaq da (rate limit ilə, #37, #40) |
-| `/api/v1/**` üzrə digər yazma sorğuları (`POST`, `PUT`, `PATCH`, `DELETE`) | daxil olmuş istifadəçi |
 | `/actuator/health`, `/actuator/health/**` | hamı |
 | `/actuator/**` (qalanı) | heç kim |
-| `/v3/api-docs`, `/swagger-ui/**` | hamı |
+| `GET /v3/api-docs/**`, `/swagger-ui.html`, `/swagger-ui/**` | hamı, amma yalnız `JEPARLA_API_DOCS=true` olanda var; default (prod) söndürülüb, 404 |
+| `POST /api/v1/auth/register`, `/register/merchant`, `/login`, `/refresh`, `/logout` | hamı (rate limit ilə) |
+| `/api/v1/auth/**` (qalanı, məs. `GET /me`) | daxil olmuş istifadəçi |
+| `/api/v1/admin/**` | `ADMIN` |
+| `/api/v1/merchant/**` | `MERCHANT` |
+| `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
+| `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
+| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**` | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
+| `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
+| `POST /internal/jobs/metal-prices` | paylaşılan sirr ilə (controller yoxlayır, #44) |
+| qalan hər şey | heç kim |
 
 Servis metodları rolu `@PreAuthorize` ilə yenidən yoxlayır (ikinci qat), məsələn
 `@PreAuthorize("hasRole('MERCHANT')")`.
@@ -109,8 +115,8 @@ Hamısı `ADMIN`, hər yazma `audit_logs`-a düşür.
   alt kateqoriyası və ya məhsulu (silinmiş də) olan kateqoriya, hər hansı variantın (silinmiş də) istifadə etdiyi əyar
   `409` (`admin.category_in_use`, `admin.fineness_in_use`); onları deaktiv edin. İstifadədə olan əyarın metalı və
   dəyəri dəyişmir. Kateqoriya öz alt ağacına köçürülmür (`409 admin.category_cycle`). Sinonimin hər tərəfi bir sözdür
-  (fold-dan sonra 2-40 simvol), cüt hər iki istiqamətdə bir dəfə olur. Axtarış sinonimləri hər sorğuda bazadan oxuyur
-  (API-də keş yoxdur), ictimai cavablar CDN-də ən çox bir neçə dəqiqə qalır.
+  (fold-dan sonra 2-40 simvol), cüt hər iki istiqamətdə bir dəfə olur. Sinonim və ya kateqoriya dəyişəndə axtarış
+  keşi (#151, 60 san.) commit-dən sonra boşalır, ictimai cavablar CDN-də ən çox bir neçə dəqiqə qalır.
 - **İstifadəçilər** (`/admin/users`): siyahı (rol, status filtri; e-poçt və ya telefon parçası ilə axtarış), rol
   (`POST /{id}/role`: `USER` və ya `MERCHANT`) və bloklama (`POST /{id}/status`, bloklamada ən az 10 simvol səbəb).
   Qaydalar: admin öz rolunu və statusunu dəyişmir (`409 admin.self`); ən az bir aktiv admin qalır
@@ -143,6 +149,11 @@ qiymət (`product.priceFrom`) və saxlananda olan qiymət (`savedPrice`, V17-də
 - **Rotasiya:** hər `POST /refresh` köhnə tokeni "istifadə olunub" kimi işarələyir və eyni ailədə
   yenisini verir. Köhnə token yenidən gəlsə (oğurlanmış surət), bütün ailə ləğv olunur və
   istifadəçi yenidən daxil olmalıdır. Digər cihazlardakı sessiyalar (başqa ailələr) qalır.
+- **Sessiyanın mütləq ömrü (#134):** ailə login-dən 90 gün sonra bitir (`jeparla.auth.refresh-family-ttl`,
+  V18 `family_expires_at`). Rotasiya onu uzatmır: yeni token ailənin sonundan uzun yaşamır (cookie-nin
+  `Max-Age`-i də), sonra refresh `401 auth.refresh_invalid` verir, ailə ləğv olunur, istifadəçi yenidən daxil olur.
+  Müddəti bitmiş sətirləri gündəlik iş silir; istifadə olunmuş və ləğv edilmiş tokenlər o vaxta qədər qalır
+  (təkrar istifadəni tanımaq üçün).
 - **Logout:** `POST /logout` ailəni ləğv edir və cookie-ni silir; həmişə 204.
 - **İmza açarı:** yalnız `JEPARLA_JWT_SECRET` mühit dəyişənindən, ən azı 32 bayt; yoxdursa və ya
   qısadırsa tətbiq başlamır.
@@ -155,7 +166,8 @@ və rus hərfi 2 baytdır), uzun şifrə kəsilmir, rədd edilir.
 
 Girişdə naməlum e-poçt/telefon və yanlış şifrə **eyni** cavabı verir (`401`,
 `code: auth.invalid_credentials`) və eyni BCrypt işini görür (naməlum hesab saxta hash ilə
-müqayisə olunur), ona görə cavab vaxtı da hesabın varlığını göstərmir. Bloklanmış hesab yalnız
+müqayisə olunur; prefiksi olmayan hash-li demo hesablar da bir BCrypt müqayisəsindən sonra rədd edilir, #134),
+ona görə cavab vaxtı da hesabın varlığını göstərmir. Bloklanmış hesab yalnız
 düzgün şifrədən sonra `403 auth.account_blocked` alır. Qeydiyyatda isə tutulmuş e-poçt `409`
 verir (istifadəçi buna ehtiyac duyur); bunu yoxlamaq rate limit ilə məhdudlaşdırılıb.
 
@@ -167,10 +179,16 @@ Sabit pəncərə, sayğaclar Redis-də (bütün instansiyalar üçün ortaq). Re
 işləməyə davam edir: sayğaclar 30 saniyəlik fasilələrlə yaddaşa keçir. Açarlar (IP, e-poçt,
 telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 
+Redis-də yalnız sayğaclar var, hər birinin TTL-i öz pəncərəsidir (#134). `maxmemory-policy noeviction`:
+yaddaş dolanda Redis canlı sayğacı silmir (limit sıfırlanmazdı), yazmanı rədd edir və API yaddaşdakı
+sayğaclara keçir (compose CI yoxlayır). Yaddaşdakı sayğaclar ən çox 50 000 açardır: dolanda əvvəl müddəti
+bitmişlər, sonra ən tez bitənlər silinir, ona görə Redis düşəndə açar seli heap-i böyütmür. Axtarış keşi
+Redis-də deyil (#151).
+
 | Siyasət | Default | Nə sayılır | Açar |
 | --- | --- | --- | --- |
 | `login-ip` | 20 / 5 dəq. | hər login cəhdi | IP |
-| `login-account-ip` | 5 / 15 dəq. | yalnız **uğursuz** login (yanlış şifrə, naməlum login) | hesab + IP |
+| `login-account-ip` | 5 / 15 dəq. | hər cəhd şifrə yoxlamasından **əvvəl** atomik sayılır (#134), uğurlu login sıfırlayır, ona görə faktiki olaraq yalnız **uğursuz** login-lər yığılır. Eyni ünvandan paralel sorğuların ən çoxu 5-i şifrə yoxlamasına çatır | hesab + IP |
 | `login-account` | 50 / saat | yalnız **uğursuz** login, bütün IP-lərdən | e-poçt və ya telefon (yazılışından asılı olmayaraq) |
 | `login-known-address` | 30 gün | uğurlu girişin IP-si (nişan, limit yoxdur) | hesab + IP |
 | `register-ip` | 10 / saat | hər qeydiyyat | IP |
