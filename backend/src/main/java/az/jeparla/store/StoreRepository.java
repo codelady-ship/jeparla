@@ -1,5 +1,7 @@
 package az.jeparla.store;
 
+import az.jeparla.verification.CheckStatus;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -57,6 +59,14 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     // ------------------------------------------------------------------ admin (#40)
 
     Page<Store> findByStatus(StoreStatus status, Pageable pageable);
+
+    /** Seller identity-check queue: by seller check status, optionally of one marketplace status. */
+    Page<Store> findBySellerStatus(CheckStatus sellerStatus, Pageable pageable);
+
+    Page<Store> findByStatusAndSellerStatus(StoreStatus status, CheckStatus sellerStatus, Pageable pageable);
+
+    /** Admin user list: the stores of these accounts (one per account). */
+    List<Store> findByOwnerIdIn(Collection<Long> ownerIds);
 
     Optional<Store> findBySlug(String slug);
 
