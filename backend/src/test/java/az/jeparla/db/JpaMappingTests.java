@@ -9,6 +9,7 @@ import az.jeparla.product.ProductReportRepository;
 import az.jeparla.product.ProductRepository;
 import az.jeparla.product.ProductVariantRepository;
 import az.jeparla.support.JpaTest;
+import az.jeparla.verification.SellerDeclarationRepository;
 import jakarta.persistence.EntityManagerFactory;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ class JpaMappingTests {
                   AND table_name NOT IN ('flyway_schema_history', 'shedlock')
                 """, String.class);
         // shedlock (V12) is the job lock table of ShedLock, used through JDBC only (no entity).
-        assertThat(tables).hasSize(20);
+        assertThat(tables).hasSize(24);
         assertThat(mapped).containsExactlyInAnyOrderElementsOf(tables);
     }
 
@@ -79,7 +80,7 @@ class JpaMappingTests {
 
     @ParameterizedTest
     @ValueSource(classes = {ProductRepository.class, ProductVariantRepository.class, PriceHistoryRepository.class,
-            AuditLogRepository.class, ProductReportRepository.class})
+            AuditLogRepository.class, ProductReportRepository.class, SellerDeclarationRepository.class})
     void historyAndProductRepositoriesCannotDelete(Class<?> repository) {
         List<String> deleting = Arrays.stream(repository.getMethods())
                 .map(Method::getName)

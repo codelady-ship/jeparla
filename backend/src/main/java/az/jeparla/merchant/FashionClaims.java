@@ -1,8 +1,11 @@
 package az.jeparla.merchant;
 
 import az.jeparla.common.i18n.SearchText;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -37,11 +40,21 @@ import java.util.regex.Pattern;
  * <p><b>Fineness</b> (333 ... 999) is a claim in one word with a metal code or "proba" ("S925", "Ag925",
  * "AU750", "PT950", "925s", "925proba"), and as a separate number next to a metal word ("925 gümüş",
  * "Gümüş 925"), a fineness or karat word ("585 пробы", "585-ci əyar", "proba 585"), a metal code ("Au 585")
- * or a jewellery word ("Üzük 585", "585 sırğa", "кольцо 585"), unless a unit follows it or a size or model
- * label precedes it: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800" pass. A number alone ("Ölçü 17",
- * "Çəki 925 qram") is not a claim. <b>Karats</b> are a
- * claim in one word ("14K", "18kt", "14к", "18ayar") or as a karat number with a karat word ("14 karat",
- * "18 əyar", "24 карата"); "1 carat zirkon" (a stone weight) passes.
+ * or a jewellery word ("Üzük 585", "585 sırğa", "кольцо 585"), unless a unit or a currency follows it or a
+ * size or model label precedes it: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800" pass. A number alone
+ * ("Ölçü 17", "Çəki 925 qram") is not a claim. "999.9" (fine gold and silver) is a claim (#162).
+ *
+ * <p><b>Karats</b> are a claim in one word ("14K", "18kt", "18ct", "14к", "18ayar") or as a karat number with
+ * a karat word ("14 karat", "18 əyar", "18 ct", "24 карата"); "1 carat zirkon" and "0.5 ct zirkon" (a stone
+ * weight) pass, and so does a karat mark of a plating ("18ct gold plated", "14K gold plated").
+ *
+ * <p><b>Prices</b> (#162): a number followed by a currency ("Sırğa 900 manat", "Kolye 750 AZN", "Üzük 500 ₼",
+ * "Кольцо 750 рублей") is a price, never a fineness.
+ *
+ * <p><b>"Diamond cut"</b> (#162, decision): the faceted cut of a chain or a zircon, a common bijouterie term,
+ * not a diamond. It passes when a zircon or a chain word follows it ("Diamond cut zirkon", "Diamond-cut
+ * zəncir", "diamond cut chain"); "Diamond cut" alone or before anything else ("Diamond cut ring") stays a
+ * claim.
  */
 final class FashionClaims {
 
@@ -86,9 +99,9 @@ final class FashionClaims {
     /** Karat numbers. */
     private static final Set<String> KARATS = Set.of("8", "9", "10", "14", "18", "21", "22", "24");
 
-    /** Words after a karat number that make it a claim ("14 karat", "18 əyar"). */
+    /** Words after a karat number that make it a claim ("14 karat", "18 əyar", "18 ct"). */
     private static final Set<String> KARAT_WORDS = Set.of(
-            "k", "kt", "kr", "karat", "karats", "carat", "carats", "ayar", "eyar", "ayarli", "eyarli", "к",
+            "k", "kt", "kr", "ct", "karat", "karats", "carat", "carats", "ayar", "eyar", "ayarli", "eyarli", "к",
             "карат", "карата", "каратов");
 
     /** Fineness numbers. */
@@ -100,6 +113,27 @@ final class FashionClaims {
     private static final Set<String> UNITS = Set.of(
             "mm", "sm", "cm", "m", "ml", "q", "qr", "qram", "g", "gr", "gram", "mq", "eded", "шт", "мм", "см", "мл",
             "г", "гр", "грамм");
+
+    /**
+     * Currencies right after a number make it a price (#162): "Sırğa 900 manat", "Кольцо 750 рублей". Currency
+     * symbols are not words: {@link #find} reads them as words first ({@link #SYMBOLS}).
+     */
+    private static final Set<String> CURRENCIES = Set.of(
+            "manat", "manata", "azn", "usd", "eur", "euro", "evro", "dollar", "dollars", "rub", "rubl", "руб",
+            "рубль", "рубля", "рублей", "манат", "маната", "манатов", "долл", "доллар", "долларов", "евро", "try",
+            "tl");
+
+    /** Currency symbols and the word each one is read as. */
+    private static final Map<String, String> SYMBOLS = Map.of(
+            "₼", "azn", "$", "usd", "€", "eur", "₽", "rub", "₺", "try");
+
+    /** Zircon words: "Diamond cut zirkon" names the cut of a zircon (#162). */
+    private static final Set<String> ZIRCONS = Set.of(
+            "zirkon", "zirkonlu", "zirkonla", "zirkonu", "zircon", "zircons", "cz", "sirkon", "sirkonlu", "циркон",
+            "цирконом", "цирконы", "цирконами", "фианит", "фианитом", "фианиты");
+
+    /** Starts of chain words: "Diamond-cut zəncir" (#162). */
+    private static final List<String> CHAIN_PREFIXES = List.of("zencir", "chain", "цеп", "zincir");
 
     /** Labels right before a fineness number make it a size or a model: "Model 800", "Uzunluq 500". */
     private static final Set<String> LABELS = Set.of(
@@ -135,11 +169,12 @@ final class FashionClaims {
             "das", "dasi", "dasli", "daslar", "daslari", "tas", "tasi", "tasli", "taslar", "stone", "stones",
             "камень", "камнем", "камни", "kamen", "kamnem", "kamni");
 
-    /**
-     * One-word hallmarks: the fineness with a metal code before or after it or "proba" ("S925", "925s",
-     * "925proba"), or a karat number with a karat word ("14k", "18ayar").
-     */
+    /** One-word hallmarks: the fineness with a metal code before or after it or "proba" ("S925", "925s", "925proba"). */
     private static final Pattern HALLMARK;
+
+    /** One-word karat marks: a karat number with a karat word ("14k", "18ct", "18ayar"). */
+    private static final Pattern KARAT_MARK =
+            Pattern.compile("(?:8|9|10|14|18|21|22|24)(?:k|kt|kr|ct|к|karat|carat|ayar|eyar|ayarli|eyarli)");
 
     static {
         String fineness = "(?:333|375|500|583|585|625|750|800|830|875|900|916|925|950|958|999)";
@@ -147,18 +182,28 @@ final class FashionClaims {
         String proba = "(?:proba|probe|пробы|проба|пр)";
         HALLMARK = Pattern.compile(code + fineness + code + "?" + proba + "?"
                 + "|" + fineness + code + proba + "?"
-                + "|" + fineness + proba
-                + "|(?:8|9|10|14|18|21|22|24)(?:k|kt|kr|к|karat|carat|ayar|eyar|ayarli|eyarli)");
+                + "|" + fineness + proba);
     }
 
     private static final Pattern WORD = Pattern.compile("[\\p{L}\\p{N}]+");
+
+    /** Opening brackets and quotes, and at the same index their closing pair. */
+    private static final String OPENERS = "([{«“";
+    private static final String CLOSERS = ")]}»”";
 
     private FashionClaims() {
     }
 
     /** The first forbidden claim in {@code text}, as the seller wrote it ("Qızıl", "585-ci əyar"), or empty. */
     static Optional<String> find(String text) {
-        String folded = SearchText.fold(text);
+        if (text == null) {
+            return Optional.empty();
+        }
+        String written = text;
+        for (Map.Entry<String, String> symbol : SYMBOLS.entrySet()) {
+            written = written.replace(symbol.getKey(), " " + symbol.getValue() + " ");
+        }
+        String folded = SearchText.fold(written);
         if (folded.isEmpty()) {
             return Optional.empty();
         }
@@ -166,7 +211,7 @@ final class FashionClaims {
         for (int i = 0; i < words.length; i++) {
             int[] claim = claimAt(words, i);
             if (claim != null) {
-                return Optional.of(original(text, words, claim[0], claim[1]));
+                return Optional.of(original(written, words, claim[0], claim[1]));
             }
         }
         return Optional.empty();
@@ -180,13 +225,22 @@ final class FashionClaims {
         if (HALLMARK.matcher(word).matches()) {
             return new int[] {i, i};
         }
+        // A karat mark of a plating describes the plating: "18ct gold plated", "14 k gold plated".
+        if (KARAT_MARK.matcher(word).matches()) {
+            return plating(words, i + 1) ? null : new int[] {i, i};
+        }
         if (KARATS.contains(word) && KARAT_WORDS.contains(next)) {
-            return new int[] {i, i + 1};
+            return plating(words, i + 2) ? null : new int[] {i, i + 1};
         }
         if (FINENESS.contains(word)) {
-            // A size or a model number: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800".
-            if (UNITS.contains(next) || LABELS.contains(previous)) {
+            // A size or a model number: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800"; a price: "Sırğa 900 manat".
+            if (UNITS.contains(next) || CURRENCIES.contains(next) || LABELS.contains(previous)) {
                 return null;
+            }
+            // Fine gold or silver: "999.9" (folded "999 9").
+            if (word.equals("999") && next.equals("9")) {
+                String unit = at(words, i + 2);
+                return UNITS.contains(unit) || CURRENCIES.contains(unit) ? null : new int[] {i, i + 1};
             }
             int after = ORDINALS.contains(next) ? i + 2 : i + 1;
             // The phrase names a metal or fineness word first ("Au 585 sırğa" -> "Au 585"), else the jewellery.
@@ -208,20 +262,33 @@ final class FashionClaims {
             boolean material = !PLATING.contains(next) && (jewellery(next) || materialNear(words, i));
             return material ? new int[] {i, i} : null;
         }
-        return metal(word, previous, next) ? new int[] {i, i} : null;
+        return metal(word, previous, next, at(words, i + 2)) ? new int[] {i, i} : null;
     }
 
-    private static boolean metal(String word, String previous, String next) {
+    private static boolean metal(String word, String previous, String next, String afterNext) {
         if (NOT_CLAIM_WORDS.contains(word) || NOT_CLAIM_PREFIXES.stream().anyMatch(word::startsWith)) {
             return false;
         }
         if (!CLAIM_WORDS.contains(word) && CLAIM_PREFIXES.stream().noneMatch(word::startsWith)) {
             return false;
         }
-        if (PLATING.contains(next) || COLOUR_BEFORE.contains(previous)) {
+        if (PLATING.contains(next) || COLOUR_BEFORE.contains(previous) || diamondCut(word, next, afterNext)) {
             return false;
         }
         return !(word.equals("qizil") && QIZIL_NAMES.stream().anyMatch(next::startsWith));
+    }
+
+    /** "Diamond cut" of a zircon or a chain (#162): "Diamond cut zirkon", "Diamond-cut zəncir". */
+    private static boolean diamondCut(String word, String next, String afterNext) {
+        return word.equals("diamond") && next.equals("cut")
+                && (ZIRCONS.contains(afterNext) || CHAIN_PREFIXES.stream().anyMatch(afterNext::startsWith));
+    }
+
+    /** Word {@code i} is a metal word with a plating word after it: "gold plated", "qızıl suyu". */
+    private static boolean plating(String[] words, int i) {
+        String word = at(words, i);
+        return !word.isEmpty() && CLAIM_PREFIXES.stream().anyMatch(word::startsWith)
+                && PLATING.contains(at(words, i + 1));
     }
 
     /** A word that makes a fineness number next to it a claim: a metal, a fineness or karat word, a metal code. */
@@ -264,6 +331,77 @@ final class FashionClaims {
         if (spans.size() != words.length) {
             return String.join(" ", List.of(words).subList(from, to + 1));
         }
-        return text.substring(spans.get(from)[0], spans.get(to)[1]);
+        return balanced(text, spans.get(from)[0], spans.get(to)[1]);
+    }
+
+    /**
+     * {@code text[start, end)} with balanced brackets (#162): a closing bracket right after the phrase or an
+     * opening one right before it is taken in ("Üzük (585)", not "Üzük (585"); a bracket whose pair stays
+     * outside is left out.
+     */
+    static String balanced(String text, int start, int end) {
+        int from = start;
+        int to = end;
+        for (int k = 0; k < OPENERS.length(); k++) {
+            char open = OPENERS.charAt(k);
+            char close = CLOSERS.charAt(k);
+            int[] unmatched = unmatched(text.substring(from, to), open, close);
+            for (int n = unmatched[1]; n > 0 && to < text.length() && text.charAt(to) == close; n--) {
+                to++;
+            }
+            for (int n = unmatched[0]; n > 0 && from > 0 && text.charAt(from - 1) == open; n--) {
+                from--;
+            }
+        }
+        String phrase = text.substring(from, to);
+        for (int k = 0; k < OPENERS.length(); k++) {
+            phrase = withoutStrays(phrase, OPENERS.charAt(k), CLOSERS.charAt(k));
+        }
+        return phrase.strip();
+    }
+
+    /** Closers without an opener before them and openers without a closer after them in {@code phrase}. */
+    private static int[] unmatched(String phrase, char open, char close) {
+        int closers = 0;
+        int openers = 0;
+        for (int i = 0; i < phrase.length(); i++) {
+            char c = phrase.charAt(i);
+            if (c == open) {
+                openers++;
+            } else if (c == close) {
+                if (openers > 0) {
+                    openers--;
+                } else {
+                    closers++;
+                }
+            }
+        }
+        return new int[] {closers, openers};
+    }
+
+    /** {@code phrase} without the brackets that have no pair in it. */
+    private static String withoutStrays(String phrase, char open, char close) {
+        boolean[] drop = new boolean[phrase.length()];
+        Deque<Integer> opened = new ArrayDeque<>();
+        for (int i = 0; i < phrase.length(); i++) {
+            char c = phrase.charAt(i);
+            if (c == open) {
+                opened.push(i);
+            } else if (c == close) {
+                if (opened.isEmpty()) {
+                    drop[i] = true;
+                } else {
+                    opened.pop();
+                }
+            }
+        }
+        opened.forEach(i -> drop[i] = true);
+        StringBuilder result = new StringBuilder(phrase.length());
+        for (int i = 0; i < phrase.length(); i++) {
+            if (!drop[i]) {
+                result.append(phrase.charAt(i));
+            }
+        }
+        return result.toString();
     }
 }

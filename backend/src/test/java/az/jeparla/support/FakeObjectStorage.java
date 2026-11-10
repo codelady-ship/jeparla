@@ -32,6 +32,7 @@ public class FakeObjectStorage implements ObjectStorage {
 
     private final Map<String, Stored> staged = new ConcurrentHashMap<>();
     private final Map<String, Stored> published = new ConcurrentHashMap<>();
+    private final Map<String, Stored> privateObjects = new ConcurrentHashMap<>();
     private final AtomicReference<Runnable> beforeNextPublish = new AtomicReference<>();
     private final AtomicReference<RuntimeException> failNextPublishAfterCopy = new AtomicReference<>();
 
@@ -102,6 +103,41 @@ public class FakeObjectStorage implements ObjectStorage {
     @Override
     public void delete(String key) {
         published.remove(key);
+    }
+
+    @Override
+    public String sha256Staged(String key, StoredObject checked) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(matching(key, checked).bytes()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public void keepStagedPrivate(String key, StoredObject checked) {
+        Runnable before = beforeNextPublish.getAndSet(null);
+        if (before != null) {
+            before.run();
+        }
+        privateObjects.put(key, matching(key, checked));
+        staged.remove(key);
+    }
+
+    @Override
+    public PresignedDownload presignPrivateDownload(String key, String contentType, String fileName, Duration ttl) {
+        return new PresignedDownload("http://storage.test/jeparla-private/" + key + "?X-Amz-Expires=" + ttl.toSeconds()
+                + "&X-Amz-Signature=test", Instant.now().plus(ttl));
+    }
+
+    @Override
+    public void deletePrivate(String key) {
+        privateObjects.remove(key);
+    }
+
+    /** Whether {@code key} is a checked document in the private bucket (never served publicly). */
+    public boolean isPrivate(String key) {
+        return privateObjects.containsKey(key);
     }
 
     /** The staged object if its ETag is still the checked one (If-Match), else 412 as the exception. */

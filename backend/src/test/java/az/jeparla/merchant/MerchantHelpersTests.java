@@ -89,6 +89,20 @@ class MerchantHelpersTests {
             "Elmaslı kolye                    | Elmaslı",
             "Кольцо с алмазом                 | алмазом",
             "Kolco s brilliantom              | brilliantom",
+            // #162: karats written with "ct", fine gold, "diamond cut" of anything but a zircon or a chain.
+            "18ct                             | 18ct",
+            "18 ct                            | 18 ct",
+            "Üzük 18ct                        | 18ct",
+            "Ring 14K gold                    | 14K",
+            "999.9                            | 999.9",
+            "Külçə 999,9                      | 999,9",
+            "Diamond cut                      | Diamond",
+            "Diamond cut ring                 | Diamond",
+            // #162: the quoted phrase keeps its brackets balanced.
+            "Üzük (585)                       | Üzük (585)",
+            "(Üzük) 585                       | (Üzük) 585",
+            "Sırğa [925]                      | Sırğa [925]",
+            "«Üzük 585»                       | Üzük 585",
     })
     void preciousClaimsAreFound(String text, String claim) {
         assertThat(FashionClaims.find(text)).contains(claim.strip());
@@ -127,7 +141,15 @@ class MerchantHelpersTests {
             "Серьги из медицинской стали с позолотой, длина 4 см",
             "Колье с фианитами, длина цепочки 45 см, цвет золотистый",
             "Браслет из натуральных камней ручной работы",
-            "Кольцо безразмерное, серебристого цвета"})
+            "Кольцо безразмерное, серебристого цвета",
+            // Prices (#162): a number followed by a currency is never a fineness.
+            "Sırğa 900 manat", "Kolye 750 AZN", "Üzük 500 ₼", "Üzük 585₼", "Qolbaq: 800 AZN endirimlə",
+            "Серьги 500 руб", "Кольцо 750 рублей", "Bracelet 925 USD", "Kolye 750 $",
+            // A stone weight and a karat mark of a plating (#162).
+            "0.5 ct zirkon", "18ct gold plated", "14K gold plated hoops", "18 ct gold plated",
+            // "Diamond cut" of a zircon or a chain (#162, decision in FashionClaims).
+            "Diamond cut zirkon", "Diamond-cut zəncir", "diamond cut chain", "Diamond cut CZ sırğa",
+            "Diamond cut цепочка"})
     void honestFashionTextsPass(String text) {
         assertThat(FashionClaims.find(text)).isEmpty();
     }

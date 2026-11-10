@@ -28,6 +28,7 @@ Qeydiyyat: `POST /api/v1/auth/register` hesabı `USER` yaradır, `POST /api/v1/a
 | `/api/v1/auth/**` (qalanı, məs. `GET /me`) | daxil olmuş istifadəçi |
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/admin/**` | `ADMIN` |
+| `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
 | `POST /api/v1/products/{id}/reports`, `POST /api/v1/products/{id}/contact-click` | hamı, qonaq da (rate limit ilə, #37) |
 | `/api/v1/**` üzrə digər yazma sorğuları (`POST`, `PUT`, `PATCH`, `DELETE`) | daxil olmuş istifadəçi |
 | `/actuator/health`, `/actuator/health/**` | hamı |
@@ -73,6 +74,28 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   `APPROVED` statusunu satıcı yalnız özü gizlətdiyi məhsula qaytarır, təsdiq admindədir (#40).
 - Testlər: `MerchantProductApiTests.anotherMerchantsProductIsForbiddenEverywhere` (11 endpoint),
   `MerchantStoreApiTests.onlyMerchantsReachTheMerchantApi`.
+
+### Yoxlama sənədləri (#40, #138)
+
+- `/api/v1/merchant/documents/**` (`MERCHANT`): sənədi yalnız qiymətli metal satan mağaza (`PRECIOUS`,
+  `MIXED`) yükləyir. `FASHION` mağaza və `FASHION` məhsul üçün hər yükləmə `403 verification.not_precious`;
+  onların `documents`/`expertise` statusu həmişə `NONE` qalır. Ekspertiza sənədinin məhsulu
+  `ProductAccess.requireOwner` ilə yoxlanılır (başqasının məhsulu 403, olmayan 404). Yükləmə açarı
+  (`documents/<store>/<uuid>.<ext>`) yalnız onu alan mağaza üçün təsdiqlənir (başqası `400 verification.document_missing`).
+- Hər yükləmə bəyanatla təsdiqlənir: `declarationAccepted: true` olmadan `400 verification.declaration_required`,
+  köhnə versiya `409 verification.declaration_outdated`. Göstərilən mətn, versiya, dil, istifadəçi, vaxt və IP
+  `seller_declarations`-da sübut kimi saxlanılır; cədvəl append-only-dir (trigger: dəyişmək və silmək olmur).
+- Fayllar yalnız private bucket-dədir. Satıcı faylı API-dən geri oxumur (cavabda açar və URL yoxdur);
+  ictimai API yalnız statusu (`verification.documents`, `verification.expertise`) göstərir.
+- `/api/v1/admin/documents/**` (`ADMIN`): növbə, detal, `POST /{id}/view` (5 dəqiqəlik presigned GET,
+  `DOCUMENT_VIEWED` auditi), `POST /{id}/decision` (`APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada səbəb
+  kateqoriyası məcburidir). Yalnız təsdiqlənmiş sənəd yoxlamanı `VERIFIED` edir.
+- Maraq toqquşması: admin öz mağazasının sənədinə, statusuna və məhsuluna qərar vermir (403).
+- `/api/v1/admin/stores`, `/admin/products`, `/admin/audit` (`ADMIN`): mağaza statusu (`REJECTED`/`BLOCKED`
+  üçün ən az 10 simvol səbəb), satıcı yoxlaması, məhsul qərarı (`APPROVE`; `RETURN`/`DEACTIVATE` səbəblə).
+  `PRECIOUS` məhsul satıcı bəyanatı təsdiqləməmiş dərc olunmur (`409 admin.declaration_missing`).
+- Bildirişlər (`/api/v1/notifications`): hər istifadəçi yalnız özününkünü görür; başqasının bildirişi 404.
+- Testlər: `DocumentApiTests` (rollar, başqa satıcı, `FASHION` 403, bəyanat, private saxlama, imtina bildirişi).
 
 ## Tokenlər
 
@@ -123,6 +146,7 @@ telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
+| `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
 `jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IPv6 müştəri /64 şəbəkəsi ilə sayılır
@@ -173,7 +197,13 @@ başqa dəyər (məs. host adı) `null` yazılır. Çağıranın tranzaksiyasın
 
 Satıcı əməliyyatları (#39): `STORE_CREATED`, `STORE_UPDATED`, `PRODUCT_CREATED`, `PRODUCT_UPDATED`,
 `PRODUCT_STATUS_CHANGED` (`{"from","to"}`), `PRODUCT_DELETED`, `VARIANT_ADDED`, `VARIANT_UPDATED`,
-`VARIANT_REMOVED`, `IMAGE_ADDED` (`aiGenerated` ilə), `IMAGE_REMOVED`.
+`VARIANT_REMOVED`, `IMAGE_ADDED` (`aiGenerated` ilə), `IMAGE_REMOVED`, `DECLARATION_CONFIRMED`,
+`DOCUMENT_UPLOADED` (`sha256` ilə; #138).
+
+Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_REJECTED`,
+`DOCUMENT_CHANGES_REQUESTED` (səbəb kateqoriyası və qeyd), `STORE_APPROVED`, `STORE_REJECTED`, `STORE_BLOCKED`,
+`SELLER_VERIFIED`, `SELLER_REJECTED`, `PRODUCT_APPROVED`, `PRODUCT_RETURNED`, `PRODUCT_DEACTIVATED` (səbəblə).
+`GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
 
 ## Loglar
 

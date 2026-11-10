@@ -28,7 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * Fixtures of the merchant API tests (#39): sellers with a store made through the API, catalog data
  * through JPA, and JSON bodies as the frontend sends them. Subclasses carry {@code @AuthIntegrationTest}.
  */
-abstract class MerchantApiTestBase {
+public abstract class MerchantApiTestBase {
 
     @Autowired
     protected MockMvc mvc;
@@ -48,7 +48,7 @@ abstract class MerchantApiTestBase {
     /** A seller account and its store. */
     protected record Seller(long userId, long storeId) {
 
-        JwtRequestPostProcessor token() {
+        public JwtRequestPostProcessor token() {
             return merchant(userId);
         }
     }

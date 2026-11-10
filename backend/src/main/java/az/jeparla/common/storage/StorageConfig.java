@@ -64,5 +64,26 @@ public class StorageConfig {
         public void delete(String key) {
             throw unavailable();
         }
+
+        @Override
+        public String sha256Staged(String key, StoredObject checked) {
+            throw unavailable();
+        }
+
+        @Override
+        public void keepStagedPrivate(String key, StoredObject checked) {
+            throw unavailable();
+        }
+
+        @Override
+        public PresignedDownload presignPrivateDownload(String key, String contentType, String fileName,
+                Duration ttl) {
+            throw unavailable();
+        }
+
+        @Override
+        public void deletePrivate(String key) {
+            throw unavailable();
+        }
     }
 }

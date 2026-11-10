@@ -1,8 +1,13 @@
 package az.jeparla.common.storage;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
 import software.amazon.awssdk.core.checksums.ResponseChecksumValidation;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
@@ -20,12 +26,14 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 /**
@@ -157,6 +165,86 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
      */
     @Override
     public void publishStaged(String key, StoredObject checked) {
+        copyStaged(key, checked, publicBucket);
+    }
+
+    /** Documents (#40): the same guarded copy, but into the private bucket under {@code key}. */
+    @Override
+    public void keepStagedPrivate(String key, StoredObject checked) {
+        copyStaged(key, checked, privateBucket);
+    }
+
+    @Override
+    public String sha256Staged(String key, StoredObject checked) {
+        GetObjectRequest.Builder request = GetObjectRequest.builder().bucket(privateBucket).key(STAGING_PREFIX + key);
+        if (checked.etag() != null) {
+            request.ifMatch(checked.etag());
+        }
+        MessageDigest digest = sha256();
+        try (ResponseInputStream<GetObjectResponse> in = client.getObject(request.build())) {
+            byte[] buffer = new byte[64 * 1024];
+            long total = 0;
+            for (int read = in.read(buffer); read >= 0; read = in.read(buffer)) {
+                digest.update(buffer, 0, read);
+                total += read;
+            }
+            if (total != checked.sizeBytes()) {
+                throw new StagedUploadChangedException(key);
+            }
+        } catch (S3Exception e) {
+            if (changed(e)) {
+                throw new StagedUploadChangedException(key);
+            }
+            throw e;
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not read staged upload " + key, e);
+        }
+        return HexFormat.of().formatHex(digest.digest());
+    }
+
+    @Override
+    public PresignedDownload presignPrivateDownload(String key, String contentType, String fileName, Duration ttl) {
+        GetObjectRequest get = GetObjectRequest.builder()
+                .bucket(privateBucket)
+                .key(key)
+                .responseContentType(contentType)
+                .responseContentDisposition("attachment; filename=\"" + asciiFileName(fileName) + "\"")
+                .build();
+        PresignedGetObjectRequest presigned = presigner.presignGetObject(
+                request -> request.signatureDuration(ttl).getObjectRequest(get));
+        return new PresignedDownload(presigned.url().toString(), presigned.expiration());
+    }
+
+    @Override
+    public void deletePrivate(String key) {
+        if (key.startsWith(STAGING_PREFIX)) {
+            throw new IllegalArgumentException("Not a private object key: " + key);
+        }
+        client.deleteObject(DeleteObjectRequest.builder().bucket(privateBucket).key(key).build());
+    }
+
+    /** A file name safe in a quoted header value: printable ASCII without quotes and backslashes. */
+    static String asciiFileName(String fileName) {
+        StringBuilder safe = new StringBuilder();
+        for (char c : (fileName == null ? "" : fileName).toCharArray()) {
+            safe.append(c >= 0x20 && c < 0x7f && c != '"' && c != '\\' ? c : '_');
+        }
+        return safe.isEmpty() ? "document" : safe.toString();
+    }
+
+    private static MessageDigest sha256() {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Two guards against a file PUT again after the check (#158), see {@link #publishStaged}; {@code bucket} is
+     * the public bucket for photos and the private one for documents.
+     */
+    private void copyStaged(String key, StoredObject checked, String bucket) {
         StoredObject current = headStaged(key).orElseThrow(() -> new StagedUploadChangedException(key));
         if (current.sizeBytes() != checked.sizeBytes() || !Objects.equals(current.etag(), checked.etag())) {
             throw new StagedUploadChangedException(key);
@@ -165,7 +253,7 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
         CopyObjectRequest copy = CopyObjectRequest.builder()
                 .sourceBucket(privateBucket)
                 .sourceKey(STAGING_PREFIX + key)
-                .destinationBucket(publicBucket)
+                .destinationBucket(bucket)
                 .destinationKey(key)
                 .build();
         try {

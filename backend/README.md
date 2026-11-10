@@ -65,7 +65,8 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_S3_ACCESS_KEY` / `JEPARLA_S3_SECRET_KEY` | boş | Bucket açarları (yalnız env-də; logda maskalanır) |
 | `JEPARLA_S3_PUBLIC_BUCKET` | `jeparla-public` | Məhsul şəkillərinin bucket-i (public oxunur) |
 | `JEPARLA_S3_PRIVATE_BUCKET` | `jeparla-private` | Private bucket: yüklənən şəkil yoxlanana qədər `staging/` altında gözləyir (#154), sənədlər (#40). Public bucket ilə eyni olsa tətbiq başlamır; boşdursa yükləmə `503` |
-| `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin təmizlənməsi (hər 30 dəq.); `-` söndürür |
+| `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin (şəkil və sənəd) təmizlənməsi (hər 30 dəq.); `-` söndürür |
+| `JEPARLA_EMAIL_OUTBOX_CRON` | `0 * * * * *` | E-poçt növbəsinin göndərilməsi (#138). Provayder seçilənə qədər (#131) heç nə göndərilmir, məktublar `PENDING` qalır; `-` söndürür |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
@@ -220,7 +221,7 @@ Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[
 - **Moderasiya:** satılanı dəyişən redaktə (ad, təsvir, kateqoriya, metal, material, daşlar, əyar, çəki, yeni variant və ya şəkil) `APPROVED` məhsulu yenidən `IN_REVIEW`-ə (satıcı artıq yoxlanılmayıbsa `DRAFT`-a), gizlədilmiş və ya deaktiv məhsulu `DRAFT`-a qaytarır. Qiymət, stok, ölçü, SKU statusu dəyişmir.
 - **Qiymət:** `METAL_LINKED` variant dərhal `PricingEngine` ilə son `APPLIED` kotirovkadan hesablanır (gündəlik job-la eyni hesab); kotirovka yoxdursa 409 `merchant.no_metal_price`. Hər qiymət `price_history`-yə `MERCHANT` səbəbi ilə yazılır. Pul və çəki `@Digits` ilə (qiymət 2, çəki 3 onluq), `BigDecimal`.
 - **SKU:** mağaza daxilində unikal (409 `merchant.sku_taken`); verilməyəndə `JP<id>-xxxxxx` yaradılır.
-- **Bijuteriya (#128, V13):** mağazanın `sellerKind`-i `PRECIOUS`, `FASHION` və ya `MIXED`; məhsulun `materialKind`-i `PRECIOUS` və ya `FASHION` (yaradılandan sonra dəyişmir). `FASHION` məhsulda metal, əyar, çəki və metal qiyməti yoxdur, yalnız `FIXED` qiymət, `material` (`BEADS`, `STAINLESS_STEEL`, `SILVER_PLATED` ...) və satıcının "qiymətli metal deyil" təsdiqi məcburidir; ad və təsvirdə qızıl/gümüş/brilyant/əyar iddiası (az, tr, en, ru və translit: `S925`, `AU750`, `925proba`, `14 karat`, `18 əyar`, `sterling`, `altın`, `zoloto` də; örtük və rəng sözü ilə, məs. `qızıl suyu`, `gold plated`, `позолота`, olmadan) 400 `merchant.fashion_claim`, xəta mətni iddia sayılan ifadəni satıcının yazdığı kimi göstərir (#157, məs. «585-ci əyar»). İcazəlidir (#157): rəng adları (`qızılı`, `gümüşü`, `rose gold`, `golden`, `золотистый`), `qızılgül`, `qızıl balıq`, `Qızılbaş`, ölçü və model rəqəmləri (`500 mm`, `750 ml`, `Model 800`). Ayrıca yazılan əyar rəqəmi (333 ... 999) metal sözü, əyar/proba sözü, metal kodu (`Au 585`) və ya zərgərlik sözü (`Üzük 585`, `585 sırğa`, `кольцо 585`) yanında iddiadır; ardınca ölçü vahidi (`mm`, `sm`, `ml`, `q`, `ədəd`, `шт` ...) gələndə və ya qabağında ölçü/uzunluq/model etiketi (`ölçü`, `uzunluq`, `model`, `размер`, `длина`, `art.`, `kod`) olanda iddia deyil. `Almaz`, `Elmas` (ad, kolleksiya), ingiliscə `brilliant` və türkcə `altın` (azərbaycanca "alt hissə") yalnız material kontekstində iddiadır: ardınca zərgərlik və ya daş sözü (`Elmas küpe`, `altın yüzük`, `almaz daşlı`) və ya 3 söz yaxınlığında karat/proba sözü; şəkilçili formaları (`almazlı`, `altınlı`, `алмазом`) həmişə. Qaydalar `FashionClaims`-da, nümunələr `MerchantHelpersTests`-də; daş yalnız sertifikatsız sirkon. Baza da yoxlayır: `FASHION` məhsulun ekspertizası və `FASHION` mağazanın sənəd statusu `NONE`-dan başqa ola bilməz (heç vaxt "sənədlər yoxlanılıb" nişanı yoxdur). `FASHION` məhsullar frontend bölməsi hazır olana qədər ictimai kataloqda, axtarışda və seçilmişlərdə görünmür.
+- **Bijuteriya (#128, V13):** mağazanın `sellerKind`-i `PRECIOUS`, `FASHION` və ya `MIXED`; məhsulun `materialKind`-i `PRECIOUS` və ya `FASHION` (yaradılandan sonra dəyişmir). `FASHION` məhsulda metal, əyar, çəki və metal qiyməti yoxdur, yalnız `FIXED` qiymət, `material` (`BEADS`, `STAINLESS_STEEL`, `SILVER_PLATED` ...) və satıcının "qiymətli metal deyil" təsdiqi məcburidir; ad və təsvirdə qızıl/gümüş/brilyant/əyar iddiası (az, tr, en, ru və translit: `S925`, `AU750`, `925proba`, `14 karat`, `18 əyar`, `sterling`, `altın`, `zoloto` də; örtük və rəng sözü ilə, məs. `qızıl suyu`, `gold plated`, `позолота`, olmadan) 400 `merchant.fashion_claim`, xəta mətni iddia sayılan ifadəni satıcının yazdığı kimi göstərir (#157, məs. «585-ci əyar»). İcazəlidir (#157): rəng adları (`qızılı`, `gümüşü`, `rose gold`, `golden`, `золотистый`), `qızılgül`, `qızıl balıq`, `Qızılbaş`, ölçü və model rəqəmləri (`500 mm`, `750 ml`, `Model 800`). Ayrıca yazılan əyar rəqəmi (333 ... 999) metal sözü, əyar/proba sözü, metal kodu (`Au 585`) və ya zərgərlik sözü (`Üzük 585`, `585 sırğa`, `кольцо 585`) yanında iddiadır; ardınca ölçü vahidi (`mm`, `sm`, `ml`, `q`, `ədəd`, `шт` ...) gələndə və ya qabağında ölçü/uzunluq/model etiketi (`ölçü`, `uzunluq`, `model`, `размер`, `длина`, `art.`, `kod`) olanda iddia deyil; ardınca valyuta (`manat`, `AZN`, `₼`, `$`, `руб`, `рублей` ...) gələn rəqəm qiymətdir, iddia deyil (#162: `Sırğa 900 manat`, `Кольцо 750 рублей`). `999.9` iddiadır; karat `ct` ilə də (`18ct`, `18 ct`), amma örtük təsvirində (`18ct gold plated`) və daş çəkisində (`0.5 ct zirkon`) yox. `Diamond cut` (zəncir və sirkon kəsimi, bijuteriya termini) yalnız ardınca sirkon (`zirkon`, `CZ`, `фианит`) və ya zəncir sözü gələndə icazəlidir (`Diamond cut zirkon`, `Diamond-cut zəncir`), qalan halda iddiadır (qərar, #162). Xəta mətnindəki ifadədə mötərizə balanslıdır (`Üzük (585)`). `Almaz`, `Elmas` (ad, kolleksiya), ingiliscə `brilliant` və türkcə `altın` (azərbaycanca "alt hissə") yalnız material kontekstində iddiadır: ardınca zərgərlik və ya daş sözü (`Elmas küpe`, `altın yüzük`, `almaz daşlı`) və ya 3 söz yaxınlığında karat/proba sözü; şəkilçili formaları (`almazlı`, `altınlı`, `алмазом`) həmişə. Qaydalar `FashionClaims`-da, nümunələr `MerchantHelpersTests`-də; daş yalnız sertifikatsız sirkon. Baza da yoxlayır: `FASHION` məhsulun ekspertizası və `FASHION` mağazanın sənəd statusu `NONE`-dan başqa ola bilməz (heç vaxt "sənədlər yoxlanılıb" nişanı yoxdur). `FASHION` məhsullar frontend bölməsi hazır olana qədər ictimai kataloqda, axtarışda və seçilmişlərdə görünmür.
 - **Fayllar (#154):** API faylı ötürmür; brauzer birbaşa **private** bucket-ə, `staging/<açar>` altına PUT edir. Oradan heç kim oxuya bilmir. Attach zamanı API faylı yoxlayır və yalnız uğurlu olanda server tərəfində (`CopyObject`) public bucket-ə `<açar>` altına köçürür, staging nüsxəsini silir. Qoşulmamış fayl heç vaxt public olmur.
   - **Yoxlanılan fayl = köçürülən fayl (#158):** presigned URL 10 dəqiqə etibarlıdır, satıcı attach zamanı eyni açara başqa bayt PUT edə bilər. Ona görə HEAD-in ETag-i yadda saxlanılır: ilk baytların oxunması (`GetObject` `If-Match`) və köçürmə (`CopyObject` `x-amz-copy-source-if-match`) həmin ETag ilə şərtlidir, köçürmədən dərhal əvvəl isə ikinci HEAD ETag və ölçünü müqayisə edir (şərti nəzərə almayan storage üçün də). Uyğunsuzluqda 400 `merchant.image_missing`, staged fayl silinir, public-ə heç nə düşmür. Storage şərtli `CopyObject`-ə 501 qaytarsa, köçürmə şərtsiz edilir (yalnız HEAD qoruyur, logda bir dəfə xəbərdarlıq). R2 və MinIO şərti dəstəkləyir; deploy zamanı yoxlayın (#45).
   - **Rollback:** public nüsxəni silən tranzaksiya sinxronizasiyası köçürmədən **əvvəl** qeydiyyatdan keçir: serverdə tamamlanıb müştəri tərəfdə uğursuz olan köçürmə (məs. timeout) attach-ı geri qaytarır və public açarı silir; slot açıq qalır, satıcı təkrar cəhd edə bilər.
@@ -229,6 +230,49 @@ Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[
   - **Təmizləmə:** hər presign `image_upload_slots` cədvəlində sətirdir (V14). `ImageUploadCleanupJob` (ShedLock kilidi `image-upload-cleanup`, `JEPARLA_UPLOAD_CLEANUP_CRON`) URL-in vaxtı 1 saatdan çox əvvəl keçmiş, qoşulmamış yükləmələrin staging faylını silir və 2 gündən köhnə sətirləri təmizləyir. Storage əlçatan deyilsə növbəti işə qədər gözləyir.
   - **Lifecycle qaydası (ehtiyat):** private bucket-də `staging/` prefiksi üçün 1 gündən köhnə obyektləri silən qayda olmalıdır. R2: Dashboard -> R2 -> `jeparla-private` -> Settings -> Object lifecycle rules -> prefix `staging/`, "Delete objects" 1 gün (və ya `wrangler r2 bucket lifecycle add`). Sənədlər (`staging/`-dən kənarda) bu qaydaya düşmür. Lokal MinIO-da `minio-init` eyni qaydanı `mc ilm import` ilə qoyur.
   - **Açarlar:** R2 API tokeni hər iki bucket-ə `Object Read & Write` icazəsi ilə; yalnız env-də.
+
+## Yoxlama sənədləri, moderasiya və bildirişlər (#40, #138)
+
+Sənəd yalnız qiymətli metal satan mağazadan (`PRECIOUS`, `MIXED`) və yalnız `PRECIOUS` məhsul üçün qəbul
+olunur. Bijuteriya (`FASHION`) satıcısı və məhsulu heç vaxt sənəd yükləmir (`403 verification.not_precious`),
+onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admin qərarıdır (`seller-check`).
+
+| Endpoint | Nə edir |
+| --- | --- |
+| `GET /api/v1/merchant/documents` | Mağazanın sənədləri və yoxlama nəticəsi (açar və URL yoxdur) |
+| `GET /api/v1/merchant/documents/declaration` | Təsdiqlənəcək bəyanat: `version`, `language`, `text`, `draft` |
+| `POST /api/v1/merchant/documents/uploads` | Bir sənəd üçün presigned PUT (`checkKind` `DOCUMENTS`: `TAX_ID`, `TRADE_LICENSE`; `EXPERTISE`: `ASSAY_CERTIFICATE`, `LAB_REPORT` + `productId`). PDF, JPEG, PNG, ən çox 10 MB |
+| `POST /api/v1/merchant/documents` | `{key, declarationAccepted: true, declarationVersion, declarationLanguage?}`: faylı yoxlayır, `201` `PENDING` sənəd |
+| `GET /api/v1/admin/documents?status=` | Yoxlama növbəsi (default `PENDING`, köhnələr əvvəl) |
+| `GET /api/v1/admin/documents/{id}` | Detal: SHA-256 və satıcının təsdiqlədiyi bəyanat |
+| `POST /api/v1/admin/documents/{id}/view` | 5 dəqiqəlik presigned GET (`attachment`), `DOCUMENT_VIEWED` auditi |
+| `POST /api/v1/admin/documents/{id}/decision` | `APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada `reason` (`UNREADABLE`, `EXPIRED`, `MISMATCH`, `WRONG_TYPE`, `HALLMARK_MISSING`, `AUTHENTICITY`) və istəyə görə `note` |
+| `GET /api/v1/admin/stores?status=`, `GET /api/v1/admin/stores/{id}` | Mağaza müraciətləri (default `PENDING`) |
+| `POST /api/v1/admin/stores/{id}/status` | `APPROVED`, `REJECTED`, `BLOCKED` (son ikisi ən az 10 simvol səbəblə) |
+| `POST /api/v1/admin/stores/{id}/seller-check` | Satıcı yoxlaması: `VERIFIED` və ya `REJECTED` (səbəblə) |
+| `GET /api/v1/admin/products?status=` | Yoxlamada olan məhsullar (default `IN_REVIEW`) |
+| `POST /api/v1/admin/products/{id}/decision` | `APPROVE` (mağaza `APPROVED`, `PRECIOUS` üçün satıcı bəyanatı lazımdır: `409 admin.declaration_missing`), `RETURN`, `DEACTIVATE` (səbəblə) |
+| `GET /api/v1/admin/audit?targetType=&targetId=` | Audit jurnalı, yenilər əvvəl |
+| `GET /api/v1/notifications`, `GET /notifications/unread-count`, `POST /notifications/{id}/read`, `POST /notifications/read-all` | Daxil olmuş istifadəçinin öz bildirişləri |
+
+- **Bəyanat (#138):** hər yükləmə `docs/legal/sellers-liability.md` 2b-dəki mətnlə təsdiqlənir (hüquqşünas
+  təsdiqləyənə qədər **qaralama**, #57; `DeclarationText.VERSION`). Mətn dəyişəndə versiya da dəyişir və köhnə
+  versiya ilə göndəriş `409 verification.declaration_outdated` olur. `seller_declarations` cədvəli (V15)
+  göstərilən mətni, versiyanı, dili, istifadəçini, vaxtı və IP-ni saxlayır; trigger onu dəyişməyə və silməyə
+  qoymur (yalnız hesab silinəndə `user_id` `NULL` olur).
+- **Fayl:** brauzer private bucket-ə `staging/documents/<store>/<uuid>.<ext>` altına PUT edir. Təsdiqdə API
+  faylın ilk baytlarını (PDF, PNG, JPEG imzası), ölçüsünü və SHA-256-ını yoxlayır, eyni faylın təkrarını
+  (`409 verification.document_duplicate`) rədd edir və onu **eyni private bucket-də** `documents/...` altına
+  köçürür. Sənəd public bucket-ə heç vaxt düşmür; `staging/` lifecycle qaydası `documents/`-ə toxunmur.
+  `DocumentUploadCleanupJob` (kilid `document-upload-cleanup`) qoşulmamış yükləmələri şəkillərdəki kimi təmizləyir.
+- **Status:** yoxlama yalnız admin ən az bir sənədi təsdiqləyəndə `VERIFIED` olur; gözləyən sənəd varsa
+  `PENDING`, hamısı rədd edilibsə `REJECTED`. İctimai API yalnız bu statusu göstərir.
+- **Bildirişlər:** qərar (sənəd, məhsul, mağaza, satıcı yoxlaması) satıcıya onun dilində (`users.preferred_locale`)
+  nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Mətn hadisə anında yazılır (`notifications`).
+  E-poçtu olan istifadəçi üçün eyni tranzaksiyada `email_outbox` sətri yaranır; `EmailOutboxJob`
+  (kilid `email-outbox`) onu `EmailSender` ilə göndərir. Provayder hələ yoxdur (#131): `NoEmailSender`
+  heç nə göndərmir və məktubu "göndərildi" saymır. Provayder açarları yalnız env-də olacaq.
+- **Maraq toqquşması:** admin öz mağazası haqqında qərar vermir (403).
 
 ## Giriş və icazələr
 
