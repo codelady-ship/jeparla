@@ -7,9 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import az.jeparla.support.CatalogApiTest;
 import az.jeparla.support.DatabaseSuperuser;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +50,9 @@ class SearchIndexTests {
 
     @Autowired
     private SearchSynonymRepository synonyms;
+
+    @Autowired
+    private SearchService search;
 
     @Autowired
     private SearchCache cache;
@@ -104,11 +105,12 @@ class SearchIndexTests {
                 .getContentAsString(StandardCharsets.UTF_8);
     }
 
-    /** {@code EXPLAIN} of a ranked statement for {@code words}, with the synonyms the service would use. */
+    /**
+     * {@code EXPLAIN} of a ranked statement for {@code words}, with the terms the service looks up (synonyms,
+     * matching categories and stores).
+     */
     private String plan(List<String> words, Function<SearchSql, String> statement) {
-        List<Map.Entry<String, String>> pairs = new ArrayList<>();
-        synonyms.findTouching(words).forEach(s -> pairs.add(Map.entry(s.getTermFolded(), s.getSynonymFolded())));
-        SearchSql sql = new SearchSql(SearchTerms.of(words, pairs));
+        SearchSql sql = new SearchSql(search.terms(words));
         String text = statement.apply(sql);
         String plan = String.join("\n", new NamedParameterJdbcTemplate(jdbc)
                 .queryForList("EXPLAIN " + text, sql.params(), String.class));
@@ -123,6 +125,22 @@ class SearchIndexTests {
         // Every API connection sets the threshold of the trigram pre-filter (application.yml).
         assertThat(jdbc.queryForObject("SHOW pg_trgm.word_similarity_threshold", String.class))
                 .isEqualTo(SearchSql.PREFILTER_THRESHOLD);
+    }
+
+    @Test
+    void theWordsBringTheirCategoriesAndStores() {
+        // "uzuk" is in three category names (rings, engagement rings, wedding rings), in no store name or city.
+        SearchTerms.Word uzuk = search.terms(List.of("uzuk")).words().getFirst();
+        assertThat(uzuk.categoryIds()).containsAll(jdbc.queryForList(
+                "SELECT id FROM categories WHERE slug IN ('uzukler', 'nisan-uzukleri', 'toy-uzukleri')", Long.class));
+        assertThat(uzuk.storeIds()).isEmpty();
+        assertThat(uzuk.synonyms()).contains("кольцо");
+        // "zerger" starts two store names; "baki" is a city.
+        assertThat(search.terms(List.of("zerger")).words().getFirst().storeIds()).containsAll(jdbc.queryForList(
+                "SELECT id FROM stores WHERE slug IN ('ayzer-zerger', 'semender-zerger')", Long.class));
+        assertThat(search.terms(List.of("baki")).words().getFirst().storeIds()).isNotEmpty();
+        // A synonym brings what it matches: "yüzük" (Turkish) is a synonym of "üzük".
+        assertThat(search.terms(List.of("yuzuk")).words().getFirst().categoryIds()).containsAll(uzuk.categoryIds());
     }
 
     @Test

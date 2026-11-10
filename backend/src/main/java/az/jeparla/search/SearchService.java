@@ -47,7 +47,6 @@ public class SearchService {
     /** Suggestions per group (PLAN 5.3: "first 3-5"). */
     static final int SUGGESTIONS = 5;
 
-    private final SearchSynonymRepository synonyms;
     private final ProductCatalogService catalog;
     private final StoreCatalogService stores;
 
@@ -56,9 +55,7 @@ public class SearchService {
 
     private final SearchCache cache;
 
-    public SearchService(SearchSynonymRepository synonyms, ProductCatalogService catalog, StoreCatalogService stores,
-            SearchCache cache) {
-        this.synonyms = synonyms;
+    public SearchService(ProductCatalogService catalog, StoreCatalogService stores, SearchCache cache) {
         this.catalog = catalog;
         this.stores = stores;
         this.cache = cache;
@@ -150,14 +147,16 @@ public class SearchService {
 
     // ------------------------------------------------------------------ internals
 
-    private SearchTerms terms(List<String> words) {
+    /** The words with their synonyms and the categories and stores they may match: one statement. */
+    @SuppressWarnings("unchecked")
+    SearchTerms terms(List<String> words) {
         if (words.isEmpty()) {
-            return SearchTerms.of(words, List.of());
+            return SearchTerms.of(words, List.of(), Map.of(), Map.of());
         }
-        List<Map.Entry<String, String>> pairs = synonyms.findTouching(words).stream()
-                .map(s -> Map.entry(s.getTermFolded(), s.getSynonymFolded()))
-                .toList();
-        return SearchTerms.of(words, pairs);
+        SearchTermsQuery lookup = new SearchTermsQuery(words);
+        Query query = entityManager.createNativeQuery(lookup.sql());
+        lookup.params().forEach(query::setParameter);
+        return lookup.read(query.getResultList());
     }
 
     private List<Long> ids(SearchSql sql, Function<SearchSql, String> statement) {

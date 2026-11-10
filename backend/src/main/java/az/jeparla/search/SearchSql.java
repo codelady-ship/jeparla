@@ -9,7 +9,7 @@ import java.util.function.IntFunction;
 /**
  * Builds the ranked search statements (#38) over the generated {@code search_text} columns (folded
  * with {@code jeparla_fold}, trigram GIN indexes). Every value is a bound parameter; the SQL text
- * depends only on the number of words and synonyms. Scores are computed and ordered in SQL and never
+ * depends only on the number of words and synonyms (and whether a word matches a category or store). Scores are computed and ordered in SQL and never
  * read into Java (they are {@code real}).
  *
  * <p><b>Matching.</b> Every query word must match (AND). A word matches a text when it is a word of
@@ -35,7 +35,7 @@ import java.util.function.IntFunction;
  * similarity at least {@code pg_trgm.word_similarity_threshold}, set to {@value #PREFILTER_THRESHOLD} for
  * every connection in application.yml). Every row a score can match passes the pre-filter, so it changes
  * neither the results nor their order, only how many rows are scored. Products are found by their category
- * and store through the category and store indexes ({@code = ANY(ARRAY(...))}, B-tree on the product).
+ * and store through the ids {@link SearchTermsQuery} looked up (literal lists, B-tree indexes on the product).
  */
 final class SearchSql {
 
@@ -177,16 +177,21 @@ final class SearchSql {
     }
 
     /**
-     * Word {@code i} may match the product: its name, its category or its store passes {@link #wordFilter}. The
-     * store score reads the folded store name, a part of {@code stores.search_text} (name and city): what
-     * matches the name matches that text too.
+     * Word {@code i} may match the product: its name passes {@link #wordFilter}, or its category or store is one
+     * whose search text passes it ({@link SearchTermsQuery} found their ids). The store score reads the folded
+     * store name, a part of {@code stores.search_text} (name and city): what matches the name matches that text
+     * too. The ids are literal lists, so the planner estimates how many products they bring.
      */
     private String productFilter(int i) {
-        return "(" + wordFilter(i, "p.search_text")
-                + " OR p.category_id = ANY (ARRAY(SELECT fc.id FROM categories fc WHERE "
-                + wordFilter(i, "fc.search_text") + "))"
-                + " OR p.store_id = ANY (ARRAY(SELECT fs.id FROM stores fs WHERE "
-                + wordFilter(i, "fs.search_text") + ")))";
+        SearchTerms.Word word = terms.words().get(i);
+        StringBuilder sql = new StringBuilder("(").append(wordFilter(i, "p.search_text"));
+        if (!word.categoryIds().isEmpty()) {
+            sql.append(" OR p.category_id IN (").append(param("w" + i + "c", word.categoryIds())).append(")");
+        }
+        if (!word.storeIds().isEmpty()) {
+            sql.append(" OR p.store_id IN (").append(param("w" + i + "t", word.storeIds())).append(")");
+        }
+        return sql.append(")").toString();
     }
 
     /**

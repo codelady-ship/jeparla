@@ -1,18 +1,13 @@
 package az.jeparla.search;
 
-import java.util.Collection;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+/** Synonyms the admin manages; search reads them in {@link SearchTermsQuery}. */
 public interface SearchSynonymRepository extends JpaRepository<SearchSynonym, Long> {
-
-    /** Rows where either side equals one of the folded query words: one statement per search. */
-    @Query("select s from SearchSynonym s where s.termFolded in :words or s.synonymFolded in :words")
-    List<SearchSynonym> findTouching(@Param("words") Collection<String> foldedWords);
 
     /** Admin list filtered by a folded part of either side. */
     Page<SearchSynonym> findByTermFoldedContainingOrSynonymFoldedContaining(String termPart, String synonymPart,
