@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import az.jeparla.support.CatalogApiTest;
 import az.jeparla.support.DatabaseSuperuser;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,8 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Search on a large catalog (#151): with 20 000 more listed products the ranked statements read the trigram GIN
- * index instead of scanning every product, and the results stay the same. The rows are committed (the planner
+ * Search on a large catalog (#151): with 100 000 more listed products the ranked statements read the trigram GIN
+ * index instead of scanning every product, and the results stay the same. (At 20 000 rows, a few hundred pages,
+ * a sequential scan is still the cheaper plan and PostgreSQL rightly takes it; the index matters as the catalog
+ * grows, so the test uses a catalog where it does.) The rows are committed (the planner
  * only sees analyzed, committed data) and removed again after the class; the other CatalogApiTest classes share
  * this database but never run at the same time. Skipped without Docker, mandatory in CI.
  */
@@ -36,7 +40,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 class SearchIndexTests {
 
     private static final Logger log = LoggerFactory.getLogger(SearchIndexTests.class);
-    private static final int EXTRA_PRODUCTS = 20_000;
+    private static final int EXTRA_PRODUCTS = 100_000;
     private static final String SLUG_PREFIX = "index-test-";
 
     @Autowired
@@ -64,7 +68,7 @@ class SearchIndexTests {
     private String suggestionsBefore;
 
     @BeforeAll
-    void addTwentyThousandListedBrooches() throws Exception {
+    void addAHundredThousandListedBrooches() throws Exception {
         ringsBefore = body("/api/v1/search?q=uzuk&size=96");
         suggestionsBefore = body("/api/v1/search/suggest?q=uzu");
         // Copies of a demo brooch with names no query below matches, each with a live variant, in every store.
@@ -115,8 +119,20 @@ class SearchIndexTests {
         String plan = String.join("\n", new NamedParameterJdbcTemplate(jdbc)
                 .queryForList("EXPLAIN " + text, sql.params(), String.class));
         log.info("EXPLAIN {}:\n{}", words, plan);
+        if (plan.contains("Seq Scan on products")) {
+            // Only to explain a failure: the cost of the index plan the planner turned down.
+            String forced = new TransactionTemplate(transactions).execute(status -> {
+                jdbc.execute("SET LOCAL enable_seqscan = off");
+                return String.join("\n", new NamedParameterJdbcTemplate(jdbc)
+                        .queryForList("EXPLAIN " + text, sql.params(), String.class));
+            });
+            turnedDown.put(plan, forced);
+        }
         return plan;
     }
+
+    /** Plan with a sequential scan on products -> the plan without sequential scans, for a failure message. */
+    private final Map<String, String> turnedDown = new HashMap<>();
 
     @Test
     void theCatalogIsLarge() {
@@ -150,7 +166,8 @@ class SearchIndexTests {
                 plan(List.of("uzuk"), SearchSql::productCount),
                 plan(List.of("uzu"), sql -> sql.productSuggestions(SearchService.SUGGESTIONS)),
                 plan(List.of("qizil", "nisan"), sql -> sql.productPage(24, 0)))) {
-            assertThat(plan).contains("Bitmap Index Scan on products_search_text_trgm_idx")
+            assertThat(plan).as("index plan turned down: %s", turnedDown.get(plan))
+                    .contains("Bitmap Index Scan on products_search_text_trgm_idx")
                     .doesNotContain("Seq Scan on products");
         }
     }
