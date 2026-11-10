@@ -97,7 +97,8 @@ class GlobalExceptionHandlerTests {
 
     @Test
     void unknownPathIsLocalizedNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/does-not-exist").header(HttpHeaders.ACCEPT_LANGUAGE, "az"))
+        // Under a public prefix: a path without any URL rule is 401 before it can be 404 (#134).
+        mockMvc.perform(get("/api/v1/stores/some-store/does-not-exist").header(HttpHeaders.ACCEPT_LANGUAGE, "az"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.title").value("Tapılmadı"));

@@ -173,8 +173,12 @@ management:
         enabled: true
 
 springdoc:
+  # Off by default, so production never publishes the API description (#134); JEPARLA_API_DOCS=true turns
+  # both on locally. Off, the paths answer 404.
   api-docs:
+    enabled: ${JEPARLA_API_DOCS:false}
     path: /v3/api-docs
   swagger-ui:
+    enabled: ${JEPARLA_API_DOCS:false}
     path: /swagger-ui.html
   paths-to-match: /api/**

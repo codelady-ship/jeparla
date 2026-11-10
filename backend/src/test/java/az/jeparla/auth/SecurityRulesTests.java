@@ -56,6 +56,20 @@ class SecurityRulesTests {
     }
 
     @Test
+    void pathsWithoutARuleAreDeniedEvenToAdmins() throws Exception {
+        // Default deny (#134): an unlisted GET is never public, whoever asks; it gives no data, only 401 / 403.
+        mockMvc.perform(get("/api/v1/xyz"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("auth.unauthenticated"));
+        mockMvc.perform(get("/api/v1/xyz").with(as("ADMIN")))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("auth.forbidden"));
+        mockMvc.perform(get("/internal/jobs/metal-prices")).andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/v1/products")).andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/v1/products").with(as("MERCHANT"))).andExpect(status().isForbidden());
+    }
+
+    @Test
     void writesNeedASignedInUserAsLocalizedProblem() throws Exception {
         mockMvc.perform(post("/api/v1/test/secure/ping").header(HttpHeaders.ACCEPT_LANGUAGE, "en"))
                 .andExpect(status().isUnauthorized())

@@ -22,3 +22,10 @@ jeparla:
     backoff: 0s
     connect-timeout: 2s
     read-timeout: 5s
+
+# The OpenAPI contract tests read /v3/api-docs; ApiDocsOffTests checks the production default (off).
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
