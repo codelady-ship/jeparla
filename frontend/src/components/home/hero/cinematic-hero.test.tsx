@@ -6,7 +6,6 @@ import az from "../../../../messages/az.json";
 import en from "../../../../messages/en.json";
 import { CinematicHero } from "./cinematic-hero";
 import { phase } from "./hero-media";
-import { afterLoad } from "./hero-motion";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...rest }: Omit<ComponentProps<"a">, "href"> & { href: string }) => (
@@ -102,26 +101,6 @@ describe("CinematicHero", () => {
     expect(stage).not.toHaveClass("is-revealed");
     container.querySelector("video")!.dispatchEvent(new Event("ended"));
     expect(stage).toHaveClass("is-revealed");
-  });
-});
-
-describe("afterLoad", () => {
-  it("waits for the load event while the page is still loading", () => {
-    vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
-    vi.stubGlobal("requestIdleCallback", (cb: () => void) => (cb(), 1));
-    const start = vi.fn();
-    afterLoad(start);
-    expect(start).not.toHaveBeenCalled();
-    window.dispatchEvent(new Event("load"));
-    expect(start).toHaveBeenCalledOnce();
-  });
-
-  it("does not start after it was cancelled", () => {
-    vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
-    const start = vi.fn();
-    afterLoad(start)();
-    window.dispatchEvent(new Event("load"));
-    expect(start).not.toHaveBeenCalled();
   });
 });
 

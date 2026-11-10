@@ -14,31 +14,6 @@ import {
 
 export type HeroMode = "pending" | "motion" | "static";
 
-/**
- * Runs `start` once the page has loaded and the main thread is idle (#160). The
- * entrance video (about 0.5 MB) then never competes with the headline, the
- * scripts and the first product images on a slow phone network. Its first frame
- * is the plain backdrop the page already paints, so the wait is not visible.
- * Returns a cancel function.
- */
-export function afterLoad(start: () => void) {
-  let idle = 0;
-  let timeout = 0;
-  const run = () => {
-    // Safari has no requestIdleCallback.
-    if (typeof window.requestIdleCallback === "function")
-      idle = window.requestIdleCallback(start, { timeout: 800 });
-    else timeout = window.setTimeout(start, 0);
-  };
-  if (document.readyState === "complete") run();
-  else window.addEventListener("load", run, { once: true });
-  return () => {
-    window.removeEventListener("load", run);
-    if (idle) window.cancelIdleCallback(idle);
-    window.clearTimeout(timeout);
-  };
-}
-
 /** Reveal the copy even if the video never reports its end (ms). */
 const REVEAL_TIMEOUT = 6000;
 
@@ -132,8 +107,7 @@ export function HeroMotion({
         brand.style.transform = `translateY(${(1 - b) * 0.75}rem)`;
       }
       const tf = phase(p, HERO_PHASES.transform);
-      // A scroll before the video had a frame skips act 1: the frames hold its end.
-      frames.style.opacity = p > 0.005 || (landed && video.readyState < 2) ? "1" : "0";
+      frames.style.opacity = p > 0.005 ? "1" : "0";
       player.show(tf);
     };
     const onScroll = () => {
@@ -144,7 +118,6 @@ export function HeroMotion({
     if (video.readyState >= 2) sampleBackdrop();
 
     let timer = 0;
-    let cancelStart = () => {};
     if (reduce) {
       track.dataset.mode = "static";
       video.pause();
@@ -158,18 +131,14 @@ export function HeroMotion({
       video.addEventListener("ended", land);
       video.addEventListener("error", land);
       video.muted = true;
-      cancelStart = afterLoad(() => {
-        if (landed) return;
-        video.play()?.catch(land);
-        timer = window.setTimeout(land, REVEAL_TIMEOUT);
-      });
+      video.play()?.catch(land);
+      timer = window.setTimeout(land, REVEAL_TIMEOUT);
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll);
       render();
     }
 
     return () => {
-      cancelStart();
       window.clearTimeout(timer);
       video.removeEventListener("loadeddata", sampleBackdrop);
       video.removeEventListener("ended", land);
@@ -185,13 +154,13 @@ export function HeroMotion({
     <section ref={trackRef} aria-label={label} data-hero data-mode="pending" className="hero-track">
       <div className="hero">
         <div className="hero-media" role="img" aria-label={scene}>
-          {/* No autoplay and no preload: play() runs after the page has loaded (see afterLoad). */}
           <video
             ref={videoRef}
             className="hero-video"
             muted
+            autoPlay
             playsInline
-            preload="none"
+            preload="auto"
             disablePictureInPicture
           >
             <source src={HERO_MEDIA.desktop.video} type="video/mp4" media={HERO_DESKTOP_QUERY} />
