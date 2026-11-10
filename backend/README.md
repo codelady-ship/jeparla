@@ -181,3 +181,17 @@ curl -i -X POST localhost:8080/api/v1/auth/register -H 'Content-Type: applicatio
 - Testlər: `@WithPostgres` Spring testlərinə Testcontainers ilə PostgreSQL 16 verir; `@AuthIntegrationTest`
   üstəlik Redis 7 konteyneri və qorunan test endpoint-ləri qoşur. Test JWT açarı `src/test/resources/config/application.yml`-dədir. Docker olmayan maşında
   bu testlər keçilir (skipped), CI-da isə məcburi işləyir (`DockerInCiTests`).
+- Variantın əyarı məhsulun metalındandır (V10, #122): `product_variants.metal` əyardan trigger ilə doldurulur,
+  kompozit FK-lar onu `finenesses (id, metal)` və `products (id, metal)` ilə eyni saxlayır. Məhsulun metalını
+  dəyişmək üçün variantların əyarı eyni tranzaksiyada dəyişməlidir (FK commit-də yoxlanılır).
+- Koordinatlar `NUMERIC(9,6)`: `Store.setGeo` `Decimals.coordinate` ilə 6 onluğa gətirir, artığını yuvarlaqlaşdırmır,
+  xəta verir (#126); xəritədən gələn dəyəri çağıran tərəf yuvarlaqlaşdırır.
+
+## CI (`.github/workflows/backend.yml`, #35)
+
+- `gradle build`: bütün testlər (Testcontainers runner-in Docker-ində). Job summary testləri sayır
+  (`.github/scripts/junit_summary.py`); CI-da bir test belə skipped olarsa job qırmızıdır. JUnit XML və HTML
+  hesabatı `backend-test-results` artifact-ındadır.
+- `old-name sweep`: `python3 tools/sweep.py backend --config docs/brand.json`.
+- `secret scan`: gitleaks (versiya və SHA-256 workflow-da sabitdir) PR-ın commit-lərini yoxlayır; qaydalar `.gitleaks.toml`.
+- Asılılıq yeniləmələri: Dependabot (`.github/dependabot.yml`, Gradle və GitHub Actions, həftəlik).
