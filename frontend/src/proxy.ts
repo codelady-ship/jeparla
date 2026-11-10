@@ -32,8 +32,8 @@ export default async function proxy(request: NextRequest) {
   const isDocument = !request.headers.has("rsc") && !request.headers.has("next-router-prefetch");
   const detail = locale && isDocument ? rest.match(DETAIL) : null;
   if (detail && !(await detailExists(detail[1] as DetailKind, decodeSlug(detail[2]), USING_MOCK))) {
-    // A path that matches no route: the global 404 page, with a real 404 status.
-    return NextResponse.rewrite(new URL(`/${locale}/_not-found`, request.url), { status: 404 });
+    // The site 404 page in this language (app/[locale]/404), with a real 404 status.
+    return NextResponse.rewrite(new URL(`/${locale}/404`, request.url), { status: 404 });
   }
   const area = PROTECTED.find((p) => rest === p.prefix || rest.startsWith(`${p.prefix}/`));
 
