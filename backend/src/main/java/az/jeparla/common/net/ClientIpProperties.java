@@ -31,10 +31,6 @@ public record ClientIpProperties(String trustedProxies, String frontendToken) {
         }
     }
 
-    public ClientIpProperties(String trustedProxies) {
-        this(trustedProxies, null);
-    }
-
     public TrustedProxies proxies() {
         return TrustedProxies.parse(trustedProxies);
     }
