@@ -1,7 +1,11 @@
 /**
- * How the service worker treats a request (issue #136):
- * - "static": content-hashed build files, fonts, icons and demo images. Cache first;
- *   they never change under the same URL, so a cached copy is never stale.
+ * How the service worker treats a request (issues #136, #147):
+ * - "immutable": content-hashed build files under /_next/static/ (chunks, CSS, fonts).
+ *   Cache first; a new build gives them new URLs, so a cached copy is never stale.
+ * - "revalidate": unhashed public files (icons, demo images, placeholders). A file can
+ *   be replaced under the same URL (a new logo, a new product photo), so they are
+ *   stale-while-revalidate: the cached copy answers at once, the network refreshes the
+ *   cache, and the next load shows the new file.
  * - "page": a page navigation. Network only; when the network fails, the offline page.
  *   Pages carry prices, and a price must never be shown from an old copy.
  * - "pass": everything else (API, RSC payloads, video, other origins, non-GET). The
@@ -10,7 +14,7 @@
  * This function is inlined into /sw.js with Function.prototype.toString(), so it must
  * stay self-contained: no imports, no closures, plain syntax only.
  */
-export type SwStrategy = "static" | "page" | "pass";
+export type SwStrategy = "immutable" | "revalidate" | "page" | "pass";
 
 export function swStrategy(
   url: { origin: string; pathname: string; search: string },
@@ -23,15 +27,15 @@ export function swStrategy(
     return "pass";
   }
   if (request.mode === "navigate") return "page";
+  if (path.indexOf("/_next/static/") === 0) return "immutable";
   if (
-    path.indexOf("/_next/static/") === 0 ||
     path.indexOf("/icons/") === 0 ||
     path.indexOf("/demo/") === 0 ||
     path.indexOf("/placeholders/") === 0 ||
     path === "/icon.svg" ||
     path === "/apple-icon.png"
   ) {
-    return "static";
+    return "revalidate";
   }
   return "pass";
 }

@@ -211,6 +211,26 @@ test.describe("installable app", () => {
     );
   });
 
+  test("shows a replaced image after a reload (not the cached copy)", async ({ page, context }) => {
+    test.skip(isPhone(page), "one viewport is enough for the worker");
+    const image = "/demo/ring-gold-1.jpg";
+    const bytes = () =>
+      page.evaluate(async (u) => (await (await fetch(u)).arrayBuffer()).byteLength, image);
+    await page.goto("/ru/categories");
+    await page.waitForFunction(() => navigator.serviceWorker?.controller != null, null, {
+      timeout: 20_000,
+    });
+    const original = await bytes();
+    expect(original).toBeGreaterThan(0);
+    // Now cached by the worker. The server gets a new file under the same URL.
+    const replaced = Buffer.alloc(original + 30, 7);
+    await context.route(`**${image}`, (route) =>
+      route.fulfill({ status: 200, contentType: "image/jpeg", body: replaced }),
+    );
+    await page.reload();
+    await expect.poll(bytes, { timeout: 15_000 }).toBe(replaced.length);
+  });
+
   test("offline page is served directly in every language", async ({ page }) => {
     await page.goto("/az/offline.html");
     await expect(page.getByRole("heading", { level: 1, name: "İnternet yoxdur" })).toBeVisible();
