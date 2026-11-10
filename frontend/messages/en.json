@@ -1211,7 +1211,8 @@
     "perGram": "1 gram",
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
-    "empty": "Today's price has not arrived yet."
+    "empty": "Today's price has not arrived yet.",
+    "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it."
   },
   "Hero": {
     "label": "Jeparla: jewelry collections",
@@ -1245,5 +1246,9 @@
     "copy": "Copy link",
     "copied": "Link copied",
     "copyFailed": "Could not copy the link"
+  },
+  "SampleData": {
+    "label": "Sample data",
+    "banner": "The stores, products and prices on this site are samples, not real."
   }
 }

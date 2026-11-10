@@ -10,11 +10,13 @@ import { NoticeRegion } from "@/components/feedback/notice-region";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { CompareTray } from "@/components/saved/compare-tray";
+import { SampleDataBanner } from "@/components/layout/sample-data-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { alternates, SITE_URL } from "@/i18n/alternates";
 import { PAGE_TRANSITION } from "@/i18n/navigation";
+import { USING_MOCK } from "@/lib/api";
 import { routing } from "@/i18n/routing";
 import colors from "@/lib/brand-colors.json";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/open-graph";
@@ -72,6 +74,8 @@ export async function generateMetadata(): Promise<Metadata> {
     // The site has its own light and dark themes; Dark Reader would invert them again
     // (and the cream hero video would no longer match the page).
     other: { "darkreader-lock": "true" },
+    // Sample data is invented: never index it as real stores, products or prices.
+    ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
 }
 
@@ -100,6 +104,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       <body className="flex min-h-full flex-col">
         <IntlProvider locale={locale} messages={clientMessages}>
           <ThemeProvider>
+            <SampleDataBanner locale={locale} />
             <SiteHeader />
             {/* In-app navigations cross-fade the page body; header and footer stay put.
                 Only the PAGE_TRANSITION type: streamed first-load reveals do not animate. */}

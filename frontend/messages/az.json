@@ -1211,7 +1211,8 @@
     "perGram": "1 qram",
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
-    "empty": "Bugünkü qiymət hələ gəlməyib."
+    "empty": "Bugünkü qiymət hələ gəlməyib.",
+    "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək."
   },
   "Hero": {
     "label": "Jeparla: zərgərlik kolleksiyaları",
@@ -1245,5 +1246,9 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "SampleData": {
+    "label": "Nümunə data",
+    "banner": "Bu saytdakı mağazalar, məhsullar və qiymətlər nümunədir, real deyil."
   }
 }

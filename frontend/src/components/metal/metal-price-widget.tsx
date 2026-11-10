@@ -169,6 +169,10 @@ export async function MetalPriceWidget({
         </div>
       )}
 
+      {/* A manual admin correction is not the CBAR rate: say so instead of citing CBAR alone. */}
+      {data.latest.some((p) => p.source === "ADMIN") && (
+        <p className="text-xs text-muted-foreground">{t("adminSource")}</p>
+      )}
       <p className="text-xs text-muted-foreground">{t("note")}</p>
     </>,
   );
