@@ -34,10 +34,12 @@ import java.util.regex.Pattern;
  * stone ("Elmas küpe", "altın yüzük", "almaz daşlı") or a fineness or carat word is at most three words away
  * ("0.5 karat almaz"). Their inflected forms are always claims: "almazlı", "elmaslı", "altınlı", "алмазом".
  *
- * <p><b>Fineness</b> (375 ... 999) is a claim in one word with a metal code or "proba" ("S925", "Ag925",
- * "AU750", "PT950", "925s", "925proba"), and as a separate number only next to a metal word ("925 gümüş",
- * "Gümüş 925"), a fineness or karat word ("585 пробы", "585-ci əyar", "proba 585") or a metal code ("Au 585").
- * A bare number is a size or a model: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800". <b>Karats</b> are a
+ * <p><b>Fineness</b> (333 ... 999) is a claim in one word with a metal code or "proba" ("S925", "Ag925",
+ * "AU750", "PT950", "925s", "925proba"), and as a separate number next to a metal word ("925 gümüş",
+ * "Gümüş 925"), a fineness or karat word ("585 пробы", "585-ci əyar", "proba 585"), a metal code ("Au 585")
+ * or a jewellery word ("Üzük 585", "585 sırğa", "кольцо 585"), unless a unit follows it or a size or model
+ * label precedes it: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800" pass. A number alone ("Ölçü 17",
+ * "Çəki 925 qram") is not a claim. <b>Karats</b> are a
  * claim in one word ("14K", "18kt", "14к", "18ayar") or as a karat number with a karat word ("14 karat",
  * "18 əyar", "24 карата"); "1 carat zirkon" (a stone weight) passes.
  */
@@ -91,7 +93,18 @@ final class FashionClaims {
 
     /** Fineness numbers. */
     private static final Set<String> FINENESS = Set.of(
-            "375", "500", "583", "585", "750", "800", "830", "875", "900", "916", "925", "950", "958", "999");
+            "333", "375", "500", "583", "585", "625", "750", "800", "830", "875", "900", "916", "925", "950", "958",
+            "999");
+
+    /** Units right after a fineness number make it a size or an amount: "500 mm", "750 ml". */
+    private static final Set<String> UNITS = Set.of(
+            "mm", "sm", "cm", "m", "ml", "q", "qr", "qram", "g", "gr", "gram", "mq", "eded", "шт", "мм", "см", "мл",
+            "г", "гр", "грамм");
+
+    /** Labels right before a fineness number make it a size or a model: "Model 800", "Uzunluq 500". */
+    private static final Set<String> LABELS = Set.of(
+            "olcu", "olcusu", "uzunluq", "uzunlugu", "model", "modeli", "размер", "длина", "art", "artikul",
+            "артикул", "kod", "kodu", "код");
 
     /** "Proba" words: "585 пробы", "proba 925". */
     private static final Set<String> PROBA_WORDS = Set.of("proba", "probe", "probu", "пробы", "проба", "пробу", "пр");
@@ -105,11 +118,17 @@ final class FashionClaims {
     /** Marks a stone weight; with karat and fineness words, the material context of {@link #CONTEXTUAL}. */
     private static final Set<String> CARAT_MARKS = Set.of("ct", "cts");
 
-    /** Starts of jewellery words; such a word after "almaz", "altın" ... makes them a material. */
+    /**
+     * Starts of jewellery words; such a word after "almaz", "altın" ... makes them a material, and next to a
+     * fineness number makes the number a claim ("Üzük 585").
+     */
     private static final List<String> JEWELLERY_PREFIXES = List.of(
-            "uzuk", "uzuy", "sirga", "bilerzik", "boyunbag", "kulon", "kolye", "zencir", "bros", "yuzuk", "kupe",
-            "bilezik", "gerdanlik", "ring", "earring", "necklace", "bracelet", "pendant", "кольц", "серьг",
-            "колье", "браслет", "кулон", "подвеск", "цепоч", "kolc", "braslet");
+            "uzuk", "uzuy", "sirga", "bilerzik", "qolbaq", "boyunbag", "kulon", "kolye", "zencir", "bros", "yuzuk",
+            "kupe", "bilezik", "gerdanlik", "ring", "earring", "necklace", "bracelet", "pendant", "chain", "кольц",
+            "серьг", "колье", "браслет", "кулон", "подвеск", "цеп", "kolc", "braslet");
+
+    /** Whole jewellery words whose start is also a common word: "dəst" (a jewellery set). */
+    private static final Set<String> JEWELLERY_WORDS = Set.of("dest", "desti", "destler", "set");
 
     /** Stone words; such a word after "almaz", "elmas" ... makes them a material ("almaz daşlı"). */
     private static final Set<String> STONES = Set.of(
@@ -123,7 +142,7 @@ final class FashionClaims {
     private static final Pattern HALLMARK;
 
     static {
-        String fineness = "(?:375|500|583|585|750|800|830|875|900|916|925|950|958|999)";
+        String fineness = "(?:333|375|500|583|585|625|750|800|830|875|900|916|925|950|958|999)";
         String code = "(?:s|ag|au|pt|pd)";
         String proba = "(?:proba|probe|пробы|проба|пр)";
         HALLMARK = Pattern.compile(code + fineness + code + "?" + proba + "?"
@@ -165,12 +184,23 @@ final class FashionClaims {
             return new int[] {i, i + 1};
         }
         if (FINENESS.contains(word)) {
+            // A size or a model number: "Zəncir uzunluğu 500 mm", "750 ml", "Model 800".
+            if (UNITS.contains(next) || LABELS.contains(previous)) {
+                return null;
+            }
             int after = ORDINALS.contains(next) ? i + 2 : i + 1;
+            // The phrase names a metal or fineness word first ("Au 585 sırğa" -> "Au 585"), else the jewellery.
             if (finenessContext(at(words, after))) {
                 return new int[] {i, after};
             }
             if (finenessContext(previous)) {
                 return new int[] {i - 1, i};
+            }
+            if (jewellery(previous)) {
+                return new int[] {i - 1, i};
+            }
+            if (jewellery(at(words, after))) {
+                return new int[] {i, after};
             }
             return null;
         }
@@ -202,7 +232,8 @@ final class FashionClaims {
     }
 
     private static boolean jewellery(String word) {
-        return STONES.contains(word) || JEWELLERY_PREFIXES.stream().anyMatch(word::startsWith);
+        return STONES.contains(word) || JEWELLERY_WORDS.contains(word)
+                || !word.isEmpty() && JEWELLERY_PREFIXES.stream().anyMatch(word::startsWith);
     }
 
     /** A karat, carat or "proba" word at most three words before or after word {@code i}. */

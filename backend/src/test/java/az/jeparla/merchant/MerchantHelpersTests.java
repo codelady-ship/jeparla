@@ -47,6 +47,17 @@ class MerchantHelpersTests {
             "925 gümüş                        | 925 gümüş",
             "Sırğa 750 qızıl                  | 750 qızıl",
             "Rose gold 585                    | gold 585",
+            // ... or next to a jewellery word, without a unit after it or a size label before it.
+            "Üzük 585                         | Üzük 585",
+            "585 sırğa                        | 585 sırğa",
+            "кольцо 585                       | кольцо 585",
+            "Boyunbağı 925, əl işi            | Boyunbağı 925",
+            "Dəst 750                         | Dəst 750",
+            "Qolbaq 333                       | Qolbaq 333",
+            "Серьги 625                       | Серьги 625",
+            "Цепь 500                         | Цепь 500",
+            "Earrings 925                     | Earrings 925",
+            "Kulon 958, broş                  | Kulon 958",
             // Karats in one word or as a number and a karat word.
             "Ring 18kt                        | 18kt",
             "Серьги 14к                       | 14к",
@@ -106,6 +117,8 @@ class MerchantHelpersTests {
             "Almaz xanım kolleksiyası", "Elmas kolleksiyası", "Almaz kolleksiyasından sırğa", "Kulonun altın hissəsi",
             // Sizes and model numbers.
             "Zəncir uzunluğu 500 mm", "Uzunluq 375 mm", "750 ml", "Model 800", "Çəkisi 925 qram deyil, 9 qram",
+            "Zəncir 500 mm", "Sırğa, model 750", "Üzük art. 585", "Boyunbağı 500 sm", "Dəst, 750 q",
+            "Цепь длина 500 мм", "Серьги, 750 шт в наличии", "Ring 500 g",
             // Plain sentences from bijouterie listings.
             "Paslanmayan poladdan sırğa, allergiya yaratmır, uzunluğu 3 sm",
             "Əl işi muncuqlu boyunbağı, zəncir uzunluğu 500 mm, qızılı rəngdə",
