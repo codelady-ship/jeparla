@@ -10,6 +10,7 @@ import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.dto.PageDto;
 import az.jeparla.common.error.ApiException;
 import az.jeparla.common.i18n.Language;
+import az.jeparla.common.storage.ImageUrls;
 import az.jeparla.notification.NotificationKind;
 import az.jeparla.notification.NotificationService;
 import az.jeparla.product.MaterialKind;
@@ -23,6 +24,10 @@ import az.jeparla.verification.CheckStatus;
 import az.jeparla.verification.SellerDeclarationRepository;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -56,32 +61,47 @@ public class AdminModerationService {
     private final AuditLogRepository auditLogs;
     private final AuditService audit;
     private final NotificationService notifications;
+    private final ImageUrls imageUrls;
     private final Clock clock;
 
     public AdminModerationService(StoreRepository stores, ProductRepository products,
             SellerDeclarationRepository declarations, AuditLogRepository auditLogs, AuditService audit,
-            NotificationService notifications, Clock clock) {
+            NotificationService notifications, ImageUrls imageUrls, Clock clock) {
         this.stores = stores;
         this.products = products;
         this.declarations = declarations;
         this.auditLogs = auditLogs;
         this.audit = audit;
         this.notifications = notifications;
+        this.imageUrls = imageUrls;
         this.clock = clock;
     }
 
     // ------------------------------------------------------------------ stores
 
+    /**
+     * Stores, oldest first. Without filters the store applications ({@code PENDING}); with {@code sellerStatus}
+     * alone the seller identity-check queue of every marketplace status (e.g. {@code sellerStatus=PENDING} or
+     * {@code NONE}); with both, both apply.
+     */
     @Transactional(readOnly = true)
-    public PageDto<AdminStoreDto> stores(StoreStatus status, int page, int size) {
+    public PageDto<AdminStoreDto> stores(StoreStatus status, CheckStatus sellerStatus, int page, int size) {
         PageRequest request = pageRequest(page, size, Sort.by("createdAt", "id"));
-        return PageDto.of(stores.findByStatus(status == null ? StoreStatus.PENDING : status, request),
-                AdminStoreDto::of);
+        Page<Store> found;
+        if (sellerStatus == null) {
+            found = stores.findByStatus(status == null ? StoreStatus.PENDING : status, request);
+        } else if (status == null) {
+            found = stores.findBySellerStatus(sellerStatus, request);
+        } else {
+            found = stores.findByStatusAndSellerStatus(status, sellerStatus, request);
+        }
+        Map<Long, Long> counts = productCounts(found.map(Store::getId).toList());
+        return PageDto.of(found, store -> AdminStoreDto.of(store, counts.getOrDefault(store.getId(), 0L)));
     }
 
     @Transactional(readOnly = true)
     public AdminStoreDto store(long id) {
-        return AdminStoreDto.of(stores.findById(id).orElseThrow(ApiException::notFound));
+        return storeDto(stores.findById(id).orElseThrow(ApiException::notFound));
     }
 
     /** APPROVED, REJECTED (reason) or BLOCKED (reason); the same status again is a no-op. */
@@ -95,7 +115,7 @@ public class AdminModerationService {
             throw new ApiException(HttpStatus.BAD_REQUEST, "admin.status_invalid", "status");
         }
         if (to == from) {
-            return AdminStoreDto.of(store);
+            return storeDto(store);
         }
         String reason = null;
         if (to == StoreStatus.APPROVED) {
@@ -116,7 +136,7 @@ public class AdminModerationService {
         String note = reason;
         notifications.notify(store.getOwner(), kind, locale -> new Object[] {store.getName(), note == null ? "" : note},
                 null, STORE_LINK);
-        return AdminStoreDto.of(store);
+        return storeDto(store);
     }
 
     /** The seller check: VERIFIED or REJECTED (reason). */
@@ -139,7 +159,7 @@ public class AdminModerationService {
         notifications.notify(store.getOwner(),
                 to == CheckStatus.VERIFIED ? NotificationKind.SELLER_VERIFIED : NotificationKind.SELLER_REJECTED,
                 locale -> new Object[] {store.getName(), note == null ? "" : note}, null, STORE_LINK);
-        return AdminStoreDto.of(store);
+        return storeDto(store);
     }
 
     // ------------------------------------------------------------------ products
@@ -149,7 +169,7 @@ public class AdminModerationService {
     public PageDto<AdminProductDto> products(ProductStatus status, int page, int size) {
         PageRequest request = pageRequest(page, size, Sort.by("submittedAt", "id"));
         return PageDto.of(products.findByStatus(status == null ? ProductStatus.IN_REVIEW : status, request),
-                AdminProductDto::of);
+                this::productDto);
     }
 
     @Transactional
@@ -198,7 +218,7 @@ public class AdminModerationService {
         notifications.notify(store.getOwner(), kind,
                 locale -> new Object[] {product.getName().in(Language.of(locale)), note == null ? "" : note}, null,
                 PRODUCTS_LINK);
-        return AdminProductDto.of(product);
+        return productDto(product);
     }
 
     // ------------------------------------------------------------------ audit
@@ -215,6 +235,26 @@ public class AdminModerationService {
     }
 
     // ------------------------------------------------------------------ helpers
+
+    private AdminStoreDto storeDto(Store store) {
+        return AdminStoreDto.of(store, productCounts(List.of(store.getId())).getOrDefault(store.getId(), 0L));
+    }
+
+    private AdminProductDto productDto(Product product) {
+        return AdminProductDto.of(product, imageUrls::url);
+    }
+
+    /** Products (not deleted, any status) per store, in one statement for a page of stores. */
+    private Map<Long, Long> productCounts(List<Long> storeIds) {
+        Map<Long, Long> counts = new HashMap<>();
+        if (storeIds.isEmpty()) {
+            return counts;
+        }
+        for (Object[] row : products.countLiveByStoreIds(storeIds)) {
+            counts.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+        }
+        return counts;
+    }
 
     private static PageRequest pageRequest(int page, int size, Sort sort) {
         if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
