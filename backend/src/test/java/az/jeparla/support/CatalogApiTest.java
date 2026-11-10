@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
         "spring.jpa.properties.hibernate.generate_statistics=true",
         "jeparla.rate-limit.policies.report-ip.limit=" + CatalogApiTest.REPORT_IP_LIMIT,
         "jeparla.rate-limit.policies.contact-ip.limit=" + CatalogApiTest.CONTACT_IP_LIMIT,
+        "jeparla.rate-limit.policies.search-ip.limit=" + CatalogApiTest.SEARCH_IP_LIMIT,
 })
 @ActiveProfiles("demo")
 @AutoConfigureMockMvc
@@ -34,4 +35,6 @@ public @interface CatalogApiTest {
 
     int REPORT_IP_LIMIT = 3;
     int CONTACT_IP_LIMIT = 3;
+    /** High enough for every search request of the shared context from 127.0.0.1 within a minute. */
+    int SEARCH_IP_LIMIT = 2000;
 }

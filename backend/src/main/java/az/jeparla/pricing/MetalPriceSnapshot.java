@@ -25,7 +25,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Daily CBAR metal quote (PLAN 5.10, #43): AZN per troy ounce and per gram
  * ({@code NUMERIC(14,4)}). One CBAR row per metal and business date (partial unique index
- * {@code metal_price_snapshots_metal_date_source_key}, V11); ADMIN overrides may repeat on a day,
+ * {@code metal_price_snapshots_metal_date_source_key}, V12); ADMIN overrides may repeat on a day,
  * the newest one wins. Only APPLIED quotes price products.
  */
 @Entity

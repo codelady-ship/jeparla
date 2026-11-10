@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant } from "next/font/google";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
@@ -7,12 +7,16 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransition } from "react";
 import { IntlProvider } from "@/components/i18n/intl-provider";
 import { NoticeRegion } from "@/components/feedback/notice-region";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { ServiceWorker } from "@/components/pwa/service-worker";
 import { CompareTray } from "@/components/saved/compare-tray";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
+import colors from "@/lib/brand-colors.json";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/open-graph";
 import "../globals.css";
 
 // Headings: Cormorant, a variable editorial serif, so one file per unicode subset
@@ -32,6 +36,14 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+// Browser chrome (Android address bar, installed app title bar) matches the page.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: colors.light.bg },
+    { media: "(prefers-color-scheme: dark)", color: colors.dark.bg },
+  ],
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   "use cache";
   const locale = await rootLocale();
@@ -42,9 +54,13 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: t("title"), template: "%s | Jeparla" },
     description: t("description"),
     alternates: alternates(locale),
-    openGraph: { siteName: "Jeparla", locale, type: "website", url: `${SITE_URL}/${locale}` },
+    // No og:url here: a page without its own Open Graph must not claim to be the home page.
+    openGraph: { siteName: "Jeparla", locale, type: "website", images: [DEFAULT_OG_IMAGE] },
     twitter: { card: "summary_large_image" },
     applicationName: "Jeparla",
+    // The installable app in this page's language (start URL, shortcuts).
+    manifest: `/${locale}/manifest.webmanifest`,
+    appleWebApp: { capable: true, title: "Jeparla", statusBarStyle: "default" },
     // Search Console / Bing Webmaster ownership tokens, set in the host env when ready.
     verification: {
       ...(process.env.GOOGLE_SITE_VERIFICATION && { google: process.env.GOOGLE_SITE_VERIFICATION }),
@@ -62,9 +78,10 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   // Root param, not `params`: unknown segments below (e.g. [...rest]) stay prerenderable.
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) notFound();
-  const [messages, tc] = await Promise.all([
+  const [messages, tc, tp] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "Common" }),
+    getTranslations({ locale, namespace: "Pwa" }),
   ]);
   // Only namespaces used by Client Components go to the browser (keeps JS small).
   const clientMessages = {
@@ -92,6 +109,19 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
             <SiteFooter />
             <CompareTray label={tc("compare")} />
             <NoticeRegion closeLabel={tc("close")} />
+            <InstallPrompt
+              labels={{
+                title: tp("installTitle"),
+                text: tp("installText"),
+                install: tp("install"),
+                notNow: tp("notNow"),
+                iosText: tp("iosText"),
+                iosStep1: tp("iosStep1"),
+                iosStep2: tp("iosStep2"),
+                gotIt: tp("gotIt"),
+              }}
+            />
+            <ServiceWorker />
           </ThemeProvider>
         </IntlProvider>
       </body>

@@ -107,6 +107,7 @@ export function VariantPanel({
         <Button
           type="button"
           variant="outline"
+          className="pointer-coarse:h-11"
           aria-pressed={isFavorite}
           onClick={() => favorites.toggle(productId)}
         >
@@ -117,6 +118,7 @@ export function VariantPanel({
         <Button
           type="button"
           variant="outline"
+          className="pointer-coarse:h-11"
           aria-pressed={compared.includes(v.id)}
           onClick={() => toggleCompare(v.id, labels.actions)}
         >

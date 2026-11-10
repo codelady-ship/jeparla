@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,6 +315,46 @@ class ProductCatalogApiTests {
         assertThat(ids).containsExactly(5L, 2L, 5L);
         mvc.perform(get("/api/v1/products?ids=" + "1,".repeat(100) + "1")).andExpect(status().isBadRequest());
         mvc.perform(get("/api/v1/products?ids=1,x")).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("ids"));
+    }
+
+    /** #141: empty elements were a 500 (Map.of().get(null)); now they are ignored. */
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "/api/v1/products?ids=,         | ",
+            "/api/v1/products?ids=,,,       | ",
+            "/api/v1/products?ids=%20       | ",
+            "/api/v1/products?ids=          | ",
+            "/api/v1/products?ids=1,,2      | 1,2",
+            "/api/v1/products?ids=,2,%201,  | 2,1",
+            "/api/v1/variants?ids=,         | ",
+            "/api/v1/variants?ids=10,,20    | 1,2",
+    })
+    void emptyIdElementsAreIgnored(String request, String expectedProductIds) throws Exception {
+        JsonNode items = getJson(request);
+        List<Long> productIds = new ArrayList<>();
+        items.forEach(item -> productIds.add((item.has("product") ? item.get("product") : item).get("id").longValue()));
+        List<Long> expected = expectedProductIds == null ? List.of()
+                : Stream.of(expectedProductIds.split(",")).map(Long::valueOf).toList();
+        assertThat(productIds).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "/api/v1/products?ids=0                     | catalog.invalid_ids",
+            "/api/v1/products?ids=-1                    | catalog.invalid_ids",
+            "/api/v1/products?ids=1,abc                 | catalog.invalid_ids",
+            "/api/v1/products?ids=1.5                   | catalog.invalid_ids",
+            "/api/v1/products?ids=99999999999999999999  | catalog.invalid_ids",
+            "/api/v1/products?ids=0x10                  | catalog.invalid_ids",
+            "/api/v1/variants?ids=,x                    | catalog.invalid_ids",
+            "/api/v1/variants?ids=1,2,3,4,5             | catalog.too_many_ids",
+    })
+    void invalidIdsAreABadRequest(String request, String code) throws Exception {
+        mvc.perform(get(URI.create(request)).header(HttpHeaders.ACCEPT_LANGUAGE, "en"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(code))
+                .andExpect(jsonPath("$.title").value("Bad request"))
                 .andExpect(jsonPath("$.errors[0].field").value("ids"));
     }
 

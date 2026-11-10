@@ -4,6 +4,7 @@ import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { ProductDetails } from "@/components/pdp/product-details";
 import { alternates } from "@/i18n/alternates";
+import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
 
@@ -30,10 +31,10 @@ export async function generateMetadata({
     alternates: alternates(locale, `/products/${p.slug}`),
     // Demo data is invented and must not be indexed as real stores or products.
     ...(USING_MOCK && { robots: { index: false, follow: true } }),
-    openGraph: {
+    openGraph: openGraph(locale, `/products/${p.slug}`, {
       title: name,
-      images: p.images[0] ? [{ url: p.images[0].url, alt: p.images[0].alt[locale] }] : [],
-    },
+      ...(p.images[0] && { images: [{ url: p.images[0].url, alt: p.images[0].alt[locale] }] }),
+    }),
   };
 }
 

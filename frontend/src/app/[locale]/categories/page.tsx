@@ -4,6 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { alternates } from "@/i18n/alternates";
+import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api } from "@/lib/api";
 
@@ -16,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t("title"),
     description: t("description"),
     alternates: alternates(locale, "/categories"),
+    openGraph: openGraph(locale, "/categories"),
   };
 }
 

@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Enables {@code @Scheduled} jobs. Every job must be idempotent, and a job that must not run on two
- * instances at once takes a ShedLock lock (table {@code shedlock}, V11) through
+ * instances at once takes a ShedLock lock (table {@code shedlock}, V12) through
  * {@link LockingTaskExecutor}. Lock times are UTC instants from the JVM clock (TIMESTAMPTZ columns);
  * the scheduled run's lock-at-least-for covers small clock differences between instances.
  */

@@ -8,7 +8,10 @@ import { Catalog } from "@/components/catalog/catalog";
 import { Reveal } from "@/components/motion/reveal";
 import { ProductGridSkeleton } from "@/components/product/product-grid";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ShareButton } from "@/components/share/share-button";
+import { shareLabels } from "@/components/share/share-labels";
 import { alternates } from "@/i18n/alternates";
+import { openGraph } from "@/lib/seo/open-graph";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api } from "@/lib/api";
@@ -34,6 +37,7 @@ export async function generateMetadata({
     title: c.name[locale],
     description: t("categoryDescription", { name: c.name[locale] }),
     alternates: alternates(locale, `/categories/${c.slug}`),
+    openGraph: openGraph(locale, `/categories/${c.slug}`),
   };
 }
 
@@ -42,11 +46,12 @@ export default async function CategoryPage({
   searchParams,
 }: PageProps<"/[locale]/categories/[slug]">) {
   const { slug } = await params;
-  const [t, tc, locale, categories] = await Promise.all([
+  const [t, tc, locale, categories, share] = await Promise.all([
     getTranslations("Categories"),
     getTranslations("Catalog"),
     getLocale(),
     api.listCategories(),
+    shareLabels(),
   ]);
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
@@ -88,7 +93,10 @@ export default async function CategoryPage({
           </li>
         </ol>
       </nav>
-      <h1 className="mb-2 text-3xl sm:text-4xl">{name}</h1>
+      <div className="mb-2 flex items-start justify-between gap-4">
+        <h1 className="min-w-0 text-3xl sm:text-4xl">{name}</h1>
+        <ShareButton labels={share} title={name} className="shrink-0" />
+      </div>
       <p className="mb-6 max-w-2xl text-muted-foreground">{t("categoryDescription", { name })}</p>
 
       {children.length > 0 && (
@@ -97,7 +105,7 @@ export default async function CategoryPage({
             <li key={c.id}>
               <Link
                 href={`/categories/${c.slug}`}
-                className="inline-flex h-9 items-center rounded-full border bg-card px-4 text-sm hover:bg-muted"
+                className="inline-flex h-9 items-center rounded-full border bg-card px-4 text-sm hover:bg-muted pointer-coarse:h-11"
               >
                 {c.name[locale]}
               </Link>

@@ -9,10 +9,13 @@ import { isVerified } from "@/components/product/product-card";
 import { ProductGridSkeleton } from "@/components/product/product-grid";
 import { StoreMonogram } from "@/components/stores/store-card";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ShareButton } from "@/components/share/share-button";
+import { shareLabels } from "@/components/share/share-labels";
 import { StoreProducts } from "@/components/stores/store-products";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
+import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
 import { formatOpeningHours } from "@/lib/opening-hours";
@@ -36,6 +39,11 @@ export async function generateMetadata({
     title: `${store.name}, ${store.city}`,
     description: store.description[locale],
     alternates: alternates(locale, `/stores/${store.slug}`),
+    openGraph: openGraph(
+      locale,
+      `/stores/${store.slug}`,
+      store.logoUrl ? { images: [{ url: store.logoUrl, alt: store.name }] } : {},
+    ),
     // Demo data is invented and must not be indexed as real stores or products.
     ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
@@ -48,10 +56,11 @@ export default async function StorePage({
   const { slug } = await params;
   const store = await api.getStore(slug);
   if (!store) notFound();
-  const [t, tp, locale] = await Promise.all([
+  const [t, tp, locale, share] = await Promise.all([
     getTranslations("Stores"),
     getTranslations("Product"),
     getLocale(),
+    shareLabels(),
   ]);
   const mapHref = store.geo
     ? `https://www.google.com/maps/search/?api=1&query=${store.geo.lat},${store.geo.lng}`
@@ -82,6 +91,7 @@ export default async function StorePage({
               </span>
             </div>
             <p className="max-w-xl text-sm leading-relaxed">{store.description[locale]}</p>
+            <ShareButton labels={share} title={store.name} className="mt-2 self-start" />
           </div>
         </div>
 

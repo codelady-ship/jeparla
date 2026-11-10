@@ -96,7 +96,9 @@ public class ProductCatalogService {
     /** {@code GET /products?ids=} (favorites): in the order asked; unknown or hidden ids are left out. */
     public List<ProductSummaryDto> byIds(List<Long> ids) {
         Map<Long, Product> listed = findListed(ids);
-        return ids.stream().map(listed::get).filter(Objects::nonNull).map(mapper::summary).toList();
+        // Null elements never reach Map.get: an immutable empty map throws on get(null) (#141).
+        return ids.stream().filter(Objects::nonNull).map(listed::get).filter(Objects::nonNull).map(mapper::summary)
+                .toList();
     }
 
     /** {@code GET /products/{slug}}: 404 unless the product is listed. */

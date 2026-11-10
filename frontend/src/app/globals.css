@@ -79,6 +79,12 @@
   html {
     @apply font-sans;
   }
+  /* A field scrolled into view (on-screen keyboard, error focus) clears the sticky header. */
+  input,
+  select,
+  textarea {
+    scroll-margin-block: 5rem;
+  }
 }
 
 @layer base {
@@ -333,5 +339,30 @@
         filter 0.9s var(--ease-luxe);
       transition-delay: calc(var(--d, 0) * 90ms);
     }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Install offer (<InstallPrompt>, #136): rises 16px and fades in once, leaves
+   faster and shorter. Reduced motion: a plain fade.
+   --------------------------------------------------------------------------- */
+.pwa-card {
+  transition:
+    opacity var(--duration-base) var(--ease-luxe),
+    translate var(--duration-base) var(--ease-luxe);
+  @starting-style {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+  &[data-closing] {
+    opacity: 0;
+    translate: 0 0.5rem;
+    transition-duration: var(--duration-fast);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pwa-card {
+    translate: none !important;
+    transition-property: opacity;
   }
 }

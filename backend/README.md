@@ -113,7 +113,7 @@ Hamısı anonim `GET`-dir, cavablar `frontend/src/types/api.ts` tipləri ilə ey
 | Endpoint | Cavab |
 | --- | --- |
 | `GET /api/v1/products` | `Page<ProductSummary>`; filtrlər `ProductFilters` ilə eyni: `q`, `category`, `store` (çoxlu), `metal`, `fineness` (çoxlu), `minWeight`/`maxWeight`, `minPrice`/`maxPrice`, `verified`, `inStock`, `city`, `shape`/`color`/`clarity` (çoxlu), `minCarat`/`maxCarat`, `sort` (`relevance`, `newest`, `price_asc`, `price_desc`, `weight_asc`), `page` (0-dan), `size` (1-96, default 24) |
-| `GET /api/v1/products?ids=1,2` | `ProductSummary[]` (seçilmişlər), soruşulan sırada, ən çox 100 |
+| `GET /api/v1/products?ids=1,2` | `ProductSummary[]` (seçilmişlər), soruşulan sırada, ən çox 100; boş elementlər atılır (`ids=,` -> `[]`), müsbət tam ədəd olmayan id 400-dür (`catalog.invalid_ids`, #141) |
 | `GET /api/v1/products/{slug}` | `Product` və ya 404 |
 | `GET /api/v1/variants?ids=10,20` | `CompareItem[]` (müqayisə), ən çox 4 |
 | `GET /api/v1/categories`, `/finenesses` | `Category[]` (say alt kateqoriyalarla), `Fineness[]` |
@@ -178,6 +178,19 @@ tipində hələ yalnız `"CBAR"` var (#41-də `"CBAR" | "ADMIN"` olmalıdır).
 **Gündəlik yoxlama** (`.github/workflows/metal-prices-check.yml`, hər gün 14:30 Bakı): repo dəyişəni `JEPARLA_API_URL`
 və secret `JEPARLA_INTERNAL_JOB_TOKEN` ilə `latest` tarixini AMB bülleteninin tarixi ilə müqayisə edir, köhnədirsə
 endpoint-i çağırır, yenə köhnədirsə və ya admin təsdiqi gözləyən qiymət varsa issue açır (açıq olanı yeniləyir).
+
+## Axtarış API (#38)
+
+| Endpoint | Cavab |
+| --- | --- |
+| `GET /api/v1/search?q=&type=&page=&size=` | `SearchResult`: `products` (`Page`, default 24), `stores`, `categories` (səhifəsiz, hər biri ən çox 100). `type`: `all` (default), `products`, `stores`, `categories`; seçilməyən qruplar boşdur. Növ üzrə say: `products.totalElements`, `stores.length`, `categories.length` |
+| `GET /api/v1/search/suggest?q=` | `Suggestions`: hər qrupda ən çox 5 (mağaza, kateqoriya, məhsul `priceFrom` ilə); boş `q` üçün qruplar boşdur |
+
+- **Uyğunluq:** sorğu `jeparla_fold` qaydası ilə qatlanır (`SearchText.fold`), ilk 8 söz götürülür, hər söz uyğun gəlməlidir (AND). Söz mətnin sözüdürsə, sözün başlanğıcıdırsa, sinonimi (`search_synonyms`, V11) sözün başlanğıcıdırsa və ya (3+ hərf) trigram `word_similarity` >= 0.5-dirsə uyğundur: `qizil` = `qızıl`, `uzk` = `üzük`, `кольцо` = `Кольца`, `serqa` = `sırğa`. Mətn: məhsul adları (az/en/ru), kateqoriya adı, mağaza adı; mağazada ad və şəhər; kateqoriyada üç dildə ad.
+- **Sıralama** (`SearchSql`): söz üçün tam söz 1.0, başlanğıc 0.8, sinonim 0.7, səhv yazı ən çox 0.6 (0.6 x oxşarlıq), sözlər üzrə orta. Məhsulda kateqoriya adında tapılan söz x0.75, mağaza adında x0.5. Mağaza və ya kateqoriya adı sorğunun özüdürsə +1.0, onunla başlayırsa +0.5 (mağaza adı ilə axtarışda mağaza birincidir); məhsul adı sorğu ilə başlayırsa +0.3, sorğu ardıcıl sözlər kimi içindədirsə +0.2. Bərabərlikdə: məhsul və mağaza id, kateqoriya admin sırası.
+- **Yalnız ictimai olan:** kataloqdakı kimi (görünən məhsul, `APPROVED` mağaza, görünən kateqoriya). Boş (və ya hərfsiz) `q`: hər şey kataloq sırası ilə (frontend mock kimi).
+- **Limitlər:** `q` ən çox 100 simvol, `page` 0-10000, `size` 1-96; səhv dəyər 400 ProblemDetail (`errors`, 3 dildə). `search-ip` rate limit (300 / dəq., [RBAC.md](../docs/RBAC.md)). Cavablar CDN üçün keşlənir (`CachePolicy.CATALOG`, ETag).
+- **Sinonimlər:** `search_synonyms (term, synonym)`, iki istiqamətdə işləyir, hər tərəf bir sözdür. V11 kiçik az/ru/tr dəsti əlavə edir; admin idarəsi #40-dadır.
 
 ## Giriş və icazələr
 

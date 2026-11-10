@@ -382,7 +382,7 @@ class EntityRoundTripTests {
 
     @Test
     void adminMayOverrideTwiceOnOneDay() {
-        // V11: only CBAR quotes are unique per day; a mistyped override is fixed by a newer one.
+        // V12: only CBAR quotes are unique per day; a mistyped override is fixed by a newer one.
         LocalDate day = LocalDate.of(2031, 1, 1).plusDays(TestData.next());
         em.persist(new MetalPriceSnapshot(Metal.SILVER, day, BigDecimal.TEN, BigDecimal.ONE, QuoteSource.CBAR, NOW));
         em.persist(new MetalPriceSnapshot(Metal.SILVER, day, BigDecimal.TEN, BigDecimal.ONE, QuoteSource.ADMIN, NOW));

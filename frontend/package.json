@@ -15,6 +15,7 @@
     "prepare": "cd .. && husky frontend/.husky",
     "tokens": "node scripts/tokens.mjs",
     "tokens:check": "node scripts/tokens.mjs --check",
+    "icons": "node scripts/icons.mjs",
     "lighthouse": "lhci autorun",
     "e2e": "playwright test"
   },

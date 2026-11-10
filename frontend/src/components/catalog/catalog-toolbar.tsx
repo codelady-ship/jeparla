@@ -24,7 +24,7 @@ export function SortForm({ action, filters }: { action: string; filters: Product
         id="sort"
         name="sort"
         defaultValue={sort ?? ""}
-        className="h-9 rounded-md border border-input bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="h-9 rounded-md border border-input bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-11"
       >
         <option value="">{t("sort.relevance")}</option>
         {SORTS.map((s) => (
@@ -96,7 +96,7 @@ export function ActiveFilterChips({
           <Link
             href={`${action}${toQuery(c.without)}`}
             scroll={false}
-            className="inline-flex h-8 items-center gap-1 rounded-full border bg-card px-3 text-sm hover:bg-muted"
+            className="inline-flex h-8 items-center gap-1 rounded-full border bg-card px-3 text-sm hover:bg-muted pointer-coarse:h-11 pointer-coarse:px-4"
             aria-label={t("removeFilter", { name: label(c.key, c.value) })}
           >
             {label(c.key, c.value)}
@@ -133,7 +133,7 @@ export function Pagination({
   if (totalPages <= 1) return null;
   const href = (p: number) => `${action}${toQuery({ ...filters, page: p })}`;
   const item =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm tabular-nums hover:bg-muted";
+    "inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm tabular-nums hover:bg-muted pointer-coarse:h-11 pointer-coarse:min-w-11";
   return (
     <nav aria-label={t("pagination")} className="mt-12 flex justify-center">
       <ul className="flex flex-wrap items-center gap-2">
