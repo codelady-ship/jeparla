@@ -25,7 +25,7 @@ export function ProductGrid({ products, empty }: Props) {
             <ProductCard product={p} preload={i < 2} />
           </li>
         ) : (
-          <Reveal key={p.id} as="li" index={i % FIRST_ROW} className="flex">
+          <Reveal key={p.id} as="li" index={i % FIRST_ROW} className="flex card-deferred">
             <ProductCard product={p} />
           </Reveal>
         ),

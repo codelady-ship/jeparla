@@ -141,6 +141,21 @@
   }
 }
 
+/* Product cards below the first row (#160): the browser skips their layout, paint and
+   lazy images until they come near the viewport, so a long grid does not slow the
+   first screen. The placeholder height is close to a real card (4:5 photo plus about
+   6rem of text in a 2/3/4-column grid) and is replaced by the measured size once seen. */
+@utility card-deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto calc(min(100vw, 90rem) / 2 * 1.25 + 6rem);
+  @media (min-width: 48rem) {
+    contain-intrinsic-size: auto calc(min(100vw, 90rem) / 3 * 1.25 + 6rem);
+  }
+  @media (min-width: 64rem) {
+    contain-intrinsic-size: auto calc(min(100vw, 90rem) / 4 * 1.25 + 6rem);
+  }
+}
+
 /* Second product image cross-fades in on hover. */
 @utility img-swap {
   opacity: 0;
