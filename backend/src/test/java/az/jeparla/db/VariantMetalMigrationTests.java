@@ -23,7 +23,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 class VariantMetalMigrationTests {
 
     @Container
-    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(PostgresContainerConfig.IMAGE);
+    static final PostgreSQLContainer POSTGRES = PostgresContainerConfig.container();
 
     @Test
     void existingVariantsAreBackfilledFromTheirFineness() {
@@ -76,12 +76,14 @@ class VariantMetalMigrationTests {
         Flyway.configure()
                 .dataSource(dataSource)
                 .locations("classpath:db/migration")
+                .placeholders(PostgresContainerConfig.placeholders())
                 .target(MigrationVersion.fromVersion("9"))
                 .load()
                 .migrate();
         Flyway toLatest = Flyway.configure()
                 .dataSource(dataSource)
                 .locations("classpath:db/migration")
+                .placeholders(PostgresContainerConfig.placeholders())
                 .cleanDisabled(true)
                 .load();
         return new Database(toLatest, new JdbcTemplate(dataSource));

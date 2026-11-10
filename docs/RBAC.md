@@ -84,7 +84,9 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   (`documents/<store>/<uuid>.<ext>`) yalnız onu alan mağaza üçün təsdiqlənir (başqası `400 verification.document_missing`).
 - Hər yükləmə bəyanatla təsdiqlənir: `declarationAccepted: true` olmadan `400 verification.declaration_required`,
   köhnə versiya `409 verification.declaration_outdated`. Göstərilən mətn, versiya, dil, istifadəçi, vaxt və IP
-  `seller_declarations`-da sübut kimi saxlanılır; cədvəl append-only-dir (trigger: dəyişmək və silmək olmur).
+  `seller_declarations`-da sübut kimi saxlanılır; cədvəl append-only-dir: tətbiqin baza rolu yalnız `SELECT`
+  və `INSERT` edə bilər, trigger isə sahib rolu üçün də dəyişməyi, silməyi və `TRUNCATE`-i rədd edir (aşağıda
+  "Verilənlər bazası rolları", #165).
 - Fayllar yalnız private bucket-dədir. Satıcı faylı API-dən geri oxumur (cavabda açar və URL yoxdur);
   ictimai API yalnız statusu (`verification.documents`, `verification.expertise`) göstərir.
 - `/api/v1/admin/documents/**` (`ADMIN`): növbə, detal, `POST /{id}/view` (5 dəqiqəlik presigned GET,
@@ -204,6 +206,37 @@ Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_
 `DOCUMENT_CHANGES_REQUESTED` (səbəb kateqoriyası və qeyd), `STORE_APPROVED`, `STORE_REJECTED`, `STORE_BLOCKED`,
 `SELLER_VERIFIED`, `SELLER_REJECTED`, `PRODUCT_APPROVED`, `PRODUCT_RETURNED`, `PRODUCT_DEACTIVATED` (səbəblə).
 `GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
+
+`audit_logs` append-only-dir (V16, #165): tətbiq yalnız oxuyur və əlavə edir; yeganə dəyişiklik hesab
+silinəndə `actor_id`-nin `NULL` olmasıdır (`actor_label` qalır). Köhnə sətirlərin silinməsi yalnız sahib rolunun
+çağıra bildiyi `jeparla_purge_audit_logs(interval)` funksiyası ilə, ən azı 5 ildən köhnə sətirlər üçün mümkündür
+(müddət hüquqşünasın təsdiqini gözləyir, `docs/legal/sellers-liability.md` 3.6, #57); planlı job yoxdur.
+
+## Verilənlər bazası rolları (#165)
+
+Sübut cədvəllərinin (`seller_declarations`, `audit_logs`) dəyişməzliyi trigger-ə yox, baza rollarına söykənir:
+cədvəlin sahibi trigger-i söndürə bilər, superuser isə `session_replication_role = replica` ilə bütün trigger-ləri.
+Ona görə:
+
+| Rol | Kim qoşulur | Nə edə bilər |
+| --- | --- | --- |
+| superuser (`postgres`) | yalnız baza konteynerinin özü və texniki xidmət | hər şey; parolu API-yə verilmir |
+| miqrasiya rolu (`JEPARLA_DB_MIGRATION_USER`, `jeparla_owner`) | yalnız Flyway (`spring.flyway.user`) | sxemin və cədvəllərin sahibi; superuser deyil |
+| iş rolu (`JEPARLA_DB_USER`, `jeparla_app`) | API (`spring.datasource.username`) | adi cədvəllərdə `SELECT`, `INSERT`, `UPDATE`, `DELETE`; sübut cədvəllərində yalnız `SELECT`, `INSERT`; `TRUNCATE`, `ALTER`, `DROP`, trigger, yeni obyekt yoxdur |
+
+- Hesab silinəndə `ON DELETE SET NULL` sahib rolu adı ilə işləyir (PostgreSQL referential action), trigger-lər
+  yalnız bu dəyişikliyə (`user_id`/`actor_id` -> `NULL`) icazə verir; iş rolu bu sütunu birbaşa dəyişə bilmir.
+- `BEFORE TRUNCATE` trigger-ləri `TRUNCATE ... CASCADE` ilə gələn silinməni də sahib rolu üçün dayandırır.
+- Sonrakı miqrasiyaların cədvəlləri default privileges ilə iş roluna avtomatik açılır. Yeni sübut cədvəli
+  əlavə edən miqrasiya onun üçün `UPDATE`, `DELETE`-i `REVOKE` etməli və `DatabaseRoleCheck.EVIDENCE_TABLES`-ə
+  əlavə etməlidir.
+- `DatabaseRoleCheck` API başlayanda yoxlayır: iş rolu superuser, sahib və ya sübut cədvəllərində
+  `UPDATE`/`DELETE`/`TRUNCATE`/`TRIGGER` hüquqlu olsa, API başlamır.
+- Testlər: bütün Spring testləri iş rolu ilə işləyir (Flyway sahib rolu ilə); `EvidenceTablesTests` iş rolu ilə
+  `UPDATE`, `DELETE`, `TRUNCATE` (`CASCADE` da), `ALTER TABLE ... DISABLE TRIGGER`, `DROP TRIGGER`,
+  `SET session_replication_role` və retention funksiyasının rədd olunduğunu, hesab silinəndə isə yalnız
+  istinadın `NULL` olduğunu yoxlayır. Compose CI eyni yoxlamanı işləyən stack-də edir.
+- Qurulum və mövcud baza üçün keçid: [backend/README.md](../backend/README.md), "Verilənlər bazası rolları".
 
 ## Loglar
 

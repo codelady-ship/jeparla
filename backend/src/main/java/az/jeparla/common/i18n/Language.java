@@ -13,6 +13,16 @@ public enum Language {
         return name().toLowerCase(Locale.ROOT);
     }
 
+    /** The language of {@code locale}; Azerbaijani for any other language (as the message files do). */
+    public static Language of(Locale locale) {
+        for (Language language : values()) {
+            if (language.code().equals(locale.getLanguage())) {
+                return language;
+            }
+        }
+        return AZ;
+    }
+
     public static Language fromCode(String code) {
         for (Language language : values()) {
             if (language.code().equals(code)) {

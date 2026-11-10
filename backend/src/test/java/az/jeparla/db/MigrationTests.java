@@ -32,7 +32,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 class MigrationTests {
 
     @Container
-    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(PostgresContainerConfig.IMAGE);
+    static final PostgreSQLContainer POSTGRES = PostgresContainerConfig.container();
 
     private static final AtomicInteger SEQ = new AtomicInteger();
 
@@ -43,8 +43,11 @@ class MigrationTests {
     @BeforeAll
     static void migrate() {
         flyway = Flyway.configure()
-                .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
+                // As in production: the migration role owns the schema and is not a superuser (#165).
+                .dataSource(POSTGRES.getJdbcUrl(), PostgresContainerConfig.MIGRATION_USER,
+                        PostgresContainerConfig.MIGRATION_PASSWORD)
                 .locations("classpath:db/migration")
+                .placeholders(PostgresContainerConfig.placeholders())
                 .cleanDisabled(true)
                 .load();
         firstRun = flyway.migrate();

@@ -31,13 +31,15 @@ public class NotificationService {
     private final NotificationRepository notifications;
     private final EmailOutboxRepository outbox;
     private final MessageSource messages;
+    private final SupportProperties support;
     private final Clock clock;
 
     public NotificationService(NotificationRepository notifications, EmailOutboxRepository outbox,
-            MessageSource messages, Clock clock) {
+            MessageSource messages, SupportProperties support, Clock clock) {
         this.notifications = notifications;
         this.outbox = outbox;
         this.messages = messages;
+        this.support = support;
         this.clock = clock;
     }
 
@@ -58,6 +60,9 @@ public class NotificationService {
         if (note != null && !note.isBlank()) {
             body = body + "\n\n" + messages.getMessage("notification.note", new Object[] {note.strip()}, locale);
         }
+        if (kind.supportContact()) {
+            body = body + "\n\n" + supportLine(locale);
+        }
         Notification notification = notifications.save(new Notification(recipient, kind, language, title, body, link));
         if (recipient.getEmail() != null && !recipient.getEmail().isBlank()) {
             String footer = messages.getMessage("notification.email.footer", null, locale);
@@ -65,6 +70,17 @@ public class NotificationService {
                     title, body + "\n\n" + footer, clock.instant()));
         }
         return notification;
+    }
+
+    /**
+     * Where to turn (#138): the configured support email and URL, or else the in-app help page. The email is
+     * read outside the site, so "contact support" alone would not tell the seller where to write.
+     */
+    private String supportLine(Locale locale) {
+        if (support.hasContact()) {
+            return messages.getMessage("notification.support", new Object[] {support.contact()}, locale);
+        }
+        return messages.getMessage("notification.support.help", new Object[] {support.helpPath()}, locale);
     }
 
     /** The signed-in user's notifications, newest first. */

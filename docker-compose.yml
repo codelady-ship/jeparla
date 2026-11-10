@@ -12,10 +12,17 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    # Three roles (#165): the image's superuser (this container only, never the API), the migration role that
+    # owns the schema (Flyway) and the API's runtime role, which owns nothing and cannot change the evidence
+    # tables. docker/postgres/10-jeparla-roles.sh creates the last two on the first start of an empty volume.
     environment:
       POSTGRES_DB: ${JEPARLA_DB_NAME:-jeparla}
-      POSTGRES_USER: ${JEPARLA_DB_USER:-jeparla}
-      POSTGRES_PASSWORD: ${JEPARLA_DB_PASSWORD:?set JEPARLA_DB_PASSWORD in .env}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${JEPARLA_DB_ADMIN_PASSWORD:?set JEPARLA_DB_ADMIN_PASSWORD in .env}
+      JEPARLA_DB_MIGRATION_USER: ${JEPARLA_DB_MIGRATION_USER:-jeparla_owner}
+      JEPARLA_DB_MIGRATION_PASSWORD: ${JEPARLA_DB_MIGRATION_PASSWORD:?set JEPARLA_DB_MIGRATION_PASSWORD in .env}
+      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla_app}
+      JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD:?set JEPARLA_DB_PASSWORD in .env}
       # Store and compare timestamps in UTC (timestamptz columns).
       TZ: UTC
       PGTZ: UTC
@@ -23,8 +30,10 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/10-jeparla-roles.sh:/docker-entrypoint-initdb.d/10-jeparla-roles.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      # Over TCP: during the first-start initialisation the server listens on its socket only.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -126,8 +135,13 @@ services:
       # Optional shared secret of POST /internal/jobs/metal-prices; empty turns the endpoint off.
       JEPARLA_INTERNAL_JOB_TOKEN: ${JEPARLA_INTERNAL_JOB_TOKEN:-}
       JEPARLA_DB_URL: jdbc:postgresql://postgres:5432/${JEPARLA_DB_NAME:-jeparla}
-      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla}
+      # Flyway migrates as the owner; the API runs as the runtime role (#165). No superuser password here.
+      JEPARLA_DB_MIGRATION_USER: ${JEPARLA_DB_MIGRATION_USER:-jeparla_owner}
+      JEPARLA_DB_MIGRATION_PASSWORD: ${JEPARLA_DB_MIGRATION_PASSWORD}
+      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla_app}
       JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD}
+      JEPARLA_SUPPORT_EMAIL: ${JEPARLA_SUPPORT_EMAIL:-}
+      JEPARLA_SUPPORT_URL: ${JEPARLA_SUPPORT_URL:-}
       JEPARLA_REDIS_HOST: redis
       JEPARLA_REDIS_PORT: "6379"
       JEPARLA_REDIS_PASSWORD: ${JEPARLA_REDIS_PASSWORD}

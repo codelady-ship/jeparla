@@ -234,13 +234,13 @@ class MetalPriceJobTests {
         // A price in another currency cannot come from an AZN quote.
         db.jdbc().update("UPDATE product_variants SET currency = 'USD' WHERE id = ?", usd);
         // A database error on one row (batch size is 2: it shares a batch with "last").
-        db.jdbc().execute("""
+        db.superuserJdbc().execute("""
                 CREATE FUNCTION test_fail_variant() RETURNS trigger LANGUAGE plpgsql AS $$
                 BEGIN
                     IF NEW.id = %d AND NEW.price <> OLD.price THEN RAISE EXCEPTION 'test failure'; END IF;
                     RETURN NEW;
                 END $$""".formatted(dbFailure));
-        db.jdbc().execute("""
+        db.superuserJdbc().execute("""
                 CREATE TRIGGER test_fail_variant BEFORE UPDATE ON product_variants
                 FOR EACH ROW EXECUTE FUNCTION test_fail_variant()""");
         try {
@@ -248,8 +248,8 @@ class MetalPriceJobTests {
 
             assertThat(report.repriced().get(Metal.GOLD)).isEqualTo(new RepricingService.Result(2, 0, 0, 2));
         } finally {
-            db.jdbc().execute("DROP TRIGGER test_fail_variant ON product_variants");
-            db.jdbc().execute("DROP FUNCTION test_fail_variant()");
+            db.superuserJdbc().execute("DROP TRIGGER test_fail_variant ON product_variants");
+            db.superuserJdbc().execute("DROP FUNCTION test_fail_variant()");
         }
         // 1 x 585/1000 x 221.1147 = 129.35
         assertThat(db.price(first)).isEqualTo(new BigDecimal("129.35"));

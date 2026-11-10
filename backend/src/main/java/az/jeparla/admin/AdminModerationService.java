@@ -9,6 +9,7 @@ import az.jeparla.admin.dto.StoreStatusRequest;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.dto.PageDto;
 import az.jeparla.common.error.ApiException;
+import az.jeparla.common.i18n.Language;
 import az.jeparla.notification.NotificationKind;
 import az.jeparla.notification.NotificationService;
 import az.jeparla.product.MaterialKind;
@@ -195,7 +196,8 @@ public class AdminModerationService {
                 "{\"from\":\"" + from + "\",\"to\":\"" + product.getStatus() + "\"}");
         String note = reason;
         notifications.notify(store.getOwner(), kind,
-                locale -> new Object[] {product.getName().az(), note == null ? "" : note}, null, PRODUCTS_LINK);
+                locale -> new Object[] {product.getName().in(Language.of(locale)), note == null ? "" : note}, null,
+                PRODUCTS_LINK);
         return AdminProductDto.of(product);
     }
 

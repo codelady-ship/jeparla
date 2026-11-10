@@ -123,6 +123,12 @@ Təəssüf ki, sənədinizi qəbul edə bilmədik. Səbəb: {reason}. Bu səbəb
 **en:**
 Unfortunately, we could not accept your document. Reason: {reason}. Because of this, the product (store) will not be published for now. You can upload a correct document from your dashboard; it will be published once verified. If you have questions, contact support. If you disagree with the decision, you can request a review within 14 days.
 
+> **Tətbiqdəki vəziyyət (#138, 2026-11-10):** göndərilən bildirişlərdə son cümlə ("14 gün ərzində yenidən
+> baxılma") **yoxdur**, çünki 3.2-dəki apellyasiya yolu hələ qurulmayıb; vəd yalnız o yol hazır olanda və hüquqşünas
+> mətni təsdiqləyəndə qaytarılır. "Dəstək xidmətinə yazın" cümləsindən sonra konkret ünvan gəlir
+> (`JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL`, yoxdursa saytdakı kömək səhifəsi). 2b-dəki bəyanat mətni
+> (versiyalanmış sübut) apellyasiya vədi saxlamır və dəyişdirilməyib.
+
 ### (d) Saxtalaşdırma şübhəsi: hesab yoxlama müddətinə dayandırılır (`seller.verification.suspended`)
 
 Yalnız `authenticity` səbəbi ən azı iki nəfər tərəfindən təsdiqləndikdə göndərilir (bölmə 3). Mətndə "saxta", "cinayət", "polis" sözləri yoxdur; ittiham deyil.
@@ -153,6 +159,9 @@ We could not verify some of the documents you submitted and are carrying out an 
 **3.3. Audit log (dəyişməz)**
 - Hər hadisə: kim (user id, rol), nə (sənəd id, məhsul/mağaza id), nə vaxt (UTC + Asia/Baku), qərar, səbəb kateqoriyası, şərh, bəyanat mətninin versiyası, IP.
 - Yalnız əlavə (append-only) cədvəl; yeniləmə və silmə yoxdur; admin UI-dan redaktə olunmur.
+- Texniki təminat (#165): tətbiqin baza rolu `audit_logs` və `seller_declarations` cədvəllərini yalnız oxuya və
+  onlara əlavə edə bilər; dəyişmə, silmə, `TRUNCATE` və trigger-in söndürülməsi rədd olunur. Bunu yalnız
+  tətbiqdə olmayan sahib rolu və ya serverin superuser-i edə bilər (`docs/RBAC.md`, "Verilənlər bazası rolları").
 - Fayl yükləndikdə SHA-256 həşi yazılır (sübutun dəyişmədiyini göstərmək üçün).
 
 **3.4. Sübutların saxlanması**
@@ -173,8 +182,43 @@ We could not verify some of the documents you submitted and are carrying out an 
 | Şəxsiyyət vəsiqəsi surəti (saxlanılırsa) | Yoxlama tamamlandıqdan sonra 30 gün; sonra yalnız nəticə qeydi |
 | Rədd edilmiş adi sənəd | 90 gün |
 | Həqiqilik şübhəsi olan sənəd və sübut | Legal hold; bağlanmadan sonra hüquqşünasın müəyyən etdiyi müddət |
-| Audit log | Ən azı 5 il (təklif) |
+| Audit log | Ən azı 5 il (təklif). Bazada 5 ildən qısa silmə texniki olaraq mümkün deyil (`jeparla_purge_audit_logs`, #165) |
+| Satıcı bəyanatı: mətn, versiya, dil, mağaza, vaxt (`seller_declarations`) | Mağaza platformada olduğu müddət + aşağıdakı N il; sətir **silinmir** (sənədlər ona istinad edir) |
+| Satıcı bəyanatı: IP ünvanı və istifadəçi etiketi (ad + e-poçt/telefon), audit log-dakı eyni hadisənin IP-si və `actor_label`-i | Müqavilənin bitməsindən (və ya son bəyanatdan, hansı gecdirsə) N il, sonra psevdonimləşdirilir (aşağıda). Legal hold altında olanlar istisna. **Təklifdir, hüquqşünas təsdiqləməlidir (#57)** |
 | Hesab silindikdə | Fərdi məlumatlar silinir; legal hold altında olanlar istisna; silinmə özü log-a yazılır |
+
+**Bəyanatın IP-si və istifadəçi etiketi: N nə olmalıdır (təklif, hüquqi rəy deyil)**
+
+- Məqsəd: bəyanat yalnız satıcının saxta sənəd və ya yanlış məlumat təqdim etdiyi şübhəsi yarananda sübut kimi
+  lazımdır (bölmə 1, sətir 1-3, 7, 8: CM 320, 273-2, 200, 178). Sübut, səlahiyyətli orqan həmin əməl üzrə
+  hələ məsuliyyət məsələsini qaldıra bildiyi müddətdə lazımdır; ondan sonra IP və şəxsi etiketin saxlanması
+  üçün əsas zəifləyir ("Fərdi məlumatlar haqqında" Qanun: məqsədə çatdıqdan sonra məhv etmə öhdəliyi, İXM 375).
+- Ona görə N = istinad edilən cinayətlər üzrə **cinayət məsuliyyətinə cəlb etmə müddəti** olmalıdır. Bu müddətlər
+  Cinayət Məcəlləsində cinayətin ağırlıq kateqoriyasından asılıdır; həmin maddələr (kateqoriyalar və müddətlər)
+  bu araşdırmada **oxunmayıb və yoxlanılmayıb**, rəqəm hüquqşünasdan gəlməlidir (bölmə 5, sual 9).
+- Mühəndislik üçün işçi dəyər (hüquqi əsası yoxdur, yalnız boş qalmasın deyə): N = 5 il, audit log-un təklif
+  olunan minimumu ilə eyni, ki, bir hadisənin bəyanatı ilə audit qeydi eyni vaxtda psevdonimləşsin. Hüquqşünas
+  başqa müddət desə, yalnız konfiqurasiya dəyəri dəyişir.
+- Məxfilik siyasətinə bir cümlə lazımdır: sənəd yükləyəndə bəyanatın təsdiqi, vaxtı və IP ünvanı sübut kimi
+  saxlanılır, N ildən sonra IP və ad/əlaqə psevdonimləşdirilir.
+
+**Psevdonimləşdirmə işi: dizayn qeydi (hələ qurulmayıb)**
+
+- Sübut sətri heç vaxt silinmir: `id`, `store_id`, `text_version`, `language`, `text`, `confirmed_at` qalır,
+  `verification_documents.declaration_id` etibarlı qalır. Yalnız `ip_address` `NULL` olur və `user_label`
+  açarlı həşlə (HMAC-SHA256, açar yalnız env-də, məs. `JEPARLA_PSEUDONYM_KEY`) əvəz olunur: məhkəmə sorğusunda
+  məlum şəxsin etiketi ilə uyğunluq yoxlana bilər, etiketin özü bərpa olunmur. Yeni `pseudonymised_at` sütunu
+  işin vaxtını saxlayır.
+- Audit log-da eyni şəxsin `DECLARATION_CONFIRMED`, `DOCUMENT_UPLOADED` sətirlərinin `ip_address` və
+  `actor_label`-i eyni qayda ilə dəyişir, əks halda məlumat orada qalır.
+- Baza tərəfi (yeni miqrasiya): append-only trigger-lər yalnız bu dəyişikliyə icazə verir (`ip_address` -> `NULL`,
+  `user_label`/`actor_label` -> həş, digər sütunlar eyni, `confirmed_at`/`created_at` N ildən köhnə) və yalnız
+  sahib rolunun `SECURITY DEFINER` funksiyası daxilində (audit log retention funksiyası kimi). İş roluna `UPDATE`
+  verilmir; funksiyanı ya ayrıca `jeparla_retention` rolu (yalnız `EXECUTE`), ya da sahib rolu ilə cron çağırır.
+- Legal hold: mağaza və ya sənəd üzrə bayraq (3.4) olan sətirlərə toxunulmur; bayraq qurulana qədər iş işə
+  salınmır.
+- İş idempotentdir, ShedLock ilə bir instansiyada işləyir, hər run neçə sətir dəyişdiyini audit log-a yazır
+  (dəyişən sətirlərin məzmunu olmadan).
 
 **3.7. Platformanın hüquqi mövqeyi**
 - Jeparla v1-də satıcı deyil, ödəniş qəbul etmir (#57); hüquqi status "kataloq / informasiya saxlayan vasitəçi" kimi qurulmalıdır. ET 12.4 məlumatın qanunsuzluğundan faktiki xəbəri olmayan və xəbər tutduqda dərhal silən vasitəçini məsuliyyətdən azad edir.

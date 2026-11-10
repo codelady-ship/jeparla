@@ -106,7 +106,7 @@ class VerificationUnitTests {
     @Test
     void reasonsAndNotificationsExistInAzEnAndRu() throws IOException {
         List<String> keys = new ArrayList<>(List.of(DeclarationText.KEY, "notification.note",
-                "notification.email.footer"));
+                "notification.email.footer", "notification.support", "notification.support.help"));
         Arrays.stream(RejectReason.values()).forEach(reason -> keys.add("verification.reason." + reason.name()));
         for (NotificationKind kind : NotificationKind.values()) {
             keys.add(kind.messageKey() + ".title");
@@ -116,6 +116,11 @@ class VerificationUnitTests {
             Properties properties = load(file);
             for (String key : keys) {
                 assertThat(properties.getProperty(key)).as(file + ": " + key).isNotBlank();
+            }
+            // #138: no review within a deadline is promised until an appeal flow exists.
+            for (NotificationKind kind : NotificationKind.values()) {
+                assertThat(properties.getProperty(kind.messageKey() + ".body")).as(file + ": " + kind)
+                        .doesNotContain("14");
             }
         }
     }
