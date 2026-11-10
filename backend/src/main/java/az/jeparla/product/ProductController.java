@@ -18,8 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Optional;
 import org.springdoc.core.annotations.ParameterObject;
@@ -71,12 +69,13 @@ public class ProductController {
     @GetMapping(value = "/products", params = "ids")
     @Operation(summary = "Product cards by id (favorites)",
             description = "With ids=1,2,3 the response is a list, not a page: in the order asked, unknown or hidden "
-                    + "ids left out. At most " + MAX_IDS + " ids.")
+                    + "ids left out. At most " + MAX_IDS + " ids. Empty elements are ignored (ids=, is an empty list).")
     @ApiResponse(responseCode = "200", description = "Product cards")
-    @ApiResponse(responseCode = "400", description = "Too many or invalid ids")
+    @ApiResponse(responseCode = "400", description = "Too many ids, or an id that is not a positive number")
     public ResponseEntity<List<ProductSummaryDto>> byIds(
-            @Parameter(description = "Product ids, comma-separated") @RequestParam @Size(max = MAX_IDS) List<Long> ids) {
-        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(catalog.byIds(ids));
+            @Parameter(description = "Product ids, comma-separated") @RequestParam List<String> ids) {
+        List<Long> parsed = IdsParameter.parse(ids, MAX_IDS);
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(catalog.byIds(parsed));
     }
 
     @GetMapping("/products/{slug}")
@@ -90,13 +89,13 @@ public class ProductController {
     @GetMapping("/variants")
     @Operation(summary = "Compare columns by variant id",
             description = "In the order asked; removed variants and hidden products are left out. At most "
-                    + MAX_COMPARE + " ids.")
+                    + MAX_COMPARE + " ids. Empty elements are ignored (ids=, is an empty list), as for products.")
     @ApiResponse(responseCode = "200", description = "Compare items")
-    @ApiResponse(responseCode = "400", description = "Missing, too many or invalid ids")
+    @ApiResponse(responseCode = "400", description = "Missing parameter, too many ids, or an id that is not a positive number")
     public ResponseEntity<List<CompareItemDto>> compare(
-            @Parameter(description = "Variant ids, comma-separated") @RequestParam @NotEmpty @Size(max = MAX_COMPARE)
-            List<Long> ids) {
-        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(catalog.compare(ids));
+            @Parameter(description = "Variant ids, comma-separated") @RequestParam List<String> ids) {
+        List<Long> parsed = IdsParameter.parse(ids, MAX_COMPARE);
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(catalog.compare(parsed));
     }
 
     @PostMapping("/products/{id}/contact-click")
