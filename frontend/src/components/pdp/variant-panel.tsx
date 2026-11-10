@@ -48,7 +48,7 @@ export function VariantPanel({
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
+      <div data-keep-clear="">
         <p className="text-3xl font-semibold tabular-nums">{v.price}</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {labels.priceUpdated} <time dateTime={v.updatedIso}>{v.updated}</time>
@@ -97,6 +97,7 @@ export function VariantPanel({
         href={v.whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
+        data-keep-clear=""
         className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-12 w-full text-base")}
       >
         <MessageCircle aria-hidden />

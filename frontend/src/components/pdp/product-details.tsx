@@ -187,7 +187,7 @@ export async function ProductDetails({
             <h2 id="facts" className="mb-3 text-xl">
               {t("factsTitle")}
             </h2>
-            <table className="w-full text-sm">
+            <table data-keep-clear="" className="w-full text-sm">
               <tbody>
                 {facts.map(([k, v]) => (
                   <tr key={k} className="border-b last:border-0">
@@ -312,7 +312,10 @@ export async function ProductDetails({
             <div className="flex flex-col gap-2 rounded-lg border p-4">
               <p className="flex items-center gap-2 font-medium">
                 <StoreIcon aria-hidden className="size-4 text-gold-text" />
-                <Link href={`/stores/${store.slug}`} className="link-underline">
+                <Link
+                  href={`/stores/${store.slug}`}
+                  className="touch-target relative link-underline"
+                >
                   {store.name}
                 </Link>
               </p>

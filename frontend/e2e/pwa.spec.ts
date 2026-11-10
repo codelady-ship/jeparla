@@ -39,7 +39,60 @@ async function showInterest(page: Page) {
   await viewProduct(page, RING_2);
 }
 
-const offer = (page: Page) => page.getByRole("complementary", { name: "Jeparla telefonunuzda" });
+/** The card, in whichever wording fits the device (phone, tablet or computer). */
+const offer = (page: Page) =>
+  page.getByRole("complementary", {
+    name: /^Jeparla (telefonunuzda|planşetinizdə|tətbiq kimi|on your phone|on your tablet|as an app|на вашем телефоне|на вашем планшете|как приложение)$/,
+  });
+const installButton = (page: Page) =>
+  offer(page).getByRole("button", { name: isPhone(page) ? "Əlavə et" : "Quraşdır", exact: true });
+
+/**
+ * On a phone the product page opens with Share and the price in the bottom zone, so the
+ * card waits; at the end of the page nothing primary is under it.
+ */
+async function scrollToEnd(page: Page) {
+  await page.evaluate(() =>
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }),
+  );
+}
+
+type Rect = { top: number; right: number; bottom: number; left: number };
+const overlaps = (a: Rect, b: Rect) =>
+  a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+/** The visible card's box and the boxes of Share and the product facts table. */
+async function layout(page: Page) {
+  return page.evaluate(() => {
+    const box = (el: Element | null) => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { top: r.top, right: r.right, bottom: r.bottom, left: r.left };
+    };
+    const card = document.querySelector<HTMLElement>(".pwa-card");
+    const visible = !!card && getComputedStyle(card).visibility === "visible";
+    const share = [...document.querySelectorAll("main button")].find((b) =>
+      /^(Paylaş|Linki kopyala|Share|Copy link|Поделиться|Копировать ссылку)$/.test(
+        (b as HTMLElement).innerText.trim(),
+      ),
+    );
+    return {
+      card: visible ? box(card) : null,
+      share: box(share ?? null),
+      table: box(document.querySelector("#facts ~ table")),
+    };
+  });
+}
+
+/** Wherever the page is scrolled, a visible card lies over neither Share nor the facts. */
+async function expectClearOfActions(page: Page) {
+  const { card, share, table } = await layout(page);
+  expect(share, "the Share button").not.toBeNull();
+  expect(table, "the facts table").not.toBeNull();
+  if (!card) return;
+  expect(overlaps(card, share!), "card over Share").toBe(false);
+  expect(overlaps(card, table!), "card over the facts table").toBe(false);
+}
 
 test.describe("install offer", () => {
   test("appears after two product pages and stays away once dismissed", async ({ page }) => {
@@ -52,7 +105,9 @@ test.describe("install offer", () => {
 
     await viewProduct(page, RING_2);
     await fireInstallEvent(page);
+    await scrollToEnd(page);
     await expect(offer(page)).toBeVisible();
+    await expect(offer(page)).toHaveAccessibleName("Jeparla telefonunuzda");
     await expect(offer(page)).toContainText("Əsas ekrana əlavə edin");
     await expectNoA11yViolations(page);
 
@@ -68,7 +123,8 @@ test.describe("install offer", () => {
   test("hands over to the browser's install dialog", async ({ page }) => {
     await showInterest(page);
     await fireInstallEvent(page);
-    await offer(page).getByRole("button", { name: "Əlavə et", exact: true }).click();
+    await scrollToEnd(page);
+    await installButton(page).click();
     await expect(offer(page)).toHaveCount(0);
     expect(
       await page.evaluate(() => (window as unknown as { __prompted?: boolean }).__prompted),
@@ -83,6 +139,7 @@ test.describe("install offer", () => {
   test("Escape dismisses it from the keyboard", async ({ page }) => {
     await showInterest(page);
     await fireInstallEvent(page);
+    await scrollToEnd(page);
     await offer(page).getByRole("button", { name: "İndi yox" }).focus();
     await page.keyboard.press("Escape");
     await expect(offer(page)).toHaveCount(0);
@@ -110,6 +167,7 @@ test.describe("install offer on iPhone Safari", () => {
   test("explains Share, then Add to Home Screen", async ({ page }) => {
     test.skip(!isPhone(page), "the phone flow");
     await showInterest(page);
+    await scrollToEnd(page);
     const card = offer(page);
     await expect(card).toBeVisible();
     await expect(card.getByRole("listitem")).toHaveCount(2);
@@ -117,6 +175,90 @@ test.describe("install offer on iPhone Safari", () => {
     await expectNoA11yViolations(page);
     await card.getByRole("button", { name: "Aydındır" }).click();
     await expect(card).toHaveCount(0);
+  });
+});
+
+/** Scroll positions to check: top, Share and the facts table centred, the end. */
+async function eachScrollPosition(page: Page, check: () => Promise<void>) {
+  const positions = await page.evaluate(() => {
+    const centre = (el: Element | null) => {
+      if (!el) return 0;
+      const r = el.getBoundingClientRect();
+      return Math.max(0, window.scrollY + r.top + r.height / 2 - innerHeight / 2);
+    };
+    const share = document.querySelector("main [data-keep-clear]");
+    return [
+      0,
+      centre(share),
+      centre(document.querySelector("#facts ~ table")),
+      document.documentElement.scrollHeight,
+    ];
+  });
+  for (const y of positions) {
+    await page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y);
+    // One frame for the card to measure, one for its fade to settle (reduced motion).
+    await page.waitForTimeout(400);
+    await check();
+  }
+}
+
+for (const width of [360, 390, 430]) {
+  test.describe(`install card placement at ${width}px (touch)`, () => {
+    test.use({ viewport: { width, height: 844 }, hasTouch: true });
+
+    test("never lies over Share or the product facts", async ({ page }) => {
+      test.skip(test.info().project.name !== "mobile", "touch widths run once");
+      await showInterest(page);
+      await fireInstallEvent(page);
+      await page.waitForTimeout(2000);
+      await eachScrollPosition(page, () => expectClearOfActions(page));
+      // And it does show where nothing primary is under it.
+      await scrollToEnd(page);
+      await expect(offer(page)).toBeVisible();
+      await expect(offer(page)).toHaveAccessibleName("Jeparla telefonunuzda");
+    });
+  });
+}
+
+test.describe("install card on larger screens", () => {
+  test("a computer gets computer wording, clear of the product details", async ({ page }) => {
+    test.skip(isPhone(page), "the desktop flow");
+    await showInterest(page);
+    await fireInstallEvent(page);
+    // The product page is open at the top: the card shows at once, bottom left.
+    await expect(offer(page)).toBeVisible();
+    await expect(offer(page)).toHaveAccessibleName("Jeparla tətbiq kimi");
+    await expect(offer(page)).not.toContainText(/telefon|toxunuş/i);
+    await expect(installButton(page)).toBeVisible();
+    await expectClearOfActions(page);
+    await eachScrollPosition(page, () => expectClearOfActions(page));
+  });
+
+  for (const [locale, title, phoneWords] of [
+    ["en", "Jeparla as an app", /phone|tap/i],
+    ["ru", "Jeparla как приложение", /телефон|касани/i],
+  ] as const) {
+    test(`computer wording in ${locale}`, async ({ page }) => {
+      test.skip(isPhone(page), "the desktop flow");
+      await viewProduct(page, RING.replace("/az/", `/${locale}/`));
+      await viewProduct(page, RING_2.replace("/az/", `/${locale}/`));
+      await fireInstallEvent(page);
+      await expect(offer(page)).toHaveAccessibleName(title);
+      await expect(offer(page)).not.toContainText(phoneWords);
+    });
+  }
+
+  test.describe("on a tablet", () => {
+    test.use({ viewport: { width: 834, height: 1194 }, hasTouch: true });
+
+    test("speaks of a tablet, not a phone", async ({ page }) => {
+      test.skip(test.info().project.name !== "desktop", "one tablet run");
+      await showInterest(page);
+      await fireInstallEvent(page);
+      await scrollToEnd(page);
+      await expect(offer(page)).toHaveAccessibleName("Jeparla planşetinizdə");
+      await eachScrollPosition(page, () => expectClearOfActions(page));
+    });
   });
 });
 

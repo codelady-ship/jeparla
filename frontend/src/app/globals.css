@@ -152,6 +152,21 @@
   }
 }
 
+/* Invisible hit area of at least 44x44px around a smaller control (WCAG 2.5.5, #148).
+   It does not change the look; the element itself (or an ancestor box) must be
+   positioned, so add `relative` unless it is already `absolute`/`fixed`. */
+@utility touch-target {
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 2.75rem);
+    height: max(100%, 2.75rem);
+    translate: -50% -50%;
+  }
+}
+
 /* Underline that draws from left to right. */
 @utility link-underline {
   background-image: linear-gradient(currentColor, currentColor);
@@ -349,10 +364,18 @@
 .pwa-card {
   transition:
     opacity var(--duration-base) var(--ease-luxe),
-    translate var(--duration-base) var(--ease-luxe);
+    translate var(--duration-base) var(--ease-luxe),
+    visibility var(--duration-base);
   @starting-style {
     opacity: 0;
     translate: 0 1rem;
+  }
+  /* Steps aside while a primary action (data-keep-clear) would sit under it.
+     Hidden, it is out of the tab order and the accessibility tree too. */
+  &[data-tucked] {
+    opacity: 0;
+    translate: 0 1rem;
+    visibility: hidden;
   }
   &[data-closing] {
     opacity: 0;
@@ -363,6 +386,6 @@
 @media (prefers-reduced-motion: reduce) {
   .pwa-card {
     translate: none !important;
-    transition-property: opacity;
+    transition-property: opacity, visibility;
   }
 }

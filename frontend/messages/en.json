@@ -1225,7 +1225,12 @@
   "Pwa": {
     "installTitle": "Jeparla on your phone",
     "installText": "Add it to your home screen and open stores and today's prices in one tap.",
+    "installTitleTablet": "Jeparla on your tablet",
+    "installTextTablet": "Add it to your home screen and open stores and today's prices in one tap.",
+    "installTitleDesktop": "Jeparla as an app",
+    "installTextDesktop": "Install it on your computer and open stores and today's prices in their own window, in one click.",
     "install": "Add",
+    "installDesktop": "Install",
     "notNow": "Not now",
     "iosText": "Two steps in Safari:",
     "iosStep1": "Tap Share (in the ⋯ menu on newer iOS)",

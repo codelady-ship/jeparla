@@ -111,9 +111,21 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
             <NoticeRegion closeLabel={tc("close")} />
             <InstallPrompt
               labels={{
-                title: tp("installTitle"),
-                text: tp("installText"),
-                install: tp("install"),
+                title: {
+                  phone: tp("installTitle"),
+                  tablet: tp("installTitleTablet"),
+                  desktop: tp("installTitleDesktop"),
+                },
+                text: {
+                  phone: tp("installText"),
+                  tablet: tp("installTextTablet"),
+                  desktop: tp("installTextDesktop"),
+                },
+                install: {
+                  phone: tp("install"),
+                  tablet: tp("install"),
+                  desktop: tp("installDesktop"),
+                },
                 notNow: tp("notNow"),
                 iosText: tp("iosText"),
                 iosStep1: tp("iosStep1"),

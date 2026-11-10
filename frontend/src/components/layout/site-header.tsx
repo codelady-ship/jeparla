@@ -32,7 +32,7 @@ export function SiteHeader() {
         <Link
           href="/"
           translate="no"
-          className="font-heading text-2xl font-semibold tracking-tight"
+          className="touch-target relative font-heading text-2xl font-semibold tracking-tight"
         >
           Jeparla
         </Link>

@@ -9,7 +9,7 @@ import type { SearchParams } from "@/lib/catalog/filters";
 import { StoreCard } from "./store-card";
 
 const field =
-  "h-10 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-10 pointer-coarse:h-11 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export async function StoreList({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const sp = await searchParams;
@@ -49,7 +49,7 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
             ))}
           </select>
         </label>
-        <Button type="submit" className="h-10">
+        <Button type="submit" className="h-10 pointer-coarse:h-11">
           {t("search")}
         </Button>
       </FilterForm>

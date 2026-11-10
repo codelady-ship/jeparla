@@ -104,7 +104,7 @@ export function Gallery({
           type="button"
           onClick={() => setZoom(true)}
           aria-label={labels.zoom}
-          className="absolute right-3 bottom-3 inline-flex size-10 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="touch-target absolute right-3 bottom-3 inline-flex size-10 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
           <Expand aria-hidden className="size-4" />
         </button>
@@ -114,7 +114,7 @@ export function Gallery({
               type="button"
               onClick={() => go(index - 1)}
               aria-label={labels.prev}
-              className="absolute top-1/2 left-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
+              className="touch-target absolute top-1/2 left-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
             >
               <ChevronLeft aria-hidden className="size-5" />
             </button>
@@ -122,7 +122,7 @@ export function Gallery({
               type="button"
               onClick={() => go(index + 1)}
               aria-label={labels.next}
-              className="absolute top-1/2 right-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
+              className="touch-target absolute top-1/2 right-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
             >
               <ChevronRight aria-hidden className="size-5" />
             </button>

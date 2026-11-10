@@ -1225,7 +1225,12 @@
   "Pwa": {
     "installTitle": "Jeparla telefonunuzda",
     "installText": "Əsas ekrana əlavə edin: mağazalar və bugünkü qiymətlər bir toxunuşla açılsın.",
+    "installTitleTablet": "Jeparla planşetinizdə",
+    "installTextTablet": "Əsas ekrana əlavə edin: mağazalar və bugünkü qiymətlər bir toxunuşla açılsın.",
+    "installTitleDesktop": "Jeparla tətbiq kimi",
+    "installTextDesktop": "Kompüterinizə quraşdırın: mağazalar və bugünkü qiymətlər ayrıca pəncərədə, bir kliklə açılsın.",
     "install": "Əlavə et",
+    "installDesktop": "Quraşdır",
     "notNow": "İndi yox",
     "iosText": "Safari-də iki addım:",
     "iosStep1": "Paylaş düyməsinə toxunun (yeni iOS-da ⋯ menyusunda)",
