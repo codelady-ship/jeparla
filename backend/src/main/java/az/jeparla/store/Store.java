@@ -2,6 +2,7 @@ package az.jeparla.store;
 
 import az.jeparla.auth.User;
 import az.jeparla.common.i18n.LocalizedText;
+import az.jeparla.common.persistence.Decimals;
 import az.jeparla.common.persistence.TimestampedEntity;
 import az.jeparla.verification.CheckStatus;
 import jakarta.persistence.AttributeOverride;
@@ -25,6 +26,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "stores")
 public class Store extends TimestampedEntity {
+
+    private static final BigDecimal MAX_LATITUDE = BigDecimal.valueOf(90);
+    private static final BigDecimal MAX_LONGITUDE = BigDecimal.valueOf(180);
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false, updatable = false)
@@ -221,10 +225,23 @@ public class Store extends TimestampedEntity {
         return longitude;
     }
 
-    /** Both or neither (CHECK {@code stores_geo_pair}). */
+    /**
+     * Both or neither (CHECK {@code stores_geo_pair}), within -90..90 and -180..180 (CHECK
+     * {@code stores_latitude}, {@code stores_longitude}). Brought to the column scale through
+     * {@link Decimals#coordinate}: {@code 40.4} is stored as {@code 40.400000}, and more than six
+     * decimals throws {@link ArithmeticException} instead of being rounded by PostgreSQL (#126).
+     */
     public void setGeo(BigDecimal latitude, BigDecimal longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+        if ((latitude == null) != (longitude == null)) {
+            throw new IllegalArgumentException("Latitude and longitude are set together");
+        }
+        BigDecimal lat = Decimals.coordinate(latitude);
+        BigDecimal lon = Decimals.coordinate(longitude);
+        if (lat != null && (lat.abs().compareTo(MAX_LATITUDE) > 0 || lon.abs().compareTo(MAX_LONGITUDE) > 0)) {
+            throw new IllegalArgumentException("Coordinates out of range: " + lat + ", " + lon);
+        }
+        this.latitude = lat;
+        this.longitude = lon;
     }
 
     public String getLogoKey() {

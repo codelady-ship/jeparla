@@ -159,6 +159,25 @@ class EntityRoundTripTests {
     }
 
     @Test
+    void storeCoordinatesHaveTheColumnScale() {
+        Store store = data.store(data.merchant());
+        store.setGeo(new BigDecimal("40.4"), new BigDecimal("-49.8671"));
+        assertThat(store.getLatitude()).isEqualTo(new BigDecimal("40.400000"));
+        em.flush();
+
+        Store loaded = reload(Store.class, store.getId());
+        assertThat(loaded.getLatitude()).isEqualTo(store.getLatitude());
+        assertThat(loaded.getLongitude()).isEqualTo(new BigDecimal("-49.867100"));
+        assertThat(jdbc.queryForObject("SELECT latitude::text || ' ' || longitude::text FROM stores WHERE id = ?",
+                String.class, store.getId())).isEqualTo("40.400000 -49.867100");
+
+        // A map picker's 8 decimals are refused, not silently rounded to 40.409262 by PostgreSQL (#126).
+        assertThatThrownBy(() -> loaded.setGeo(new BigDecimal("40.40926172"), new BigDecimal("49.867092")))
+                .isInstanceOf(ArithmeticException.class);
+        assertThat(loaded.getLatitude()).isEqualTo(new BigDecimal("40.400000"));
+    }
+
+    @Test
     void storeSlugIsUnique() {
         Store store = data.store(data.merchant());
         em.flush();
