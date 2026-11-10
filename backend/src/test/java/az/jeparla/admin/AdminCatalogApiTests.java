@@ -49,6 +49,22 @@ class AdminCatalogApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theNewEndpointsAreInTheOpenApiDocument() throws Exception {
+        String doc = body(mvc.perform(get("/v3/api-docs")).andExpect(status().isOk()).andReturn());
+        for (String path : List.of(CATEGORIES, CATEGORIES + "/{id}", FINENESSES, FINENESSES + "/{id}", SYNONYMS,
+                SYNONYMS + "/{id}", "/api/v1/admin/users", "/api/v1/admin/users/{id}/role",
+                "/api/v1/admin/users/{id}/status", "/api/v1/admin/reports", "/api/v1/admin/reports/{id}/resolution",
+                "/api/v1/stores/{id}/reports", "/api/v1/favorites", "/api/v1/favorites/{productId}",
+                "/api/v1/favorites/import")) {
+            assertThat(JsonPath.<Object>read(doc, "$.paths['" + path + "']")).as(path).isNotNull();
+        }
+        for (String schema : List.of("AdminCategory", "AdminFineness", "AdminSynonym", "AdminUser", "AdminReport",
+                "Favorite")) {
+            assertThat(JsonPath.<Object>read(doc, "$.components.schemas." + schema)).as(schema).isNotNull();
+        }
+    }
+
+    @Test
     void onlyAdminsManageTheCatalogSettings() throws Exception {
         long buyer = newBuyer();
         long merchant = newMerchant();
