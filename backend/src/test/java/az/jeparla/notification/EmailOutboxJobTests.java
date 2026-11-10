@@ -99,4 +99,47 @@ class EmailOutboxJobTests {
         assertThat(message.getAttempts()).isEqualTo(EmailOutboxMessage.MAX_ATTEMPTS);
         assertThat(sender.sent).isEmpty();
     }
+
+    private EmailOutboxMessage linkMessage(Instant expiresAt) {
+        EmailOutboxMessage message = EmailOutboxMessage.oneTimeLink(2L, "buyer@jeparla.test", Language.AZ,
+                "Jeparla: şifrənin bərpası", "https://jeparla.az/az/reset-password#token=secret", NOW.minusSeconds(60),
+                expiresAt);
+        when(outbox.findById(any())).thenReturn(Optional.of(message));
+        return message;
+    }
+
+    @Test
+    void aSentOneTimeLinkLeavesNoLinkInTheOutbox() {
+        RecordingSender sender = new RecordingSender();
+        EmailOutboxMessage message = linkMessage(NOW.plusSeconds(3600));
+        when(outbox.findDue(any(), any(Pageable.class))).thenReturn(List.of(message));
+        EmailOutboxJob job = new EmailOutboxJob(outbox, sender, tx, mock(LockingTaskExecutor.class), clock);
+
+        assertThat(job.run()).isEqualTo(new EmailOutboxJob.Result(1, 0));
+        assertThat(message.getStatus()).isEqualTo(EmailOutboxMessage.Status.SENT);
+        assertThat(message.getBody()).isEqualTo(EmailOutboxMessage.REDACTED_BODY);
+        assertThat(message.getNotificationId()).isNull();
+    }
+
+    @Test
+    void anExpiredOneTimeLinkIsNotSent() {
+        RecordingSender sender = new RecordingSender();
+        EmailOutboxMessage message = linkMessage(NOW);
+        when(outbox.findDue(any(), any(Pageable.class))).thenReturn(List.of(message));
+        EmailOutboxJob job = new EmailOutboxJob(outbox, sender, tx, mock(LockingTaskExecutor.class), clock);
+
+        assertThat(job.run()).isEqualTo(new EmailOutboxJob.Result(0, 1));
+        assertThat(sender.sent).isEmpty();
+        assertThat(message.getStatus()).isEqualTo(EmailOutboxMessage.Status.FAILED);
+        assertThat(message.getBody()).isEqualTo(EmailOutboxMessage.REDACTED_BODY);
+    }
+
+    @Test
+    void anOrdinaryNotificationKeepsItsBody() {
+        RecordingSender sender = new RecordingSender();
+        EmailOutboxMessage message = message("seller@jeparla.test");
+        when(outbox.findDue(any(), any(Pageable.class))).thenReturn(List.of(message));
+        new EmailOutboxJob(outbox, sender, tx, mock(LockingTaskExecutor.class), clock).run();
+        assertThat(message.getBody()).isEqualTo("Текст");
+    }
 }

@@ -54,6 +54,8 @@ dependencies {
         exclude(group = "software.amazon.awssdk", module = "apache5-client")
     }
     implementation("software.amazon.awssdk:url-connection-client")
+    // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

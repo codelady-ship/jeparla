@@ -23,6 +23,12 @@ public class EmailOutboxMessage extends LongIdEntity {
     /** Attempts before a message is given up (FAILED). */
     static final int MAX_ATTEMPTS = 5;
 
+    /**
+     * Body of a sent or expired one-time link email (#131): the outbox keeps the record that it was sent, not a
+     * link that would still open the account.
+     */
+    public static final String REDACTED_BODY = "[one-time link removed]";
+
     public enum Status {
         PENDING,
         SENT,
@@ -45,7 +51,7 @@ public class EmailOutboxMessage extends LongIdEntity {
     @Column(name = "subject", nullable = false, updatable = false)
     private String subject;
 
-    @Column(name = "body", nullable = false, updatable = false)
+    @Column(name = "body", nullable = false)
     private String body;
 
     @Enumerated(EnumType.STRING)
@@ -67,6 +73,10 @@ public class EmailOutboxMessage extends LongIdEntity {
     @Column(name = "sent_at")
     private Instant sentAt;
 
+    /** Set when the body holds a one-time link (#131): the body is redacted once sent or after this time. */
+    @Column(name = "expires_at", updatable = false)
+    private Instant expiresAt;
+
     protected EmailOutboxMessage() {
     }
 
@@ -82,11 +92,34 @@ public class EmailOutboxMessage extends LongIdEntity {
         this.nextAttemptAt = now;
     }
 
+    /** An email with a one-time link that stops working at {@code expiresAt}; no in-app notification. */
+    static EmailOutboxMessage oneTimeLink(Long userId, String toAddress, Language language, String subject,
+            String body, Instant now, Instant expiresAt) {
+        EmailOutboxMessage message = new EmailOutboxMessage(null, userId, toAddress, language, subject, body, now);
+        message.expiresAt = expiresAt;
+        return message;
+    }
+
     void sent(Instant now) {
         this.status = Status.SENT;
         this.attempts++;
         this.sentAt = now;
         this.lastError = null;
+        if (expiresAt != null) {
+            this.body = REDACTED_BODY;
+        }
+    }
+
+    /** Whether the one-time link in the body no longer works, so sending it would be pointless. */
+    boolean isExpired(Instant now) {
+        return expiresAt != null && !expiresAt.isAfter(now);
+    }
+
+    /** Gives up a message whose link expired before it could be sent; the link is removed from the body. */
+    void expired() {
+        this.status = Status.FAILED;
+        this.lastError = "link expired before sending";
+        this.body = REDACTED_BODY;
     }
 
     /** A failed attempt: retried later with a growing pause, given up after {@value #MAX_ATTEMPTS}. */
@@ -134,5 +167,9 @@ public class EmailOutboxMessage extends LongIdEntity {
 
     public Instant getNextAttemptAt() {
         return nextAttemptAt;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
     }
 }

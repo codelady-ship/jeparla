@@ -20,7 +20,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * jeparla.notifications.email-cron}, {@code -} turns it off), under the ShedLock lock {@value #LOCK_NAME}.
  * Without a provider ({@link NoEmailSender}, #131) it sends nothing and the messages stay PENDING. A message
  * that fails is retried with a growing pause and given up after {@value EmailOutboxMessage#MAX_ATTEMPTS}
- * attempts. Logs carry the message id only, never the address or the text.
+ * attempts. Logs carry the message id only, never the address or the text. A one-time link email (#131) is not
+ * sent after its link expired, and its body loses the link once it is sent.
  */
 @Service
 public class EmailOutboxJob {
@@ -79,6 +80,13 @@ public class EmailOutboxJob {
         int sent = 0;
         int failed = 0;
         for (EmailOutboxMessage message : due == null ? List.<EmailOutboxMessage>of() : due) {
+            if (message.isExpired(clock.instant())) {
+                // A one-time link that no longer works (#131): not sent, the link is removed from the body.
+                tx.executeWithoutResult(status ->
+                        outbox.findById(message.getId()).ifPresent(EmailOutboxMessage::expired));
+                failed++;
+                continue;
+            }
             String error = null;
             try {
                 sender.send(message.getToAddress(), message.getSubject(), message.getBody());

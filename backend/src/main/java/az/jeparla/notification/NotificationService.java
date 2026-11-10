@@ -73,6 +73,36 @@ public class NotificationService {
     }
 
     /**
+     * Queues an account email with a one-time link (#131): email verification or password reset. Email only, in
+     * the recipient's language: no in-app notification, which would keep the link in {@code notifications}. The
+     * body loses the link once the email is sent or the link expires ({@link EmailOutboxMessage#REDACTED_BODY}).
+     *
+     * @param to        address the link goes to (the account's email)
+     * @param kind      {@code email.<kind>.subject} and {@code email.<kind>.body} in the message files
+     * @param args      arguments of the body for a locale
+     * @param expiresAt when the link stops working
+     */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void queueAccountEmail(User recipient, String to, String kind, Function<Locale, Object[]> args,
+            Instant expiresAt) {
+        Language language = recipient.getPreferredLocale();
+        Locale locale = Locale.forLanguageTag(language.code());
+        String subject = messages.getMessage("email." + kind + ".subject", null, locale);
+        String body = messages.getMessage("email." + kind + ".body", args.apply(locale), locale) + "\n\n"
+                + messages.getMessage("email.account.footer", null, locale);
+        outbox.save(EmailOutboxMessage.oneTimeLink(recipient.getId(), to, language, subject, body, clock.instant(),
+                expiresAt));
+    }
+
+    /** Gives up and redacts one-time link emails whose link has expired (#131). Returns how many were redacted. */
+    @Transactional
+    public int redactExpiredLinks() {
+        Instant now = clock.instant();
+        outbox.giveUpExpired(now);
+        return outbox.redactExpired(now, EmailOutboxMessage.REDACTED_BODY);
+    }
+
+    /**
      * Where to turn (#138): the configured support email and URL, or else the in-app help page. The email is
      * read outside the site, so "contact support" alone would not tell the seller where to write.
      */

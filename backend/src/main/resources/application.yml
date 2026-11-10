@@ -93,6 +93,14 @@ jeparla:
     # Absolute lifetime of a session (refresh token family, #134): rotation never extends it past this.
     refresh-family-ttl: 90d
     cookie-secure: ${JEPARLA_COOKIE_SECURE:true}
+    # Email verification and password reset links (#131): one use each, only the SHA-256 hash is stored.
+    account-email:
+      verification-ttl: 24h
+      reset-ttl: 1h
+      # Every "forgot password" answer takes at least this long, account or not.
+      forgot-response-floor: 400ms
+      # Deletes expired tokens and removes expired links from the email outbox. "-" turns it off.
+      cleanup-cron: ${JEPARLA_ACCOUNT_TOKEN_CLEANUP_CRON:0 40 * * * *}
   storage:
     # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
     # do not need it: they are served by the frontend from /demo.
@@ -133,9 +141,19 @@ jeparla:
     email: ${JEPARLA_SUPPORT_EMAIL:}
     url: ${JEPARLA_SUPPORT_URL:}
     help-path: /help
+    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az.
+    site-url: ${JEPARLA_PUBLIC_SITE_URL:http://localhost:3000}
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
     email-cron: ${JEPARLA_EMAIL_OUTBOX_CRON:0 * * * * *}
+  mail:
+    # SMTP relay of the email outbox (#131, docs/deploy.md "Email"). Empty host: nothing is sent, the outbox
+    # keeps the messages. STARTTLS is required.
+    host: ${JEPARLA_SMTP_HOST:}
+    port: ${JEPARLA_SMTP_PORT:587}
+    username: ${JEPARLA_SMTP_USERNAME:}
+    password: ${JEPARLA_SMTP_PASSWORD:}
+    from: ${JEPARLA_MAIL_FROM:}
   metal-prices:
     # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
     # holidays CBAR answers with the last bulletin (its own date), which is already stored.
