@@ -60,6 +60,20 @@ public ProductDto update(long productId, UpdateProductRequest request) {
 İctimai id-lər ardıcıldır və təsdiqlənmiş məhsullar onsuz da görünür, ona görə 403 ilə 404-ün fərqi
 gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir.
 
+### Satıcı API (#39)
+
+- Mağaza URL-də yoxdur: `/api/v1/merchant/store` həmişə token sahibinin mağazasıdır (`stores.owner_id`
+  unikal, hesaba bir mağaza). Mağaza yoxdursa `404 merchant.no_store`.
+- Məhsul, variant və şəkil endpoint-ləri `ProductAccess.requireOwner` ilə başlayır: başqasının məhsulu
+  `403 auth.forbidden`, olmayan və ya silinmiş məhsul `404 not_found`. Variant və şəkil həmin məhsulun
+  içində axtarılır (başqa məhsulun variant id-si 404). Şəkil açarı yalnız bu məhsulun prefiksi ilə
+  (`products/<store>/<product>/`) qəbul olunur.
+- `BLOCKED` mağaza yalnız oxuyur: hər dəyişiklik `403 merchant.store_blocked`.
+- Məhsulu yoxlamaya yalnız `APPROVED` mağaza və `VERIFIED` satıcı göndərir (`409 merchant.seller_not_verified`);
+  `APPROVED` statusunu satıcı yalnız özü gizlətdiyi məhsula qaytarır, təsdiq admindədir (#40).
+- Testlər: `MerchantProductApiTests.anotherMerchantsProductIsForbiddenEverywhere` (11 endpoint),
+  `MerchantStoreApiTests.onlyMerchantsReachTheMerchantApi`.
+
 ## Tokenlər
 
 - **Access token:** JWT, HS256, 15 dəqiqə. Claim-lər: `sub` (user id), `roles`, `iss=jeparla`,
@@ -155,6 +169,10 @@ inanırdı. Caddy konfiqurasiyası: [backend/README.md](../backend/README.md#rev
 nə, hansı obyekt, IP. IP yalnız IPv4/IPv6 literal kimi parse olunur (DNS sorğusu heç vaxt olmur);
 başqa dəyər (məs. host adı) `null` yazılır. Çağıranın tranzaksiyasında işləyir (dəyişiklik geri qaytarılsa, qeyd də yazılmır).
 Şifrə, token və sənəd məzmunu heç vaxt yazılmır. İstifadə edənlər: #39 (satıcı), #40 (admin).
+
+Satıcı əməliyyatları (#39): `STORE_CREATED`, `STORE_UPDATED`, `PRODUCT_CREATED`, `PRODUCT_UPDATED`,
+`PRODUCT_STATUS_CHANGED` (`{"from","to"}`), `PRODUCT_DELETED`, `VARIANT_ADDED`, `VARIANT_UPDATED`,
+`VARIANT_REMOVED`, `IMAGE_ADDED` (`aiGenerated` ilə), `IMAGE_REMOVED`.
 
 ## Loglar
 
