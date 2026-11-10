@@ -89,7 +89,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole(RoleName.ADMIN.name())
                         .requestMatchers("/api/v1/merchant/**").hasRole(RoleName.MERCHANT.name())
                         // A user's own notifications (#138): never part of the public GET catalog.
-                        .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()                        // Public catalog: products, stores, categories, search, metal prices.
+                        .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()
+                        // A buyer's saved products (#41, PLAN 5.11): private, GET included.
+                        .requestMatchers("/api/v1/favorites", "/api/v1/favorites/**").authenticated()                        // Public catalog: products, stores, categories, search, metal prices.
                         .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
                         // Guests may report a product or a store and are counted when they open WhatsApp
                         // (#37, #40); all are rate limited in the controller.
