@@ -39,6 +39,7 @@ public class AuthService {
     private final AccessTokenService accessTokens;
     private final RefreshTokenService refreshTokens;
     private final Clock clock;
+    private final EmailVerificationService emailVerification;
     /**
      * A real hash of a random password. Unknown logins are checked against it, so they cost the
      * same BCrypt work as a wrong password and the response time does not reveal which emails exist.
@@ -46,17 +47,19 @@ public class AuthService {
     private final String dummyHash;
 
     public AuthService(UserRepository users, RoleRepository roles, PasswordEncoder passwordEncoder,
-            AccessTokenService accessTokens, RefreshTokenService refreshTokens, Clock clock) {
+            AccessTokenService accessTokens, RefreshTokenService refreshTokens, Clock clock,
+            EmailVerificationService emailVerification) {
         this.users = users;
         this.roles = roles;
         this.passwordEncoder = passwordEncoder;
         this.accessTokens = accessTokens;
         this.refreshTokens = refreshTokens;
         this.clock = clock;
+        this.emailVerification = emailVerification;
         this.dummyHash = passwordEncoder.encode(UUID.randomUUID().toString());
     }
 
-    /** Buyer sign-up: role USER, signed in right away. 409 when the email is taken. */
+    /** Buyer sign-up: role USER, signed in right away, a verification email queued (#131). 409: email taken. */
     @Transactional
     public Session registerUser(RegisterRequest request, Locale locale) {
         String email = normalizeEmail(request.email());
@@ -143,6 +146,8 @@ public class AuthService {
             throw new ApiException(HttpStatus.CONFLICT,
                     "phone".equals(uniqueField) ? "auth.phone_taken" : "auth.email_taken", uniqueField);
         }
+        // Sign-up with an email address: a verification link to it (#131).
+        emailVerification.send(user);
         return session(user, refreshTokens.startFamily(user));
     }
 

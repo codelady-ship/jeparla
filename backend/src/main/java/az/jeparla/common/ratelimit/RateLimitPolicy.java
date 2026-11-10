@@ -32,6 +32,19 @@ public enum RateLimitPolicy {
     REGISTER_IP("register-ip", 10, Duration.ofHours(1)),
     /** Sign-up attempts with one email or phone (probing which ones exist). */
     REGISTER_ACCOUNT("register-account", 5, Duration.ofHours(1)),
+    /** "Forgot password" requests from one IP address (#131). */
+    PASSWORD_FORGOT_IP("password-forgot-ip", 10, Duration.ofHours(1)),
+    /**
+     * "Forgot password" requests for one email address (#131), whether the account exists or not. Over the limit
+     * the answer stays the same 202, but no email is written: a stranger cannot flood someone's inbox.
+     */
+    PASSWORD_FORGOT_ACCOUNT("password-forgot-account", 3, Duration.ofHours(1)),
+    /** New passwords set with a reset link from one IP address (#131); the token itself is 256 random bits. */
+    PASSWORD_RESET_IP("password-reset-ip", 20, Duration.ofHours(1)),
+    /** Email verification links opened from one IP address (#131). */
+    EMAIL_VERIFY_IP("email-verify-ip", 30, Duration.ofHours(1)),
+    /** Verification emails one signed-in account asks to be sent again (#131). */
+    EMAIL_VERIFICATION_ACCOUNT("email-verification-account", 3, Duration.ofHours(1)),
     /** Token refreshes from one IP address. */
     REFRESH_IP("refresh-ip", 60, Duration.ofMinutes(5)),
     /** Product reports from one IP address (used by the report endpoint, #37). */
