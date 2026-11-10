@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test as base, type Page } from "@playwright/test";
+import { expect, test as base, type Locator, type Page } from "@playwright/test";
 
 /**
  * Every test fails on a console error, an uncaught page error or a 5xx response
@@ -34,6 +34,17 @@ export const test = base.extend<{ guard: void }>({
 });
 
 export { expect };
+
+/**
+ * Waits until React has hydrated this element (it carries React's props key). `goto`
+ * resolves on `load`, which can come before hydration on a slow CI runner; a click or
+ * select before that does nothing.
+ */
+export async function waitForHydration(locator: Locator) {
+  await expect
+    .poll(() => locator.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps"))))
+    .toBe(true);
+}
 
 export const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768;
 

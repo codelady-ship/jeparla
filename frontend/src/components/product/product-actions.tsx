@@ -24,7 +24,7 @@ export function toggleCompare(variantId: number, labels: ProductActionLabels) {
 }
 
 const button =
-  "inline-flex size-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors outline-none hover:bg-background focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-4";
+  "relative inline-flex size-9 items-center justify-center rounded-full bg-background/90 after:absolute after:-inset-1 after:content-[''] text-foreground shadow-sm transition-colors outline-none hover:bg-background focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-4";
 
 export function ProductActions({
   id,

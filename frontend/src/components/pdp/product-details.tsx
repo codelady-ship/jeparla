@@ -12,6 +12,8 @@ import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ShareButton } from "@/components/share/share-button";
+import { shareLabels } from "@/components/share/share-labels";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
@@ -36,7 +38,7 @@ export async function ProductDetails({
   product: Product;
   store: Store | null;
 }) {
-  const [t, tp, tc, format, locale, categories, similar] = await Promise.all([
+  const [t, tp, tc, format, locale, categories, similar, share] = await Promise.all([
     getTranslations("Pdp"),
     getTranslations("Product"),
     getTranslations("Common"),
@@ -44,6 +46,7 @@ export async function ProductDetails({
     getLocale(),
     api.listCategories(),
     api.listProducts({ category: undefined, size: 96 }),
+    shareLabels(),
   ]);
   const name = p.name[locale];
   const category = categories.find((c) => c.id === p.categoryId);
@@ -145,14 +148,17 @@ export async function ProductDetails({
         />
 
         <div className="flex flex-col gap-6">
-          <div>
-            <Link
-              href={`/stores/${p.store.slug}`}
-              className="link-underline text-sm font-medium text-muted-foreground"
-            >
-              {p.store.name}
-            </Link>
-            <h1 className="mt-1 text-3xl leading-tight sm:text-4xl">{name}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <Link
+                href={`/stores/${p.store.slug}`}
+                className="link-underline text-sm font-medium text-muted-foreground"
+              >
+                {p.store.name}
+              </Link>
+              <h1 className="mt-1 text-3xl leading-tight sm:text-4xl">{name}</h1>
+            </div>
+            <ShareButton labels={share} url={url} title={name} className="shrink-0" />
           </div>
 
           <VariantPanel
