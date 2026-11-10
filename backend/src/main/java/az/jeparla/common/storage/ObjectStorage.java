@@ -34,17 +34,26 @@ public interface ObjectStorage {
      */
     PresignedUpload presignStagedUpload(String key, String contentType, long sizeBytes, Duration ttl);
 
-    /** Size and content type of a staged upload, or empty when there is none. */
+    /** Size, content type and ETag of a staged upload, or empty when there is none. */
     Optional<StoredObject> headStaged(String key);
 
-    /** The first bytes of a staged upload, at most {@code maxBytes} (a ranged GET). */
-    byte[] readStagedStart(String key, int maxBytes);
+    /**
+     * The first bytes of a staged upload, at most {@code maxBytes} (a ranged GET), only while it is still the
+     * object {@code checked} describes (#158: {@code If-Match} with its ETag).
+     *
+     * @throws StagedUploadChangedException when the staged object was replaced or removed
+     */
+    byte[] readStagedStart(String key, StoredObject checked, int maxBytes);
 
     /**
      * Copies a checked staged upload to the public bucket under the same key, then deletes the staged copy
-     * (best effort: a staged copy left behind is private and removed by the cleanup).
+     * (best effort: a staged copy left behind is private and removed by the cleanup). The copy happens only
+     * while the staged object is still the one {@code checked} describes (#158): a file PUT again with the
+     * still valid upload URL after the check is never published.
+     *
+     * @throws StagedUploadChangedException when the staged object was replaced or removed; nothing is copied
      */
-    void publishStaged(String key);
+    void publishStaged(String key, StoredObject checked);
 
     /** Removes a staged upload; nothing happens when it does not exist. */
     void deleteStaged(String key);
@@ -56,6 +65,7 @@ public interface ObjectStorage {
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {
     }
 
-    record StoredObject(long sizeBytes, String contentType) {
+    /** A stored object as a HEAD sees it; {@code etag} is null when the storage sends none. */
+    record StoredObject(long sizeBytes, String contentType, String etag) {
     }
 }

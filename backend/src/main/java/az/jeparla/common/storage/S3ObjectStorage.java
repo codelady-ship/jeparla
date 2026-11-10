@@ -2,8 +2,11 @@ package az.jeparla.common.storage;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -43,19 +46,30 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     private final String publicBucket;
     private final String privateBucket;
 
+    /** Set once the storage answered a conditional copy with 501, so the warning is logged once. */
+    private final AtomicBoolean conditionalCopyUnsupported = new AtomicBoolean();
+
     public S3ObjectStorage(S3Properties properties) {
+        this(client(properties), presigner(properties), properties.publicBucket(), properties.privateBucket());
+    }
+
+    /** For tests: a given client (the presigner is only used by {@link #presignStagedUpload}). */
+    S3ObjectStorage(S3Client client, S3Presigner presigner, String publicBucket, String privateBucket) {
+        this.client = client;
+        this.presigner = presigner;
+        this.publicBucket = publicBucket;
+        this.privateBucket = privateBucket;
+    }
+
+    private static S3Client client(S3Properties properties) {
         if (!properties.configured()) {
             throw new IllegalArgumentException("S3 storage is not configured: " + properties);
         }
-        StaticCredentialsProvider credentials = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(properties.accessKey(), properties.secretKey()));
-        S3Configuration pathStyle = S3Configuration.builder().pathStyleAccessEnabled(true).build();
-        Region region = Region.of(properties.region());
-        this.client = S3Client.builder()
+        return S3Client.builder()
                 .endpointOverride(URI.create(properties.endpoint()))
-                .region(region)
-                .credentialsProvider(credentials)
-                .serviceConfiguration(pathStyle)
+                .region(Region.of(properties.region()))
+                .credentialsProvider(credentials(properties))
+                .serviceConfiguration(pathStyle())
                 .requestChecksumCalculation(RequestChecksumCalculation.WHEN_REQUIRED)
                 .responseChecksumValidation(ResponseChecksumValidation.WHEN_REQUIRED)
                 .httpClient(UrlConnectionHttpClient.builder()
@@ -63,14 +77,24 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
                         .socketTimeout(Duration.ofSeconds(20))
                         .build())
                 .build();
-        this.presigner = S3Presigner.builder()
+    }
+
+    private static S3Presigner presigner(S3Properties properties) {
+        return S3Presigner.builder()
                 .endpointOverride(URI.create(properties.browserEndpoint()))
-                .region(region)
-                .credentialsProvider(credentials)
-                .serviceConfiguration(pathStyle)
+                .region(Region.of(properties.region()))
+                .credentialsProvider(credentials(properties))
+                .serviceConfiguration(pathStyle())
                 .build();
-        this.publicBucket = properties.publicBucket();
-        this.privateBucket = properties.privateBucket();
+    }
+
+    private static StaticCredentialsProvider credentials(S3Properties properties) {
+        return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(properties.accessKey(), properties.secretKey()));
+    }
+
+    private static S3Configuration pathStyle() {
+        return S3Configuration.builder().pathStyleAccessEnabled(true).build();
     }
 
     @Override
@@ -92,7 +116,7 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
         try {
             HeadObjectResponse response = client.headObject(
                     HeadObjectRequest.builder().bucket(privateBucket).key(STAGING_PREFIX + key).build());
-            return Optional.of(new StoredObject(response.contentLength(), response.contentType()));
+            return Optional.of(new StoredObject(response.contentLength(), response.contentType(), response.eTag()));
         } catch (NoSuchKeyException e) {
             return Optional.empty();
         } catch (S3Exception e) {
@@ -104,31 +128,82 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     }
 
     @Override
-    public byte[] readStagedStart(String key, int maxBytes) {
-        GetObjectRequest request = GetObjectRequest.builder()
+    public byte[] readStagedStart(String key, StoredObject checked, int maxBytes) {
+        GetObjectRequest.Builder request = GetObjectRequest.builder()
                 .bucket(privateBucket)
                 .key(STAGING_PREFIX + key)
-                .range("bytes=0-" + (maxBytes - 1))
-                .build();
-        byte[] bytes = client.getObjectAsBytes(request).asByteArray();
+                .range("bytes=0-" + (maxBytes - 1));
+        if (checked.etag() != null) {
+            request.ifMatch(checked.etag());
+        }
+        byte[] bytes;
+        try {
+            bytes = client.getObjectAsBytes(request.build()).asByteArray();
+        } catch (S3Exception e) {
+            if (changed(e)) {
+                throw new StagedUploadChangedException(key);
+            }
+            throw e;
+        }
         // A server that ignores Range sends the whole object.
-        return bytes.length <= maxBytes ? bytes : java.util.Arrays.copyOf(bytes, maxBytes);
+        return bytes.length <= maxBytes ? bytes : Arrays.copyOf(bytes, maxBytes);
     }
 
+    /**
+     * Two guards against a file PUT again with the still valid upload URL after the check (#158): a HEAD right
+     * before the copy (same ETag and size; also covers a storage that ignores the copy condition) and the copy
+     * itself conditional on the checked ETag ({@code x-amz-copy-source-if-match}). A storage that answers the
+     * condition with 501 gets an unconditional copy, guarded by the HEAD only.
+     */
     @Override
-    public void publishStaged(String key) {
+    public void publishStaged(String key, StoredObject checked) {
+        StoredObject current = headStaged(key).orElseThrow(() -> new StagedUploadChangedException(key));
+        if (current.sizeBytes() != checked.sizeBytes() || !Objects.equals(current.etag(), checked.etag())) {
+            throw new StagedUploadChangedException(key);
+        }
         // Both buckets are in one account: a server-side copy, content type and length are kept.
-        client.copyObject(CopyObjectRequest.builder()
+        CopyObjectRequest copy = CopyObjectRequest.builder()
                 .sourceBucket(privateBucket)
                 .sourceKey(STAGING_PREFIX + key)
                 .destinationBucket(publicBucket)
                 .destinationKey(key)
-                .build());
+                .build();
+        try {
+            if (checked.etag() == null || conditionalCopyUnsupported.get()) {
+                client.copyObject(copy);
+            } else {
+                copyIfMatch(copy, checked.etag());
+            }
+        } catch (S3Exception e) {
+            if (changed(e)) {
+                throw new StagedUploadChangedException(key);
+            }
+            throw e;
+        }
         try {
             deleteStaged(key);
         } catch (RuntimeException e) {
             log.warn("Published {} but could not delete its staged copy: {}", key, e.toString());
         }
+    }
+
+    private void copyIfMatch(CopyObjectRequest copy, String etag) {
+        try {
+            client.copyObject(copy.toBuilder().copySourceIfMatch(etag).build());
+        } catch (S3Exception e) {
+            if (e.statusCode() != 501) {
+                throw e;
+            }
+            if (conditionalCopyUnsupported.compareAndSet(false, true)) {
+                log.warn("Storage does not support a conditional CopyObject (501): publishing after a HEAD check only");
+            }
+            client.copyObject(copy);
+        }
+    }
+
+    /** 412: the ETag no longer matches; 404: the staged object is gone. */
+    private static boolean changed(S3Exception e) {
+        return e instanceof NoSuchKeyException || e.statusCode() == 412 || e.statusCode() == 404;
     }
 
     @Override

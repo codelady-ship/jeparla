@@ -12,6 +12,7 @@ import az.jeparla.common.storage.ImageProbe.ImageInfo;
 import az.jeparla.common.storage.ObjectStorage;
 import az.jeparla.common.storage.ObjectStorage.PresignedUpload;
 import az.jeparla.common.storage.ObjectStorage.StoredObject;
+import az.jeparla.common.storage.StagedUploadChangedException;
 import az.jeparla.merchant.dto.ImageAttachRequest;
 import az.jeparla.merchant.dto.ImageOrderRequest;
 import az.jeparla.merchant.dto.ImageUploadDto;
@@ -165,7 +166,12 @@ public class MerchantImageService {
         }
         String expected = EXTENSIONS.entrySet().stream()
                 .filter(entry -> key.endsWith("." + entry.getValue())).map(Map.Entry::getKey).findFirst().orElseThrow();
-        Optional<ImageInfo> info = ImageProbe.probe(storage.readStagedStart(key, ImageProbe.HEADER_BYTES));
+        Optional<ImageInfo> info;
+        try {
+            info = ImageProbe.probe(storage.readStagedStart(key, stored, ImageProbe.HEADER_BYTES));
+        } catch (StagedUploadChangedException e) {
+            throw changedAfterCheck(key);
+        }
         if (info.isEmpty() || !info.get().contentType().equals(expected)) {
             discardStaged(key);
             throw invalid("merchant.image_type", "key");
@@ -188,8 +194,8 @@ public class MerchantImageService {
         productService.flush();
         audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
-        // Public only now, after the check and the rows; a failed copy rolls the attach back.
-        storage.publishStaged(key);
+        // Registered before the copy (#158): a copy that succeeded on the server but failed in the client (a
+        // timeout) rolls the attach back and still removes the public file.
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCompletion(int status) {
@@ -198,7 +204,20 @@ public class MerchantImageService {
                 }
             }
         });
+        // Public only now, after the check and the rows, and only the object that was checked (#158).
+        try {
+            storage.publishStaged(key, stored);
+        } catch (StagedUploadChangedException e) {
+            throw changedAfterCheck(key);
+        }
         return new Created<>(views.image(image), true);
+    }
+
+    /** The staged file was PUT again or removed after its check: it is deleted and never published (#158). */
+    private ApiException changedAfterCheck(String key) {
+        log.info("Staged upload {} changed after its check", key);
+        discardStaged(key);
+        return invalid("merchant.image_missing", "key");
     }
 
     /** Removes a photo and, after the commit, its file. A listed product keeps at least one photo. */

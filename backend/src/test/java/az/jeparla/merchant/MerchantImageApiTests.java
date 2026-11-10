@@ -131,6 +131,53 @@ class MerchantImageApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void aFilePutAgainAfterTheCheckIsNeverPublished() throws Exception {
+        Seller seller = seller(SellerKind.FASHION, false);
+        long productId = createProduct(seller, beadsProduct(category(), "Muncuqlu bilərzik"));
+        byte[] png = png(100, 100);
+        String key = uploadKey(seller, productId, "image/png", png.length);
+        storage.put(key, png, "image/png");
+        // Same size, other bytes, PUT with the still valid URL while the API attaches (#158).
+        byte[] other = png.clone();
+        other[other.length - 1] ^= 1;
+        storage.beforeNextPublish(() -> storage.put(key, other, "image/png"));
+
+        mvc.perform(json(post("/api/v1/merchant/products/" + productId + "/images"),
+                        "{\"key\": \"%s\"}".formatted(key)).with(seller.token()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("merchant.image_missing"));
+        assertThat(storage.contains(key)).isFalse();
+        assertThat(storage.isStaged(key)).isFalse();
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM product_images WHERE product_id = ?", Integer.class,
+                productId)).isZero();
+    }
+
+    @Test
+    void aCopyThatFailsInTheClientLeavesNoPublicFile() throws Exception {
+        Seller seller = seller(SellerKind.FASHION, false);
+        long productId = createProduct(seller, beadsProduct(category(), "Muncuqlu bilərzik"));
+        byte[] png = png(100, 100);
+        String key = uploadKey(seller, productId, "image/png", png.length);
+        storage.put(key, png, "image/png");
+        // The server copied the file, the client timed out (#158).
+        storage.failNextPublishAfterCopy(new IllegalStateException("socket timeout"));
+        String images = "/api/v1/merchant/products/" + productId + "/images";
+
+        mvc.perform(json(post(images), "{\"key\": \"%s\"}".formatted(key)).with(seller.token()))
+                .andExpect(status().isInternalServerError());
+        assertThat(storage.contains(key)).isFalse();
+        assertThat(jdbc.queryForObject("SELECT attached_at IS NULL FROM image_upload_slots WHERE storage_key = ?",
+                Boolean.class, key)).isTrue();
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM product_images WHERE product_id = ?", Integer.class,
+                productId)).isZero();
+
+        // The slot stays open and the staged file is still there: the seller can try again.
+        mvc.perform(json(post(images), "{\"key\": \"%s\"}".formatted(key)).with(seller.token()))
+                .andExpect(status().isCreated());
+        assertThat(storage.contains(key)).isTrue();
+    }
+
+    @Test
     void photosAreReorderedAndRemovedWithTheirFiles() throws Exception {
         Seller seller = seller(SellerKind.FASHION, false);
         long productId = createProduct(seller, beadsProduct(category(), "Muncuqlu bilərzik"));
