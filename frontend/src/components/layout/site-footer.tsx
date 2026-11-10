@@ -9,6 +9,7 @@ const COLUMNS = [
     links: [
       { href: "/about", label: "Footer.aboutUs" },
       { href: "/contact", label: "Footer.contact" },
+      { href: "/help", label: "Footer.help" },
     ],
   },
   {
