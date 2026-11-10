@@ -59,6 +59,7 @@ export function ShareButton({
       variant="outline"
       onClick={onClick}
       data-copied={copied || undefined}
+      data-keep-clear=""
       className={cn(
         "h-11 gap-2 rounded-full px-4 transition-[background-color,color,scale,translate] duration-150 active:scale-[0.97] sm:h-10",
         className,

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  coversAny,
+  deviceKind,
   dismiss,
   isDismissed,
   isEngaged,
@@ -158,5 +160,34 @@ describe("offerFor", () => {
     ["inside the installed app", { standalone: true }],
   ])("offers nothing %s", (_, patch) => {
     expect(offerFor({ ...base, canPrompt: true, iosSafari: true, ...patch })).toBeNull();
+  });
+});
+
+describe("deviceKind", () => {
+  it("speaks to a computer when the main pointer is fine", () => {
+    expect(deviceKind(false, 1440, 900)).toBe("desktop");
+    expect(deviceKind(false, 390, 844)).toBe("desktop");
+  });
+  it("tells phones from tablets by the short side, in both orientations", () => {
+    expect(deviceKind(true, 390, 844)).toBe("phone");
+    expect(deviceKind(true, 844, 390)).toBe("phone");
+    expect(deviceKind(true, 834, 1194)).toBe("tablet");
+    expect(deviceKind(true, 1194, 834)).toBe("tablet");
+  });
+});
+
+describe("coversAny", () => {
+  const card = { top: 600, right: 380, bottom: 800, left: 10 };
+  it("sees a primary action under the card or right next to it", () => {
+    expect(coversAny(card, [{ top: 640, right: 370, bottom: 684, left: 280 }])).toBe(true);
+    expect(coversAny(card, [{ top: 560, right: 370, bottom: 596, left: 280 }])).toBe(true);
+  });
+  it("lets the card show when the actions are clear of it", () => {
+    expect(coversAny(card, [{ top: 100, right: 370, bottom: 144, left: 280 }])).toBe(false);
+    expect(coversAny(card, [{ top: 640, right: 900, bottom: 684, left: 400 }])).toBe(false);
+  });
+  it("ignores hidden (empty) elements", () => {
+    expect(coversAny(card, [{ top: 0, right: 0, bottom: 0, left: 0 }])).toBe(false);
+    expect(coversAny(card, [])).toBe(false);
   });
 });

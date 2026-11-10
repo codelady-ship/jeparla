@@ -151,3 +151,34 @@ export function offerFor(state: {
   if (state.iosSafari) return "ios";
   return null;
 }
+
+export type Device = "phone" | "tablet" | "desktop";
+
+/**
+ * Which device the offer speaks to, so it never says "phone" or "tap" on a computer.
+ * A mouse or trackpad as the main pointer is a computer; a touch screen whose short
+ * side is under 600px is a phone (in either orientation), a larger one a tablet.
+ */
+export function deviceKind(coarse: boolean, width: number, height: number): Device {
+  if (!coarse) return "desktop";
+  return Math.min(width, height) < 600 ? "phone" : "tablet";
+}
+
+export type Box = { top: number; right: number; bottom: number; left: number };
+
+/**
+ * True when the card would lie over any of the boxes (primary actions such as Share,
+ * the price or WhatsApp), with a small margin so it never touches them either.
+ * Empty boxes (hidden elements) do not count.
+ */
+export function coversAny(card: Box, boxes: Box[], margin = 8): boolean {
+  return boxes.some(
+    (b) =>
+      b.right > b.left &&
+      b.bottom > b.top &&
+      b.left < card.right + margin &&
+      b.right > card.left - margin &&
+      b.top < card.bottom + margin &&
+      b.bottom > card.top - margin,
+  );
+}
