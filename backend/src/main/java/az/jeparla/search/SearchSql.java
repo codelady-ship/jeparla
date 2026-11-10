@@ -195,25 +195,49 @@ final class SearchSql {
     }
 
     /**
-     * Index-friendly condition that holds for every text {@link #wordScore} gives more than 0: the word or a
-     * synonym starts the text or a word of it ({@code ' ' || text LIKE '% w%'} written as two trigram-indexable
-     * {@code LIKE}s), or (3+ letters) the trigram word similarity reaches {@value #PREFILTER_THRESHOLD}.
+     * Index-friendly condition that holds for every text {@link #wordScore} gives more than 0: the text contains
+     * the word or a synonym (one trigram regex {@code ~ 'w|s1|s2'}; forms under 3 letters as two {@code LIKE}s of
+     * a word start), or (3+ letters) the trigram word similarity reaches {@value #PREFILTER_THRESHOLD}.
      */
     private String wordFilter(int i, String text) {
         SearchTerms.Word word = terms.words().get(i);
         List<String> any = new ArrayList<>();
-        any.add(text + " LIKE " + param("w" + i + "b", word.text() + "%"));
-        any.add(text + " LIKE " + param("w" + i + "p", "% " + word.text() + "%"));
-        for (int j = 0; j < word.synonyms().size(); j++) {
-            String synonym = word.synonyms().get(j);
-            any.add(text + " LIKE " + param("w" + i + "s" + j + "b", synonym + "%"));
-            any.add(text + " LIKE " + param("w" + i + "s" + j, "% " + synonym + "%"));
+        List<String> forms = new ArrayList<>();
+        forms.add(word.text());
+        forms.addAll(word.synonyms());
+        // One trigram regex for every form of 3+ letters (one index scan instead of two per form); "contains"
+        // is wider than "starts a word", which is all a pre-filter needs. Shorter forms have no inner trigram,
+        // only the padded ones of a word start, so they keep the two LIKEs.
+        List<String> alternatives = new ArrayList<>();
+        for (int j = 0; j < forms.size(); j++) {
+            String form = forms.get(j);
+            if (form.codePointCount(0, form.length()) >= SearchTerms.MIN_FUZZY_LENGTH) {
+                alternatives.add(regexLiteral(form));
+            } else {
+                any.add(text + " LIKE " + param("w" + i + "f" + j + "b", form + "%"));
+                any.add(text + " LIKE " + param("w" + i + "f" + j + "p", "% " + form + "%"));
+            }
+        }
+        if (!alternatives.isEmpty()) {
+            any.add(text + " ~ " + param("w" + i + "r", String.join("|", alternatives)));
         }
         if (word.fuzzy()) {
             // text %> w is w <% text: word_similarity(w, text) >= pg_trgm.word_similarity_threshold.
             any.add(text + " %> " + param("w" + i, word.text()));
         }
         return "(" + String.join(" OR ", any) + ")";
+    }
+
+    /** {@code text} as a literal in a PostgreSQL regular expression: every non-letter, non-digit escaped. */
+    static String regexLiteral(String text) {
+        StringBuilder regex = new StringBuilder();
+        text.codePoints().forEach(c -> {
+            if (!Character.isLetterOrDigit(c)) {
+                regex.append('\\');
+            }
+            regex.appendCodePoint(c);
+        });
+        return regex.toString();
     }
 
     /** {@code CASE} giving the score of word {@code i} against a folded text, 0 when it does not match. */
