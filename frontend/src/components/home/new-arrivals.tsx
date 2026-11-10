@@ -18,7 +18,7 @@ export async function NewArrivals() {
         </h2>
         <Link
           href="/products?sort=newest"
-          className="inline-flex items-center gap-1 link-underline text-sm font-medium"
+          className="touch-target relative inline-flex items-center gap-1 link-underline text-sm font-medium"
         >
           {t("seeAll")}
           <ArrowRight aria-hidden className="size-4" />

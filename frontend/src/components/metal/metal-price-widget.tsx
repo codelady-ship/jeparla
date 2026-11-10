@@ -139,7 +139,7 @@ export async function MetalPriceWidget({
             />
           </div>
           <details className="text-sm">
-            <summary className="cursor-pointer text-muted-foreground underline-offset-4 hover:underline">
+            <summary className="cursor-pointer text-muted-foreground underline-offset-4 hover:underline pointer-coarse:py-3">
               {t("table")}
             </summary>
             <div className="mt-2 max-h-64 overflow-y-auto rounded-md border">

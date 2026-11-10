@@ -23,7 +23,10 @@ function SectionHead({ id, title, link }: { id: string; title: string; link?: Re
 
 function SeeAll({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-1 link-underline text-sm font-medium">
+    <Link
+      href={href}
+      className="touch-target relative inline-flex items-center gap-1 link-underline text-sm font-medium"
+    >
       {children}
       <ArrowRight aria-hidden className="size-4" />
     </Link>

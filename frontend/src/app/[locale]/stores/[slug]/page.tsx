@@ -127,7 +127,10 @@ export default async function StorePage({
           </div>
           <p className="flex items-center gap-2 text-sm">
             <Phone aria-hidden className="size-4 shrink-0 text-gold-text" />
-            <a href={`tel:${store.phone}`} className="link-underline tabular-nums">
+            <a
+              href={`tel:${store.phone}`}
+              className="touch-target relative link-underline tabular-nums"
+            >
               {store.phone}
             </a>
           </p>
@@ -135,7 +138,8 @@ export default async function StorePage({
             href={whatsappLink(store.whatsapp, t("whatsappMessage", { store: store.name }))}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(buttonVariants({ variant: "gold" }), "mt-1 h-10")}
+            data-keep-clear=""
+            className={cn(buttonVariants({ variant: "gold" }), "mt-1 h-10 pointer-coarse:h-11")}
           >
             <MessageCircle aria-hidden />
             {t("whatsapp")}

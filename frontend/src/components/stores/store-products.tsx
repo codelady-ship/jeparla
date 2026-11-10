@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
 import { PAGE_SIZE, parseFilters, type SearchParams } from "@/lib/catalog/filters";
 
 const field =
-  "h-10 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-10 pointer-coarse:h-11 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /** Products of one store with in-store search and a category filter. */
 export async function StoreProducts({
@@ -58,7 +58,7 @@ export async function StoreProducts({
             ))}
           </select>
         </label>
-        <Button type="submit" className="h-10">
+        <Button type="submit" className="h-10 pointer-coarse:h-11">
           {t("search")}
         </Button>
       </FilterForm>
