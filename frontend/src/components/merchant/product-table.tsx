@@ -69,7 +69,7 @@ export function ProductTable({
   }
 
   const price = (row: MerchantProductRow) =>
-    t("fromPrice", { price: formatPrice(row.priceFrom, locale) });
+    row.priceFrom === null ? "—" : t("fromPrice", { price: formatPrice(row.priceFrom, locale) });
   const updated = (iso: string) => {
     const [y, m, d] = iso.slice(0, 10).split("-");
     return `${d}.${m}.${y}`;
@@ -241,10 +241,10 @@ export function ProductTable({
                       <StatusBadge status={row.status} label={ts(row.status)} />
                     </td>
                     <td className="p-3 text-right whitespace-nowrap tabular-nums">
-                      {formatPrice(row.priceFrom, locale)}
+                      {row.priceFrom === null ? "—" : formatPrice(row.priceFrom, locale)}
                     </td>
                     <td className="p-3 text-right tabular-nums">
-                      {formatDecimal(String(row.views), locale)}
+                      {row.views === null ? "—" : formatDecimal(String(row.views), locale)}
                     </td>
                     <td className="p-3 whitespace-nowrap tabular-nums">{updated(row.updatedAt)}</td>
                     <td className="p-3">{actions(row)}</td>

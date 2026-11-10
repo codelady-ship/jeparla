@@ -1,6 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { headers } from "next/headers";
 import { apiFetch, isNotFound, type Query } from "./http";
+import { relayHeaders } from "@/lib/auth/tokens";
 import type { JeparlaApi } from "./types";
 
 /**
@@ -42,15 +43,9 @@ async function cachedOrNull<T>(path: string): Promise<T | null> {
  * Cloudflare cf-connecting-ip). Without the token nothing extra is sent.
  */
 export async function visitorHeaders(): Promise<Record<string, string>> {
-  const token = process.env.JEPARLA_FRONTEND_TOKEN;
-  if (!token) return {};
+  if (!process.env.JEPARLA_FRONTEND_TOKEN) return {};
   const h = await headers();
-  const ip =
-    h.get("cf-connecting-ip") ??
-    h.get("x-real-ip") ??
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    null;
-  return ip ? { "X-Jeparla-Frontend-Token": token, "X-Jeparla-Client-Ip": ip } : {};
+  return relayHeaders((name) => h.get(name));
 }
 
 const enc = encodeURIComponent;

@@ -14,7 +14,18 @@ const email = z
   .pipe(z.email("emailInvalid"));
 const password = z.string().min(1, "required");
 
-export const loginSchema = z.object({ email, password });
+/** Buyers sign in with their e-mail, sellers with their mobile number (backend `login`). */
+const login = z
+  .string()
+  .trim()
+  .min(1, "required")
+  .max(254, "loginInvalid")
+  .refine(
+    (v) => (v.includes("@") ? z.email().safeParse(v).success : /^\+?[\d\s()-]{9,20}$/.test(v)),
+    "loginInvalid",
+  );
+
+export const loginSchema = z.object({ login, password });
 
 export const registerSchema = z
   .object({

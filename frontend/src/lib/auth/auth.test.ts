@@ -30,10 +30,12 @@ describe("session cookie", () => {
 
 describe("auth schemas", () => {
   it("validates login", () => {
-    const r = loginSchema.safeParse({ email: "bad", password: "" });
+    const r = loginSchema.safeParse({ login: "bad", password: "" });
     expect(r.success).toBe(false);
     if (!r.success)
-      expect(fieldErrors(r.error)).toEqual({ email: "emailInvalid", password: "required" });
+      expect(fieldErrors(r.error)).toEqual({ login: "loginInvalid", password: "required" });
+    expect(loginSchema.safeParse({ login: "050 123 45 67", password: "x" }).success).toBe(true);
+    expect(loginSchema.safeParse({ login: "a@b.az", password: "x" }).success).toBe(true);
   });
   it("validates register password rules and confirmation", () => {
     const r = registerSchema.safeParse({

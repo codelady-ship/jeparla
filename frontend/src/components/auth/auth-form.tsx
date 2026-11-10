@@ -15,11 +15,12 @@ import {
   type FieldErrors,
 } from "@/lib/auth/schemas";
 import { homeFor, safeNext } from "@/lib/auth/session";
+import { isMessage } from "@/lib/api/problem";
 
 type Kind = "login" | "register" | "forgot";
 
-const FIELDS: Record<Kind, readonly ("name" | "email" | "password" | "confirm")[]> = {
-  login: ["email", "password"],
+const FIELDS: Record<Kind, readonly ("name" | "login" | "email" | "password" | "confirm")[]> = {
+  login: ["login", "password"],
   register: ["name", "email", "password", "confirm"],
   forgot: ["email"],
 };
@@ -27,6 +28,7 @@ const SCHEMA = { login: loginSchema, register: registerSchema, forgot: forgotSch
 const ENDPOINT = { login: "/api/auth/login", register: "/api/auth/register", forgot: null };
 const AUTOCOMPLETE = {
   name: "name",
+  login: "username",
   email: "email",
   password: { login: "current-password", register: "new-password", forgot: "off" },
   confirm: "new-password",
@@ -67,7 +69,7 @@ export function AuthForm({
   const [showPassword, setShowPassword] = useState(false);
   const fields = FIELDS[kind];
   const msg = (key: string | undefined) =>
-    key ? (labels.errors[key] ?? labels.errors.server) : "";
+    key ? (labels.errors[key] ?? (isMessage(key) ? key : labels.errors.server)) : "";
 
   function focusFirstError(errs: FieldErrors) {
     const first = fields.find((f) => errs[f]);

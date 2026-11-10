@@ -11,6 +11,7 @@ import { formatWeek, invalidDays, parseWeek, WEEK, type WeekHours } from "@/lib/
 import { pathErrors, profileSchema, type ProfileInput } from "@/lib/merchant/schemas";
 import { notices } from "@/lib/notice";
 import { CITIES } from "@/lib/seller/cities";
+import { isMessage } from "@/lib/api/problem";
 
 /** Store profile and weekly opening hours (PLAN 5.7 "profile"). */
 export function ProfileForm({ initial }: { initial: ProfileInput }) {
@@ -34,6 +35,8 @@ export function ProfileForm({ initial }: { initial: ProfileInput }) {
 
   const err = (key: string | undefined) => {
     if (!key) return undefined;
+    // The backend's own sentence (already in the page language) is shown as it is.
+    if (isMessage(key)) return key;
     const k = `errors.${key}`;
     if (tm.has(k as "errors.check")) return tm(k as "errors.check");
     if (ts.has(k as "errors.phoneInvalid")) return ts(k as "errors.phoneInvalid");

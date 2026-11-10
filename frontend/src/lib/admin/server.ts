@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { adminApi, type AdminApi } from "@/lib/api/admin";
-import { AUTH_AVAILABLE, readJson, readSession, unavailable } from "@/lib/auth/server";
+import { USING_MOCK } from "@/lib/api";
+import { readJson, readSession, unavailable } from "@/lib/auth/server";
 import type { Session } from "@/lib/auth/session";
 import type { z } from "zod";
 import { decisionSchema, type Decision } from "./decisions";
@@ -25,7 +26,7 @@ export async function readAdmin<T extends z.ZodType>(
   request: Request,
   schema: T,
 ): Promise<{ session: Session; data: z.infer<T> } | Response> {
-  if (!AUTH_AVAILABLE) return unavailable();
+  if (!USING_MOCK) return unavailable();
   const session = await readSession();
   if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
   if (session.role !== "ADMIN") return Response.json({ error: "forbidden" }, { status: 403 });

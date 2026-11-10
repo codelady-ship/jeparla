@@ -28,6 +28,7 @@ import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/a
 import type { ProductInput, StoneInput, VariantInput } from "@/types/merchant";
 import { ImageUpload } from "./image-upload";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
+import { isMessage } from "@/lib/api/problem";
 
 export type Option = { value: string; label: string };
 export type FinenessOption = Option & { metal: MetalType; fineness: number };
@@ -53,6 +54,7 @@ export function ProductForm({
   finenesses,
   sellerApproved,
   quotes,
+  requireDocs = true,
 }: {
   /** "new" or the product id. */
   draftKey: string;
@@ -63,6 +65,11 @@ export function ProductForm({
   sellerApproved: boolean;
   /** Latest pure-metal gram price per metal, for the METAL_LINKED preview. */
   quotes: Partial<Record<MetalType, GramQuote>>;
+  /**
+   * Sample data only: the form asks for expertise documents before review. With the backend
+   * they are separate private uploads checked by an admin (#40), not part of this form.
+   */
+  requireDocs?: boolean;
 }) {
   const t = useTranslations("Merchant.form");
   const locale = useLocale();
@@ -146,6 +153,8 @@ export function ProductForm({
 
   const err = (key: string | undefined) => {
     if (!key) return undefined;
+    // The backend's own sentence (already in the page language) is shown as it is.
+    if (isMessage(key)) return key;
     const k = `errors.${key}`;
     if (tm.has(k as "errors.check")) return tm(k as "errors.check");
     if (ts.has(k as "errors.phoneInvalid")) return ts(k as "errors.phoneInvalid");
@@ -187,7 +196,7 @@ export function ProductForm({
         return fail(errs);
       }
     }
-    if (intent === "REVIEW" && p.docs.length === 0 && productStatus !== "APPROVED")
+    if (requireDocs && intent === "REVIEW" && p.docs.length === 0 && productStatus !== "APPROVED")
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result =
@@ -585,13 +594,14 @@ export function ProductForm({
         {current === 5 && (
           <div className="flex flex-col gap-5">
             <p className="text-sm">{t("docs.what")}</p>
+            {!requireDocs && <p className="text-sm text-muted-foreground">{t("docs.separate")}</p>}
             <DocUpload docs={p.docs as DocMeta[]} onChange={(docs) => set({ docs })} />
             <div className="flex flex-col gap-2 rounded-lg bg-muted p-4 text-sm">
               <h3 className="font-sans font-semibold">{t("review.title")}</h3>
               {sellerApproved ? (
                 <>
                   <p>{t("review.ready")}</p>
-                  {p.docs.length === 0 && productStatus !== "APPROVED" && (
+                  {requireDocs && p.docs.length === 0 && productStatus !== "APPROVED" && (
                     <p className="text-muted-foreground">{t("review.docsNeeded")}</p>
                   )}
                   {productStatus === "APPROVED" && (

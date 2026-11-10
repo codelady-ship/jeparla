@@ -428,7 +428,8 @@
       "name": "Ad",
       "email": "E-poçt",
       "password": "Şifrə",
-      "confirm": "Şifrəni təkrarlayın"
+      "confirm": "Şifrəni təkrarlayın",
+      "login": "E-poçt və ya telefon"
     },
     "hints": {
       "password": "Ən azı {min} simvol, hərf və rəqəm olsun."
@@ -445,7 +446,10 @@
       "passwordMismatch": "Şifrələr eyni deyil.",
       "unavailable": "Giriş hələ aktiv deyil. Bir az sonra yenidən yoxlayın.",
       "network": "Bağlantı alınmadı. İnterneti yoxlayıb yenidən cəhd edin.",
-      "server": "Nəsə alınmadı. Yenidən cəhd edin."
+      "server": "Nəsə alınmadı. Yenidən cəhd edin.",
+      "loginInvalid": "E-poçt ünvanını (ad@example.az) və ya mobil nömrəni (050 123 45 67) yazın.",
+      "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin.",
+      "sessionExpired": "Sessiyanın müddəti bitib. Yenidən daxil olun."
     },
     "pending": "Gözləyin",
     "showPassword": "Şifrəni göstər",
@@ -569,7 +573,10 @@
       "label": "Kabinet bölmələri",
       "dashboard": "Panel",
       "products": "Məhsullar",
-      "profile": "Mağaza profili"
+      "profile": "Mağaza profili",
+      "documents": "Sənədlər",
+      "notifications": "Bildirişlər",
+      "unread": "{count} oxunmamış"
     },
     "demoNote": "Demo rejimi: statistika nümunədir və dəyişikliklər serverdə saxlanılmır. Qaralamalar bu brauzerdə qalır.",
     "status": {
@@ -612,7 +619,8 @@
       "draftUntitled": "Adsız qaralama bu brauzerdə saxlanılıb.",
       "draftResume": "Davam et",
       "demoData": "Nümunə data",
-      "fix": "Düzəlt"
+      "fix": "Düzəlt",
+      "notCounted": "Baxışlar hələ sayılmır"
     },
     "products": {
       "title": "Məhsullar",
@@ -738,7 +746,8 @@
         "labGrown": "Laboratoriyada yetişdirilib"
       },
       "docs": {
-        "what": "Əyar möhürü, daş sertifikatı (GIA, IGI və s.) və ya alış sənədi."
+        "what": "Əyar möhürü, daş sertifikatı (GIA, IGI və s.) və ya alış sənədi.",
+        "separate": "Bu addımdakı fayllar məhsulla birlikdə göndərilmir. Ekspertiza sənədlərini (əyar möhürü, laboratoriya hesabatı) «Sənədlər» bölməsində qorunan yükləmə ilə əlavə edin."
       },
       "review": {
         "title": "Göndərməzdən əvvəl",
@@ -859,7 +868,67 @@
       "check": "Formada səhv var, qırmızı sahələri yoxlayın.",
       "moneyInvalid": "0 və ya müsbət məbləğ yazın, məsələn 12,50.",
       "percentInvalid": "0 ilə 1000 arasında faiz yazın.",
-      "maxBelowMin": "Maksimum qiymət minimumdan az ola bilməz."
+      "maxBelowMin": "Maksimum qiymət minimumdan az ola bilməz.",
+      "unavailable": "Server indi cavab vermir. Bir az sonra yenidən cəhd edin.",
+      "network": "Bağlantı alınmadı. İnterneti yoxlayıb yenidən cəhd edin.",
+      "server": "Nəsə alınmadı. Yenidən cəhd edin.",
+      "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin."
+    },
+    "sampleOnly": "Bu bölmə yalnız real serverlə işləyir. Nümunə data rejimində sənəd yüklənmir və bildiriş yoxdur.",
+    "documents": {
+      "title": "Sənədlər",
+      "intro": "Təsdiq sənədləri yalnız Jeparla administratoruna görünür: qorunan yaddaşda saxlanılır, açıq linki yoxdur.",
+      "listTitle": "Göndərilmiş sənədlər",
+      "empty": "Hələ sənəd göndərməmisiniz.",
+      "uploadTitle": "Yeni sənəd",
+      "kindLabel": "Sənədin növü",
+      "productLabel": "Məhsul",
+      "productPick": "Məhsulu seçin",
+      "fileLabel": "Fayl (PDF, JPEG və ya PNG, ən çox 10 MB)",
+      "declarationTitle": "Satıcı bəyanatı",
+      "declarationDraft": "Qaralama: mətn hüquqşünas tərəfindən hələ təsdiqlənməyib.",
+      "accept": "Bəyanatı oxudum və təsdiqləyirəm",
+      "submit": "Sənədi göndər",
+      "sending": "Göndərilir",
+      "sent": "Sənəd göndərildi və yoxlamaya düşdü.",
+      "uploaded": "{name} · {date} yüklənib",
+      "fashionNote": "Bijuteriya satan mağaza sənəd yükləmir: satıcı yoxlamasını administrator aparır.",
+      "errors": {
+        "fileRequired": "Faylı seçin.",
+        "fileType": "Yalnız PDF, JPEG və ya PNG faylı yükləmək olar.",
+        "fileSize": "Fayl 10 MB-dan böyük ola bilməz.",
+        "productRequired": "Ekspertiza sənədi üçün məhsulu seçin.",
+        "declaration": "Göndərmək üçün bəyanatı təsdiqləyin.",
+        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+      },
+      "kind": {
+        "TAX_ID": "VÖEN şəhadətnaməsi",
+        "TRADE_LICENSE": "Ticarət icazəsi",
+        "ASSAY_CERTIFICATE": "Əyar (probirlik) sertifikatı",
+        "LAB_REPORT": "Laboratoriya hesabatı (daş)"
+      },
+      "status": {
+        "PENDING": "Yoxlanılır",
+        "VERIFIED": "Təsdiqlənib",
+        "REJECTED": "Qəbul edilmədi",
+        "CHANGES_REQUESTED": "Düzəliş istənilib"
+      },
+      "reason": {
+        "UNREADABLE": "Oxunmur",
+        "EXPIRED": "Müddəti bitib",
+        "MISMATCH": "Mağaza məlumatı ilə uyğun deyil",
+        "WRONG_TYPE": "Səhv sənəd növü",
+        "HALLMARK_MISSING": "Əyar möhürü görünmür",
+        "AUTHENTICITY": "Həqiqiliyi təsdiqlənmədi"
+      }
+    },
+    "notifications": {
+      "title": "Bildirişlər",
+      "intro": "Mağaza, məhsul və sənəd qərarları burada görünür.",
+      "empty": "Bildiriş yoxdur.",
+      "readAll": "Hamısını oxunmuş et",
+      "unread": "Yeni",
+      "open": "Ətraflı"
     }
   },
   "Admin": {
