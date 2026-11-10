@@ -129,7 +129,7 @@ public class MerchantImageService {
         }
         int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
         ProductImage image = new ProductImage(key, info.get().width(), info.get().height(), expected,
-                stored.sizeBytes(), request.aiGenerated(), sortOrder);
+                stored.sizeBytes(), request.isAiGenerated(), sortOrder);
         String altAz = blankToNull(request.altAz());
         if (altAz != null || blankToNull(request.altEn()) != null || blankToNull(request.altRu()) != null) {
             image.setAlt(LocalizedText.of(altAz != null ? altAz : product.getName().az(), blankToNull(request.altEn()),
