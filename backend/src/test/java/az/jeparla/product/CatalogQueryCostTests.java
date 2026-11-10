@@ -63,6 +63,26 @@ class CatalogQueryCostTests {
         assertThat(largeCount).isLessThanOrEqualTo(9).isLessThanOrEqualTo(smallCount + 1);
     }
 
+    /**
+     * Search (#38): synonyms, one ranked statement per group, then the product cards in batches as in
+     * the catalog, the store cards and the category counts. The same for 2 and 48 products.
+     */
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "/api/v1/search?q=q%C4%B1z%C4%B1l&size=2, /api/v1/search?q=q%C4%B1z%C4%B1l&size=48, 16",
+            "/api/v1/search?q=qizil+nisan+uzuk&size=2, /api/v1/search?q=qizil+nisan+uzuk&size=48, 16",
+            "/api/v1/search?size=2, /api/v1/search?size=48, 16",
+            "/api/v1/search?q=qizil&type=products&size=2, /api/v1/search?q=qizil&type=products&size=48, 10",
+            "/api/v1/search/suggest?q=q, /api/v1/search/suggest?q=qizil+nisan, 4",
+    })
+    void searchHasAFixedCost(String small, String large, int max) throws Exception {
+        long smallCount = statements(small);
+        long largeCount = statements(large);
+        log.info("SQL statements: {} -> {}, {} -> {}", small, smallCount, large, largeCount);
+        assertThat(largeCount).isLessThanOrEqualTo(max).isEqualTo(smallCount);
+        assertThat(statements("/api/v1/search/suggest?q=")).isZero();
+    }
+
     @Test
     void otherEndpointsHaveAFixedCost() throws Exception {
         assertThat(statements("/api/v1/products/nisan-uzukleri-gold-585-1")).isLessThanOrEqualTo(7);

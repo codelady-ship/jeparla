@@ -12,6 +12,9 @@ import az.jeparla.store.dto.StoreDtos;
 import az.jeparla.store.dto.StoreSummaryDto;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,21 @@ public class StoreCatalogService {
         return stores.findAllPublic().stream()
                 .filter(store -> cityFilter == null || cityFilter.equals(store.getCity()))
                 .filter(store -> SearchText.matches(SearchText.fold(store.getName() + " " + store.getCity()), words))
+                .map(store -> StoreDtos.summary(store, imageUrls.url(store.getLogoKey()),
+                        counts.getOrDefault(store.getId(), 0L)))
+                .toList();
+    }
+
+    /** Store cards of these ids in the order given (search results); unknown and not APPROVED ids are left out. */
+    public List<StoreSummaryDto> summaries(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Long> counts = products.listedCountsByStore();
+        Map<Long, Store> byId = stores.findAllById(ids).stream()
+                .filter(store -> store.getStatus() == StoreStatus.APPROVED)
+                .collect(Collectors.toMap(Store::getId, Function.identity()));
+        return ids.stream().map(byId::get).filter(Objects::nonNull)
                 .map(store -> StoreDtos.summary(store, imageUrls.url(store.getLogoKey()),
                         counts.getOrDefault(store.getId(), 0L)))
                 .toList();

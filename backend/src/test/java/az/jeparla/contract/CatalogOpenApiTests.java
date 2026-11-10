@@ -28,17 +28,21 @@ class CatalogOpenApiTests {
                 "/api/v1/products", "/api/v1/products/{slug}", "/api/v1/variants", "/api/v1/products/{id}/reports",
                 "/api/v1/products/{id}/contact-click", "/api/v1/categories", "/api/v1/finenesses", "/api/v1/stores",
                 "/api/v1/stores/{slug}", "/api/v1/stores/{slug}/products", "/api/v1/metal-prices/latest",
-                "/api/v1/metal-prices/history");
+                "/api/v1/metal-prices/history", "/api/v1/search", "/api/v1/search/suggest");
         assertThat(doc.get("components").get("schemas").propertyNames()).contains(
                 "ProductSummary", "Product", "Variant", "Stone", "ProductImage", "PricingRule", "Fineness",
                 "Category", "StoreSummary", "Store", "Verification", "CompareItem", "MetalPrice", "LocalizedText",
-                "Money");
+                "Money", "SearchResult", "Suggestions", "StoreSuggestion", "CategorySuggestion", "ProductSuggestion");
 
         JsonNode list = doc.get("paths").get("/api/v1/products").get("get");
         assertThat(list.get("parameters").findValuesAsString("name")).contains("q", "category", "store", "metal",
                 "fineness", "minWeight", "maxWeight", "minPrice", "maxPrice", "verified", "inStock", "city", "shape",
                 "minCarat", "maxCarat", "color", "clarity", "sort", "page", "size");
-        JsonNode money = doc.get("components").get("schemas").get("Money").get("properties");
+        JsonNode search = doc.get("paths").get("/api/v1/search").get("get");
+        assertThat(search.get("parameters").findValuesAsString("name")).containsExactlyInAnyOrder("q", "type", "page",
+                "size");
+        assertThat(search.get("responses").propertyNames()).contains("200", "400", "429");
+        JsonNode money =doc.get("components").get("schemas").get("Money").get("properties");
         assertThat(money.get("amount").get("type").stringValue()).isEqualTo("string");
     }
 }
