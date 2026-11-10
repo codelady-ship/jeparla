@@ -184,6 +184,7 @@ public class Product extends TimestampedEntity {
     }
 
     public void addVariant(ProductVariant variant) {
+        requireMetalOf(variant.getFineness());
         variant.attachTo(this);
         variants.add(variant);
     }
@@ -264,8 +265,20 @@ public class Product extends TimestampedEntity {
         return metal;
     }
 
+    /**
+     * Changes the metal. Every live variant must move to a fineness of the new metal in the same
+     * transaction: the database checks the pair at commit (V10, deferred foreign key).
+     */
     public void setMetal(Metal metal) {
         this.metal = metal;
+    }
+
+    /** A variant's fineness must be of this product's metal (#122; the database enforces it too). */
+    void requireMetalOf(Fineness fineness) {
+        if (fineness.getMetal() != metal) {
+            throw new IllegalArgumentException(
+                    "Fineness " + fineness.getLabel() + " is " + fineness.getMetal() + ", the product is " + metal);
+        }
     }
 
     public ProductStatus getStatus() {

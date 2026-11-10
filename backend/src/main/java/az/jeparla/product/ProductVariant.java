@@ -51,6 +51,14 @@ public class ProductVariant extends TimestampedEntity {
     @JoinColumn(name = "fineness_id", nullable = false)
     private Fineness fineness;
 
+    /**
+     * Copy of the fineness metal, written by the database trigger {@code product_variants_metal} (V10)
+     * and read-only here. Composite foreign keys keep it equal to the fineness and the product metal.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "metal", insertable = false, updatable = false)
+    private Metal metal;
+
     @Column(name = "weight_grams", nullable = false, precision = 8, scale = 3)
     private BigDecimal weightGrams;
 
@@ -189,8 +197,20 @@ public class ProductVariant extends TimestampedEntity {
         return fineness;
     }
 
+    /** A fineness of the product's metal; the database rejects any other (V10). */
     public void setFineness(Fineness fineness) {
+        if (product != null) {
+            product.requireMetalOf(fineness);
+        }
         this.fineness = fineness;
+    }
+
+    /**
+     * The metal the database stored for this variant (always its fineness metal). Read-only: it is
+     * null on a new variant until it is flushed and loaded again.
+     */
+    public Metal getMetal() {
+        return metal;
     }
 
     public BigDecimal getWeightGrams() {

@@ -253,6 +253,33 @@ class EntityRoundTripTests {
     }
 
     @Test
+    void variantMetalIsTheFinenessMetal() {
+        Product product = data.product(data.store(data.merchant()), data.category(), data.fineness(Metal.SILVER),
+                "80.00");
+        ProductVariant variant = product.getVariants().getFirst();
+        assertThat(variant.getMetal()).as("written by the database, not by the entity").isNull();
+
+        ProductVariant loaded = reload(ProductVariant.class, variant.getId());
+        assertThat(loaded.getMetal()).isEqualTo(Metal.SILVER);
+        assertThat(jdbc.queryForObject("SELECT metal FROM product_variants WHERE id = ?", String.class, variant.getId()))
+                .isEqualTo("SILVER");
+    }
+
+    @Test
+    void variantOfAnotherMetalIsRefusedByTheEntity() {
+        Product gold = data.product(data.store(data.merchant()), data.category(), data.fineness(Metal.GOLD), "1.00");
+        Fineness silver = data.fineness(Metal.SILVER);
+        ProductVariant variant = new ProductVariant("SILVER-" + TestData.next(), silver, BigDecimal.ONE,
+                BigDecimal.TEN, Currencies.AZN, NOW);
+        assertThatThrownBy(() -> gold.addVariant(variant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("SILVER");
+        assertThatThrownBy(() -> gold.getVariants().getFirst().setFineness(silver))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(gold.getVariants()).hasSize(1);
+    }
+
+    @Test
     void liveSkuIsUniquePerStore() {
         Store store = data.store(data.merchant());
         Category category = data.category();
