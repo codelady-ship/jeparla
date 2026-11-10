@@ -9,6 +9,14 @@ export const HERO_MEDIA = {
   mobile: { video: "/hero/enter-mobile.mp4", frames: "/hero/tf-mobile" },
 } as const;
 
+/**
+ * Poster of the entrance video: its first frame, which is the plain backdrop in
+ * both cuts (about 0.5 KB, lossless AVIF). Painted with the page, it keeps the video
+ * from becoming the LCP element when its first frame arrives (#160); the headline
+ * is the largest content of the first screen.
+ */
+export const HERO_POSTER = "/hero/poster.avif";
+
 /** Number of act 2 frames per format (00.jpg ... 37.jpg). */
 export const HERO_FRAMES = 37;
 

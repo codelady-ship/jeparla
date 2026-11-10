@@ -392,7 +392,9 @@
 
 @keyframes hero-title-in {
   from {
-    opacity: 0;
+    /* Starts visible (soft and low), not transparent: the headline is the first screen's
+       largest content and must be painted with the first frame (LCP, #160). */
+    opacity: 0.35;
     transform: translateY(18px);
     filter: blur(6px);
   }
