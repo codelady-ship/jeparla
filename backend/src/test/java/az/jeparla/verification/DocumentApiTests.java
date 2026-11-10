@@ -301,14 +301,18 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .contains("Причина: Срок действия документа истёк.")
                 .contains("VÖEN çıxarışı 2024-cü ildəndir")
                 .contains("voen.pdf")
-                // Where to write (#138): no support address configured in tests, so the help page.
-                .endsWith("Поддержка: страница помощи на сайте, /help")
+                // Where to write (#138): no support address configured in tests, so the help page in the
+                // seller's language (#167).
+                .endsWith("Поддержка: страница помощи на сайте, /ru/help")
                 // No review deadline is promised while there is no appeal flow.
                 .doesNotContain("14 дней");
         assertThat(notification.get("link")).isEqualTo("/merchant/documents");
         Map<String, Object> email = jdbc.queryForMap(
-                "SELECT to_address, language, subject, status FROM email_outbox WHERE notification_id = ?",
+                "SELECT to_address, language, subject, body, status FROM email_outbox WHERE notification_id = ?",
                 notification.get("id"));
+        // The email is read outside the site: the help page as an absolute URL (#167).
+        assertThat((String) email.get("body"))
+                .contains("Поддержка: страница помощи на сайте, http://localhost:3000/ru/help\n\n");
         assertThat((String) email.get("to_address")).endsWith("@jeparla.test");
         assertThat(email.get("language")).isEqualTo("ru");
         assertThat(email.get("subject")).isEqualTo("Документ не принят");
@@ -470,7 +474,7 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.status").value("REJECTED"));
         assertThat(jdbc.queryForObject("SELECT body FROM notifications WHERE user_id = ? AND kind = 'STORE_REJECTED'",
                 String.class, seller.userId())).contains("VÖEN reyestrdə tapılmadı")
-                .endsWith("Dəstək: saytdakı kömək səhifəsi, /help");
+                .endsWith("Dəstək: saytdakı kömək səhifəsi, /az/help");
         mvc.perform(json(post("/api/v1/admin/stores/" + seller.storeId() + "/seller-check"),
                         "{\"decision\": \"VERIFIED\"}").with(admin(adminId)))
                 .andExpect(status().isOk())
