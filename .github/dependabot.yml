@@ -1,0 +1,31 @@
+# Dependency update pull requests (#35). Weekly, grouped so the queue stays short; every PR
+# runs the path-filtered workflows like any other change. Major versions come one by one.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Baku
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [backend]
+    groups:
+      gradle-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Baku
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [devops]
+    groups:
+      actions:
+        patterns: ["*"]

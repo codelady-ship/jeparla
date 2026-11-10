@@ -17,7 +17,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -202,6 +204,57 @@ class MigrationTests {
     }
 
     @Test
+    void variantFinenessMustBeOfTheProductMetal() {
+        long goldProduct = product(store(merchant()));
+        long silver = fineness("SILVER");
+        assertThatThrownBy(() -> variant(goldProduct, silver, "SILVER-ON-GOLD", "80.00", "2.000"))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("product_variants_product_metal_fk");
+
+        // The metal column is the fineness metal whatever the caller writes.
+        long variant = variant(goldProduct, fineness(), "GOLD-1", "900.00", "2.000");
+        jdbc.update("UPDATE product_variants SET metal = 'SILVER' WHERE id = ?", variant);
+        assertThat(jdbc.queryForObject("SELECT metal FROM product_variants WHERE id = ?", String.class, variant))
+                .isEqualTo("GOLD");
+        assertThatThrownBy(() -> jdbc.update("UPDATE product_variants SET fineness_id = ? WHERE id = ?", silver, variant))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("product_variants_product_metal_fk");
+        assertThatThrownBy(() -> jdbc.update("UPDATE product_variants SET fineness_id = -1 WHERE id = ?", variant))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("fineness -1 does not exist");
+    }
+
+    @Test
+    void finenessInUseKeepsItsMetal() {
+        long fineness = fineness();
+        variant(product(store(merchant())), fineness, "KEEP-1", "900.00", "2.000");
+        assertThatThrownBy(() -> jdbc.update("UPDATE finenesses SET metal = 'SILVER' WHERE id = ?", fineness))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("product_variants_fineness_metal_fk");
+    }
+
+    @Test
+    void productMetalChangesTogetherWithItsVariants() {
+        long product = product(store(merchant()));
+        long variant = variant(product, fineness(), "MOVE-1", "900.00", "2.000");
+        long silver = fineness("SILVER");
+
+        // Alone, the product cannot leave its variants on the old metal (checked at commit).
+        assertThatThrownBy(() -> jdbc.update("UPDATE products SET metal = 'SILVER' WHERE id = ?", product))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("product_variants_product_metal_fk");
+
+        // Product first, variant second, one transaction: accepted.
+        TransactionTemplate tx = new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource()));
+        tx.executeWithoutResult(status -> {
+            jdbc.update("UPDATE products SET metal = 'SILVER' WHERE id = ?", product);
+            jdbc.update("UPDATE product_variants SET fineness_id = ? WHERE id = ?", silver, variant);
+        });
+        assertThat(jdbc.queryForObject("SELECT metal FROM product_variants WHERE id = ?", String.class, variant))
+                .isEqualTo("SILVER");
+    }
+
+    @Test
     void decimalsAreStoredExactly() {
         long variant = variant(product(store(merchant())), fineness(), "EXACT-1", "1248.50", "3.250");
         Map<String, Object> row = jdbc.queryForMap(
@@ -335,10 +388,14 @@ class MigrationTests {
     }
 
     private static long fineness() {
+        return fineness("GOLD");
+    }
+
+    private static long fineness(String metal) {
         int n = SEQ.incrementAndGet();
         return jdbc.queryForObject("""
-                INSERT INTO finenesses (metal, value, label) VALUES ('GOLD', ?, ?) RETURNING id
-                """, Long.class, n, "test " + n);
+                INSERT INTO finenesses (metal, value, label) VALUES (?, ?, ?) RETURNING id
+                """, Long.class, metal, n, "test " + n);
     }
 
     private static long product(long store) {

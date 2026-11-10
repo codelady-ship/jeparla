@@ -18,6 +18,8 @@ public final class Decimals {
     public static final int PERCENT_SCALE = 2;
     /** CBAR quote per ounce and per gram: {@code NUMERIC(14,4)}. */
     public static final int QUOTE_SCALE = 4;
+    /** Latitude and longitude in degrees: {@code NUMERIC(9,6)} (about 0.1 m). */
+    public static final int COORDINATE_SCALE = 6;
 
     public static final BigDecimal ZERO_MONEY = BigDecimal.ZERO.setScale(MONEY_SCALE);
 
@@ -38,6 +40,14 @@ public final class Decimals {
 
     public static BigDecimal quote(BigDecimal value) {
         return scaled(value, QUOTE_SCALE);
+    }
+
+    /**
+     * A map coordinate. Same rule as money and weight: more than six decimals is refused, not
+     * rounded, so the caller (the store form) decides how to round what a map picker returns.
+     */
+    public static BigDecimal coordinate(BigDecimal value) {
+        return scaled(value, COORDINATE_SCALE);
     }
 
     private static BigDecimal scaled(BigDecimal value, int scale) {

@@ -159,6 +159,25 @@ class EntityRoundTripTests {
     }
 
     @Test
+    void storeCoordinatesHaveTheColumnScale() {
+        Store store = data.store(data.merchant());
+        store.setGeo(new BigDecimal("40.4"), new BigDecimal("-49.8671"));
+        assertThat(store.getLatitude()).isEqualTo(new BigDecimal("40.400000"));
+        em.flush();
+
+        Store loaded = reload(Store.class, store.getId());
+        assertThat(loaded.getLatitude()).isEqualTo(store.getLatitude());
+        assertThat(loaded.getLongitude()).isEqualTo(new BigDecimal("-49.867100"));
+        assertThat(jdbc.queryForObject("SELECT latitude::text || ' ' || longitude::text FROM stores WHERE id = ?",
+                String.class, store.getId())).isEqualTo("40.400000 -49.867100");
+
+        // A map picker's 8 decimals are refused, not silently rounded to 40.409262 by PostgreSQL (#126).
+        assertThatThrownBy(() -> loaded.setGeo(new BigDecimal("40.40926172"), new BigDecimal("49.867092")))
+                .isInstanceOf(ArithmeticException.class);
+        assertThat(loaded.getLatitude()).isEqualTo(new BigDecimal("40.400000"));
+    }
+
+    @Test
     void storeSlugIsUnique() {
         Store store = data.store(data.merchant());
         em.flush();
@@ -231,6 +250,33 @@ class EntityRoundTripTests {
                 Currencies.AZN, NOW)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> new ProductVariant("X", fineness, BigDecimal.ONE, new BigDecimal("9.999"),
                 Currencies.AZN, NOW)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    void variantMetalIsTheFinenessMetal() {
+        Product product = data.product(data.store(data.merchant()), data.category(), data.fineness(Metal.SILVER),
+                "80.00");
+        ProductVariant variant = product.getVariants().getFirst();
+        assertThat(variant.getMetal()).as("written by the database, not by the entity").isNull();
+
+        ProductVariant loaded = reload(ProductVariant.class, variant.getId());
+        assertThat(loaded.getMetal()).isEqualTo(Metal.SILVER);
+        assertThat(jdbc.queryForObject("SELECT metal FROM product_variants WHERE id = ?", String.class, variant.getId()))
+                .isEqualTo("SILVER");
+    }
+
+    @Test
+    void variantOfAnotherMetalIsRefusedByTheEntity() {
+        Product gold = data.product(data.store(data.merchant()), data.category(), data.fineness(Metal.GOLD), "1.00");
+        Fineness silver = data.fineness(Metal.SILVER);
+        ProductVariant variant = new ProductVariant("SILVER-" + TestData.next(), silver, BigDecimal.ONE,
+                BigDecimal.TEN, Currencies.AZN, NOW);
+        assertThatThrownBy(() -> gold.addVariant(variant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("SILVER");
+        assertThatThrownBy(() -> gold.getVariants().getFirst().setFineness(silver))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(gold.getVariants()).hasSize(1);
     }
 
     @Test
