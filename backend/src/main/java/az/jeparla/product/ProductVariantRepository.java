@@ -40,4 +40,17 @@ public interface ProductVariantRepository extends NoDeleteRepository<ProductVari
             order by v.id
             """)
     List<ProductVariant> findLiveMetalLinked(@Param("metal") Metal metal);
+
+    /** Daily repricing (#44): ids of the live METAL_LINKED variants of one metal, processed in batches. */
+    @Query("""
+            select v.id from ProductVariant v join v.fineness f
+            where v.pricingMode = az.jeparla.product.PricingMode.METAL_LINKED
+              and v.deletedAt is null and f.metal = :metal
+            order by v.id
+            """)
+    List<Long> findLiveMetalLinkedIds(@Param("metal") Metal metal);
+
+    /** One repricing batch: the variants with their fineness (the quote is compared by id only). */
+    @Query("select v from ProductVariant v join fetch v.fineness where v.id in :ids order by v.id")
+    List<ProductVariant> findWithFinenessByIdIn(@Param("ids") Collection<Long> ids);
 }

@@ -93,6 +93,8 @@ public class SecurityConfig {
                         // Guests may report a product and are counted when they open WhatsApp (#37);
                         // both are rate limited in the controller.
                         .requestMatchers(HttpMethod.POST, PUBLIC_PRODUCT_POSTS).permitAll()
+                        // Internal jobs (#44) check their own shared secret (InternalJobController).
+                        .requestMatchers(HttpMethod.POST, "/internal/jobs/metal-prices").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))

@@ -3,6 +3,7 @@ package az.jeparla.db;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import az.jeparla.common.i18n.Language;
+import az.jeparla.pricing.PricingEngine;
 import az.jeparla.product.Category;
 import az.jeparla.product.CategoryRepository;
 import az.jeparla.product.PricingMode;
@@ -11,6 +12,7 @@ import az.jeparla.product.ProductRepository;
 import az.jeparla.product.ProductVariant;
 import az.jeparla.product.StockStatus;
 import az.jeparla.support.WithPostgres;
+import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +57,9 @@ class DemoSeedTests {
     @Autowired
     private CategoryRepository categories;
 
+    @Autowired
+    private EntityManager em;
+
     private long count(String table) {
         return jdbc.queryForObject("SELECT count(*) FROM " + table, Long.class);
     }
@@ -93,6 +98,29 @@ class DemoSeedTests {
             assertThat(row.get("variant_id")).as("defaultVariantId").isEqualTo(id * 10);
             assertThat(row.get("sku")).isEqualTo("JP-%04d".formatted(id));
             assertThat(row.get("price")).as("price of product %d", id).isEqualTo(new BigDecimal(FIXTURE_PRICES.get(i)));
+        }
+    }
+
+    /**
+     * The pricing engine (#44) reproduces every METAL_LINKED price of the seed, which the test above
+     * compares with the frontend (big.js) fixtures: engine = pricing.ts on the whole demo catalog.
+     */
+    @Test
+    @Transactional
+    void pricingEngineReproducesTheMetalLinkedPrices() {
+        List<ProductVariant> linked = em.createQuery("""
+                select v from ProductVariant v join fetch v.fineness join fetch v.metalSnapshot
+                where v.pricingMode = :mode
+                """, ProductVariant.class).setParameter("mode", PricingMode.METAL_LINKED).getResultList();
+        assertThat(linked).hasSizeGreaterThan(30);
+        for (ProductVariant variant : linked) {
+            BigDecimal price = PricingEngine.price(variant.getWeightGrams(), variant.getFineness().getValue(),
+                    variant.getMetalSnapshot().getPricePerGram(), new PricingEngine.Rule(variant.getLaborPerGram(),
+                            variant.getLaborFixed(), variant.getStonePrice(), variant.getMarkupPercent(),
+                            variant.getMinPrice(), variant.getMaxPrice()));
+            assertThat(price).as("variant %d", variant.getId()).isEqualTo(variant.getPrice());
+            assertThat(PricingEngine.gramPrice(variant.getMetalSnapshot().getPricePerOunce()))
+                    .isEqualTo(variant.getMetalSnapshot().getPricePerGram());
         }
     }
 

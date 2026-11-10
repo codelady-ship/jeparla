@@ -81,6 +81,29 @@ jeparla:
     # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
     # do not need it: they are served by the frontend from /demo.
     public-url: ${JEPARLA_S3_PUBLIC_URL:}
+  metal-prices:
+    # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
+    # holidays CBAR answers with the last bulletin (its own date), which is already stored.
+    source-url: https://www.cbar.az/currencies/{date}.xml
+    # Names the service, no personal contact.
+    user-agent: "Jeparla/1.0 (metal price service; +https://jeparla.az)"
+    zone: Asia/Baku
+    # Three runs a day after CBAR publishes (10:15, 13:15, 17:15 Baku); the bulletin of a day is
+    # stored once, so the later runs are no-ops. JEPARLA_METAL_PRICES_CRON=- turns the schedule off.
+    cron: ${JEPARLA_METAL_PRICES_CRON:0 15 10,13,17 * * *}
+    connect-timeout: 5s
+    read-timeout: 20s
+    attempts: 3
+    backoff: 30s
+    # PLAN 5.10: a daily change above 10% is never applied without an admin.
+    max-daily-change-percent: 10
+    batch-size: 200
+    lock-at-most-for: 30m
+    lock-at-least-for: 1m
+  internal:
+    # Shared secret of POST /internal/jobs/metal-prices (header X-Jeparla-Job-Token), 32+ bytes.
+    # Empty: the endpoint answers 404.
+    job-token: ${JEPARLA_INTERNAL_JOB_TOKEN:}
   rate-limit:
     # redis (shared counters, in-memory fallback while Redis is down) or memory.
     store: redis
