@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { buildCss, TOKENS_CSS, TOKENS_JSON } from "../../scripts/tokens.mjs";
+import {
+  BRAND_COLORS_JSON,
+  buildBrandColors,
+  buildCss,
+  TOKENS_CSS,
+  TOKENS_JSON,
+} from "../../scripts/tokens.mjs";
 import { AA, contrastRatio } from "./contrast";
 
 type Tokens = {
@@ -27,5 +33,6 @@ describe("design tokens", () => {
 
   it("tokens.css is generated from tokens.json (run npm run tokens)", () => {
     expect(readFileSync(TOKENS_CSS, "utf8")).toBe(buildCss(tokens));
+    expect(readFileSync(BRAND_COLORS_JSON, "utf8")).toBe(buildBrandColors(tokens));
   });
 });

@@ -18,7 +18,14 @@ export function FiltersSheet({
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger render={<Button variant="outline" className="lg:hidden" />}>
+      <SheetTrigger
+        render={
+          <Button
+            variant="outline"
+            className="lg:hidden pointer-coarse:h-11 pointer-coarse:px-3.5"
+          />
+        }
+      >
         <SlidersHorizontal aria-hidden />
         {labels.open}
         {count > 0 && (

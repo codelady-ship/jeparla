@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { StoreList } from "@/components/stores/store-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { alternates } from "@/i18n/alternates";
+import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t("title"),
     description: t("description"),
     alternates: alternates(locale, "/stores"),
+    openGraph: openGraph(locale, "/stores"),
   };
 }
 

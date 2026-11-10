@@ -51,14 +51,14 @@ export function SiteFooter() {
         {COLUMNS.map((col) => (
           <nav key={col.title} aria-label={t(`Footer.${col.title}`)}>
             <h2 className="mb-3 font-sans text-sm font-semibold">{t(`Footer.${col.title}`)}</h2>
-            <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+            <ul className="flex flex-col gap-2 text-sm text-muted-foreground pointer-coarse:gap-0">
               {col.links.map((l) => (
                 <li key={l.href}>
                   {/* Most footer routes arrive later; no prefetch keeps 404s out. */}
                   <Link
                     href={l.href}
                     prefetch={false}
-                    className="link-underline hover:text-foreground"
+                    className="link-underline hover:text-foreground pointer-coarse:inline-block pointer-coarse:py-3"
                   >
                     {t(l.label)}
                   </Link>

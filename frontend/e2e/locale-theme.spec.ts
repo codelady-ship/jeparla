@@ -1,4 +1,4 @@
-import { expect, expectNoA11yViolations, isPhone, test } from "./fixtures";
+import { expect, expectNoA11yViolations, isPhone, test, waitForHydration } from "./fixtures";
 
 test.describe("language and theme", () => {
   test("switches the language and keeps the page", async ({ page }) => {
@@ -6,7 +6,9 @@ test.describe("language and theme", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "az");
     if (isPhone(page)) await page.getByRole("button", { name: "Menyu" }).click();
     const scope = isPhone(page) ? page.getByRole("dialog") : page.getByRole("banner");
-    await scope.getByRole("combobox", { name: "Dil" }).selectOption("en");
+    const select = scope.getByRole("combobox", { name: "Dil" });
+    await waitForHydration(select);
+    await select.selectOption("en");
 
     await expect(page).toHaveURL(/\/en\/products/);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");

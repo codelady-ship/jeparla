@@ -90,7 +90,7 @@ export async function Catalog({
                   <li key={c.id}>
                     <Link
                       href={`${ACTION}?category=${c.slug}`}
-                      className="inline-flex h-8 items-center rounded-full border px-3 text-sm hover:bg-muted"
+                      className="inline-flex h-8 items-center rounded-full border px-3 text-sm hover:bg-muted pointer-coarse:h-11 pointer-coarse:px-4"
                     >
                       {c.name[locale]}
                     </Link>

@@ -1221,5 +1221,24 @@
     "ctaCollection": "Explore the collection",
     "ctaStores": "Browse stores",
     "scrollHint": "Scroll down"
+  },
+  "Pwa": {
+    "installTitle": "Jeparla on your phone",
+    "installText": "Add it to your home screen and open stores and today's prices in one tap.",
+    "install": "Add",
+    "notNow": "Not now",
+    "iosText": "Two steps in Safari:",
+    "iosStep1": "Tap Share (in the ⋯ menu on newer iOS)",
+    "iosStep2": "Choose “Add to Home Screen”",
+    "gotIt": "Got it",
+    "offlineTitle": "You are offline",
+    "offlineText": "The page reloads by itself once you are back online. Prices are shown online only, so they are always current.",
+    "retry": "Try again"
+  },
+  "Share": {
+    "share": "Share",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy the link"
   }
 }

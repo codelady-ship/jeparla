@@ -30,7 +30,13 @@ export function ReportDialog({ labels }: { labels: Labels }) {
   return (
     <Dialog>
       <DialogTrigger
-        render={<Button variant="ghost" size="sm" className="self-start text-muted-foreground" />}
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="self-start text-muted-foreground pointer-coarse:h-11"
+          />
+        }
       >
         <Flag aria-hidden />
         {labels.open}
