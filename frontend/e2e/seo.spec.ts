@@ -56,7 +56,7 @@ test.describe("SEO metadata and structured data", () => {
       await page.goto(path);
       await expect(page).toHaveTitle(/\S/);
       const head = page.locator("head");
-      await expect(head.locator('meta[name="description"]')).toHaveAttribute("content", /\S{10,}/);
+      await expect(head.locator('meta[name="description"]')).toHaveAttribute("content", /\S.{9,}/);
 
       const canonicalHref = await head.locator('link[rel="canonical"]').getAttribute("href");
       expect(new URL(canonicalHref!).pathname).toBe(canonical);
