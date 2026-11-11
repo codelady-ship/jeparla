@@ -82,6 +82,14 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   `APPROVED` statusunu satıcı yalnız özü gizlətdiyi məhsula qaytarır, təsdiq admindədir (#40).
 - Testlər: `MerchantProductApiTests.anotherMerchantsProductIsForbiddenEverywhere` (11 endpoint),
   `MerchantStoreApiTests.onlyMerchantsReachTheMerchantApi`.
+- Damğa və etiket şəkli (#106): `POST /merchant/products/{id}/evidence/{HALLMARK|TAG}/uploads`,
+  `PUT` və `DELETE /merchant/products/{id}/evidence/{kind}` də `ProductAccess.requireOwner` ilə başlayır (başqasının
+  məhsulu 403). Açar yalnız bu məhsulun `products/<store>/<product>/evidence/` prefiksi ilə və həmin növ üçün
+  verilmiş yükləmədən qəbul olunur: qalereya açarı damğa kimi, damğa açarı qalereya şəkli kimi qoşulmur. Fayl
+  qalereya şəkli kimi yoxlanılır (private staging, magic number, ölçü) və yalnız sonra public bucket-ə köçür;
+  ictimai səhifədə yalnız `APPROVED` məhsulda görünür (yeni şəkil təsdiqlənmiş məhsulu yenidən yoxlamaya göndərir).
+  `FASHION` məhsula damğa yox, yalnız etiket şəkli (`409 merchant.hallmark_precious_only`). Test:
+  `EvidencePhotoApiTests`.
 
 ### Yoxlama sənədləri (#40, #138)
 
@@ -107,6 +115,11 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   `GET /admin/stores?sellerStatus=PENDING` satıcı yoxlaması növbəsidir (bütün mağaza statuslarında); siyahıda
   mağazanın məhsul sayı (silinməmiş, istənilən status) var. Məhsul kartında ən ucuz canlı variantın qiyməti, əyarı,
   çəkisi və ilk şəkil var; olmayan dəyər `null`-dur, heç vaxt saxta `0` deyil.
+- `/api/v1/admin/evidence-photos` və `/admin/products/{id}/evidence-photos` (`ADMIN`, #106): damğa və etiket
+  şəkilləri məhsulun metalı, əyarları və çəkiləri ilə yan-yana (növbə: `status`, default `PENDING`, köhnədən yeniyə).
+  `POST /admin/evidence-photos/{id}/check`: `VERIFIED` və ya `REJECTED` (ən az 10 simvol səbəb), admin öz
+  mağazasının şəklinə qərar vermir (403). Qərar yalnız şəklin statusunu dəyişir; uyğunsuzluğa görə məhsulu
+  çıxarmaq ayrıca `RETURN`/`DEACTIVATE` qərarıdır. `REJECTED` şəkil ictimai səhifədə göstərilmir.
 
 ### Admin: kataloq, istifadəçilər, şikayətlər (#40)
 
@@ -312,7 +325,8 @@ başqa dəyər (məs. host adı) `null` yazılır. Çağıranın tranzaksiyasın
 Satıcı əməliyyatları (#39): `STORE_CREATED`, `STORE_UPDATED`, `PRODUCT_CREATED`, `PRODUCT_UPDATED`,
 `PRODUCT_STATUS_CHANGED` (`{"from","to"}`), `PRODUCT_DELETED`, `VARIANT_ADDED`, `VARIANT_UPDATED`,
 `VARIANT_REMOVED`, `IMAGE_ADDED` (`aiGenerated` ilə), `IMAGE_REMOVED`, `DECLARATION_CONFIRMED`,
-`DOCUMENT_UPLOADED` (`sha256` ilə; #138).
+`DOCUMENT_UPLOADED` (`sha256` ilə; #138), `EVIDENCE_PHOTO_ADDED` (`photoId`, `kind`, əvəz olunubsa
+`replacedPhotoId`), `EVIDENCE_PHOTO_REMOVED` (#106).
 
 Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_REJECTED`,
 `DOCUMENT_CHANGES_REQUESTED` (səbəb kateqoriyası və qeyd), `STORE_APPROVED`, `STORE_REJECTED`, `STORE_BLOCKED`,
@@ -320,7 +334,8 @@ Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_
 `CATEGORY_CREATED`, `CATEGORY_UPDATED`, `CATEGORY_DELETED`, `FINENESS_CREATED`, `FINENESS_UPDATED`,
 `FINENESS_DELETED`, `SYNONYM_CREATED`, `SYNONYM_UPDATED`, `SYNONYM_DELETED` (`CATALOG`; `details`-də əvvəlki və yeni
 dəyər), `USER_ROLE_CHANGED`, `USER_BLOCKED` (səbəblə), `USER_UNBLOCKED` (`USER`), `REPORT_RESOLVED`, `REPORT_DISMISSED`
-(`REPORT`, qeyd `reason`-dadır).
+(`REPORT`, qeyd `reason`-dadır), `EVIDENCE_PHOTO_VERIFIED`, `EVIDENCE_PHOTO_REJECTED` (`CHECK`, hədəf məhsul;
+`details`-də `kind`, `photoId`, `from`, `to`; #106).
 `GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
 
 Hesab əməliyyatları (#131, hədəf `USER`): `EMAIL_VERIFIED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_RESET`
