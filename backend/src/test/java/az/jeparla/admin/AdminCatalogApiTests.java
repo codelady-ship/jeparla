@@ -10,12 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import az.jeparla.merchant.MerchantApiTestBase;
 import az.jeparla.product.Metal;
+import az.jeparla.search.SearchCache;
 import az.jeparla.store.SellerKind;
 import az.jeparla.support.AuthIntegrationTest;
 import az.jeparla.support.TestData;
 import com.jayway.jsonpath.JsonPath;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
 
 /**
@@ -28,6 +30,9 @@ class AdminCatalogApiTests extends MerchantApiTestBase {
     private static final String CATEGORIES = "/api/v1/admin/categories";
     private static final String FINENESSES = "/api/v1/admin/finenesses";
     private static final String SYNONYMS = "/api/v1/admin/synonyms";
+
+    @Autowired
+    private SearchCache searchCache;
 
     private static String categoryJson(String slug, Long parentId, boolean active) {
         return """
@@ -227,6 +232,46 @@ class AdminCatalogApiTests extends MerchantApiTestBase {
         mvc.perform(get("/api/v1/search").param("q", word).param("type", "products"))
                 .andExpect(jsonPath("$.products.totalElements").value(0));
         mvc.perform(get(SYNONYMS).with(buyer(newBuyer()))).andExpect(status().isForbidden());
+    }
+
+    /**
+     * The search cache (#151) is emptied after every committed synonym and category write of the admin, so a
+     * cached ranking never outlives the change by the cache time. A refused write commits nothing and keeps it.
+     */
+    @Test
+    void catalogWritesEmptyTheSearchCache() throws Exception {
+        long adminId = newBuyer();
+        String word = "qxjw" + TestData.next();
+
+        long before = searchCache.evictions();
+        MvcResult created = mvc.perform(json(post(SYNONYMS), """
+                        {"term": "%s", "synonym": "üzük"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isCreated()).andReturn();
+        long id = id(created);
+        assertThat(searchCache.evictions()).as("synonym created").isGreaterThan(before);
+
+        before = searchCache.evictions();
+        mvc.perform(json(post(SYNONYMS), """
+                        {"term": "%s", "synonym": "üzük"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isConflict());
+        assertThat(searchCache.evictions()).as("duplicate refused").isEqualTo(before);
+
+        mvc.perform(json(put(SYNONYMS + "/" + id), """
+                        {"term": "%s", "synonym": "sırğa"}
+                        """.formatted(word)).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isOk());
+        assertThat(searchCache.evictions()).as("synonym updated").isGreaterThan(before);
+
+        before = searchCache.evictions();
+        mvc.perform(delete(SYNONYMS + "/" + id).with(AdminTestTokens.admin(adminId)))
+                .andExpect(status().isNoContent());
+        assertThat(searchCache.evictions()).as("synonym deleted").isGreaterThan(before);
+
+        before = searchCache.evictions();
+        createCategory(adminId, "cache-" + TestData.next(), null);
+        assertThat(searchCache.evictions()).as("category created").isGreaterThan(before);
     }
 
     @Test

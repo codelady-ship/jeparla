@@ -33,6 +33,9 @@ cd backend
 - OpenAPI: http://localhost:8080/v3/api-docs
 - Swagger UI: http://localhost:8080/swagger-ui.html
 
+OpenAPI və Swagger UI yalnız `JEPARLA_API_DOCS=true` ilə açılır (`JEPARLA_API_DOCS=true ./gradlew bootRun`);
+default söndürülüb və prod-da 404 verir (#134).
+
 Az RAM-lı maşında: `./gradlew build --no-daemon` (Gradle JVM `gradle.properties`-də 1 GB ilə məhduddur).
 
 Docker (Docker olan maşında, `backend/` qovluğundan; amd64 və arm64 üçün):
@@ -59,7 +62,8 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsinin yolu (`/help`) yazılır. Səhv dəyər tətbiqi başlatmır |
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
-| `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
+| `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları (yalnız onlar; `maxmemory-policy noeviction`, #134). Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir. Axtarış keşi API-nin yaddaşındadır (`jeparla.search.cache`, 60 san., #151) |
+| `JEPARLA_API_DOCS` | `false` | `true`: `/v3/api-docs` və Swagger UI açılır (yalnız lokal). Default-da hər ikisi 404 (#134) |
 | `JEPARLA_S3_PUBLIC_URL` | boş | Public bucket-in brauzer URL-i (məs. `https://img.jeparla.az`); şəkil URL-i = bu dəyər + `/` + açar. Demo şəkillər (`demo/...`) üçün lazım deyil |
 | `JEPARLA_S3_ENDPOINT` | boş | Satıcı şəkilləri üçün S3 uyğun API (R2: `https://<account>.r2.cloudflarestorage.com`, lokal MinIO). Boş və ya açar yoxdursa yükləmə endpoint-ləri `503 storage.unavailable` qaytarır, qalan API işləyir |
 | `JEPARLA_S3_PRESIGN_ENDPOINT` | boş (`JEPARLA_S3_ENDPOINT`) | Presigned URL-ə yazılan host (brauzer açır). Docker Compose-da `http://localhost:9000`, çünki API MinIO-ya `minio:9000` ilə gedir |

@@ -14,6 +14,11 @@ import az.jeparla.support.AuthTestClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +104,36 @@ class RateLimitTests {
                 .andExpect(status().isTooManyRequests())
                 .andExpect(header().exists(HttpHeaders.RETRY_AFTER))
                 .andExpect(jsonPath("$.code").value("rate_limited"));
+    }
+
+    /** #134: each attempt takes its place in Redis before BCrypt, so parallel guesses cannot pass the check together. */
+    @Test
+    void parallelWrongPasswordsFromOneAddressReachThePasswordCheckAtMostLimitTimes() throws Exception {
+        String phone = registerMerchant();
+        String ip = AuthTestClient.nextIp();
+        int requests = 20;
+        ExecutorService pool = Executors.newFixedThreadPool(requests);
+        try {
+            CountDownLatch start = new CountDownLatch(1);
+            List<Future<Integer>> statuses = new ArrayList<>();
+            for (int i = 0; i < requests; i++) {
+                statuses.add(pool.submit(() -> {
+                    start.await();
+                    return mockMvc.perform(login(ip, phone, WRONG, "az")).andReturn().getResponse().getStatus();
+                }));
+            }
+            start.countDown();
+            List<Integer> results = new ArrayList<>();
+            for (Future<Integer> status : statuses) {
+                results.add(status.get(60, TimeUnit.SECONDS));
+            }
+            // 401 = the password was checked (and was wrong); everything else was refused before.
+            assertThat(results.stream().filter(s -> s == 401).count())
+                    .isEqualTo(AuthIntegrationTest.LOGIN_ACCOUNT_IP_LIMIT);
+            assertThat(results).containsOnly(401, 429);
+        } finally {
+            pool.shutdownNow();
+        }
     }
 
     @Test

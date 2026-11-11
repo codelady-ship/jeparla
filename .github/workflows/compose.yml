@@ -115,6 +115,24 @@ jobs:
           [ "$(sql "$JEPARLA_DB_MIGRATION_USER" "$JEPARLA_DB_MIGRATION_PASSWORD" \
             "SELECT rolsuper FROM pg_roles WHERE rolname = current_user")" = f ]
 
+      # #134: a full Redis refuses writes (the API then counts in memory) instead of evicting live counters.
+      - name: Redis never evicts rate-limit counters
+        run: |
+          r() { docker compose exec -T redis redis-cli "$@" | tr -d '\r'; }
+          [ "$(r CONFIG GET maxmemory-policy | tail -n 1)" = noeviction ]
+          r SET jeparla:rl:ci-probe 1 EX 600
+          r CONFIG SET maxmemory 2mb
+          filler=$(head -c 100000 /dev/zero | tr '\0' x)
+          refused=0
+          for i in $(seq 1 60); do
+            out=$(r SET "ci-filler:$i" "$filler" EX 600 2>&1 || true)
+            case "$out" in *OOM*) refused=1; break ;; esac
+          done
+          echo "write refused when full: $refused"
+          [ "$refused" = 1 ]
+          [ "$(r EXISTS jeparla:rl:ci-probe)" = 1 ]
+          r CONFIG SET maxmemory 128mb
+
       - name: Logs
         if: always()
         run: docker compose logs --no-color --tail 200
