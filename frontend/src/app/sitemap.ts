@@ -32,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/products", 0.9),
     entry("/categories", 0.8),
     entry("/stores", 0.8),
+    entry("/calculator", 0.7),
     ...categories.map((c) => entry(`/categories/${c.slug}`, 0.7)),
   ];
   // Demo stores and products are invented; they must not be indexed as real ones.
