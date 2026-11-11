@@ -65,6 +65,7 @@
     "aboutUs": "About us",
     "contact": "Contact",
     "metalPrices": "Metal prices",
+    "sizeGuide": "Size guide",
     "openStore": "Open a store",
     "merchantCabinet": "Store dashboard",
     "privacy": "Privacy policy",
@@ -331,6 +332,156 @@
         "q": "How do I buy a piece I like?",
         "a": "Use the WhatsApp button on the product page; the message includes the product name, code and link. The purchase is agreed directly with the store."
       }
+    }
+  },
+  "SizeGuide": {
+    "title": "Size guide: rings, bracelets and chains",
+    "metaTitle": "Ring size chart, bracelet and chain lengths",
+    "description": "How to find your ring size at home: inner diameter and circumference in mm, the ISO 8653 size, a size helper, and bracelet and chain lengths.",
+    "breadcrumb": "Breadcrumb",
+    "updated": "Updated:",
+    "answer": "In Azerbaijan a ring size is the ring's inner diameter in millimetres: a size 17 ring is 17 mm across inside. Sizes usually go in steps of 0.5. Measure around your finger and enter it in the helper below to see the nearest size.",
+    "toc": "On this page",
+    "honest": {
+      "title": "Measuring at home is approximate",
+      "text": "A measurement taken at home can be off by half a size to a full size. Confirm the size with the store before you order: many stores measure in person, and some can resize a ring.",
+      "noPrintable": "We do not offer a printable ring sizer: printers and PDF viewers often shrink or enlarge the page, so a printed ruler can be off by several millimetres. That is more than the step between two sizes (0.5 mm of diameter)."
+    },
+    "rings": {
+      "title": "Ring size chart",
+      "intro": "The size number equals the inner diameter. The circumference is the diameter times π, rounded to one decimal.",
+      "caption": "Ring sizes: Azerbaijan size, inner diameter, inner circumference and ISO 8653 size",
+      "colSize": "Size (AZ, CIS)",
+      "colDiameter": "Inner diameter, mm",
+      "colCircumference": "Inner circumference, mm",
+      "colIso": "ISO 8653 size",
+      "sourceTitle": "Source and calculation",
+      "sourceAz": "Azerbaijan and CIS size: the inner diameter in millimetres, in steps of 0.5. This is the convention stores use; we did not find the text of a current standard we could cite.",
+      "sourceIso": "ISO 8653:2016 (Jewellery — Ring-sizes — Definition, measurement and designation) designates a ring size by its inner circumference in mm; most of Europe uses this system. In the chart the ISO size is the circumference rounded to a whole millimetre.",
+      "sourceUs": "US sizes are not shown: we found no current published standard for that conversion, and we will not invent one.",
+      "rounding": "Every number comes from exact decimal arithmetic, with halves rounded up."
+    },
+    "helper": {
+      "title": "Ring size helper",
+      "intro": "Enter the number you measured. Measure around the finger with a thread or a paper strip, or measure across an existing ring.",
+      "modeLegend": "What did you measure?",
+      "circumference": "Around the finger",
+      "diameter": "Inside diameter of a ring",
+      "inputCircumference": "Circumference, mm",
+      "inputDiameter": "Inner diameter, mm",
+      "hint": "For example 53.5. A dot or a comma, at most two decimals.",
+      "empty": "The nearest size appears here once you enter a number.",
+      "invalid": "Enter a number in millimetres, for example 53.5.",
+      "outOfRange": "This is outside the chart (sizes 15 to 24). Check that you chose the right measurement, or ask the store.",
+      "result": "Nearest size: {size}",
+      "details": "Inner diameter {diameter} mm, inner circumference {circumference} mm, ISO 8653 size {iso}.",
+      "tie": "Exactly half-way between two sizes, the helper picks the larger one.",
+      "confirm": "This is an estimate. Confirm with the store before you order."
+    },
+    "measure": {
+      "title": "How to find your ring size at home",
+      "ringTitle": "With a ring you already have",
+      "ringSteps": {
+        "s1": "Pick a thin, round ring that fits the same finger comfortably.",
+        "s2": "Lay it on a ruler marked in millimetres.",
+        "s3": "Measure across the widest part, from inside edge to inside edge, without the metal.",
+        "s4": "That number in millimetres is your size. In the helper, choose \"Inside diameter of a ring\"."
+      },
+      "stringTitle": "With a thread or a paper strip",
+      "stringSteps": {
+        "s1": "Take a thread that does not stretch, or a paper strip about 5 mm wide.",
+        "s2": "Wrap it around the base of the finger, snug but not tight.",
+        "s3": "Mark where the ends meet with a pen.",
+        "s4": "Unwrap it and measure up to the mark with a ruler, in millimetres: that is the circumference.",
+        "s5": "Enter the number in the helper and check that the ring will pass over the knuckle."
+      },
+      "tipsTitle": "For a more accurate result",
+      "tips": {
+        "t1": "Measure at the end of the day in a warm room: fingers are thinner in the cold and fuller in the heat.",
+        "t2": "Measure two or three times and compare.",
+        "t3": "If the knuckle is wider than the base of the finger, the ring has to pass over it: measure both.",
+        "t4": "A wide band (about 6 mm or more) sits tighter; ask the store whether you need half a size up."
+      },
+      "diagram": {
+        "title": "Inner diameter and inner circumference of a ring",
+        "desc": "The straight line across the inside of the ring is the inner diameter; the circle along the inside edge is the inner circumference.",
+        "diameter": "diameter",
+        "circumference": "circumference"
+      }
+    },
+    "bracelets": {
+      "title": "Bracelet length",
+      "intro": "Measure the wrist just above the wrist bone with a thread or a strip. For a chain bracelet to sit comfortably, 1 to 2 cm is usually added to the wrist measurement.",
+      "caption": "Bracelet lengths and who they usually fit",
+      "colLength": "Length",
+      "colUse": "Usually",
+      "rows": {
+        "r1": {
+          "length": "15–16 cm",
+          "use": "Slim wrist, sits close"
+        },
+        "r2": {
+          "length": "17–18 cm",
+          "use": "A frequent length for women's bracelets"
+        },
+        "r3": {
+          "length": "19–20 cm",
+          "use": "A looser women's fit or a smaller men's bracelet"
+        },
+        "r4": {
+          "length": "21–22 cm",
+          "use": "A frequent length for men's bracelets"
+        }
+      },
+      "bangle": "A rigid bangle that does not open has to pass over the hand: touch the thumb to the little finger, measure around the widest part of the hand, and ask the store for the bangle's inner size.",
+      "note": "These lengths are general guidance, not a standard; stores and designs differ."
+    },
+    "chains": {
+      "title": "Chain length",
+      "intro": "A chain is measured laid flat, clasp included. Where it sits depends on the neck and on any pendant.",
+      "caption": "Chain lengths and where they usually sit",
+      "colLength": "Length",
+      "colUse": "Usually sits",
+      "rows": {
+        "r1": {
+          "length": "40 cm",
+          "use": "Close to the base of the neck"
+        },
+        "r2": {
+          "length": "45 cm",
+          "use": "At the collarbone; a frequent choice for a pendant"
+        },
+        "r3": {
+          "length": "50 cm",
+          "use": "Just below the collarbone"
+        },
+        "r4": {
+          "length": "55 cm",
+          "use": "At the neckline; frequent for men's chains"
+        },
+        "r5": {
+          "length": "60 cm",
+          "use": "Below the neckline, over clothing"
+        },
+        "r6": {
+          "length": "70 cm and longer",
+          "use": "A long chain over clothing; can be worn doubled"
+        }
+      },
+      "note": "The simplest way: lay a chain you already own flat, measure it, and choose shorter or longer from how you like it."
+    },
+    "sources": {
+      "title": "Sources",
+      "iso": "ISO 8653:2016, Jewellery — Ring-sizes — Definition, measurement and designation (International Organization for Standardization).",
+      "trade": "Azerbaijan and CIS size numbers (inner diameter, mm): the convention used by stores.",
+      "lengths": "Bracelet and chain lengths: general guidance, not a standard."
+    },
+    "howTo": {
+      "name": "How to find your ring size at home",
+      "description": "Find a ring size by measuring the inner diameter of an existing ring or the circumference of the finger in millimetres.",
+      "supplyStrip": "A thread that does not stretch, or a paper strip",
+      "toolRuler": "A ruler marked in millimetres",
+      "toolPen": "A pen"
     }
   },
   "Search": {
