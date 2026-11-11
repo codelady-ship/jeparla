@@ -104,7 +104,7 @@ export async function MetalPriceWidget({
       {pricesLink && (
         <Link
           href="/prices"
-          className="-mt-2 self-start link-underline text-sm font-medium pointer-coarse:py-2"
+          className="-mt-2 inline-flex self-start link-underline text-sm font-medium pointer-coarse:min-h-11 pointer-coarse:items-center"
         >
           {t("allPrices")}
         </Link>
