@@ -32,7 +32,8 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/actuator/**` (qalanı) | heç kim |
 | `GET /v3/api-docs/**`, `/swagger-ui.html`, `/swagger-ui/**` | hamı, amma yalnız `JEPARLA_API_DOCS=true` olanda var; default (prod) söndürülüb, 404 |
 | `POST /api/v1/auth/register`, `/register/merchant`, `/login`, `/refresh`, `/logout` | hamı (rate limit ilə) |
-| `/api/v1/auth/**` (qalanı, məs. `GET /me`) | daxil olmuş istifadəçi |
+| `POST /api/v1/auth/password/forgot`, `/password/reset`, `/email/verify` | hamı (rate limit ilə, #131) |
+| `/api/v1/auth/**` (qalanı, məs. `GET /me`, `POST /email/verification`) | daxil olmuş istifadəçi |
 | `/api/v1/admin/**` | `ADMIN` |
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
@@ -173,6 +174,62 @@ verir (istifadəçi buna ehtiyac duyur); bunu yoxlamaq rate limit ilə məhdudla
 
 SMS OTP v1-də yoxdur (#52): satıcının telefonu `phone_verified = false` qalır.
 
+## Şifrə bərpası və e-poçt təsdiqi (#131)
+
+Kod: `auth/AccountRecoveryController`, `PasswordResetService`, `EmailVerificationService`, `AccountTokenService`.
+
+**Token.** 256 bit təsadüfi (base64url), linkdə bir dəfə göndərilir; bazada (`account_tokens`, V19) yalnız SHA-256
+hash-i, məqsədi (`EMAIL_VERIFICATION` və ya `PASSWORD_RESET`), göndərildiyi e-poçt və müddəti saxlanılır. Token
+bir dəfə işləyir (sətir `FOR UPDATE` ilə kilidlənir, eyni anda iki sorğu onu iki dəfə işlədə bilmir), vaxtı keçəndə,
+başqa məqsədin linki olanda və ya hesabın e-poçtu artıq başqa olanda eyni `400` verir. Biri uğurla işlənəndə həmin
+hesabın eyni məqsədli digər açıq linkləri də bitir. Vaxtı keçmiş tokenlər saatlıq job ilə silinir.
+
+**Link.** `JEPARLA_PUBLIC_SITE_URL/{dil}/verify-email#token=...` və `/{dil}/reset-password#token=...`, hesabın
+dilində. Token URL fragment-indədir: brauzer onu nə serverə, nə `Referer`-ə göndərir. Məktub yalnız e-poçtladır
+(in-app bildirişdə link saxlanılmır); növbədəki məktubun mətni göndəriləndən və ya link vaxtı keçəndən sonra
+`[one-time link removed]` olur, vaxtı keçmiş link göndərilmir.
+
+**E-poçt təsdiqi.** E-poçtla hər qeydiyyat (alıcı və e-poçt yazan satıcı) 24 saatlıq link alır; açılanda
+`users.email_verified = true` və `EMAIL_VERIFIED` auditi. `GET /me` və login cavabında `user.emailVerified` var.
+Təsdiqlənməmiş hesab **hər şeyi** edə bilir (giriş, seçilmişlər, şikayət, satıcı kabineti): satıcının girişi telefon,
+məhsulun dərci isə adminin satıcı yoxlamasından (`VERIFIED`) asılıdır, e-poçtdan yox. Bayraq frontend-ə "e-poçtunuzu
+təsdiqləyin" xatırlatması üçündür. Təsdiq linki ilə şifrə bərpası linki eyni ünvana gedir, ona görə e-poçtla
+bərpa ünvanı da təsdiqləyir. Təsdiqlənməmiş ünvana bildiriş məktubları (#138) əvvəlki kimi gedir.
+
+| Endpoint | Kim | Cavab |
+| --- | --- | --- |
+| `POST /api/v1/auth/email/verify` `{token}` | hamı | `204`; etibarsız/işlənmiş/vaxtı keçmiş link `400 auth.verification_token_invalid` |
+| `POST /api/v1/auth/email/verification` | daxil olmuş | `202` yeni link; e-poçt yoxdur `409 auth.no_email`; artıq təsdiqlənib `409 auth.email_already_verified` |
+
+**Şifrə bərpası.**
+
+| Endpoint | Kim | Cavab |
+| --- | --- | --- |
+| `POST /api/v1/auth/password/forgot` `{email}` | hamı | **həmişə** `202`, boş gövdə, eyni başlıqlar |
+| `POST /api/v1/auth/password/reset` `{token, password}` | hamı | `204` + refresh cookie silinir; etibarsız link `400 auth.reset_token_invalid` |
+
+- Cavab hesabın varlığını açmır: naməlum e-poçt, bloklanmış hesab və hesab limitini keçmiş ünvan da eyni `202`-ni
+  alır. Hesab olanda token, növbə və audit yazılır, olmayanda yox; bu fərqi cavab vaxtı göstərməsin deyə hər sorğu
+  ən azı `forgot-response-floor` (400 ms) gözləyir. Yalnız IP limiti `429` verir: açar sorğu göndərəndir, ünvan yox.
+- Yeni şifrə qeydiyyatın qaydalarındandır (8-128 simvol, hərf və rəqəm, ən çox 72 bayt). Uğurlu bərpa: yeni BCrypt
+  hash, **bütün** refresh token ailələri ləğv olunur (`RefreshTokenService.revokeAllOf`: bütün cihazlar çıxır;
+  access token ən gec 15 dəqiqədə bitir), digər bərpa linkləri bitir, link e-poçtla gəlibsə ünvan təsdiqlənir.
+  Bloklanmış hesab bərpa ilə açılmır (`400`).
+- Audit: `PASSWORD_RESET_REQUESTED` (yalnız mövcud hesab üçün), `PASSWORD_RESET` (`{"via":"email"|"admin_link"}`),
+  `EMAIL_VERIFIED`; aktor hesabın özüdür (link kimin olduğunu sübut edir), IP ilə. Token və şifrə yazılmır.
+
+**Telefonla qeydiyyatdan keçmiş satıcı (e-poçtsuz).** Ona e-poçt göndərilə bilmir, SMS isə sahibin qərarını
+gözləyir (#52, pulludur, PLAN 3a), ona görə kod SMS göndərmir. #52 qərarına qədər yol admin vasitəsilədir:
+
+1. Satıcı dəstəyə yazır. Admin onu hesabdakı telefon nömrəsi ilə yoxlayır (məs. həmin nömrəyə WhatsApp zəngi,
+   mağaza adı və VÖEN kimi məlumatların soruşulması).
+2. `POST /api/v1/admin/users/{id}/password-reset-link` (`ADMIN`) 1 saatlıq birdəfəlik link qaytarır
+   `{url, expiresAt}`; bazada yalnız hash-i və verən admin (`issued_by`) qalır, audit `PASSWORD_RESET_LINK_ISSUED`.
+3. Admin linki yalnız hesabdakı nömrəyə göndərir. Satıcı yeni şifrəni təyin edir, bütün sessiyalar bitir.
+
+Admin hesabı, e-poçtu təsdiqlənmiş hesab (özü bərpa edir) və aktiv olmayan hesab üçün link verilmir
+(`409 auth.reset_link_not_allowed`). E-poçtu olan, amma təsdiqlənməmiş satıcı həm özü bərpa edə bilər, həm admin linki alır.
+
 ## Rate limit
 
 Sabit pəncərə, sayğaclar Redis-də (bütün instansiyalar üçün ortaq). Redis əlçatan deyilsə API
@@ -195,6 +252,11 @@ Redis-də deyil (#151).
 | `register-account` | 5 / saat | hər qeydiyyat | e-poçt və ya telefon |
 | `refresh-ip` | 60 / 5 dəq. | hər refresh | IP (token 256 bitdir, təxmin etmək olmur) |
 | `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37) və `POST /stores/{id}/reports` (#40), sayğaclar ortaqdır; limit yoxlaması məhsulun (mağazanın) varlığından əvvəldir |
+| `password-forgot-ip` | 10 / saat | hər "şifrəni unutdum" | IP: aşanda `429` (#131) |
+| `password-forgot-account` | 3 / saat | hər "şifrəni unutdum", hesab olsa da, olmasa da | e-poçt: aşanda cavab yenə `202`, amma məktub yazılmır (başqasının poçtunu doldurmaq olmur) |
+| `password-reset-ip` | 20 / saat | hər yeni şifrə cəhdi | IP |
+| `email-verify-ip` | 30 / saat | hər təsdiq linki | IP |
+| `email-verification-account` | 3 / saat | hər "linki yenidən göndər" | user id: aşanda `429` |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
@@ -260,6 +322,9 @@ Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_
 dəyər), `USER_ROLE_CHANGED`, `USER_BLOCKED` (səbəblə), `USER_UNBLOCKED` (`USER`), `REPORT_RESOLVED`, `REPORT_DISMISSED`
 (`REPORT`, qeyd `reason`-dadır).
 `GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
+
+Hesab əməliyyatları (#131, hədəf `USER`): `EMAIL_VERIFIED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_RESET`
+(aktor hesabın özüdür, `AuditService.recordAs`), `PASSWORD_RESET_LINK_ISSUED` (aktor admin).
 
 `audit_logs` append-only-dir (V16, #165): tətbiq yalnız oxuyur və əlavə edir; yeganə dəyişiklik hesab
 silinəndə `actor_id`-nin `NULL` olmasıdır (`actor_label` qalır). Köhnə sətirlərin silinməsi yalnız sahib rolunun
