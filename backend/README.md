@@ -73,7 +73,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_S3_PRIVATE_BUCKET` | `jeparla-private` | Private bucket: yüklənən şəkil yoxlanana qədər `staging/` altında gözləyir (#154), sənədlər (#40). Public bucket ilə eyni olsa tətbiq başlamır; boşdursa yükləmə `503` |
 | `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin (şəkil və sənəd) təmizlənməsi (hər 30 dəq.); `-` söndürür |
 | `JEPARLA_EMAIL_OUTBOX_CRON` | `0 * * * * *` | E-poçt növbəsinin göndərilməsi (#138). `JEPARLA_SMTP_HOST` boşdursa heç nə göndərilmir, məktublar `PENDING` qalır; `-` söndürür |
-| `JEPARLA_PUBLIC_SITE_URL` | `http://localhost:3000` | Frontend-in ictimai origin-i (path-sız, məs. `https://jeparla.az`): e-poçtdakı linklər bununla qurulur (təsdiq, şifrə bərpası, kömək səhifəsi). Path, query və ya http(s) olmayan dəyər tətbiqi başlatmır |
+| `JEPARLA_PUBLIC_SITE_URL` | `http://localhost:3000` | Frontend-in ictimai origin-i (path-sız, məs. `https://jeparla.az`): e-poçtdakı linklər bununla qurulur (təsdiq, şifrə bərpası, kömək səhifəsi), həmçinin mağazanın paylaşım linki `/s/<kod>` və onun QR kodu (#100). Path, query və ya http(s) olmayan dəyər tətbiqi başlatmır |
 | `JEPARLA_SMTP_HOST` / `JEPARLA_SMTP_PORT` | boş / `587` | E-poçt növbəsinin SMTP relay-i (#131), STARTTLS məcburidir. Boş: heç nə göndərilmir. Aşağıda: "E-poçt göndərmə" |
 | `JEPARLA_SMTP_USERNAME` / `JEPARLA_SMTP_PASSWORD` | boş | Provayderin SMTP login-i və parolu/API açarı (yalnız env-də; logda maskalanır) |
 | `JEPARLA_MAIL_FROM` | boş | Göndərən, məs. `Jeparla <no-reply@jeparla.az>`; host varsa məcburidir (yoxdursa tətbiq başlamır). Domen provayderdə SPF/DKIM ilə təsdiqlənməlidir |
@@ -311,7 +311,7 @@ Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[
 ## Paylaşım linki və mağaza faktları (#100, #108)
 
 Satıcı kataloqunu bir linklə Instagram bio-da, TikTok-da, WhatsApp statusunda və Tap.az elanında paylaşır:
-`JEPARLA_PUBLIC_SITE_URL/s/<kod>` (default `http://localhost:3000`; prod-da `https://jeparla.az`, http(s) origin,
+`JEPARLA_PUBLIC_SITE_URL/s/<kod>` (`jeparla.support.site-url`, e-poçt linkləri ilə eyni dəyər; default `http://localhost:3000`; prod-da `https://jeparla.az`, http(s) origin,
 path yoxdur, səhv dəyər tətbiqi başlatmır).
 
 | Endpoint | Kim | Nə edir |

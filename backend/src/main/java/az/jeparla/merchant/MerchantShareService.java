@@ -11,7 +11,7 @@ import az.jeparla.merchant.dto.ShareLinkDto;
 import az.jeparla.share.QrSvg;
 import az.jeparla.share.ReferralCounts;
 import az.jeparla.share.ReferralSource;
-import az.jeparla.share.ShareProperties;
+import az.jeparla.notification.SupportProperties;
 import az.jeparla.store.ShareCodes;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreRepository;
@@ -47,17 +47,18 @@ public class MerchantShareService {
     private final MerchantStores merchantStores;
     private final StoreRepository stores;
     private final ReferralCounts referrals;
-    private final ShareProperties properties;
+    /** Its {@code siteUrl} ({@code JEPARLA_PUBLIC_SITE_URL}, a checked http(s) origin) is the base of the link. */
+    private final SupportProperties site;
     private final RateLimitService rateLimits;
     private final AuditService audit;
     private final Clock clock;
 
     public MerchantShareService(MerchantStores merchantStores, StoreRepository stores, ReferralCounts referrals,
-            ShareProperties properties, RateLimitService rateLimits, AuditService audit, Clock clock) {
+            SupportProperties site, RateLimitService rateLimits, AuditService audit, Clock clock) {
         this.merchantStores = merchantStores;
         this.stores = stores;
         this.referrals = referrals;
-        this.properties = properties;
+        this.site = site;
         this.rateLimits = rateLimits;
         this.audit = audit;
         this.clock = clock;
@@ -136,7 +137,7 @@ public class MerchantShareService {
     }
 
     private ShareLinkDto linkOf(Store store) {
-        String url = properties.linkOf(store.getShareCode());
+        String url = site.siteUrl() + "/s/" + store.getShareCode();
         return new ShareLinkDto(store.getShareCode(), url, url + "?ref=qr", store.getStatus() == StoreStatus.APPROVED);
     }
 

@@ -1,7 +1,6 @@
 package az.jeparla.share;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import az.jeparla.common.ratelimit.InMemoryRateLimitCounter;
 import az.jeparla.common.ratelimit.RateLimitProperties;
@@ -204,19 +203,6 @@ class ShareUnitTests {
         assertThat(referrals.whatsappClick(4, new ReferralService.Hit(null, "TikTok", CHROME, null, "10.0.3.1")))
                 .isTrue();
         assertThat(counts.clicks).containsExactly("4/2026-11-11/TIKTOK");
-    }
-
-    // ------------------------------------------------------------------ site URL
-
-    @Test
-    void theShareLinkIsBuiltFromTheSiteOrigin() {
-        assertThat(new ShareProperties("https://jeparla.az/").linkOf("k7m2q9xa")).isEqualTo("https://jeparla.az/s/k7m2q9xa");
-        assertThat(new ShareProperties("http://localhost:3000").linkOf("k7m2q9xa"))
-                .isEqualTo("http://localhost:3000/s/k7m2q9xa");
-        for (String bad : List.of("jeparla.az", "ftp://jeparla.az", "https://jeparla.az/az", "https://jeparla.az?x=1",
-                "https://user@jeparla.az", "")) {
-            assertThatThrownBy(() -> new ShareProperties(bad)).as(bad).isInstanceOf(IllegalArgumentException.class);
-        }
     }
 
     // ------------------------------------------------------------------ QR code
