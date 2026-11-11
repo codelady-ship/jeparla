@@ -14,6 +14,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { alternates, SITE_URL } from "@/i18n/alternates";
+import { PAGE_TRANSITION } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import colors from "@/lib/brand-colors.json";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/open-graph";
@@ -100,8 +101,9 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
         <IntlProvider locale={locale} messages={clientMessages}>
           <ThemeProvider>
             <SiteHeader />
-            {/* Route changes cross-fade the page body; header and footer stay put. */}
-            <ViewTransition>
+            {/* In-app navigations cross-fade the page body; header and footer stay put.
+                Only the PAGE_TRANSITION type: streamed first-load reveals do not animate. */}
+            <ViewTransition update={{ [PAGE_TRANSITION]: "auto", default: "none" }}>
               <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
                 {children}
               </main>

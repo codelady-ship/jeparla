@@ -7,6 +7,7 @@ import {
   HERO_DESKTOP_QUERY,
   HERO_FRAMES,
   HERO_MEDIA,
+  HERO_POSTER,
   HERO_PHASES,
   frameUrl,
   phase,
@@ -161,6 +162,7 @@ export function HeroMotion({
             autoPlay
             playsInline
             preload="auto"
+            poster={HERO_POSTER}
             disablePictureInPicture
           >
             <source src={HERO_MEDIA.desktop.video} type="video/mp4" media={HERO_DESKTOP_QUERY} />

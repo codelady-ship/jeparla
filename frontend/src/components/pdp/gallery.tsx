@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState, ViewTransition, type PointerEvent } from "react";
+import { useEffect, useRef, useState, ViewTransition, type PointerEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
@@ -41,7 +41,21 @@ export function Gallery({
   const [zoom, setZoom] = useState(false);
   const startX = useRef<number | null>(null);
   const total = images.length;
-  const go = (i: number) => setIndex((i + total) % total);
+  // The hidden shots (opacity 0, same box) load after the page, not with the first
+  // photo (#160); choosing a shot before that loads it at once.
+  const [rest, setRest] = useState(false);
+  const show = (i: number) => {
+    setRest(true);
+    setIndex(i);
+  };
+  const go = (i: number) => show((i + total) % total);
+
+  useEffect(() => {
+    const load = () => setRest(true);
+    if (document.readyState === "complete") return load();
+    window.addEventListener("load", load, { once: true });
+    return () => window.removeEventListener("load", load);
+  }, []);
 
   function onPointerDown(e: PointerEvent) {
     if (e.pointerType === "touch") startX.current = e.clientX;
@@ -65,13 +79,14 @@ export function Gallery({
         aria-roledescription="carousel"
       >
         {images.map((img, i) => {
-          const image = (
+          const image = (i === 0 || rest) && (
             <Image
               src={img.url}
               alt={img.alt}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               preload={i === 0}
+              fetchPriority={i === 0 ? "high" : undefined}
               unoptimized={svg(img.url)}
               className="object-cover"
             />
@@ -139,7 +154,7 @@ export function Gallery({
             <li key={img.url + i}>
               <button
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => show(i)}
                 aria-current={i === index}
                 aria-label={fill(labels.position, i + 1, total)}
                 className={cn(

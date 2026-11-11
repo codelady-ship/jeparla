@@ -128,7 +128,7 @@ export default function DesignPage() {
               <a href="#motion" className="group block">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
                   <div className="absolute inset-0 img-zoom bg-linear-to-br from-muted to-gold/40" />
-                  <div className="absolute inset-0 bg-linear-to-tr from-primary/80 to-gold/60 img-swap" />
+                  <div className="absolute inset-0 img-swap bg-linear-to-tr from-primary/80 to-gold/60" />
                 </div>
                 <span className="mt-2 inline-block link-underline text-sm font-medium">{name}</span>
               </a>
