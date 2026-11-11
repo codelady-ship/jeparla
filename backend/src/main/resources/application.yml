@@ -23,9 +23,15 @@ spring:
     hikari:
       # Small pool: the API, PostgreSQL and Redis share one free-tier VM.
       maximum-pool-size: 10
+      # Search (#151): the word-similarity operator (%>) of the GIN-indexed pre-filter uses this threshold.
+      # It is SearchSql.PREFILTER_THRESHOLD, a little below the 0.5 of the score, so the index finds every
+      # typo match; the exact word_similarity check then runs on those rows only. Must stay <= 0.5.
+      connection-init-sql: SET pg_trgm.word_similarity_threshold = 0.45
   data:
     redis:
-      # Rate-limit counters (#34) and later caches. The API keeps working without Redis.
+      # Rate-limit counters only (#34): search results are cached in the API (#151), so nothing else
+      # competes with the counters for Redis memory (docker-compose.yml: noeviction). The API keeps
+      # working without Redis.
       host: ${JEPARLA_REDIS_HOST:localhost}
       port: ${JEPARLA_REDIS_PORT:6379}
       password: ${JEPARLA_REDIS_PASSWORD:}
@@ -84,7 +90,17 @@ jeparla:
     jwt-secret: ${JEPARLA_JWT_SECRET:}
     access-token-ttl: 15m
     refresh-token-ttl: 30d
+    # Absolute lifetime of a session (refresh token family, #134): rotation never extends it past this.
+    refresh-family-ttl: 90d
     cookie-secure: ${JEPARLA_COOKIE_SECURE:true}
+    # Email verification and password reset links (#131): one use each, only the SHA-256 hash is stored.
+    account-email:
+      verification-ttl: 24h
+      reset-ttl: 1h
+      # Every "forgot password" answer takes at least this long, account or not.
+      forgot-response-floor: 400ms
+      # Deletes expired tokens and removes expired links from the email outbox. "-" turns it off.
+      cleanup-cron: ${JEPARLA_ACCOUNT_TOKEN_CLEANUP_CRON:0 40 * * * *}
   storage:
     # Base URL of the public bucket for image URLs (JEPARLA_S3_PUBLIC_URL). Demo images (demo/...)
     # do not need it: they are served by the frontend from /demo.
@@ -125,9 +141,19 @@ jeparla:
     email: ${JEPARLA_SUPPORT_EMAIL:}
     url: ${JEPARLA_SUPPORT_URL:}
     help-path: /help
+    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az.
+    site-url: ${JEPARLA_PUBLIC_SITE_URL:http://localhost:3000}
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
     email-cron: ${JEPARLA_EMAIL_OUTBOX_CRON:0 * * * * *}
+  mail:
+    # SMTP relay of the email outbox (#131, docs/deploy.md "Email"). Empty host: nothing is sent, the outbox
+    # keeps the messages. STARTTLS is required.
+    host: ${JEPARLA_SMTP_HOST:}
+    port: ${JEPARLA_SMTP_PORT:587}
+    username: ${JEPARLA_SMTP_USERNAME:}
+    password: ${JEPARLA_SMTP_PASSWORD:}
+    from: ${JEPARLA_MAIL_FROM:}
   metal-prices:
     # Daily CBAR bulletin (#43): bank metals XAU/XAG/XPT/XPD in AZN per troy ounce. On weekends and
     # holidays CBAR answers with the last bulletin (its own date), which is already stored.
@@ -151,6 +177,12 @@ jeparla:
     # Shared secret of POST /internal/jobs/metal-prices (header X-Jeparla-Job-Token), 32+ bytes.
     # Empty: the endpoint answers 404.
     job-token: ${JEPARLA_INTERNAL_JOB_TOKEN:}
+  search:
+    cache:
+      # Ranked search results and header suggestions per query (#151), in the API's memory. Emptied when a
+      # product, variant, store, category or synonym changes; 0s turns the cache off.
+      ttl: 60s
+      max-entries: 5000
   rate-limit:
     # redis (shared counters, in-memory fallback while Redis is down) or memory.
     store: redis
@@ -173,8 +205,12 @@ management:
         enabled: true
 
 springdoc:
+  # Off by default, so production never publishes the API description (#134); JEPARLA_API_DOCS=true turns
+  # both on locally. Off, the paths answer 404.
   api-docs:
+    enabled: ${JEPARLA_API_DOCS:false}
     path: /v3/api-docs
   swagger-ui:
+    enabled: ${JEPARLA_API_DOCS:false}
     path: /swagger-ui.html
   paths-to-match: /api/**

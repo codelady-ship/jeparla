@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntFunction;
 
 /**
  * Builds the ranked search statements (#38) over the generated {@code search_text} columns (folded
  * with {@code jeparla_fold}, trigram GIN indexes). Every value is a bound parameter; the SQL text
- * depends only on the number of words and synonyms. Scores are computed and ordered in SQL and never
+ * depends only on the number of words and synonyms (and whether a word matches a category or store). Scores are computed and ordered in SQL and never
  * read into Java (they are {@code real}).
  *
  * <p><b>Matching.</b> Every query word must match (AND). A word matches a text when it is a word of
@@ -27,10 +28,23 @@ import java.util.Map;
  *       containing it as consecutive words +0.2.</li>
  * </ul>
  * Ties: products and stores by id (the catalog order), categories by the admin sort order.
+ *
+ * <p><b>Indexes</b> (#151). The scores are expressions the trigram GIN indexes cannot serve, so each
+ * statement first narrows the rows with a pre-filter per word that the indexes can serve: {@code LIKE 'w%'}
+ * and {@code LIKE '% w%'} (the word or a synonym starts a word) and {@code text %> 'w'} (trigram word
+ * similarity at least {@code pg_trgm.word_similarity_threshold}, set to {@value #PREFILTER_THRESHOLD} for
+ * every connection in application.yml). Every row a score can match passes the pre-filter, so it changes
+ * neither the results nor their order, only how many rows are scored. Products are found by their category
+ * and store through the ids {@link SearchTermsQuery} looked up (literal lists, B-tree indexes on the product).
  */
 final class SearchSql {
 
     static final String FUZZY_THRESHOLD = "0.5";
+    /**
+     * {@code pg_trgm.word_similarity_threshold} of the pre-filter: a little below {@link #FUZZY_THRESHOLD}, so
+     * the index finds every typo match whatever the rounding of the similarity; the exact check is the score.
+     */
+    static final String PREFILTER_THRESHOLD = "0.45";
 
     /** Category ids the public sees: active, under active ancestors only (CategoryTree in SQL). */
     private static final String VISIBLE_CATEGORIES = """
@@ -112,7 +126,8 @@ final class SearchSql {
             sql.append(", ").append(wordScore(i, "s.search_text")).append(" AS m").append(i);
         }
         sql.append(", ").append(namePhraseBonus(List.of("s.name"))).append(" AS bonus")
-                .append(" FROM stores s WHERE s.status = 'APPROVED' OFFSET 0) x")
+                .append(" FROM stores s WHERE s.status = 'APPROVED'").append(everyWord(i -> wordFilter(i, "s.search_text")))
+                .append(" OFFSET 0) x")
                 .append(where()).append(orderBy("x.id")).append(" LIMIT :limit");
         return sql.toString();
     }
@@ -125,7 +140,9 @@ final class SearchSql {
             sql.append(", ").append(wordScore(i, "c.search_text")).append(" AS m").append(i);
         }
         sql.append(", ").append(namePhraseBonus(List.of("c.name_az", "c.name_en", "c.name_ru"))).append(" AS bonus")
-                .append(" FROM categories c WHERE c.id IN (SELECT id FROM visible) OFFSET 0) x")
+                .append(" FROM categories c WHERE c.id IN (SELECT id FROM visible)")
+                .append(everyWord(i -> wordFilter(i, "c.search_text")))
+                .append(" OFFSET 0) x")
                 .append(where()).append(orderBy("x.sort_order, x.id")).append(" LIMIT :limit");
         return sql.toString();
     }
@@ -144,8 +161,83 @@ final class SearchSql {
         }
         sql.append(", ").append(productPhraseBonus()).append(" AS bonus")
                 .append(" FROM products p JOIN stores s ON s.id = p.store_id JOIN categories c ON c.id = p.category_id")
-                .append(" WHERE ").append(LISTED_PRODUCT).append(" OFFSET 0");
+                .append(" WHERE ").append(LISTED_PRODUCT).append(everyWord(this::productFilter)).append(" OFFSET 0");
         return sql.toString();
+    }
+
+    // ------------------------------------------------------------------ index pre-filters (#151)
+
+    /** {@code " AND (...) AND (...)"} with one condition per word; "" for a blank query. */
+    private String everyWord(IntFunction<String> condition) {
+        StringBuilder sql = new StringBuilder();
+        for (int i = 0; i < terms.words().size(); i++) {
+            sql.append(" AND ").append(condition.apply(i));
+        }
+        return sql.toString();
+    }
+
+    /**
+     * Word {@code i} may match the product: its name passes {@link #wordFilter}, or its category or store is one
+     * whose search text passes it ({@link SearchTermsQuery} found their ids). The store score reads the folded
+     * store name, a part of {@code stores.search_text} (name and city): what matches the name matches that text
+     * too. The ids are literal lists, so the planner estimates how many products they bring.
+     */
+    private String productFilter(int i) {
+        SearchTerms.Word word = terms.words().get(i);
+        StringBuilder sql = new StringBuilder("(").append(wordFilter(i, "p.search_text"));
+        if (!word.categoryIds().isEmpty()) {
+            sql.append(" OR p.category_id IN (").append(param("w" + i + "c", word.categoryIds())).append(")");
+        }
+        if (!word.storeIds().isEmpty()) {
+            sql.append(" OR p.store_id IN (").append(param("w" + i + "t", word.storeIds())).append(")");
+        }
+        return sql.append(")").toString();
+    }
+
+    /**
+     * Index-friendly condition that holds for every text {@link #wordScore} gives more than 0: the text contains
+     * the word or a synonym (one trigram regex {@code ~ 'w|s1|s2'}; forms under 3 letters as two {@code LIKE}s of
+     * a word start), or (3+ letters) the trigram word similarity reaches {@value #PREFILTER_THRESHOLD}.
+     */
+    private String wordFilter(int i, String text) {
+        SearchTerms.Word word = terms.words().get(i);
+        List<String> any = new ArrayList<>();
+        List<String> forms = new ArrayList<>();
+        forms.add(word.text());
+        forms.addAll(word.synonyms());
+        // One trigram regex for every form of 3+ letters (one index scan instead of two per form); "contains"
+        // is wider than "starts a word", which is all a pre-filter needs. Shorter forms have no inner trigram,
+        // only the padded ones of a word start, so they keep the two LIKEs.
+        List<String> alternatives = new ArrayList<>();
+        for (int j = 0; j < forms.size(); j++) {
+            String form = forms.get(j);
+            if (form.codePointCount(0, form.length()) >= SearchTerms.MIN_FUZZY_LENGTH) {
+                alternatives.add(regexLiteral(form));
+            } else {
+                any.add(text + " LIKE " + param("w" + i + "f" + j + "b", form + "%"));
+                any.add(text + " LIKE " + param("w" + i + "f" + j + "p", "% " + form + "%"));
+            }
+        }
+        if (!alternatives.isEmpty()) {
+            any.add(text + " ~ " + param("w" + i + "r", String.join("|", alternatives)));
+        }
+        if (word.fuzzy()) {
+            // text %> w is w <% text: word_similarity(w, text) >= pg_trgm.word_similarity_threshold.
+            any.add(text + " %> " + param("w" + i, word.text()));
+        }
+        return "(" + String.join(" OR ", any) + ")";
+    }
+
+    /** {@code text} as a literal in a PostgreSQL regular expression: every non-letter, non-digit escaped. */
+    static String regexLiteral(String text) {
+        StringBuilder regex = new StringBuilder();
+        text.codePoints().forEach(c -> {
+            if (!Character.isLetterOrDigit(c)) {
+                regex.append('\\');
+            }
+            regex.appendCodePoint(c);
+        });
+        return regex.toString();
     }
 
     /** {@code CASE} giving the score of word {@code i} against a folded text, 0 when it does not match. */

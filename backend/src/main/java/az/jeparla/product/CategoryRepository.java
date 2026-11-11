@@ -16,4 +16,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByParentIdOrderBySortOrderAscIdAsc(Long parentId);
 
     boolean existsBySlug(String slug);
+
+    /** Admin catalog settings: whether a category has subcategories (it cannot be deleted then). */
+    boolean existsByParentId(Long parentId);
 }

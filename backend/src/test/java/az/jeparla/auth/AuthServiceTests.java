@@ -37,7 +37,7 @@ class AuthServiceTests {
     void setUp() {
         when(encoder.encode(anyString())).thenReturn(DUMMY_HASH);
         auth = new AuthService(users, mock(RoleRepository.class), encoder, mock(AccessTokenService.class),
-                refreshTokens, Clock.systemUTC());
+                refreshTokens, Clock.systemUTC(), mock(EmailVerificationService.class));
     }
 
     private static User user(UserStatus status) {

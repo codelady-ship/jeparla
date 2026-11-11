@@ -42,7 +42,10 @@ services:
   redis:
     image: redis:7.4-alpine
     restart: unless-stopped
-    # Cache and rate-limit counters only (PLAN 3a): the API keeps working without Redis.
+    # Rate-limit counters only (PLAN 3a): the API keeps working without Redis. Every counter expires on its
+    # own (TTL = its window). noeviction (#134): a full Redis never drops live counters, which would reset a
+    # limit; writes fail instead and the API counts in memory until Redis has room again. Search results are
+    # cached in the API's memory (#151), never here, so they cannot crowd the counters out.
     command:
       - redis-server
       - --requirepass
@@ -50,7 +53,7 @@ services:
       - --maxmemory
       - 128mb
       - --maxmemory-policy
-      - allkeys-lru
+      - noeviction
     environment:
       REDISCLI_AUTH: ${JEPARLA_REDIS_PASSWORD}
     ports:
@@ -142,6 +145,13 @@ services:
       JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD}
       JEPARLA_SUPPORT_EMAIL: ${JEPARLA_SUPPORT_EMAIL:-}
       JEPARLA_SUPPORT_URL: ${JEPARLA_SUPPORT_URL:-}
+      JEPARLA_PUBLIC_SITE_URL: ${JEPARLA_PUBLIC_SITE_URL:-http://localhost:3000}
+      # Optional SMTP relay of the email outbox (#131); without a host the emails wait in the outbox.
+      JEPARLA_SMTP_HOST: ${JEPARLA_SMTP_HOST:-}
+      JEPARLA_SMTP_PORT: ${JEPARLA_SMTP_PORT:-587}
+      JEPARLA_SMTP_USERNAME: ${JEPARLA_SMTP_USERNAME:-}
+      JEPARLA_SMTP_PASSWORD: ${JEPARLA_SMTP_PASSWORD:-}
+      JEPARLA_MAIL_FROM: ${JEPARLA_MAIL_FROM:-}
       JEPARLA_REDIS_HOST: redis
       JEPARLA_REDIS_PORT: "6379"
       JEPARLA_REDIS_PASSWORD: ${JEPARLA_REDIS_PASSWORD}

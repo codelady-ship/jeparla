@@ -24,10 +24,12 @@ record SearchTerms(List<Word> words, String phrase) {
     /**
      * One query word.
      *
-     * @param text     folded word, e.g. "uzuk"
-     * @param synonyms folded synonyms, e.g. "кольцо" (V11 {@code search_synonyms})
+     * @param text        folded word, e.g. "uzuk"
+     * @param synonyms    folded synonyms, e.g. "кольцо" (V11 {@code search_synonyms})
+     * @param categoryIds categories whose search text the word or a synonym may match ({@link SearchTermsQuery})
+     * @param storeIds    stores whose search text the word or a synonym may match
      */
-    record Word(String text, List<String> synonyms) {
+    record Word(String text, List<String> synonyms, List<Long> categoryIds, List<Long> storeIds) {
 
         /** Typo tolerance (trigram word similarity) for words of 3 and more letters. */
         boolean fuzzy() {
@@ -42,10 +44,14 @@ record SearchTerms(List<Word> words, String phrase) {
     /**
      * @param foldedWords {@link #foldedWords} of the query
      * @param synonymPairs folded {@code [term, synonym]} pairs touching the words, in both directions
+     * @param categoryIds  per word index, the categories it may match (missing: none)
+     * @param storeIds     per word index, the stores it may match (missing: none)
      */
-    static SearchTerms of(List<String> foldedWords, List<Map.Entry<String, String>> synonymPairs) {
+    static SearchTerms of(List<String> foldedWords, List<Map.Entry<String, String>> synonymPairs,
+            Map<Integer, List<Long>> categoryIds, Map<Integer, List<Long>> storeIds) {
         List<Word> words = new ArrayList<>(foldedWords.size());
-        for (String word : foldedWords) {
+        for (int i = 0; i < foldedWords.size(); i++) {
+            String word = foldedWords.get(i);
             Set<String> synonyms = new LinkedHashSet<>();
             for (Map.Entry<String, String> pair : synonymPairs) {
                 if (pair.getKey().equals(word)) {
@@ -56,7 +62,8 @@ record SearchTerms(List<Word> words, String phrase) {
                 }
             }
             synonyms.remove(word);
-            words.add(new Word(word, List.copyOf(synonyms)));
+            words.add(new Word(word, List.copyOf(synonyms), List.copyOf(categoryIds.getOrDefault(i, List.of())),
+                    List.copyOf(storeIds.getOrDefault(i, List.of()))));
         }
         return new SearchTerms(List.copyOf(words), String.join(" ", foldedWords));
     }

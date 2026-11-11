@@ -53,4 +53,23 @@ public interface ProductVariantRepository extends NoDeleteRepository<ProductVari
     /** One repricing batch: the variants with their fineness (the quote is compared by id only). */
     @Query("select v from ProductVariant v join fetch v.fineness where v.id in :ids order by v.id")
     List<ProductVariant> findWithFinenessByIdIn(@Param("ids") Collection<Long> ids);
+
+    /**
+     * Admin catalog settings: {@code [finenessId, count]} of products (not deleted, any status) with a live variant
+     * of that fineness.
+     */
+    @Query("""
+            select v.fineness.id, count(distinct v.product.id) from ProductVariant v
+            where v.deletedAt is null and v.product.deletedAt is null and v.fineness is not null
+            group by v.fineness.id
+            """)
+    List<Object[]> countLiveProductsByFineness();
+
+    /** Finenesses any variant row uses, removed ones too. */
+    @Query("select distinct v.fineness.id from ProductVariant v where v.fineness is not null")
+    List<Long> findUsedFinenessIds();
+
+    /** Any variant row, removed ones too (the price history keeps them): the fineness cannot be deleted. */
+    @Query("select count(v) > 0 from ProductVariant v where v.fineness.id = :finenessId")
+    boolean existsByFinenessId(@Param("finenessId") Long finenessId);
 }

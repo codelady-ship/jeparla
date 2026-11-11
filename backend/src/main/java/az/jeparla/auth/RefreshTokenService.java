@@ -40,10 +40,10 @@ public class RefreshTokenService {
         this.clock = clock;
     }
 
-    /** First token of a new family (login, register). */
+    /** First token of a new family (login, register); the family ends {@code refresh-family-ttl} from now. */
     @Transactional
     public IssuedRefreshToken startFamily(User user) {
-        return issue(user, UUID.randomUUID());
+        return issue(user, UUID.randomUUID(), clock.instant().plus(properties.refreshFamilyTtl()));
     }
 
     /**
@@ -52,7 +52,11 @@ public class RefreshTokenService {
      * <p>Not rolled back on {@link ApiException}: the family revocation of a reuse must be committed
      * although the request fails.
      *
-     * @throws ApiException 401 {@code auth.refresh_invalid} for an unknown, expired, used or revoked token
+     * <p>The next token never outlives the family (#134): a session ends {@code refresh-family-ttl} after its
+     * login however often it is refreshed, and the whole family is revoked then.
+     *
+     * @throws ApiException 401 {@code auth.refresh_invalid} for an unknown, expired, used or revoked token, or
+     *                      one of an expired family
      */
     @Transactional(noRollbackFor = ApiException.class)
     public Rotation rotate(String rawToken) {
@@ -68,12 +72,18 @@ public class RefreshTokenService {
                     token.getUser().getId(), token.getFamilyId(), revoked);
             throw invalid();
         }
+        if (!token.getFamilyExpiresAt().isAfter(now)) {
+            tokens.revokeFamily(token.getFamilyId(), now);
+            log.info("Refresh token family {} of user {} reached its absolute lifetime",
+                    token.getFamilyId(), token.getUser().getId());
+            throw invalid();
+        }
         if (token.isExpired(now)) {
             token.revoke(now);
             throw invalid();
         }
         token.markUsed(now);
-        IssuedRefreshToken next = issue(token.getUser(), token.getFamilyId());
+        IssuedRefreshToken next = issue(token.getUser(), token.getFamilyId(), token.getFamilyExpiresAt());
         return new Rotation(token.getUser(), next);
     }
 
@@ -93,7 +103,10 @@ public class RefreshTokenService {
         return tokens.revokeAllOfUser(userId, clock.instant());
     }
 
-    /** Daily cleanup of tokens that expired more than a day ago. */
+    /**
+     * Daily cleanup of tokens that expired more than a day ago; a token never outlives its family, so the rows
+     * of ended sessions go too. Used and revoked tokens stay until then for reuse detection.
+     */
     @Scheduled(cron = "0 30 4 * * *", zone = "Asia/Baku")
     @Transactional
     public void deleteExpired() {
@@ -103,12 +116,15 @@ public class RefreshTokenService {
         }
     }
 
-    private IssuedRefreshToken issue(User user, UUID familyId) {
+    private IssuedRefreshToken issue(User user, UUID familyId, Instant familyExpiresAt) {
         byte[] bytes = new byte[TOKEN_BYTES];
         random.nextBytes(bytes);
         String raw = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         Instant expiresAt = clock.instant().plus(properties.refreshTokenTtl());
-        tokens.save(new RefreshToken(user, familyId, hash(raw), expiresAt));
+        if (expiresAt.isAfter(familyExpiresAt)) {
+            expiresAt = familyExpiresAt;
+        }
+        tokens.save(new RefreshToken(user, familyId, hash(raw), expiresAt, familyExpiresAt));
         return new IssuedRefreshToken(raw, expiresAt);
     }
 

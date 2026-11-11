@@ -125,12 +125,33 @@ public class ProductController {
     @ApiResponse(responseCode = "429", description = "Too many reports")
     public ResponseEntity<Void> report(@PathVariable long id, @Valid @RequestBody ProductReportRequest body,
             HttpServletRequest request) {
+        Optional<Long> userId = checkReportLimits(request);
+        feedback.report(id, body, userId.orElse(null));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/stores/{id}/reports")
+    @Operation(summary = "Report a store",
+            description = "A complaint about the store as a whole (by its numeric id). Guests and signed-in users, "
+                    + "the same rate limits as product reports (report-ip, report-account; shared counters).")
+    @ApiResponse(responseCode = "204", description = "Report saved for the admin queue")
+    @ApiResponse(responseCode = "400", description = "Invalid body")
+    @ApiResponse(responseCode = "404", description = "Unknown or not approved store")
+    @ApiResponse(responseCode = "429", description = "Too many reports")
+    public ResponseEntity<Void> reportStore(@PathVariable long id, @Valid @RequestBody ProductReportRequest body,
+            HttpServletRequest request) {
+        Optional<Long> userId = checkReportLimits(request);
+        feedback.reportStore(id, body, userId.orElse(null));
+        return ResponseEntity.noContent().build();
+    }
+
+    /** Report limits are checked before the target is looked up, so they cannot be used to probe ids. */
+    private Optional<Long> checkReportLimits(HttpServletRequest request) {
         Optional<Long> userId = CurrentUser.idIfPresent();
         rateLimits.check(RateLimitPolicy.REPORT_IP, IpAddresses.rateLimitKey(request.getRemoteAddr()));
         if (userId.isPresent()) {
             rateLimits.check(RateLimitPolicy.REPORT_ACCOUNT, "user:" + userId.get());
         }
-        feedback.report(id, body, userId.orElse(null));
-        return ResponseEntity.noContent().build();
+        return userId;
     }
 }

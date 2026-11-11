@@ -112,4 +112,17 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     Optional<Product> findBySlug(String slug);
 
     boolean existsBySlug(String slug);
+
+    /** Admin catalog settings: {@code [categoryId, count]} of products that are not deleted (any status). */
+    @Query("select p.category.id, count(p) from Product p where p.deletedAt is null group by p.category.id")
+    List<Object[]> countLiveByCategory();
+
+    /** Any product row, deleted ones too (they keep the foreign key): the category cannot be deleted. */
+    @Query("select count(p) > 0 from Product p where p.category.id = :categoryId")
+    boolean existsByCategoryId(@Param("categoryId") Long categoryId);
+
+    /** Admin store list: {@code [storeId, count]} of the stores' products that are not deleted (any status). */
+    @Query("select p.store.id, count(p) from Product p where p.store.id in :storeIds and p.deletedAt is null"
+            + " group by p.store.id")
+    List<Object[]> countLiveByStoreIds(@Param("storeIds") Collection<Long> storeIds);
 }

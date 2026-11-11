@@ -9,6 +9,7 @@ import az.jeparla.admin.dto.StoreStatusRequest;
 import az.jeparla.common.dto.PageDto;
 import az.jeparla.product.ProductStatus;
 import az.jeparla.store.StoreStatus;
+import az.jeparla.verification.CheckStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -35,10 +36,14 @@ public class AdminModerationController {
     }
 
     @GetMapping("/stores")
-    @Operation(summary = "Stores by status (default PENDING), oldest first")
+    @Operation(summary = "Stores, oldest first: by status (default PENDING) and/or seller check status",
+            description = "Without parameters: store applications (status=PENDING). sellerStatus alone is the seller "
+                    + "identity-check queue across every store status (e.g. sellerStatus=PENDING); with both, both "
+                    + "apply. productCount is the store's products that are not deleted, in any status.")
     public PageDto<AdminStoreDto> stores(@RequestParam(required = false) StoreStatus status,
+            @RequestParam(required = false) CheckStatus sellerStatus,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
-        return moderation.stores(status, page, size);
+        return moderation.stores(status, sellerStatus, page, size);
     }
 
     @GetMapping("/stores/{id}")
@@ -59,7 +64,9 @@ public class AdminModerationController {
     }
 
     @GetMapping("/products")
-    @Operation(summary = "Products by status (default IN_REVIEW), the longest waiting first")
+    @Operation(summary = "Products by status (default IN_REVIEW), the longest waiting first",
+            description = "Each card has the cheapest live variant's price, fineness and weight and the first photo; "
+                    + "missing values are null (no live variant, a FASHION product, no photo), never zero.")
     public PageDto<AdminProductDto> products(@RequestParam(required = false) ProductStatus status,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return moderation.products(status, page, size);
