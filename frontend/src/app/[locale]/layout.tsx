@@ -15,6 +15,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { alternates, SITE_URL } from "@/i18n/alternates";
 import { PAGE_TRANSITION } from "@/i18n/navigation";
+import { USING_MOCK } from "@/lib/api";
 import { routing } from "@/i18n/routing";
 import colors from "@/lib/brand-colors.json";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/open-graph";
@@ -72,6 +73,8 @@ export async function generateMetadata(): Promise<Metadata> {
     // The site has its own light and dark themes; Dark Reader would invert them again
     // (and the cream hero video would no longer match the page).
     other: { "darkreader-lock": "true" },
+    // Sample data is invented: never index it as real stores, products or prices.
+    ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
 }
 

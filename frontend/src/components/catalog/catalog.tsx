@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { ProductGrid, ProductGridEmpty } from "@/components/product/product-grid";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
+import { itemList } from "@/lib/seo/json-ld";
 import { activeFilters, PAGE_SIZE, parseFilters, type SearchParams } from "@/lib/catalog/filters";
 import { getLocale } from "next-intl/server";
 import { ActiveFilterChips, Pagination, SortForm } from "./catalog-toolbar";
@@ -46,8 +48,22 @@ export async function Catalog({
     .filter((c) => c.parentId === null && c.productCount > 0)
     .slice(0, 6);
 
+  const listName = categories.find((c) => c.slug === category)?.name[locale] ?? t("title");
+
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+      {/* The products on this page of results, in order (schema.org ItemList). */}
+      <JsonLd
+        data={[
+          itemList(
+            listName,
+            page.content.map((p) => ({
+              name: p.name[locale],
+              path: `/${locale}/products/${p.slug}`,
+            })),
+          ),
+        ]}
+      />
       <aside aria-label={t("filters")} className="hidden lg:block">
         <FilterForm action={ACTION} auto>
           <FilterFields id="d" filters={filters} data={data} hideCategory={Boolean(category)} />

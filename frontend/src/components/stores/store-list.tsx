@@ -2,6 +2,8 @@ import { Search, Store } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { Reveal } from "@/components/motion/reveal";
+import { JsonLd } from "@/components/seo/json-ld";
+import { itemList } from "@/lib/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
@@ -27,6 +29,14 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
 
   return (
     <div className="flex flex-col gap-6">
+      <JsonLd
+        data={[
+          itemList(
+            t("title"),
+            stores.map((s) => ({ name: s.name, path: `/${locale}/stores/${s.slug}` })),
+          ),
+        ]}
+      />
       <FilterForm action="/stores" className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <label className="flex flex-1 flex-col gap-1 text-sm">
           {t("searchLabel")}
