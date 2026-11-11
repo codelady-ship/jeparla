@@ -7,7 +7,8 @@ import ru from "../../messages/ru.json";
 import "./globals.css";
 
 // Only for URLs with no language: anything under /az, /en or /ru reaches
-// [locale]/[...rest] and gets the localized 404 with the site header and footer.
+// [locale]/[...rest] and gets the localized 404 with the site header and footer,
+// and the proxy sends other paths to the visitor's language first.
 // The language is unknown here, so the page is in az, the default, with links to
 // the home page in the other languages, each labelled in its own language.
 const MESSAGES = { az, en, ru } as const;

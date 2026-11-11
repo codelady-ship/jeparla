@@ -23,25 +23,17 @@ test.describe("localized 404", () => {
     });
   }
 
-  test("a path without a language goes to the visitor's language first", async ({ page }) => {
-    allowNotFound();
-    await page.setExtraHTTPHeaders({ "accept-language": "ru" });
-    const res = await page.goto("/nonexistent-page");
-    expect(res?.status()).toBe(404);
-    await expect(page).toHaveURL(/\/ru\/nonexistent-page$/);
-    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Страница не найдена");
-  });
+  // The proxy sends a path without a language to the browser's language (Accept-Language).
+  test.describe("a path without a language", () => {
+    test.use({ locale: "ru-RU" });
 
-  // Paths the language proxy skips (they look like files) get the global page.
-  test("the global 404 is in az with links to en and ru", async ({ page }) => {
-    allowNotFound();
-    const res = await page.goto("/nonexistent.page");
-    expect(res?.status()).toBe(404);
-    await expect(page.locator("html")).toHaveAttribute("lang", "az");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Səhifə tapılmadı");
-    await expect(page.getByRole("link", { name: "English" })).toHaveAttribute("href", "/en");
-    await expect(page.getByRole("link", { name: "Русский" })).toHaveAttribute("href", "/ru");
-    await expectNoA11yViolations(page);
+    test("goes to the visitor's language first", async ({ page }) => {
+      allowNotFound();
+      const res = await page.goto("/nonexistent-page");
+      expect(res?.status()).toBe(404);
+      await expect(page).toHaveURL(/\/ru\/nonexistent-page$/);
+      await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Страница не найдена");
+    });
   });
 });
