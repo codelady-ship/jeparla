@@ -123,6 +123,7 @@ class StoreFactsApiTests {
         Store store = data.approvedStore(data.merchant());
         em.flush();
         jdbc.update("UPDATE stores SET approved_at = NULL WHERE id = ?", store.getId());
+        em.clear(); // the request must read the row, not the store entity still in this transaction
 
         mvc.perform(get("/api/v1/stores/" + store.getSlug() + "/facts"))
                 .andExpect(jsonPath("$.onJeparlaSince").value(Matchers.nullValue()))
@@ -134,6 +135,7 @@ class StoreFactsApiTests {
         Store store = data.approvedStore(data.merchant());
         em.flush();
         jdbc.update("UPDATE stores SET seller_kind = 'FASHION' WHERE id = ?", store.getId());
+        em.clear();
 
         mvc.perform(get("/api/v1/stores/" + store.getSlug() + "/facts"))
                 .andExpect(jsonPath("$.documents").value(Matchers.nullValue()));
