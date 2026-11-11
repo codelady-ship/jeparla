@@ -38,8 +38,9 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
 | `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
-| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**` | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
+| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**`, `/share/{code}` (#100; `/stores/{slug}/facts` və `/preview` `/stores/**`-dədir, #108) | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
 | `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
+| `POST /api/v1/stores/{slug}/visits` | hamı, qonaq da: paylaşılmış linklə gələn baxış (#100), `referral-*` limitləri ilə |
 | `POST /internal/jobs/metal-prices` | paylaşılan sirr ilə (controller yoxlayır, #44) |
 | qalan hər şey | heç kim |
 
@@ -82,6 +83,18 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   `APPROVED` statusunu satıcı yalnız özü gizlətdiyi məhsula qaytarır, təsdiq admindədir (#40).
 - Testlər: `MerchantProductApiTests.anotherMerchantsProductIsForbiddenEverywhere` (11 endpoint),
   `MerchantStoreApiTests.onlyMerchantsReachTheMerchantApi`.
+
+### Paylaşım linki və statistika (#100)
+
+- `/api/v1/merchant/store/share`, `/store/share/qr.svg`, `/store/share/regenerate`, `/merchant/referrals` (`MERCHANT`):
+  mağaza URL-də və sorğuda yoxdur, həmişə token sahibinin mağazasıdır (`MerchantStores`). Başqa mağazanın linkini
+  və ya statistikasını istəmək üçün parametr yoxdur, ona görə satıcı yalnız öz rəqəmlərini görür.
+- Linki yalnız sahibi dəyişir: `POST /store/share/regenerate` köhnə kodu dərhal etibarsız edir, auditə
+  (`STORE_SHARE_LINK_REPLACED`, köhnə və yeni kod) yazılır, `BLOCKED` mağaza üçün `403 merchant.store_blocked`,
+  hesab üzrə `share-regenerate-account` limiti var. Admin linki dəyişmir.
+- İctimai tərəf: `GET /share/{code}` yalnız `APPROVED` mağazanı açır; `/stores/{slug}/preview` kodu göstərmir.
+  `POST /stores/{slug}/visits` yalnız aqreqat sayğacı artırır (mağaza, gün, mənbə); IP və user agent saxlanılmır.
+- Testlər: `ShareApiTests` (rollar, başqa satıcının statistikası, bot və təkrar baxış, audit), `ShareUnitTests`.
 
 ### Yoxlama sənədləri (#40, #138)
 
@@ -258,6 +271,9 @@ Redis-də deyil (#151).
 | `email-verify-ip` | 30 / saat | hər təsdiq linki | IP |
 | `email-verification-account` | 3 / saat | hər "linki yenidən göndər" | user id: aşanda `429` |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
+| `referral-ip` | 30 / saat | botdan olmayan, mənbəli hər baxış | IP: `POST /stores/{slug}/visits` (#100), bütün mağazalar üzrə; artığı 204 alır, sayılmır |
+| `referral-visit` | 1 / 30 dəq. | eyni baxış | IP + mağaza + mənbə: yeniləmə və linki təkrar açmaq bir baxışdır |
+| `share-regenerate-account` | 5 / gün | hər yeni link | user id: `POST /merchant/store/share/regenerate` (#100); 429 |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |

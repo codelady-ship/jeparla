@@ -308,6 +308,58 @@ Xətalar 3 dildə ProblemDetail-dir (`code: merchant.*`, sahə xətası `errors[
   - **Lifecycle qaydası (ehtiyat):** private bucket-də `staging/` prefiksi üçün 1 gündən köhnə obyektləri silən qayda olmalıdır. R2: Dashboard -> R2 -> `jeparla-private` -> Settings -> Object lifecycle rules -> prefix `staging/`, "Delete objects" 1 gün (və ya `wrangler r2 bucket lifecycle add`). Sənədlər (`staging/`-dən kənarda) bu qaydaya düşmür. Lokal MinIO-da `minio-init` eyni qaydanı `mc ilm import` ilə qoyur.
   - **Açarlar:** R2 API tokeni hər iki bucket-ə `Object Read & Write` icazəsi ilə; yalnız env-də.
 
+## Paylaşım linki və mağaza faktları (#100, #108)
+
+Satıcı kataloqunu bir linklə Instagram bio-da, TikTok-da, WhatsApp statusunda və Tap.az elanında paylaşır:
+`JEPARLA_PUBLIC_SITE_URL/s/<kod>` (default `http://localhost:3000`; prod-da `https://jeparla.az`, http(s) origin,
+path yoxdur, səhv dəyər tətbiqi başlatmır).
+
+| Endpoint | Kim | Nə edir |
+| --- | --- | --- |
+| `GET /api/v1/merchant/store/share` | `MERCHANT` | `ShareLink`: `code`, `url`, `qrUrl` (`url?ref=qr`), `active` (mağaza `APPROVED`-dirsə) |
+| `GET /api/v1/merchant/store/share/qr.svg` | `MERCHANT` | `qrUrl`-in QR kodu, `image/svg+xml` (tünd yaşıl ağ fonda, 4 modul boşluq, `no-store`) |
+| `POST /api/v1/merchant/store/share/regenerate` | `MERCHANT` | Yeni kod; köhnə link və çap olunmuş QR dərhal 404 olur. Audit `STORE_SHARE_LINK_REPLACED` (köhnə və yeni kod). `BLOCKED` mağaza 403 `merchant.store_blocked`; `share-regenerate-account` 5 / gün |
+| `GET /api/v1/merchant/referrals?days=30\|90` | `MERCHANT` | `ReferralStats`: cəmi baxış və WhatsApp kliki, mənbə üzrə (çoxdan aza), gün üzrə (sıfırlar daxil). Başqa pəncərə 400 `merchant.referral_days` |
+| `GET /api/v1/share/{code}` | hamı | `StorePreview` (`slug` daxil): frontend-in `/s/{code}` səhifəsi `/{locale}/stores/{slug}`-a yönləndirir. Naməlum, dəyişdirilmiş kod və ya ictimai olmayan mağaza 404. Heç nə saymır |
+| `GET /api/v1/stores/{slug}/preview` | hamı | `StorePreview`: OG və paylaşım şəkli üçün ad, şəhər, `verified` (satıcı yoxlaması), `verification`, `productCount`, `coverImageUrl`, `logoUrl`. Kod burada yoxdur |
+| `GET /api/v1/stores/{slug}/facts` | hamı | `StoreFacts` (#108), aşağıda |
+| `POST /api/v1/stores/{slug}/visits?ref=` (və ya `utm_source=`) | hamı | Paylaşılmış linklə gələn baxışı sayır; ictimai mağaza üçün həmişə 204, başqası 404 |
+| `POST /api/v1/products/{id}/contact-click?ref=` | hamı | Əvvəlki kimi məhsulun klikini sayır; `ref` (və ya `utm_source`) varsa klik mağazanın həmin mənbəsinə də yazılır |
+
+- **Kod:** 8 simvol, `abcdefghijkmnpqrstuvwxyz23456789` (0/o, 1/l yoxdur), 32^8 ~ 10^12: sayaraq tapılmır. Slug-dan asılı
+  deyil (`stores.share_code`, unikal, V20). API ilə yaranan mağazaya `ShareCodes.random()` (`SecureRandom`), SQL ilə
+  yarananlara (demo seed) default `jeparla_new_share_code()` (`gen_random_uuid()` baytları) verir. Kodu yalnız sahibi
+  dəyişir; ictimai `/stores/{slug}/preview` kodu göstərmir.
+- **QR:** serverdə SVG (`io.nayuki:qrcodegen`, MIT, 38 KB, asılılıqsız): frontend QR kitabxanası yükləmir (250 KB
+  skript büdcəsi). PNG lazımdırsa brauzer SVG-ni canvas-a çəkir.
+- **Mənbə:** `ref` `utm_source`-dan üstündür, böyük-kiçik hərf və `_`/`-`-dən sonrakı hissə nəzərə alınmır:
+  `INSTAGRAM` (`instagram`, `ig`, `insta`), `TIKTOK` (`tt`), `WHATSAPP` (`wa`), `TAPAZ` (`tap.az`), `FACEBOOK` (`fb`),
+  `TELEGRAM` (`tg`), `YOUTUBE` (`yt`), `QR`, `LINK` (`link`, `share`), qalan hər şey `OTHER`. Mənbəsiz sorğu sayılmır.
+- **Nə sayılmır:** bot və link önizləməsi (`BotUserAgents`: axtarış və AI crawler-ləri, `WhatsApp/`, `facebookexternalhit`,
+  `TelegramBot`, `Twitterbot`, HTTP kitabxanaları, headless brauzer, Lighthouse; boş `User-Agent` də), `Sec-Purpose`/`Purpose:
+  prefetch`, `referral-ip` limitindən (30 / saat, bütün mağazalar) artığı və eyni ünvan + mağaza + mənbədən
+  `referral-visit` pəncərəsində (30 dəq.) təkrar baxış (yeniləmə). Sayılmayan sorğu da 204 alır.
+- **Şəxsi məlumat yoxdur:** `store_referral_counts (store_id, day, source, visits, whatsapp_clicks)`, gün Asia/Baku.
+  IP, user agent, istifadəçi id-si, baxış sətri saxlanılmır; limit açarları Redis-də SHA-256 ilə və vaxtı bitəndə silinir.
+- **Statistikanın başlanğıcı:** `from` pəncərənin ilk günü və ya mağazanın yarandığı gündür (hansı gecdirsə). Sayğac bu
+  buraxılışla (V20) başlayır: ondan əvvəlki günlərin sıfırı "ölçülməyib" deməkdir.
+
+**Mağaza faktları (#108, `StoreFactsService`).** Hər sorğuda bazadan hesablanır (mağaza başına bir neçə indeksli sorğu,
+CDN 5 dəq. saxlayır); heç bir rəqəm əl ilə yazılmır, gecəlik cədvəl yoxdur ki, fakt məlumatdan geri qalmasın. "Aktiv
+məhsul" kataloqdakı kimidir: `APPROVED`, silinməyib, `PRECIOUS`, görünən kateqoriyada, canlı variantı var.
+
+| Sahə | Necə hesablanır | Bilinməyəndə |
+| --- | --- | --- |
+| `onJeparlaSince`, `monthsOnJeparla` | adminin mağazanı ilk təsdiq etdiyi an (`stores.approved_at`); bu günə qədər tam təqvim ayı (Asia/Baku) | `null` |
+| `activeProducts` | aktiv məhsul sayı (mağaza səhifəsinin `productCount`-u ilə eyni) | həmişə var, `0` realdır |
+| `catalogUpdatedAt` | aktiv məhsulların ən son dəyişmə vaxtı (`products.updated_at`; gündəlik metal qiyməti yeniləməsi məhsula toxunmur) | aktiv məhsul yoxdursa `null` |
+| `verifiedExpertise` | ekspertizası (`ASSAY_CERTIFICATE` və ya `LAB_REPORT`) admin tərəfindən təsdiqlənmiş aktiv məhsullar: `count` və `percent` (aşağı yuvarlaqlaşdırılır, heç vaxt şişirdilmir) | aktiv məhsul yoxdursa `percent: null` |
+| `metalLinkedPrice` | ən az bir canlı `METAL_LINKED` variantı olan aktiv məhsullar (qiyməti AMB-nin gündəlik məzənnəsinə bağlıdır) | eyni |
+| `hallmarkPhoto` | damğa şəkli olan məhsulların payı: şəkillər hələ "damğa şəkli" kimi işarələnmir | həmişə `null` |
+| `documents` | `taxId`, `tradeLicense`: həmin növdən ən az bir sənədi admin təsdiqləyibsə `true` (#40, #164) | `FASHION` mağaza üçün `null` (sənəd yoxlaması yoxdur) |
+
+Göstərilmir: reytinq və rəy (hələ yoxdur, #63) və WhatsApp cavab müddəti (söhbət Jeparla-dan kənardadır, ölçmək olmur).
+
 ## Yoxlama sənədləri, moderasiya və bildirişlər (#40, #138)
 
 Sənəd yalnız qiymətli metal satan mağazadan (`PRECIOUS`, `MIXED`) və yalnız `PRECIOUS` məhsul üçün qəbul
