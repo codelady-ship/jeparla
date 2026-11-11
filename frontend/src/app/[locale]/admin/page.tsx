@@ -39,9 +39,7 @@ async function Overview() {
       value: o.pendingChecks,
       href: "/admin/verification",
     },
-    ...(o.openReports === null
-      ? []
-      : [{ icon: Flag, label: t("openReports"), value: o.openReports, href: "/admin/reports" }]),
+    { icon: Flag, label: t("openReports"), value: o.openReports, href: "/admin/reports" },
     {
       icon: Coins,
       label: t("heldPrices"),

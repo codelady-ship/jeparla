@@ -49,12 +49,15 @@ export function DecisionButtons<S extends string>({
   onDone,
   reasonLabel,
   codes,
+  reasonAlways = false,
 }: {
   endpoint: string;
   /** Who reads the reason; the default label says the seller does. */
   reasonLabel?: string;
   /** A required pick list next to the reason (e.g. why a document is refused). */
   codes?: { label: string; options: readonly { value: string; label: string }[] };
+  /** Every action of this list needs a reason (complaints: kept in the audit log). */
+  reasonAlways?: boolean;
   name: string;
   actions: readonly AdminAction[];
   onDone: (result: { status: S; note: string | null }, action: AdminAction) => void;
@@ -80,6 +83,10 @@ export function DecisionButtons<S extends string>({
 
   async function confirm() {
     if (!action) return;
+    if (reasonAlways && reason.trim().length < REASON_MIN) {
+      setErrors({ reason: "reasonRequired" });
+      return;
+    }
     if (codes && NEEDS_REASON.has(action) && !code) {
       setErrors({ code: "codeRequired" });
       return;
@@ -109,7 +116,7 @@ export function DecisionButtons<S extends string>({
     onDone(result.data, done);
   }
 
-  const needsReason = action !== null && NEEDS_REASON.has(action);
+  const needsReason = action !== null && (reasonAlways || NEEDS_REASON.has(action));
   const formError = errors.form;
 
   return (

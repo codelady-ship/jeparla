@@ -1002,7 +1002,10 @@
       "viewText": "Documents are stored privately and open through a short-lived signed link on every view. Demo mode has no files.",
       "pages": "{count, plural, one {# page} other {# pages}}",
       "product": "Product: {name}",
-      "viewFailed": "The document did not open. Try again."
+      "viewFailed": "The document did not open. Try again.",
+      "owner": "Owner",
+      "contact": "Contact",
+      "taxId": "Tax ID"
     },
     "checkStatus": {
       "ALL": "All",
@@ -1107,7 +1110,9 @@
       "lastAdmin": "This is the only admin; make someone else admin first.",
       "largeChange": "The change is above the limit: confirm that you checked the source.",
       "codeRequired": "Choose the reason type.",
-      "rateLimited": "Too many requests. Try again in a moment."
+      "rateLimited": "Too many requests. Try again in a moment.",
+      "ownsStore": "This user owns a store: hand it over or block the store first.",
+      "resetNotAllowed": "No link for this account: its email is verified, it is an admin, or it is blocked."
     },
     "metal": {
       "GOLD": "Gold",
@@ -1195,30 +1200,24 @@
       "label": "Shown as",
       "labelHint": "E.g. 585 (14K).",
       "synonyms": "Search synonyms",
-      "synonymsIntro": "Searching for any word of a group gives the same results.",
-      "addSynonym": "Add synonym group",
-      "synonymText": "The main word and its spellings or synonyms.",
+      "synonymsIntro": "Searching for either word of a pair gives the same results.",
+      "addSynonym": "Add synonym pair",
+      "synonymText": "Two words, e.g. serqa and sırğa.",
       "noSynonyms": "No synonyms yet.",
-      "language": "Language",
-      "lang": {
-        "az": "Azerbaijani",
-        "en": "English",
-        "ru": "Russian"
-      },
-      "term": "Main word",
-      "words": "Synonyms",
-      "wordsHint": "Separate with commas, at most 10.",
+      "term": "Word",
       "save": "Save",
       "delete": "Delete",
       "deleteTitle": "Delete {name}?",
       "deleteText": "This can't be undone and is written to the audit log.",
       "deleted": "{name} deleted",
-      "added": "{name} added"
+      "added": "{name} added",
+      "synonym": "Its synonym",
+      "same": "is the same as"
     },
     "users": {
       "title": "Users",
       "intro": "Accounts and roles. Role changes are written to the audit log with a reason.",
-      "search": "Name, email or store",
+      "search": "Name, email, phone or store",
       "roleLabel": "Role",
       "count": "{count, plural, =0 {No users} one {# user} other {# users}}",
       "since": "Joined: {date}",
@@ -1229,14 +1228,32 @@
       "changeTitle": "Change the role of {name}?",
       "changeText": "The new role applies from the next sign-in.",
       "newRole": "New role",
-      "adminWarning": "An admin can manage every store, product and price."
+      "adminWarning": "An admin can manage every store, product and price.",
+      "active": "Active",
+      "blocked": "Blocked",
+      "block": "Block",
+      "unblock": "Unblock",
+      "blockTitle": "Block {name}?",
+      "blockText": "The account is signed out everywhere and can't sign in. The reason stays in the audit log.",
+      "unblockTitle": "Unblock {name}?",
+      "unblockText": "The account can sign in again.",
+      "resetLink": "Password reset link",
+      "resetTitle": "Create a password reset link for {name}?",
+      "resetText": "This seller has no email. Send the link only to their own number ({phone}).",
+      "linkTitle": "One-time link for {name}",
+      "linkExpires": "The link works once and is valid until {date}.",
+      "linkWarning": "The link is shown only now. Whoever opens it can change the password: don't store it anywhere and send it only to the seller.",
+      "linkLabel": "Link",
+      "copy": "Copy",
+      "copied": "Copied"
     },
     "reports": {
       "title": "Complaints",
-      "intro": "What buyers reported about products.",
+      "intro": "What buyers reported about products and stores.",
       "search": "Product, store or text",
       "count": "{count, plural, =0 {No complaints} one {# complaint} other {# complaints}}",
-      "queueEmpty": "No open complaints."
+      "queueEmpty": "No open complaints.",
+      "aboutStore": "Complaint about the store"
     },
     "audit": {
       "title": "Audit log",
@@ -1271,7 +1288,6 @@
       "confirmLarge": "I checked the source and the price is right",
       "overridden": "{name} price changed"
     },
-    "notConnected": "This section is not connected to the API yet. Sample data is not shown here, so it can't be mistaken for a real decision.",
     "rejectReason": {
       "label": "Reason type",
       "pick": "Choose",
@@ -1311,7 +1327,25 @@
       "DOCUMENT_CHANGES_REQUESTED": "New document requested",
       "METAL_PRICE_ACCEPTED": "Metal price applied",
       "METAL_PRICE_DISCARDED": "Metal price discarded",
-      "METAL_PRICE_OVERRIDDEN": "Metal price set by hand"
+      "METAL_PRICE_OVERRIDDEN": "Metal price set by hand",
+      "CATEGORY_CREATED": "Category added",
+      "CATEGORY_UPDATED": "Category edited",
+      "CATEGORY_DELETED": "Category deleted",
+      "FINENESS_CREATED": "Fineness added",
+      "FINENESS_UPDATED": "Fineness edited",
+      "FINENESS_DELETED": "Fineness deleted",
+      "SYNONYM_CREATED": "Synonym added",
+      "SYNONYM_UPDATED": "Synonym edited",
+      "SYNONYM_DELETED": "Synonym deleted",
+      "USER_ROLE_CHANGED": "Role changed",
+      "USER_BLOCKED": "Account blocked",
+      "USER_UNBLOCKED": "Account unblocked",
+      "REPORT_RESOLVED": "Complaint resolved",
+      "REPORT_DISMISSED": "Complaint dismissed",
+      "PASSWORD_RESET_LINK_ISSUED": "Password reset link issued",
+      "PASSWORD_RESET_REQUESTED": "Password reset requested",
+      "PASSWORD_RESET": "Password changed",
+      "EMAIL_VERIFIED": "Email verified"
     }
   },
   "MetalPrices": {

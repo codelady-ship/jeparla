@@ -21,7 +21,7 @@ async function Settings() {
 
 export default function Page() {
   return (
-    <AdminPage page="catalog" sampleOnly>
+    <AdminPage page="catalog">
       <Settings />
     </AdminPage>
   );

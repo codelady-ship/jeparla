@@ -1,4 +1,5 @@
 import { CHECK_OF, type DocumentStatus } from "@/lib/api/admin-http";
+import { ApiError } from "@/lib/api/http";
 import { problemResponse } from "@/lib/api/problem";
 import { userFetch } from "@/lib/auth/backend";
 import { requestLocale } from "@/lib/auth/server";
@@ -7,16 +8,55 @@ import type { StoreStatus } from "@/types/admin";
 import type { Decision } from "./decisions";
 
 /**
- * Admin decisions on the real API. The route handler has already checked the reason;
- * the backend checks the ADMIN role, the transition (409 when stale) and writes the
- * audit log and the seller notification. Answers `{ status, note }` like the demo.
+ * Backend error codes the panel explains in its own words (Admin.errors), with the field
+ * they belong to. Anything else keeps the backend's own message (already in the admin's
+ * language) or its generic key.
  */
-async function call<T>(
+const KNOWN: Record<string, [field: string, key: string]> = {
+  "admin.slug_taken": ["slug", "taken"],
+  "admin.parent_missing": ["parentId", "invalid"],
+  "admin.category_cycle": ["parentId", "invalid"],
+  "admin.category_in_use": ["form", "inUse"],
+  "admin.fineness_exists": ["value", "taken"],
+  "admin.fineness_in_use": ["form", "inUse"],
+  "admin.synonym_exists": ["synonym", "taken"],
+  "admin.synonym_invalid": ["synonym", "invalid"],
+  "admin.self": ["form", "self"],
+  "admin.last_admin": ["form", "lastAdmin"],
+  "admin.user_owns_store": ["form", "ownsStore"],
+  "admin.role_not_assignable": ["role", "invalid"],
+  "admin.report_closed": ["form", "conflict"],
+  "admin.reason_required": ["reason", "reasonRequired"],
+  "auth.reset_link_not_allowed": ["form", "resetNotAllowed"],
+};
+
+export function adminProblem(e: unknown): Response {
+  if (e instanceof ApiError && e.code && KNOWN[e.code]) {
+    const [field, key] = KNOWN[e.code];
+    return Response.json({ errors: { [field]: key }, code: e.code }, { status: e.status });
+  }
+  return problemResponse(e);
+}
+
+/**
+ * One admin call on the real API as the signed-in admin. The route handler has already
+ * checked the form; the backend checks the ADMIN role and the transition (409 when stale)
+ * and writes the audit log and any seller notification.
+ */
+export async function adminCall<T, R = T>(
   request: Request,
   path: string,
-  body: unknown,
-  pick: (data: T) => { status: string; note: string | null },
-  method: "POST" | "PATCH" | "PUT" = "POST",
+  {
+    method = "POST",
+    body,
+    pick,
+    status = 200,
+  }: {
+    method?: "POST" | "PATCH" | "PUT" | "DELETE";
+    body?: unknown;
+    pick?: (data: T) => R;
+    status?: number;
+  } = {},
 ): Promise<Response> {
   try {
     const data = await userFetch<T>(path, {
@@ -25,11 +65,21 @@ async function call<T>(
       canRefresh: true,
       locale: requestLocale(request),
     });
-    return Response.json(pick(data));
+    if (data === null || data === undefined) return new Response(null, { status: 204 });
+    return Response.json(pick ? pick(data) : data, { status });
   } catch (e) {
-    return problemResponse(e);
+    return adminProblem(e);
   }
 }
+
+/** Decisions answer `{ status, note }` like the demo. */
+const call = <T>(
+  request: Request,
+  path: string,
+  body: unknown,
+  pick: (data: T) => { status: string; note: string | null },
+  method: "POST" | "PATCH" | "PUT" = "POST",
+) => adminCall<T, { status: string; note: string | null }>(request, path, { method, body, pick });
 
 const reason = (d: Decision) => d.reason || null;
 
@@ -95,5 +145,28 @@ export function decideQuote(request: Request, metal: string, d: Decision) {
     { action: d.action, reason: reason(d) },
     (q) => ({ status: q.status, note: q.note }),
     "PATCH",
+  );
+}
+
+/** Seller identity check of a store: verify or reject (both written to the audit log). */
+export function decideSellerCheck(request: Request, storeId: number, d: Decision) {
+  const decision = d.action === "verify" ? "VERIFIED" : "REJECTED";
+  return call<{ sellerStatus: string }>(
+    request,
+    `/admin/stores/${storeId}/seller-check`,
+    { decision, reason: reason(d) },
+    (s) => ({ status: s.sellerStatus, note: reason(d) }),
+  );
+}
+
+/** Resolve or dismiss a complaint; the note always goes with it. */
+export function decideReport(request: Request, id: number, d: Decision) {
+  const status = d.action === "resolve" ? "RESOLVED" : d.action === "dismiss" ? "DISMISSED" : null;
+  if (!status) return Response.json({ errors: { form: "conflict" } }, { status: 409 });
+  return call<{ status: string; note: string | null }>(
+    request,
+    `/admin/reports/${id}/resolution`,
+    { status, note: reason(d) },
+    (r) => ({ status: r.status, note: r.note }),
   );
 }

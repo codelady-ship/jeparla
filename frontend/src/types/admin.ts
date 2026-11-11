@@ -65,6 +65,8 @@ export type VerificationRequest = {
   check: CheckKind;
   /** The product an expertise document is for. */
   product?: { id: number; name: string } | null;
+  /** Seller check: who the admin is checking (the API has no separate files for it). */
+  owner?: { name: string; contact: string | null; taxId: string | null };
   documents: VerificationDocument[];
   submittedAt: IsoDate;
   status: CheckStatus;
@@ -78,8 +80,7 @@ export type AdminOverview = {
   stores: number;
   liveProducts: number;
   metalPriceDate: IsoDate;
-  /** Complaints have no API yet: null hides the queue. */
-  openReports: number | null;
+  openReports: number;
   heldPrices: number;
 };
 
@@ -89,14 +90,11 @@ export type AdminCategory = Category;
 
 export type AdminFineness = Fineness & { productCount: number };
 
-export type SynonymLocale = "az" | "en" | "ru";
-
-/** Search treats every word of a group as the same query (PLAN 5.4). */
-export type SynonymGroup = {
+/** Search treats the two words as the same query, in both directions (PLAN 5.4). */
+export type SynonymPair = {
   id: number;
-  locale: SynonymLocale;
   term: string;
-  synonyms: string[];
+  synonym: string;
 };
 
 // ---------------------------------------------------------------- users
@@ -104,23 +102,29 @@ export type SynonymGroup = {
 export type AdminUser = {
   id: number;
   name: string;
-  email: string;
+  /** A seller can sign up with a phone only: then email is null. */
+  email: string | null;
+  phone: string | null;
   role: Role;
+  status: UserStatus;
   /** The store a MERCHANT owns, if any. */
   storeName: string | null;
   createdAt: IsoDate;
 };
+
+export type UserStatus = "ACTIVE" | "BLOCKED";
 
 // ---------------------------------------------------------------- complaints
 
 export type ReportStatus = "OPEN" | "RESOLVED" | "DISMISSED";
 export type ReportReason = "WRONG_PRICE" | "WRONG_INFO" | "FAKE" | "OFFENSIVE" | "OTHER";
 
-/** A buyer's complaint about a product (POST /api/v1/products/{id}/reports). */
+/** A buyer's complaint about a product or a whole store. */
 export type ProductReport = {
   id: number;
-  product: { id: number; slug: string; name: LocalizedText };
-  store: { id: number; name: string };
+  /** Null for a complaint about the store itself. */
+  product: { id: number; slug: string; name: LocalizedText } | null;
+  store: { id: number; slug?: string; name: string };
   reason: ReportReason;
   message: string;
   createdAt: IsoDate;

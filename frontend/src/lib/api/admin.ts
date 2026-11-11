@@ -11,7 +11,7 @@ import type {
   AuditEntry,
   ModerationItem,
   ProductReport,
-  SynonymGroup,
+  SynonymPair,
   VerificationRequest,
 } from "@/types/admin";
 import { httpAdminApi } from "./admin-http";
@@ -40,7 +40,7 @@ export interface AdminApi {
   verification(id: string): Promise<VerificationRequest | null>;
   categories(): Promise<AdminCategory[]>;
   finenesses(): Promise<AdminFineness[]>;
-  synonyms(): Promise<SynonymGroup[]>;
+  synonyms(): Promise<SynonymPair[]>;
   users(): Promise<AdminUser[]>;
   user(id: number): Promise<AdminUser | null>;
   reports(): Promise<ProductReport[]>;
@@ -199,14 +199,14 @@ const ADMIN_FINENESSES: AdminFineness[] = FINENESSES.map((f) => ({
   productCount: PRODUCTS.filter((p) => p.variants.some((v) => v.fineness.id === f.id)).length,
 }));
 
-const SYNONYMS: SynonymGroup[] = [
-  { id: 1, locale: "az", term: "üzük", synonyms: ["uzuk", "üzüy"] },
-  { id: 2, locale: "az", term: "boyunbağı", synonyms: ["boyunbagi", "kulon"] },
-  { id: 3, locale: "az", term: "qolbaq", synonyms: ["qolbag", "bilərzik"] },
-  { id: 4, locale: "en", term: "necklace", synonyms: ["pendant", "chain"] },
-  { id: 5, locale: "en", term: "earrings", synonyms: ["studs", "hoops"] },
-  { id: 6, locale: "ru", term: "кольцо", synonyms: ["колечко", "перстень"] },
-  { id: 7, locale: "ru", term: "серьги", synonyms: ["сережки"] },
+const SYNONYMS: SynonymPair[] = [
+  { id: 1, term: "üzük", synonym: "uzuk" },
+  { id: 2, term: "boyunbağı", synonym: "kulon" },
+  { id: 3, term: "qolbaq", synonym: "bilərzik" },
+  { id: 4, term: "necklace", synonym: "pendant" },
+  { id: 5, term: "earrings", synonym: "studs" },
+  { id: 6, term: "кольцо", synonym: "перстень" },
+  { id: 7, term: "серьги", synonym: "сережки" },
 ];
 
 const USERS: AdminUser[] = [
@@ -215,6 +215,8 @@ const USERS: AdminUser[] = [
     name: "Jeparla Admin",
     email: "admin@example.com",
     role: "ADMIN",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-08-20T09:00:00+04:00",
   },
@@ -223,6 +225,8 @@ const USERS: AdminUser[] = [
     name: OWNERS[i % OWNERS.length],
     email: `seller${s.id}@example.com`,
     role: "MERCHANT" as const,
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: s.name,
     createdAt: s.createdAt,
   })),
@@ -231,6 +235,8 @@ const USERS: AdminUser[] = [
     name: "Leyla A.",
     email: "leyla@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-10-12T14:20:00+04:00",
   },
@@ -239,6 +245,8 @@ const USERS: AdminUser[] = [
     name: "Murad İ.",
     email: "murad@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-10-30T19:05:00+04:00",
   },
@@ -247,6 +255,8 @@ const USERS: AdminUser[] = [
     name: "Günel S.",
     email: "gunel@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-11-04T08:40:00+04:00",
   },

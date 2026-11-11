@@ -97,25 +97,51 @@ export function VerificationList({
                 <Badge variant={VARIANT[row.status]}>{t(`checkStatus.${row.status}`)}</Badge>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-semibold">{t("checks.docs")}</h3>
-                <ul className="flex flex-col gap-2">
-                  {row.documents.map((doc) => (
-                    <li key={doc.id}>
-                      {live ? <LiveDocumentLink doc={doc} /> : <DocumentLink doc={doc} />}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {row.owner && (
+                <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                  <dt className="text-muted-foreground">{t("checks.owner")}</dt>
+                  <dd className="break-words">{row.owner.name}</dd>
+                  {row.owner.contact && (
+                    <>
+                      <dt className="text-muted-foreground">{t("checks.contact")}</dt>
+                      <dd className="break-all">{row.owner.contact}</dd>
+                    </>
+                  )}
+                  {row.owner.taxId && (
+                    <>
+                      <dt className="text-muted-foreground">{t("checks.taxId")}</dt>
+                      <dd className="tabular-nums">{row.owner.taxId}</dd>
+                    </>
+                  )}
+                </dl>
+              )}
+
+              {row.documents.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-sm font-semibold">{t("checks.docs")}</h3>
+                  <ul className="flex flex-col gap-2">
+                    {row.documents.map((doc) => (
+                      <li key={doc.id}>
+                        {live ? <LiveDocumentLink doc={doc} /> : <DocumentLink doc={doc} />}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {row.note && <Note label={t("note")} text={row.note} />}
 
               <DecisionButtons<CheckStatus>
                 endpoint={`/api/admin/verifications/${row.id}`}
                 name={row.store.name}
-                actions={CHECK_ACTIONS[row.status]}
+                actions={
+                  // The API's seller check is verified or rejected; there is nothing to re-upload.
+                  live && row.check === "seller"
+                    ? CHECK_ACTIONS[row.status].filter((a) => a !== "return")
+                    : CHECK_ACTIONS[row.status]
+                }
                 codes={
-                  live
+                  live && row.check !== "seller"
                     ? {
                         label: t("rejectReason.label"),
                         options: DOCUMENT_REASONS.map((r) => ({

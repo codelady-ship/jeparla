@@ -24,7 +24,7 @@ async function List({ searchParams }: { searchParams: SP }) {
 
 export default function Page({ searchParams }: PageProps<"/[locale]/admin/users">) {
   return (
-    <AdminPage page="users" sampleOnly>
+    <AdminPage page="users">
       <List searchParams={searchParams} />
     </AdminPage>
   );

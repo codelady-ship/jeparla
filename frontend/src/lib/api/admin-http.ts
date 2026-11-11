@@ -1,14 +1,23 @@
 import { userFetch } from "@/lib/auth/backend";
-import type { CheckStatus, ProductStatus } from "@/types/api";
+import type { Role } from "@/lib/auth/session";
+import type { CheckStatus, LocalizedText, MetalType, Money, ProductStatus } from "@/types/api";
 import type {
+  AdminCategory,
+  AdminFineness,
   AdminMetalPrice,
   AdminStore,
+  AdminUser,
   AuditEntry,
   AuditTarget,
   CheckKind,
   DocumentKind,
   ModerationItem,
+  ProductReport,
+  ReportReason,
+  ReportStatus,
   StoreStatus,
+  SynonymPair,
+  UserStatus,
   VerificationRequest,
 } from "@/types/admin";
 import type { AdminApi } from "./admin";
@@ -25,21 +34,29 @@ type BackendStore = {
   city: string;
   status: StoreStatus;
   statusNote: string | null;
+  sellerStatus: CheckStatus;
+  taxId: string | null;
   ownerName: string;
   ownerContact: string | null;
   createdAt: string;
+  productCount: number;
 };
 
 type BackendProduct = {
   id: number;
   slug: string;
   name: string;
+  names: LocalizedText | null;
   storeId: number;
   storeName: string;
   status: ProductStatus;
+  metal: MetalType | null;
   reviewNote: string | null;
   submittedAt: string | null;
   publishedAt: string | null;
+  priceFrom: Money | null;
+  finenessLabel: string | null;
+  imageUrl: string | null;
 };
 
 export type DocumentStatus = "PENDING" | "VERIFIED" | "REJECTED" | "CHANGES_REQUESTED";
@@ -70,6 +87,28 @@ type BackendAudit = {
   createdAt: string;
 };
 
+type BackendUser = {
+  id: number;
+  displayName: string;
+  email: string | null;
+  phone: string | null;
+  roles: Role[];
+  status: UserStatus;
+  storeName: string | null;
+  createdAt: string;
+};
+
+type BackendReport = {
+  id: number;
+  product: { id: number; slug: string; name: LocalizedText } | null;
+  store: { id: number; slug: string; name: string };
+  reason: ReportReason;
+  message: string;
+  status: ReportStatus;
+  note: string | null;
+  createdAt: string;
+};
+
 /** The admin panel reads up to this many rows per list; filters run in the browser. */
 const LIST_SIZE = 100;
 
@@ -88,6 +127,16 @@ const orNull = async <T>(read: Promise<T>): Promise<T | null> => {
   }
 };
 
+/** The queue first, then the rest, without duplicates, so a long list never hides the queue. */
+async function queueFirst<T extends { id: number | string }>(
+  path: string,
+  status: string,
+): Promise<T[]> {
+  const [queue, rest] = await Promise.all([list<T>(path, { status }), list<T>(path)]);
+  const seen = new Set(queue.content.map((r) => r.id));
+  return [...queue.content, ...rest.content.filter((r) => !seen.has(r.id))];
+}
+
 export const toAdminStore = (s: BackendStore): AdminStore => ({
   id: s.id,
   slug: s.slug,
@@ -98,19 +147,18 @@ export const toAdminStore = (s: BackendStore): AdminStore => ({
   submittedAt: s.createdAt,
   status: s.status,
   note: s.statusNote,
-  productCount: null,
+  productCount: s.productCount ?? null,
 });
 
 export const toModerationItem = (p: BackendProduct): ModerationItem => ({
   id: p.id,
   slug: p.slug,
-  // The admin list carries the Azerbaijani name only.
-  name: { az: p.name, en: p.name, ru: p.name },
-  imageUrl: null,
+  name: p.names ?? { az: p.name, en: p.name, ru: p.name },
+  imageUrl: p.imageUrl ?? null,
   store: { id: p.storeId, name: p.storeName },
-  metal: null,
-  fineness: null,
-  priceFrom: null,
+  metal: p.metal ?? null,
+  fineness: p.finenessLabel ?? null,
+  priceFrom: p.priceFrom ?? null,
   submittedAt: p.submittedAt ?? p.publishedAt ?? "",
   status: p.status,
   note: p.reviewNote,
@@ -140,6 +188,20 @@ export const toVerification = (d: BackendDocument): VerificationRequest => ({
   note: d.reviewNote,
 });
 
+/** Seller-check requests are stores; their id is "s" + store id, documents are separate rows. */
+export const SELLER_CHECK_PREFIX = "s";
+
+export const toSellerCheck = (s: BackendStore): VerificationRequest => ({
+  id: `${SELLER_CHECK_PREFIX}${s.id}`,
+  store: { id: s.id, name: s.name, city: s.city },
+  check: "seller",
+  owner: { name: s.ownerName, contact: s.ownerContact, taxId: s.taxId },
+  documents: [],
+  submittedAt: s.createdAt,
+  status: s.sellerStatus,
+  note: null,
+});
+
 export const toAuditEntry = (a: BackendAudit): AuditEntry => ({
   id: a.id,
   at: a.createdAt,
@@ -150,30 +212,61 @@ export const toAuditEntry = (a: BackendAudit): AuditEntry => ({
   reason: a.reason,
 });
 
-/**
- * The admin panel on the real API, read as the signed-in admin (the backend checks the
- * ADMIN role on every call). Categories, synonyms, users and complaints have no admin API
- * yet: their pages say so instead of reading here, so these answer empty.
- */
+/** The API sorts the roles by name, so an admin is ADMIN first, a seller MERCHANT. */
+export const toAdminUser = (u: BackendUser): AdminUser => ({
+  id: u.id,
+  name: u.displayName,
+  email: u.email,
+  phone: u.phone,
+  role: u.roles[0] ?? "USER",
+  status: u.status,
+  storeName: u.storeName,
+  createdAt: u.createdAt,
+});
+
+export const toReport = (r: BackendReport): ProductReport => ({
+  id: r.id,
+  product: r.product,
+  store: r.store,
+  reason: r.reason,
+  message: r.message,
+  createdAt: r.createdAt,
+  status: r.status,
+  note: r.note,
+});
+
+/** The admin panel on the real API, read as the signed-in admin (the backend checks the role). */
 export const httpAdminApi: AdminApi = {
   async overview() {
-    const [pendingStores, productsInReview, pendingChecks, stores, liveProducts, prices] =
-      await Promise.all([
-        total("/admin/stores", "PENDING"),
-        total("/admin/products", "IN_REVIEW"),
-        total("/admin/documents", "PENDING"),
-        total("/admin/stores", "APPROVED"),
-        total("/admin/products", "APPROVED"),
-        userFetch<AdminMetalPrice[]>("/admin/metal-prices"),
-      ]);
+    const [
+      pendingStores,
+      productsInReview,
+      pendingDocuments,
+      pendingSellers,
+      stores,
+      liveProducts,
+      openReports,
+      prices,
+    ] = await Promise.all([
+      total("/admin/stores", "PENDING"),
+      total("/admin/products", "IN_REVIEW"),
+      total("/admin/documents", "PENDING"),
+      userFetch<Page<unknown>>("/admin/stores", {
+        query: { sellerStatus: "PENDING", size: 1 },
+      }).then((p) => p.totalElements),
+      total("/admin/stores", "APPROVED"),
+      total("/admin/products", "APPROVED"),
+      total("/admin/reports", "OPEN"),
+      userFetch<AdminMetalPrice[]>("/admin/metal-prices"),
+    ]);
     return {
       pendingStores,
       productsInReview,
-      pendingChecks,
+      pendingChecks: pendingDocuments + pendingSellers,
       stores,
       liveProducts,
       metalPriceDate: prices[0]?.date ?? "",
-      openReports: null,
+      openReports,
       heldPrices: prices.filter((p) => p.held?.status === "HELD").length,
     };
   },
@@ -185,38 +278,49 @@ export const httpAdminApi: AdminApi = {
     return s && toAdminStore(s);
   },
   async products() {
-    // The queue first, then what is live, so a long catalog does not push the queue out.
-    const [review, rest] = await Promise.all([
-      list<BackendProduct>("/admin/products", { status: "IN_REVIEW" }),
-      list<BackendProduct>("/admin/products"),
-    ]);
-    const seen = new Set(review.content.map((p) => p.id));
-    return [...review.content, ...rest.content.filter((p) => !seen.has(p.id))].map(
-      toModerationItem,
-    );
+    return (await queueFirst<BackendProduct>("/admin/products", "IN_REVIEW")).map(toModerationItem);
   },
   async product(id) {
     return (await this.products()).find((p) => p.id === id) ?? null;
   },
   async verifications() {
-    const [pending, rest] = await Promise.all([
-      list<BackendDocument>("/admin/documents", { status: "PENDING" }),
-      list<BackendDocument>("/admin/documents"),
+    const [sellers, documents] = await Promise.all([
+      list<BackendStore>("/admin/stores", { sellerStatus: "PENDING" }),
+      queueFirst<BackendDocument>("/admin/documents", "PENDING"),
     ]);
-    const seen = new Set(pending.content.map((d) => d.id));
-    return [...pending.content, ...rest.content.filter((d) => !seen.has(d.id))].map(toVerification);
+    return [...sellers.content.map(toSellerCheck), ...documents.map(toVerification)];
   },
   async verification(id) {
+    if (id.startsWith(SELLER_CHECK_PREFIX)) {
+      const s = await orNull(userFetch<BackendStore>(`/admin/stores/${id.slice(1)}`));
+      return s && toSellerCheck(s);
+    }
     const d = await orNull(userFetch<BackendDocument>(`/admin/documents/${id}`));
     return d && toVerification(d);
   },
-  categories: async () => [],
-  finenesses: async () => [],
-  synonyms: async () => [],
-  users: async () => [],
-  user: async () => null,
-  reports: async () => [],
-  report: async () => null,
+  async categories() {
+    return userFetch<AdminCategory[]>("/admin/categories");
+  },
+  async finenesses() {
+    return userFetch<AdminFineness[]>("/admin/finenesses");
+  },
+  async synonyms() {
+    return (await list<SynonymPair>("/admin/synonyms")).content;
+  },
+  async users() {
+    return (await list<BackendUser>("/admin/users")).content.map(toAdminUser);
+  },
+  async user(id) {
+    const u = await orNull(userFetch<BackendUser>(`/admin/users/${id}`));
+    return u && toAdminUser(u);
+  },
+  async reports() {
+    return (await queueFirst<BackendReport>("/admin/reports", "OPEN")).map(toReport);
+  },
+  async report(id) {
+    const r = await orNull(userFetch<BackendReport>(`/admin/reports/${id}`));
+    return r && toReport(r);
+  },
   async audit() {
     return (await list<BackendAudit>("/admin/audit")).content.map(toAuditEntry);
   },

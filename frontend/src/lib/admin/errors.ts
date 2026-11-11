@@ -22,6 +22,8 @@ export const ADMIN_ERRORS = [
   "largeChange",
   "codeRequired",
   "rateLimited",
+  "ownsStore",
+  "resetNotAllowed",
 ] as const;
 
 export type AdminError = (typeof ADMIN_ERRORS)[number];

@@ -1002,7 +1002,10 @@
       "viewText": "Sənədlər gizli saxlanılır və hər baxışda qısa müddətli imzalı linklə açılır. Demo rejimində fayl yoxdur.",
       "pages": "{count, plural, one {# səhifə} other {# səhifə}}",
       "product": "Məhsul: {name}",
-      "viewFailed": "Sənəd açılmadı. Yenidən cəhd edin."
+      "viewFailed": "Sənəd açılmadı. Yenidən cəhd edin.",
+      "owner": "Sahibi",
+      "contact": "Əlaqə",
+      "taxId": "VÖEN"
     },
     "checkStatus": {
       "ALL": "Hamısı",
@@ -1107,7 +1110,9 @@
       "lastAdmin": "Bu yeganə admindir; əvvəlcə başqa admin təyin edin.",
       "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin.",
       "codeRequired": "Səbəb növünü seçin.",
-      "rateLimited": "Çox sorğu göndərildi. Bir az sonra yenidən cəhd edin."
+      "rateLimited": "Çox sorğu göndərildi. Bir az sonra yenidən cəhd edin.",
+      "ownsStore": "Bu istifadəçinin mağazası var: əvvəlcə mağazanı başqasına keçirin və ya bloklayın.",
+      "resetNotAllowed": "Bu hesab üçün link verilmir: e-poçtu təsdiqlənib, admindir və ya bloklanıb."
     },
     "metal": {
       "GOLD": "Qızıl",
@@ -1195,30 +1200,24 @@
       "label": "Görünən ad",
       "labelHint": "Məsələn: 585 (14K).",
       "synonyms": "Axtarış sinonimləri",
-      "synonymsIntro": "Qrupdakı sözlərdən hər biri ilə axtarış eyni nəticəni verir.",
-      "addSynonym": "Sinonim qrupu əlavə et",
-      "synonymText": "Əsas söz və onun yazılış variantları və ya sinonimləri.",
+      "synonymsIntro": "Cütün bir sözü ilə axtarış digəri ilə eyni nəticəni verir.",
+      "addSynonym": "Sinonim cütü əlavə et",
+      "synonymText": "İki söz: məsələn, serqa və sırğa.",
       "noSynonyms": "Hələ sinonim yoxdur.",
-      "language": "Dil",
-      "lang": {
-        "az": "Azərbaycanca",
-        "en": "İngiliscə",
-        "ru": "Rusca"
-      },
-      "term": "Əsas söz",
-      "words": "Sinonimlər",
-      "wordsHint": "Vergüllə ayırın, ən çoxu 10.",
+      "term": "Söz",
       "save": "Yadda saxla",
       "delete": "Sil",
       "deleteTitle": "{name} silinsin?",
       "deleteText": "Bu əməliyyat geri qaytarılmır və audit jurnalına yazılır.",
       "deleted": "{name} silindi",
-      "added": "{name} əlavə edildi"
+      "added": "{name} əlavə edildi",
+      "synonym": "Sinonimi",
+      "same": "eynidir"
     },
     "users": {
       "title": "İstifadəçilər",
       "intro": "Hesablar və rollar. Rol dəyişikliyi səbəblə audit jurnalına yazılır.",
-      "search": "Ad, e-poçt və ya mağaza",
+      "search": "Ad, e-poçt, telefon və ya mağaza",
       "roleLabel": "Rol",
       "count": "{count, plural, =0 {İstifadəçi yoxdur} other {# istifadəçi}}",
       "since": "Qeydiyyat: {date}",
@@ -1229,14 +1228,32 @@
       "changeTitle": "{name}: rol dəyişsin?",
       "changeText": "Yeni rol növbəti girişdə qüvvəyə minir.",
       "newRole": "Yeni rol",
-      "adminWarning": "Admin bütün mağazaları, məhsulları və qiymətləri idarə edə bilir."
+      "adminWarning": "Admin bütün mağazaları, məhsulları və qiymətləri idarə edə bilir.",
+      "active": "Aktiv",
+      "blocked": "Bloklanıb",
+      "block": "Blokla",
+      "unblock": "Blokdan çıxar",
+      "blockTitle": "{name} bloklansın?",
+      "blockText": "Hesab bütün cihazlardan çıxarılır və daxil ola bilmir. Səbəb audit jurnalında qalır.",
+      "unblockTitle": "{name} blokdan çıxarılsın?",
+      "unblockText": "Hesab yenidən daxil ola biləcək.",
+      "resetLink": "Şifrə bərpa linki",
+      "resetTitle": "{name} üçün şifrə bərpa linki yaradılsın?",
+      "resetText": "Bu satıcının e-poçtu yoxdur. Linki yalnız onun öz nömrəsinə ({phone}) göndərin.",
+      "linkTitle": "{name} üçün birdəfəlik link",
+      "linkExpires": "Link bir dəfə işləyir və {date} tarixinə qədər etibarlıdır.",
+      "linkWarning": "Link yalnız indi göstərilir. Onu kim açsa, şifrəni dəyişə bilər: heç yerdə saxlamayın və yalnız satıcının özünə göndərin.",
+      "linkLabel": "Link",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı"
     },
     "reports": {
       "title": "Şikayətlər",
-      "intro": "Alıcıların məhsul haqqında şikayətləri.",
+      "intro": "Alıcıların məhsul və mağazalar barədə şikayətləri.",
       "search": "Məhsul, mağaza və ya mətn",
       "count": "{count, plural, =0 {Şikayət yoxdur} other {# şikayət}}",
-      "queueEmpty": "Açıq şikayət yoxdur."
+      "queueEmpty": "Açıq şikayət yoxdur.",
+      "aboutStore": "Mağaza barədə şikayət"
     },
     "audit": {
       "title": "Audit jurnalı",
@@ -1271,7 +1288,6 @@
       "confirmLarge": "Mənbəni yoxladım, qiymət düzgündür",
       "overridden": "{name} qiyməti dəyişdi"
     },
-    "notConnected": "Bu bölmə hələ API-yə qoşulmayıb. Nümunə məlumatı göstərmirik ki, real qərarla qarışmasın.",
     "rejectReason": {
       "label": "Səbəb növü",
       "pick": "Seçin",
@@ -1311,7 +1327,25 @@
       "DOCUMENT_CHANGES_REQUESTED": "Sənəd yenidən istənildi",
       "METAL_PRICE_ACCEPTED": "Metal qiyməti tətbiq edildi",
       "METAL_PRICE_DISCARDED": "Metal qiyməti atıldı",
-      "METAL_PRICE_OVERRIDDEN": "Metal qiyməti əllə təyin edildi"
+      "METAL_PRICE_OVERRIDDEN": "Metal qiyməti əllə təyin edildi",
+      "CATEGORY_CREATED": "Kateqoriya əlavə edildi",
+      "CATEGORY_UPDATED": "Kateqoriya dəyişdirildi",
+      "CATEGORY_DELETED": "Kateqoriya silindi",
+      "FINENESS_CREATED": "Əyar əlavə edildi",
+      "FINENESS_UPDATED": "Əyar dəyişdirildi",
+      "FINENESS_DELETED": "Əyar silindi",
+      "SYNONYM_CREATED": "Sinonim əlavə edildi",
+      "SYNONYM_UPDATED": "Sinonim dəyişdirildi",
+      "SYNONYM_DELETED": "Sinonim silindi",
+      "USER_ROLE_CHANGED": "Rol dəyişdirildi",
+      "USER_BLOCKED": "Hesab bloklandı",
+      "USER_UNBLOCKED": "Hesab blokdan çıxarıldı",
+      "REPORT_RESOLVED": "Şikayət həll edildi",
+      "REPORT_DISMISSED": "Şikayət rədd edildi",
+      "PASSWORD_RESET_LINK_ISSUED": "Şifrə bərpa linki verildi",
+      "PASSWORD_RESET_REQUESTED": "Şifrə bərpası istənildi",
+      "PASSWORD_RESET": "Şifrə dəyişdirildi",
+      "EMAIL_VERIFIED": "E-poçt təsdiqləndi"
     }
   },
   "MetalPrices": {

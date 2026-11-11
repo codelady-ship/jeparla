@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { errorKey } from "@/lib/admin/errors";
+import { isMessage } from "@/lib/api/problem";
 import { fieldErrors } from "@/lib/admin/settings";
 import { sendJson } from "@/lib/merchant/client";
 
@@ -96,7 +97,7 @@ export function AdminDialog({
             {children}
             {formError && (
               <p role="alert" className="text-sm text-destructive">
-                {t(`errors.${errorKey(formError)}`)}
+                {isMessage(formError) ? formError : t(`errors.${errorKey(formError)}`)}
               </p>
             )}
             <DialogFooter>
@@ -163,7 +164,9 @@ export function Field({
       {hasNote && (
         <p id={noteId} className="text-xs text-muted-foreground">
           {error ? (
-            <span className="text-destructive">{t(`errors.${errorKey(error)}`)}</span>
+            <span className="text-destructive">
+              {isMessage(error) ? error : t(`errors.${errorKey(error)}`)}
+            </span>
           ) : (
             hint
           )}
