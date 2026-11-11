@@ -57,6 +57,12 @@ public class Fineness extends TimestampedEntity {
         return value;
     }
 
+    /** Admin correction of a fineness no product uses yet (the service checks that). */
+    public void setMetalAndValue(Metal metal, int value) {
+        this.metal = java.util.Objects.requireNonNull(metal, "metal");
+        this.value = toShort(value);
+    }
+
     public String getLabel() {
         return label;
     }

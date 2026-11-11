@@ -29,7 +29,8 @@ Qeydiyyat: `POST /api/v1/auth/register` hesabı `USER` yaradır, `POST /api/v1/a
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/admin/**` | `ADMIN` |
 | `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
-| `POST /api/v1/products/{id}/reports`, `POST /api/v1/products/{id}/contact-click` | hamı, qonaq da (rate limit ilə, #37) |
+| `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
+| `POST /api/v1/products/{id}/reports`, `POST /api/v1/stores/{id}/reports`, `POST /api/v1/products/{id}/contact-click` | hamı, qonaq da (rate limit ilə, #37, #40) |
 | `/api/v1/**` üzrə digər yazma sorğuları (`POST`, `PUT`, `PATCH`, `DELETE`) | daxil olmuş istifadəçi |
 | `/actuator/health`, `/actuator/health/**` | hamı |
 | `/actuator/**` (qalanı) | heç kim |
@@ -96,6 +97,37 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
 - `/api/v1/admin/stores`, `/admin/products`, `/admin/audit` (`ADMIN`): mağaza statusu (`REJECTED`/`BLOCKED`
   üçün ən az 10 simvol səbəb), satıcı yoxlaması, məhsul qərarı (`APPROVE`; `RETURN`/`DEACTIVATE` səbəblə).
   `PRECIOUS` məhsul satıcı bəyanatı təsdiqləməmiş dərc olunmur (`409 admin.declaration_missing`).
+  `GET /admin/stores?sellerStatus=PENDING` satıcı yoxlaması növbəsidir (bütün mağaza statuslarında); siyahıda
+  mağazanın məhsul sayı (silinməmiş, istənilən status) var. Məhsul kartında ən ucuz canlı variantın qiyməti, əyarı,
+  çəkisi və ilk şəkil var; olmayan dəyər `null`-dur, heç vaxt saxta `0` deyil.
+
+### Admin: kataloq, istifadəçilər, şikayətlər (#40)
+
+Hamısı `ADMIN`, hər yazma `audit_logs`-a düşür.
+
+- **Kataloq** (`/admin/categories`, `/admin/finenesses`, `/admin/synonyms`): CRUD. İstifadədə olan silinmir:
+  alt kateqoriyası və ya məhsulu (silinmiş də) olan kateqoriya, hər hansı variantın (silinmiş də) istifadə etdiyi əyar
+  `409` (`admin.category_in_use`, `admin.fineness_in_use`); onları deaktiv edin. İstifadədə olan əyarın metalı və
+  dəyəri dəyişmir. Kateqoriya öz alt ağacına köçürülmür (`409 admin.category_cycle`). Sinonimin hər tərəfi bir sözdür
+  (fold-dan sonra 2-40 simvol), cüt hər iki istiqamətdə bir dəfə olur. Axtarış sinonimləri hər sorğuda bazadan oxuyur
+  (API-də keş yoxdur), ictimai cavablar CDN-də ən çox bir neçə dəqiqə qalır.
+- **İstifadəçilər** (`/admin/users`): siyahı (rol, status filtri; e-poçt və ya telefon parçası ilə axtarış), rol
+  (`POST /{id}/role`: `USER` və ya `MERCHANT`) və bloklama (`POST /{id}/status`, bloklamada ən az 10 simvol səbəb).
+  Qaydalar: admin öz rolunu və statusunu dəyişmir (`409 admin.self`); ən az bir aktiv admin qalır
+  (`409 admin.last_admin`, yoxlama `ADMIN` rol sətrinin kilidi ilə ardıcıl gedir); `ADMIN` rolu API ilə verilmir
+  (`400 admin.role_not_assignable`); mağaza sahibi `MERCHANT` olaraq qalır (`409 admin.user_owns_store`). Bloklama
+  hesabın bütün refresh token-lərini ləğv edir; mağazanı gizlətmir (onu ayrıca bloklayın).
+- **Şikayətlər** (`/admin/reports`): məhsul və mağaza şikayətləri (`status`, `targetType`, `storeId` filtri).
+  `POST /{id}/resolution`: `RESOLVED` və ya `DISMISSED`, ən az 10 simvol qeyd. `RESOLVED` satıcıya bildiriş göndərir
+  (yalnız adminin qeydi; şikayətçinin kimliyi və mətni heç vaxt); `DISMISSED` heç kimə. Bağlı şikayət `409
+  admin.report_closed`; admin öz mağazası haqqında şikayətə qərar vermir (403).
+
+### Seçilmişlər (#41)
+
+`/api/v1/favorites`: `GET` (yeni əvvəldə, yalnız kataloqda görünən məhsullar), `PUT /{productId}` (idempotent, yalnız
+görünən məhsul, ən çox 500), `DELETE /{productId}` (idempotent), `POST /import` (qonaq siyahısının birləşdirilməsi,
+100 id-yə qədər). İstifadəçi yalnız token-in `sub`-udur: başqasının siyahısı oxunmur, dəyişmir. Hər elementdə bugünkü
+qiymət (`product.priceFrom`) və saxlananda olan qiymət (`savedPrice`, V17-dən əvvəl saxlananlarda `null`) var (#112).
 - Bildirişlər (`/api/v1/notifications`): hər istifadəçi yalnız özününkünü görür; başqasının bildirişi 404.
 - Testlər: `DocumentApiTests` (rollar, başqa satıcı, `FASHION` 403, bəyanat, private saxlama, imtina bildirişi).
 
@@ -144,7 +176,7 @@ telefon) SHA-256 ilə hash-lənir, Redis-də şəxsi məlumat yoxdur.
 | `register-ip` | 10 / saat | hər qeydiyyat | IP |
 | `register-account` | 5 / saat | hər qeydiyyat | e-poçt və ya telefon |
 | `refresh-ip` | 60 / 5 dəq. | hər refresh | IP (token 256 bitdir, təxmin etmək olmur) |
-| `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37); limit yoxlaması məhsulun varlığından əvvəldir |
+| `report-ip`, `report-account` | 10 / saat, 5 / saat | hər şikayət | IP, user id: `POST /products/{id}/reports` (#37) və `POST /stores/{id}/reports` (#40), sayğaclar ortaqdır; limit yoxlaması məhsulun (mağazanın) varlığından əvvəldir |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
@@ -204,7 +236,11 @@ Satıcı əməliyyatları (#39): `STORE_CREATED`, `STORE_UPDATED`, `PRODUCT_CREA
 
 Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_REJECTED`,
 `DOCUMENT_CHANGES_REQUESTED` (səbəb kateqoriyası və qeyd), `STORE_APPROVED`, `STORE_REJECTED`, `STORE_BLOCKED`,
-`SELLER_VERIFIED`, `SELLER_REJECTED`, `PRODUCT_APPROVED`, `PRODUCT_RETURNED`, `PRODUCT_DEACTIVATED` (səbəblə).
+`SELLER_VERIFIED`, `SELLER_REJECTED`, `PRODUCT_APPROVED`, `PRODUCT_RETURNED`, `PRODUCT_DEACTIVATED` (səbəblə),
+`CATEGORY_CREATED`, `CATEGORY_UPDATED`, `CATEGORY_DELETED`, `FINENESS_CREATED`, `FINENESS_UPDATED`,
+`FINENESS_DELETED`, `SYNONYM_CREATED`, `SYNONYM_UPDATED`, `SYNONYM_DELETED` (`CATALOG`; `details`-də əvvəlki və yeni
+dəyər), `USER_ROLE_CHANGED`, `USER_BLOCKED` (səbəblə), `USER_UNBLOCKED` (`USER`), `REPORT_RESOLVED`, `REPORT_DISMISSED`
+(`REPORT`, qeyd `reason`-dadır).
 `GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
 
 `audit_logs` append-only-dir (V16, #165): tətbiq yalnız oxuyur və əlavə edir; yeganə dəyişiklik hesab
