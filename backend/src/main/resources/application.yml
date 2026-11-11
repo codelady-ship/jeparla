@@ -141,7 +141,8 @@ jeparla:
     email: ${JEPARLA_SUPPORT_EMAIL:}
     url: ${JEPARLA_SUPPORT_URL:}
     help-path: /help
-    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az.
+    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az. Also the base of
+    # a store's share link <site-url>/s/<code> and its QR code (#100).
     site-url: ${JEPARLA_PUBLIC_SITE_URL:http://localhost:3000}
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.

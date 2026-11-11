@@ -180,6 +180,15 @@ class StoreFactsApiTests {
         em.flush();
         mvc.perform(get("/api/v1/stores/" + pending.getSlug() + "/facts")).andExpect(status().isNotFound());
         mvc.perform(get("/api/v1/stores/" + pending.getSlug() + "/preview")).andExpect(status().isNotFound());
+        mvc.perform(get("/api/v1/share/" + pending.getShareCode())).andExpect(status().isNotFound());
         mvc.perform(get("/api/v1/stores/no-such-store/facts")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void demoStoresGetAShareCodeFromTheDatabase() throws Exception {
+        String code = jdbc.queryForObject("SELECT share_code FROM stores WHERE slug = 'ayzer-zerger'", String.class);
+        mvc.perform(get("/api/v1/share/" + code))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.slug").value("ayzer-zerger"));
     }
 }
