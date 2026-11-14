@@ -165,11 +165,11 @@ public class Product extends TimestampedEntity {
     // ------------------------------------------------------------------ lifecycle
 
     /**
-     * Visible in the public catalog. FASHION products stay out of it until the catalog shows them in their
-     * own section with a clear badge (#128 frontend part): the public product type still requires a metal.
+     * Visible in the public catalog. FASHION (bijouterie) products are public too (#128): the public DTOs carry
+     * {@code materialKind}, so the catalog shows them in their own section with a clear badge.
      */
     public boolean isPublic() {
-        return status == ProductStatus.APPROVED && deletedAt == null && materialKind == MaterialKind.PRECIOUS;
+        return status == ProductStatus.APPROVED && deletedAt == null;
     }
 
     public boolean isDeleted() {

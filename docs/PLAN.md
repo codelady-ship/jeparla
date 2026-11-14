@@ -2,7 +2,10 @@
 
 ## 0. Kontekst
 Jeparla — Azərbaycanda (sonra bütün dünyada) qızıl, gümüş və brilyant zərgərlik mağazalarını
-bir platformada toplayan çoxmağazalı kataloq/marketplace-dir. Köhnə sənədlərdə layihə
+bir platformada toplayan çoxmağazalı kataloq/marketplace-dir. Sahibin qərarı (2026-11-09, #128):
+bijuteriya və əl işi (muncuq, polad, mis, gümüş suyu, dəri və s.) satıcıları da qoşulur; onların
+məhsulları ayrıca bölmədə, aydın nişanla görünür, sertifikat və sənəd tələb olunmur, metal qiyməti
+və "sənədlər"/"ekspertiza" nişanları göstərilmir. Köhnə sənədlərdə layihə
 "Golden.az", "GoldenLux", "Golden Lux" adları ilə keçir — HAMISINI "Jeparla" ilə əvəz et
 ("Golden Verified" → "Jeparla Verified"). "Planera" başqa layihədir, ona aid heç nə götürmə.
 
