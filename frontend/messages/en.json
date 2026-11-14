@@ -836,6 +836,97 @@
       "startOver": "Start a new sign-up"
     }
   },
+  "SellLanding": {
+    "eyebrow": "For sellers",
+    "title": "Put your jewellery store where buyers are searching",
+    "lead": "Jeparla brings Azerbaijan's jewellery stores together in one catalogue. Buyers search by fineness, weight and price, then message you directly on WhatsApp. Listing in the catalogue is free.",
+    "start": "Start registration",
+    "seeHow": "How it works",
+    "valuesTitle": "What you get",
+    "values": {
+      "catalog": {
+        "title": "A free catalogue and your own link",
+        "text": "All your products on one page, with fineness, weight, size and stones. Put your store link in your Instagram bio or in a message."
+      },
+      "price": {
+        "title": "Prices update themselves every day",
+        "text": "Mark a product as \"metal-linked\" and its price follows the Central Bank of Azerbaijan's daily rate. No more editing the price list by hand every morning."
+      },
+      "verified": {
+        "title": "Jeparla Verified badge",
+        "text": "Once your documents are checked, a badge appears on your store and products. Buyers see who was checked and what was checked."
+      },
+      "search": {
+        "title": "Buyers from search",
+        "text": "Buyers search for things like \"585 gold ring\" and filter. Your products are found by category, metal and price."
+      },
+      "whatsapp": {
+        "title": "Straight to WhatsApp",
+        "text": "No middleman: the buyer writes to you with the product name, code and link. The sale and payment are between you and the buyer."
+      }
+    },
+    "howTitle": "How it works",
+    "steps": {
+      "1": {
+        "title": "Account and store",
+        "text": "Name, phone, store name, city, opening hours and WhatsApp number. A few minutes."
+      },
+      "2": {
+        "title": "Documents",
+        "text": "Upload your tax ID (VÖEN) and store documents; the team checks them. The result appears in your dashboard."
+      },
+      "3": {
+        "title": "Products",
+        "text": "Add photos, fineness, weight and price. A product appears in the catalogue after review."
+      }
+    },
+    "demo": "See a sample store",
+    "demoNote": "Sample: an invented store and products, only to show how your page will look.",
+    "compareTitle": "Comparison",
+    "compareIntro": "Only features are compared. Each option has its place; Jeparla does not replace your Instagram page, it links to it.",
+    "compareCaption": "Three ways to show a store online",
+    "feature": "Feature",
+    "columns": {
+      "bio": "Instagram bio link",
+      "classifieds": "Classifieds site",
+      "jeparla": "Jeparla"
+    },
+    "rows": {
+      "structured": "Product card with fineness, weight and stones",
+      "autoPrice": "Automatic price from the metal rate",
+      "filters": "Fineness, metal and price filters",
+      "verified": "Document checks",
+      "whatsapp": "Buyer writes straight to WhatsApp",
+      "free": "Free listing"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "partly": "Partly",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "fee": {
+        "q": "How much does it cost to be on Jeparla?",
+        "a": "Listing your store and products in the catalogue is free. Commission terms are still being decided; if any apply, they will be agreed in advance in a written agreement, and nothing is charged without your consent."
+      },
+      "documents": {
+        "q": "Which documents do I need?",
+        "a": "Your tax ID (VÖEN), the store registration certificate or the hallmark stamp document (PDF, JPG or PNG). Documents are used only for the check and are never shown publicly."
+      },
+      "time": {
+        "q": "How long does it take?",
+        "a": "The registration form takes a few minutes. Document checks depend on the team's queue; you see the result in your dashboard."
+      },
+      "prices": {
+        "q": "Can I set my own prices?",
+        "a": "Yes. For each product you choose a fixed price or a \"metal-linked\" price. A metal-linked price is calculated from the Central Bank rate, the weight and your making charge."
+      },
+      "sales": {
+        "q": "Do sales go through Jeparla?",
+        "a": "No. Jeparla does not take orders or payments. The buyer writes to you on WhatsApp; the deal and payment are between you and the buyer."
+      }
+    },
+    "wizardTitle": "Registration"
+  },
   "Merchant": {
     "title": "Store cabinet",
     "nav": {
