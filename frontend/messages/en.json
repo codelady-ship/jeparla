@@ -620,7 +620,8 @@
       "name": "Name",
       "email": "E-mail",
       "password": "Password",
-      "confirm": "Repeat password"
+      "confirm": "Repeat password",
+      "login": "E-mail or phone"
     },
     "hints": {
       "password": "At least {min} characters, with a letter and a digit."
@@ -637,7 +638,10 @@
       "passwordMismatch": "The passwords do not match.",
       "unavailable": "Sign-in is not available yet. Please try again later.",
       "network": "Could not connect. Check your internet and try again.",
-      "server": "Something went wrong. Please try again."
+      "server": "Something went wrong. Please try again.",
+      "loginInvalid": "Enter your e-mail (name@example.az) or mobile number (050 123 45 67).",
+      "rateLimited": "Too many attempts in a short time. Try again a little later.",
+      "sessionExpired": "Your session has expired. Sign in again."
     },
     "pending": "Please wait",
     "showPassword": "Show password",
@@ -761,7 +765,10 @@
       "label": "Cabinet sections",
       "dashboard": "Dashboard",
       "products": "Products",
-      "profile": "Store profile"
+      "profile": "Store profile",
+      "documents": "Documents",
+      "notifications": "Notifications",
+      "unread": "{count} unread"
     },
     "demoNote": "Demo mode: statistics are sample data and changes are not saved on the server. Drafts stay in this browser.",
     "status": {
@@ -804,7 +811,8 @@
       "draftUntitled": "An untitled draft is saved in this browser.",
       "draftResume": "Continue",
       "demoData": "Sample data",
-      "fix": "Fix"
+      "fix": "Fix",
+      "notCounted": "Views are not counted yet"
     },
     "products": {
       "title": "Products",
@@ -930,7 +938,8 @@
         "labGrown": "Lab-grown"
       },
       "docs": {
-        "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document."
+        "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document.",
+        "separate": "Files in this step are not sent with the product. Add expertise documents (hallmark, lab report) in the Documents section through the protected upload."
       },
       "review": {
         "title": "Before sending",
@@ -1051,7 +1060,67 @@
       "check": "The form has errors, check the fields in red.",
       "moneyInvalid": "Enter 0 or a positive amount, for example 12.50.",
       "percentInvalid": "Enter a percent between 0 and 1000.",
-      "maxBelowMin": "The maximum price cannot be lower than the minimum."
+      "maxBelowMin": "The maximum price cannot be lower than the minimum.",
+      "unavailable": "The server is not answering right now. Try again a little later.",
+      "network": "Could not connect. Check your internet and try again.",
+      "server": "Something went wrong. Try again.",
+      "rateLimited": "Too many attempts in a short time. Try again a little later."
+    },
+    "sampleOnly": "This section works with the real server only. In sample data mode no documents are uploaded and there are no notifications.",
+    "documents": {
+      "title": "Documents",
+      "intro": "Verification documents are visible to Jeparla administrators only: they are kept in private storage, with no public link.",
+      "listTitle": "Submitted documents",
+      "empty": "You have not sent any documents yet.",
+      "uploadTitle": "New document",
+      "kindLabel": "Document type",
+      "productLabel": "Product",
+      "productPick": "Choose the product",
+      "fileLabel": "File (PDF, JPEG or PNG, up to 10 MB)",
+      "declarationTitle": "Seller declaration",
+      "declarationDraft": "Draft: the text has not been approved by a lawyer yet.",
+      "accept": "I have read and confirm the declaration",
+      "submit": "Send the document",
+      "sending": "Sending",
+      "sent": "The document was sent and is waiting for review.",
+      "uploaded": "{name} · uploaded {date}",
+      "fashionNote": "Stores selling bijouterie do not upload documents: an administrator checks the seller.",
+      "errors": {
+        "fileRequired": "Choose a file.",
+        "fileType": "Only PDF, JPEG or PNG files can be uploaded.",
+        "fileSize": "The file cannot be larger than 10 MB.",
+        "productRequired": "Choose the product for an expertise document.",
+        "declaration": "Confirm the declaration to send.",
+        "upload": "The file was not uploaded. Check the connection and try again."
+      },
+      "kind": {
+        "TAX_ID": "Tax ID (VOEN) certificate",
+        "TRADE_LICENSE": "Trade licence",
+        "ASSAY_CERTIFICATE": "Assay (hallmark) certificate",
+        "LAB_REPORT": "Laboratory report (stone)"
+      },
+      "status": {
+        "PENDING": "In review",
+        "VERIFIED": "Approved",
+        "REJECTED": "Not accepted",
+        "CHANGES_REQUESTED": "Changes requested"
+      },
+      "reason": {
+        "UNREADABLE": "Not readable",
+        "EXPIRED": "Expired",
+        "MISMATCH": "Does not match the store details",
+        "WRONG_TYPE": "Wrong document type",
+        "HALLMARK_MISSING": "Hallmark not visible",
+        "AUTHENTICITY": "Authenticity not confirmed"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "intro": "Decisions about your store, products and documents appear here.",
+      "empty": "No notifications.",
+      "readAll": "Mark all as read",
+      "unread": "New",
+      "open": "Details"
     }
   },
   "Admin": {
