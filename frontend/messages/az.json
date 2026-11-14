@@ -563,6 +563,97 @@
       "startOver": "Yeni qeydiyyat başlat"
     }
   },
+  "SellLanding": {
+    "eyebrow": "Satıcılar üçün",
+    "title": "Zərgərlik mağazanızı alıcının axtardığı yerə çıxarın",
+    "lead": "Jeparla Azərbaycanın zərgərlik mağazalarını bir kataloqda toplayır. Alıcı əyara, çəkiyə və qiymətə görə axtarır, sonra birbaşa sizə WhatsApp-da yazır. Kataloqda yer almaq pulsuzdur.",
+    "start": "Qeydiyyata başla",
+    "seeHow": "Necə işləyir",
+    "valuesTitle": "Nə əldə edirsiniz",
+    "values": {
+      "catalog": {
+        "title": "Pulsuz kataloq və öz linkiniz",
+        "text": "Bütün məhsullarınız bir səhifədə: əyar, çəki, ölçü və daşlarla. Mağaza linkini Instagram bio-suna və ya mesaja qoya bilərsiniz."
+      },
+      "price": {
+        "title": "Qiymət hər gün özü yenilənir",
+        "text": "Məhsulu \"metala bağlı\" qeyd etsəniz, qiymət AMB-nin gündəlik məzənnəsinə görə avtomatik hesablanır. Hər səhər qiymət siyahısını əl ilə düzəltmək lazım deyil."
+      },
+      "verified": {
+        "title": "Jeparla Verified nişanı",
+        "text": "Sənədləriniz yoxlanılandan sonra mağazada və məhsullarda nişan görünür. Alıcı kimin yoxlandığını və nəyin yoxlandığını görür."
+      },
+      "search": {
+        "title": "Axtarışdan gələn alıcı",
+        "text": "Alıcı \"585 qızıl üzük\" kimi axtarır və filtrləyir. Məhsullarınız kateqoriya, metal və qiymət üzrə tapılır."
+      },
+      "whatsapp": {
+        "title": "Birbaşa WhatsApp-a",
+        "text": "Vasitəçi yoxdur: alıcı məhsulun adı, kodu və linki ilə sizə yazır. Satış və ödəniş sizinlə alıcı arasındadır."
+      }
+    },
+    "howTitle": "Necə işləyir",
+    "steps": {
+      "1": {
+        "title": "Hesab və mağaza",
+        "text": "Ad, telefon, mağaza adı, şəhər, iş saatları və WhatsApp nömrəsi. Bir neçə dəqiqə."
+      },
+      "2": {
+        "title": "Sənədlər",
+        "text": "VÖEN və mağaza sənədlərini yükləyirsiniz; komanda yoxlayır. Yoxlama nəticəsi kabinetdə görünür."
+      },
+      "3": {
+        "title": "Məhsullar",
+        "text": "Şəkil, əyar, çəki və qiymət əlavə edirsiniz. Məhsul baxışdan sonra kataloqda görünür."
+      }
+    },
+    "demo": "Nümunə mağazaya baxın",
+    "demoNote": "Nümunə: uydurma mağaza və məhsullar, yalnız səhifənin necə görünəcəyini göstərir.",
+    "compareTitle": "Müqayisə",
+    "compareIntro": "Yalnız funksiyalar müqayisə olunur. Hər yolun öz yeri var; Jeparla Instagram səhifənizi əvəz etmir, ona link verir.",
+    "compareCaption": "Mağazanı onlayn göstərməyin üç yolu",
+    "feature": "İmkan",
+    "columns": {
+      "bio": "Instagram bio linki",
+      "classifieds": "Elan saytı",
+      "jeparla": "Jeparla"
+    },
+    "rows": {
+      "structured": "Əyar, çəki və daş məlumatı ilə məhsul kartı",
+      "autoPrice": "Metal məzənnəsinə görə avtomatik qiymət",
+      "filters": "Əyar, metal və qiymət filtrləri",
+      "verified": "Sənədlərin yoxlanılması",
+      "whatsapp": "Alıcı birbaşa WhatsApp-a yazır",
+      "free": "Pulsuz yerləşdirmə"
+    },
+    "yes": "Bəli",
+    "no": "Xeyr",
+    "partly": "Qismən",
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "fee": {
+        "q": "Jeparla-da olmaq neçəyədir?",
+        "a": "Kataloqda mağaza və məhsul yerləşdirmək pulsuzdur. Komissiya şərtləri hələ müəyyənləşdirilir; tətbiq olunacaqsa, əvvəlcədən yazılı müqavilə ilə razılaşdırılacaq, razılığınız olmadan heç nə tutulmur."
+      },
+      "documents": {
+        "q": "Hansı sənədlər lazımdır?",
+        "a": "VÖEN, mağazanın qeydiyyat şəhadətnaməsi və ya əyar möhürü sənədi (PDF, JPG və ya PNG). Sənədlər yalnız yoxlama üçün istifadə olunur və ictimai göstərilmir."
+      },
+      "time": {
+        "q": "Bu nə qədər vaxt aparır?",
+        "a": "Qeydiyyat formu bir neçə dəqiqəlikdir. Sənədlərin yoxlanılması komandanın növbəsindən asılıdır; nəticə kabinetdə görünür."
+      },
+      "prices": {
+        "q": "Qiyməti özüm təyin edə bilərəm?",
+        "a": "Bəli. Hər məhsul üçün sabit qiymət və ya \"metala bağlı\" qiymət seçirsiniz. Metala bağlı qiymət AMB məzənnəsi, çəki və sizin işçilik haqqınızla hesablanır."
+      },
+      "sales": {
+        "q": "Satış Jeparla-dan keçir?",
+        "a": "Xeyr. Jeparla sifariş və ödəniş qəbul etmir. Alıcı sizə WhatsApp ilə yazır, razılaşma və ödəniş sizinlə alıcı arasındadır."
+      }
+    },
+    "wizardTitle": "Qeydiyyat"
+  },
   "Merchant": {
     "title": "Mağaza kabineti",
     "nav": {
