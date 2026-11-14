@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing } from "@/i18n/routing";
 import { api as publicApi } from "@/lib/api";
+import { suggestAudience } from "@/lib/merchant/audience";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
 import { ProductForm } from "./product-form";
@@ -33,7 +34,11 @@ export async function ProductFormPage({ id }: { id?: string }) {
   const parents = new Set(categories.map((c) => c.parentId).filter((v) => v !== null));
   const options = categories
     .filter((c) => !parents.has(c.id))
-    .map((c) => ({ value: c.slug, label: c.name[locale] }));
+    .map((c) => ({
+      value: c.slug,
+      label: c.name[locale],
+      audience: suggestAudience(c.id, categories),
+    }));
 
   return (
     <div className="flex flex-col gap-6">

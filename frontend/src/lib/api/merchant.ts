@@ -7,6 +7,7 @@ import type {
   MerchantStore,
   ProductInput,
 } from "@/types/merchant";
+import { suggestAudience } from "@/lib/merchant/audience";
 import { EMPTY_PRICING } from "@/lib/merchant/draft";
 import { USING_MOCK } from "./index";
 import { CATEGORIES, PRODUCTS, STORES } from "./mock/fixtures";
@@ -87,6 +88,7 @@ export function toInput(p: Product): ProductInput {
     images: p.images.map((img, i) => ({ id: `img${i}`, url: img.url, name: img.url })),
     name: p.name.az,
     category: CATEGORIES.find((c) => c.id === p.categoryId)?.slug ?? "",
+    audience: suggestAudience(p.categoryId, CATEGORIES),
     description: p.description.az,
     metal: p.metal,
     fineness: String(p.variants[0]?.fineness.id ?? ""),

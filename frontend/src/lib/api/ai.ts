@@ -3,8 +3,9 @@ import type { AiJob, AiModel, AiStatus, ModelAudience } from "@/types/ai";
 
 /**
  * AI Studio reads (#55, #130): GET /api/v1/merchant/ai/status, /jobs?productId=
- * and /models?audience=. The backend checks the role and the product's owner on
- * every call.
+ * and /models?productId= (only models that fit the product's audience, #121: a
+ * kids piece only on a child model). The backend checks the role and the
+ * product's owner on every call.
  *
  * No AI provider is connected (owner decision), and the cabinet session carries
  * no API token until #41 wires the real backend. Until then this answers exactly
@@ -14,7 +15,7 @@ import type { AiJob, AiModel, AiStatus, ModelAudience } from "@/types/ai";
 export interface AiStudioApi {
   status(): Promise<AiStatus>;
   jobs(productId: number): Promise<AiJob[]>;
-  models(audience?: ModelAudience): Promise<AiModel[]>;
+  models(filter?: { productId?: number; audience?: ModelAudience }): Promise<AiModel[]>;
 }
 
 export const NOT_CONFIGURED: AiStatus = {

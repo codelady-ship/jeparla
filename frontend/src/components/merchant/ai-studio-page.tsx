@@ -22,7 +22,7 @@ export async function AiStudioPage({ id }: { id: string }) {
   const [status, jobs, models, t] = await Promise.all([
     ai.status(),
     ai.jobs(productId),
-    ai.models(),
+    ai.models({ productId }),
     getTranslations("Merchant.ai"),
   ]);
 

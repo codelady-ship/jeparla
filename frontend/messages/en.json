@@ -700,14 +700,16 @@
         "carat": "Carat",
         "count": "Count",
         "certificateLab": "Certificate lab",
-        "certificateNumber": "Certificate number"
+        "certificateNumber": "Certificate number",
+        "audience": "Who it is for"
       },
       "hints": {
         "name": "For example: Gold engagement ring with diamond.",
         "description": "Design, sizing advice, packaging. Up to 2000 characters.",
         "size": "For rings and bracelets; leave empty for others.",
         "price": "Fixed price, AZN.",
-        "fineness": "Choose the metal first."
+        "fineness": "Choose the metal first.",
+        "audience": "Picks the model of an on-model AI image. Set automatically in men's and children's categories; you can change it."
       },
       "images": {
         "drop": "Drop photos here or choose them",
@@ -803,6 +805,12 @@
         },
         "computed": "Computed price",
         "pending": "Not enough data"
+      },
+      "audience": {
+        "UNISEX": "Everyone",
+        "WOMEN": "Women",
+        "MEN": "Men",
+        "KIDS": "Children"
       }
     },
     "profile": {
@@ -931,7 +939,8 @@
           "source_ai_generated": "A new image cannot be made from an AI image. Choose the original photo.",
           "quota": "Today's limit is used up. Please try again tomorrow.",
           "model_inactive": "This model is no longer offered. Choose another model.",
-          "model_kind": "A model is chosen only for an on-model image."
+          "model_kind": "A model is chosen only for an on-model image.",
+          "model_mismatch": "This model does not fit the product's audience: children's jewelry is shown only on a child model."
         }
       },
       "modelLegend": "AI model",

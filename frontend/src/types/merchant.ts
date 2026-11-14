@@ -54,6 +54,10 @@ export type MerchantProductRow = {
   reviewNote: string | null;
 };
 
+/** Who a piece is for (#121): picks the AI model of an on-model image. */
+export const PRODUCT_AUDIENCES = ["UNISEX", "WOMEN", "MEN", "KIDS"] as const;
+export type ProductAudience = (typeof PRODUCT_AUDIENCES)[number];
+
 export type ProductImageInput = {
   id: string;
   /** Uploaded URL, or a downscaled data: URL while the backend does not exist. */
@@ -94,6 +98,7 @@ export type ProductInput = {
   images: ProductImageInput[];
   name: string;
   category: string;
+  audience: ProductAudience;
   description: string;
   metal: MetalType | "";
   fineness: string;

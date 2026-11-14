@@ -700,14 +700,16 @@
         "carat": "Karat",
         "count": "Say",
         "certificateLab": "Sertifikat laboratoriyası",
-        "certificateNumber": "Sertifikat nömrəsi"
+        "certificateNumber": "Sertifikat nömrəsi",
+        "audience": "Kimin üçündür"
       },
       "hints": {
         "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
         "description": "Dizayn, ölçü məsləhəti, qablaşdırma. Ən çox 2000 simvol.",
         "size": "Üzük və qolbaq üçün; digərlərində boş saxlayın.",
         "price": "Sabit qiymət, AZN.",
-        "fineness": "Əvvəl metalı seçin."
+        "fineness": "Əvvəl metalı seçin.",
+        "audience": "Model üzərində AI şəklində uyğun modeli seçir. Kişi və uşaq kateqoriyalarında avtomatik seçilir, dəyişə bilərsiniz."
       },
       "images": {
         "drop": "Şəkilləri bura atın və ya seçin",
@@ -803,6 +805,12 @@
         },
         "computed": "Hesablanmış qiymət",
         "pending": "Məlumat tam deyil"
+      },
+      "audience": {
+        "UNISEX": "Hamı üçün",
+        "WOMEN": "Qadın",
+        "MEN": "Kişi",
+        "KIDS": "Uşaq"
       }
     },
     "profile": {
@@ -931,7 +939,8 @@
           "source_ai_generated": "AI şəklindən yeni şəkil yaratmaq olmaz. Orijinal şəkli seçin.",
           "quota": "Bugünkü limit dolub. Sabah yenidən cəhd edin.",
           "model_inactive": "Bu model artıq təklif olunmur. Başqa model seçin.",
-          "model_kind": "Model yalnız \"model üzərində\" şəkil üçün seçilir."
+          "model_kind": "Model yalnız \"model üzərində\" şəkil üçün seçilir.",
+          "model_mismatch": "Bu model məhsulun auditoriyasına uyğun deyil: uşaq zərgərliyi yalnız uşaq modeldə göstərilir."
         }
       },
       "modelLegend": "AI model",

@@ -58,6 +58,7 @@ export const AI_ERROR_CODES = [
   "ai.quota",
   "ai.model_inactive",
   "ai.model_kind",
+  "ai.model_mismatch",
 ] as const;
 
 export type AiErrorCode = (typeof AI_ERROR_CODES)[number];
