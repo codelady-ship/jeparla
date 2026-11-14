@@ -79,6 +79,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_MAIL_FROM` | boş | Göndərən, məs. `Jeparla <no-reply@jeparla.az>`; host varsa məcburidir (yoxdursa tətbiq başlamır). Domen provayderdə SPF/DKIM ilə təsdiqlənməlidir |
 | `JEPARLA_ACCOUNT_TOKEN_CLEANUP_CRON` | `0 40 * * * *` | Vaxtı keçmiş təsdiq/bərpa tokenlərinin silinməsi və növbədəki vaxtı keçmiş linklərin məktubdan çıxarılması (saatda bir); `-` söndürür |
 | `JEPARLA_AI_IMAGE_PROVIDER` | `none` | AI Studio provayderi (#55). `none`: AI Studio "qoşulmayıb" göstərir, tapşırıq sorğusu `503 ai.not_configured`. Başqa dəyər quraşdırılmış provayderin id-si olmalıdır, yoxdursa tətbiq başlamır. Provayder açarları provayderin öz env dəyişənlərindədir: `docs/ai-providers.md` |
+| `JEPARLA_AI_AUTO_TRY_ON` | `false` | `true`: məhsulun ilk orijinal şəklindən sonra "model üzərində" AI tapşırığı özü növbəyə düşür (#121). Provayder, limit və büdcə yenə yoxlanılır, nəticə satıcının təsdiqini gözləyir |
 | `JEPARLA_AI_DAILY_JOBS_PER_STORE` | `10` | Mağaza başına gündəlik AI tapşırığı və təkrar cəhd (Bakı vaxtı) |
 | `JEPARLA_AI_MONTHLY_COST_LIMIT` / `JEPARLA_AI_COST_CURRENCY` | `0` / `USD` | Bütün mağazalar üçün aylıq sərt xərc limiti. `0`: provayder olsa da heç bir tapşırıq işə düşmür (büdcəni sahib açıq təyin edir) |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |

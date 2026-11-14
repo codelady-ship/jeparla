@@ -3,6 +3,7 @@ package az.jeparla.ai;
 import az.jeparla.ai.dto.AiModelDto;
 import az.jeparla.common.error.ApiException;
 import az.jeparla.product.Audience;
+import az.jeparla.product.AudienceRules;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -30,9 +31,10 @@ public class AiModelCatalog {
 
     /**
      * The model of a new job: only VIRTUAL_TRY_ON uses one (400 {@code ai.model_kind} otherwise); a deactivated or
-     * empty model is refused (400 {@code ai.model_inactive}). Null stays null.
+     * empty model is refused (400 {@code ai.model_inactive}), and so is a model of another audience than the
+     * product (400 {@code ai.model_mismatch}, #121: a KIDS piece only on a child model). Null stays null.
      */
-    public Long checkForJob(AiJobKind kind, Long modelId) {
+    public Long checkForJob(AiJobKind kind, Long modelId, Audience productAudience) {
         if (modelId == null) {
             return null;
         }
@@ -43,6 +45,9 @@ public class AiModelCatalog {
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "ai.model_inactive", "modelId"));
         if (!model.isSelectable()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "ai.model_inactive", "modelId");
+        }
+        if (!AudienceRules.fits(productAudience, model.getAudience())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "ai.model_mismatch", "modelId");
         }
         return model.getId();
     }

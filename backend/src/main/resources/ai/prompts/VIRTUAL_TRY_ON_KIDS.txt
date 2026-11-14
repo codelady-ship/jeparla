@@ -1,0 +1,11 @@
+Photograph of the exact children's jewelry item shown in the input image, worn by an AI-generated child model
+(not a real child, no resemblance to any real person).
+Keep the item identical: same shape, metal colour, stones, engraving, proportions and true size relative to the
+body. Do not add, remove or redesign any part of the item. Do not add text, logos or watermarks.
+Framing: close crop on the body part that wears the item ({pose}); the item is the sharpest part of the image.
+Prefer hands, wrists and ears; no full-body shot.
+Model: {audience}. Modest, age-appropriate, everyday clothing that covers shoulders and chest; no make-up, no
+adult styling, no suggestive pose, no glamour or fashion-editorial look; natural, relaxed, friendly expression.
+Background: plain warm cream (#F7F3EA) or a soft neutral studio backdrop.
+Light: soft, diffused, even daylight; natural skin texture.
+Format: 4:5 portrait, photographic, calm and gentle look.

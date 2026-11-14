@@ -54,9 +54,10 @@ public class AiStudioController {
     }
 
     @GetMapping("/models")
-    @Operation(summary = "AI models a seller can pick for VIRTUAL_TRY_ON (#130), the default of each audience first")
-    public List<AiModelDto> models(@RequestParam(required = false) Audience audience) {
-        return studio.models(audience);
+    @Operation(summary = "AI models a seller can pick for VIRTUAL_TRY_ON (#130), the default of each audience first; with productId only models that fit the product's audience (#121)")
+    public List<AiModelDto> models(@RequestParam(required = false) Audience audience,
+            @RequestParam(required = false) Long productId) {
+        return studio.models(audience, productId);
     }
 
     @GetMapping("/jobs")
