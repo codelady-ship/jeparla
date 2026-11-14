@@ -289,7 +289,26 @@
       "submit": "Send",
       "unavailable": "Sending reports will be available soon. Nothing is sent yet."
     },
-    "howWeVerify": "How we verify"
+    "howWeVerify": "How we verify",
+    "recentlyViewed": "Recently viewed",
+    "terms": {
+      "fineness": {
+        "label": "What is fineness?",
+        "text": "Fineness is the share of pure metal in the alloy, in parts per thousand: 585 gold is 58.5% pure gold. It should match the hallmark on the item."
+      },
+      "carat": {
+        "label": "What is a carat?",
+        "text": "A carat (ct) is the weight of a gemstone: 1 carat is 0.2 grams. Not to be confused with the karat of gold, which is another way to state fineness."
+      },
+      "color": {
+        "label": "What is diamond colour?",
+        "text": "Colour is graded by letter from D (colourless) to Z (light yellow or brown tint). D-F count as colourless, G-J as near colourless."
+      },
+      "clarity": {
+        "label": "What is clarity?",
+        "text": "Clarity shows how visible a stone's internal and surface flaws are: FL and IF (flawless), VVS1-VVS2, VS1-VS2, SI1-SI2, I1-I3. It is graded under 10x magnification."
+      }
+    }
   },
   "Stores": {
     "title": "Stores",
