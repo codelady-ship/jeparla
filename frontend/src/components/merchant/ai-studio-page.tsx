@@ -19,9 +19,10 @@ export async function AiStudioPage({ id }: { id: string }) {
   const product = Number.isInteger(productId) ? await api.product(productId) : null;
   if (!product) notFound();
   const ai = aiStudioApi(session);
-  const [status, jobs, t] = await Promise.all([
+  const [status, jobs, models, t] = await Promise.all([
     ai.status(),
     ai.jobs(productId),
+    ai.models(),
     getTranslations("Merchant.ai"),
   ]);
 
@@ -64,6 +65,7 @@ export async function AiStudioPage({ id }: { id: string }) {
           status={status}
           images={product.input.images.map((img) => ({ id: String(img.id), url: img.url }))}
           jobs={jobs}
+          models={models}
         />
       </MerchantIntl>
     </div>

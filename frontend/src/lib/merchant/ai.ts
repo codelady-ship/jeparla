@@ -6,6 +6,7 @@ export const aiJobRequest = z.object({
   productId: z.number().int().positive(),
   sourceImageId: z.union([z.number().int().positive(), z.string().min(1).max(64)]),
   kind: z.enum(AI_JOB_KINDS),
+  modelId: z.number().int().positive().optional(),
 });
 
 /** Seller actions on one job (POST /api/merchant/ai/jobs/[id]). */

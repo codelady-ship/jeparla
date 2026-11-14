@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { sendJson } from "@/lib/merchant/client";
 import { aiErrorCode, isRunning, quotaLeft } from "@/lib/merchant/ai";
 import { notices } from "@/lib/notice";
-import { AI_JOB_KINDS, type AiJob, type AiJobKind, type AiStatus } from "@/types/ai";
+import { AI_JOB_KINDS, type AiJob, type AiJobKind, type AiModel, type AiStatus } from "@/types/ai";
 
 export type AiSourceImage = { id: string; url: string };
 
@@ -37,17 +37,21 @@ export function AiStudio({
   status,
   images,
   jobs: initialJobs,
+  models = [],
   kinds = AI_JOB_KINDS,
 }: {
   productId: number;
   status: AiStatus;
   images: AiSourceImage[];
   jobs: AiJob[];
+  /** AI models of the library (#130), the default first. */
+  models?: AiModel[];
   kinds?: readonly AiJobKind[];
 }) {
   const t = useTranslations("Merchant.ai");
   const [source, setSource] = useState(images[0]?.id ?? "");
   const [kind, setKind] = useState<AiJobKind>(kinds[0] ?? "AI_PHOTOSHOOT");
+  const [modelId, setModelId] = useState<number | null>(models[0]?.id ?? null);
   const [jobs, setJobs] = useState(initialJobs);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +73,7 @@ export function AiStudio({
       productId,
       sourceImageId: Number.isInteger(numeric) && numeric > 0 ? numeric : source,
       kind,
+      ...(kind === "VIRTUAL_TRY_ON" && modelId !== null ? { modelId } : {}),
     });
     setBusy(null);
     if (!result.ok) {
@@ -169,6 +174,50 @@ export function AiStudio({
             ))}
           </div>
         </fieldset>
+
+        {kind === "VIRTUAL_TRY_ON" && (
+          <fieldset className="flex flex-col gap-3" disabled={!status.configured}>
+            <legend className="mb-2 font-semibold">{t("modelLegend")}</legend>
+            {models.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("modelEmpty")}</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {models.map((model) => (
+                  <label
+                    key={model.id}
+                    className="flex cursor-pointer flex-col gap-1 rounded-lg border p-1.5 has-checked:border-gold has-checked:ring-2 has-checked:ring-gold/40 has-disabled:cursor-not-allowed has-disabled:opacity-60"
+                  >
+                    <input
+                      type="radio"
+                      name="model"
+                      value={model.id}
+                      checked={modelId === model.id}
+                      onChange={() => setModelId(model.id)}
+                      className="sr-only"
+                    />
+                    <span className="relative aspect-[4/5] overflow-hidden rounded-md bg-muted">
+                      {model.images[0] && (
+                        <Image
+                          src={model.images[0].url}
+                          alt=""
+                          fill
+                          sizes="(min-width: 640px) 25vw, 50vw"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      )}
+                    </span>
+                    <span className="px-1 text-sm font-medium">{model.name}</span>
+                    <span className="px-1 text-xs text-muted-foreground">
+                      {t(`modelStyle.${model.style}`)}
+                      {model.isDefault ? ` · ${t("modelDefault")}` : ""}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </fieldset>
+        )}
 
         <div className="flex flex-wrap items-center gap-4">
           <Button type="submit" size="lg" disabled={disabled || busy !== null}>
