@@ -8,6 +8,7 @@ import Big from "big.js";
 import { gramPrice, metalLinkedPrice } from "@/lib/pricing";
 import type {
   Category,
+  ExchangeRate,
   Fineness,
   LocalizedText,
   MetalPrice,
@@ -76,6 +77,22 @@ export const METAL_PRICE_HISTORY: MetalPrice[] = (Object.keys(OUNCE_BASE) as Met
 export const LATEST_METAL_PRICES: MetalPrice[] = METAL_PRICE_HISTORY.filter(
   (p) => p.date === PRICE_DATE,
 );
+
+/** Demo USD/EUR rates (#53): the CBAR bulletin values of 06.11.2026 in the backend test fixture. */
+export const EXCHANGE_RATES: ExchangeRate[] = [
+  {
+    currency: "USD",
+    date: PRICE_DATE,
+    aznPerUnit: "1.700000",
+    fetchedAt: `${PRICE_DATE}T10:05:00+04:00`,
+  },
+  {
+    currency: "EUR",
+    date: PRICE_DATE,
+    aznPerUnit: "1.903700",
+    fetchedAt: `${PRICE_DATE}T10:05:00+04:00`,
+  },
+];
 
 const pureGram = (metal: MetalType) =>
   LATEST_METAL_PRICES.find((p) => p.metal === metal)!.pricePerGram;
@@ -319,6 +336,8 @@ function buildProduct(i: number): Product {
       city: st.city,
       verification: st.verification,
     },
+    materialKind: "PRECIOUS",
+    material: null,
     metal,
     priceFrom: { amount, currency: "AZN" },
     defaultVariantId: id * 10,

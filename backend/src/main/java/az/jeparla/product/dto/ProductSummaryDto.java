@@ -2,6 +2,8 @@ package az.jeparla.product.dto;
 
 import az.jeparla.common.dto.LocalizedTextDto;
 import az.jeparla.common.dto.MoneyDto;
+import az.jeparla.product.FashionMaterial;
+import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Metal;
 import az.jeparla.product.PricingMode;
 import az.jeparla.product.StockStatus;
@@ -16,8 +18,12 @@ import java.util.List;
  * <p>The default variant is the one with the lowest price (ties: lowest id); {@code priceFrom},
  * {@code pricingMode}, {@code fineness} and {@code weightGrams} are its values. {@code stockStatus}
  * is the best of all live variants (IN_STOCK, then MADE_TO_ORDER, then OUT_OF_STOCK).
+ *
+ * <p>{@code materialKind} (#128): PRECIOUS has a metal and a fineness; FASHION (bijouterie, handmade) has
+ * {@code metal} and {@code fineness} null, a {@code material} instead, FIXED prices and maybe no weight.
  */
-@Schema(name = "ProductSummary", requiredProperties = {"id", "slug", "name", "categoryId", "store", "metal",
+@Schema(name = "ProductSummary", requiredProperties = {"id", "slug", "name", "categoryId", "store", "materialKind",
+        "material", "metal",
         "priceFrom", "defaultVariantId", "pricingMode", "fineness", "weightGrams", "images", "hasStones",
         "verification", "stockStatus", "publishedAt"})
 public record ProductSummaryDto(
@@ -26,12 +32,15 @@ public record ProductSummaryDto(
         LocalizedTextDto name,
         long categoryId,
         StoreRefDto store,
-        Metal metal,
+        MaterialKind materialKind,
+        @Schema(nullable = true, description = "FASHION only") FashionMaterial material,
+        @Schema(nullable = true, description = "Null for FASHION") Metal metal,
         @Schema(description = "Lowest live variant price") MoneyDto priceFrom,
         @Schema(description = "The variant priceFrom comes from") long defaultVariantId,
         PricingMode pricingMode,
-        @Schema(description = "Fineness of the default variant, parts per thousand", example = "585") int fineness,
-        @Schema(example = "3.250") String weightGrams,
+        @Schema(nullable = true, description = "Fineness of the default variant, parts per thousand; null for FASHION",
+                example = "585") Integer fineness,
+        @Schema(nullable = true, example = "3.250") String weightGrams,
         List<ProductImageDto> images,
         boolean hasStones,
         VerificationDto verification,

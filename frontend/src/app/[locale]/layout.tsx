@@ -5,11 +5,14 @@ import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransition } from "react";
+import { resendLabels } from "@/components/auth/auth-page";
+import { VerifyEmailBanner } from "@/components/auth/verify-email-banner";
 import { IntlProvider } from "@/components/i18n/intl-provider";
 import { NoticeRegion } from "@/components/feedback/notice-region";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { CompareTray } from "@/components/saved/compare-tray";
+import { SampleDataBanner } from "@/components/layout/sample-data-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -82,10 +85,12 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   // Root param, not `params`: unknown segments below (e.g. [...rest]) stay prerenderable.
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) notFound();
-  const [messages, tc, tp] = await Promise.all([
+  const [messages, tc, tp, ta, resend] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "Common" }),
     getTranslations({ locale, namespace: "Pwa" }),
+    getTranslations({ locale, namespace: "Auth" }),
+    resendLabels(locale),
   ]);
   // Only namespaces used by Client Components go to the browser (keeps JS small).
   const clientMessages = {
@@ -103,7 +108,13 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       <body className="flex min-h-full flex-col">
         <IntlProvider locale={locale} messages={clientMessages}>
           <ThemeProvider>
+            <SampleDataBanner locale={locale} />
             <SiteHeader />
+            <VerifyEmailBanner
+              text={ta("verifyBanner.text")}
+              detail={ta("verifyBanner.detail")}
+              resend={resend}
+            />
             {/* In-app navigations cross-fade the page body; header and footer stay put.
                 Only the PAGE_TRANSITION type: streamed first-load reveals do not animate. */}
             <ViewTransition update={{ [PAGE_TRANSITION]: "auto", default: "none" }}>

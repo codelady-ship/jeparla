@@ -8,8 +8,7 @@ import { activeFilters, PAGE_SIZE, parseFilters, type SearchParams } from "@/lib
 import { getLocale } from "next-intl/server";
 import { ActiveFilterChips, Pagination, SortForm } from "./catalog-toolbar";
 import { FilterFields, type FilterData } from "./filter-fields";
-import { FilterForm } from "./filter-form";
-import { FiltersSheet } from "./filters-sheet";
+import { FilterSlot, FiltersProvider, FiltersSheet } from "./filters-sheet";
 
 /**
  * Filters, results and pagination. Reads the query, so it streams.
@@ -51,84 +50,78 @@ export async function Catalog({
   const listName = categories.find((c) => c.slug === category)?.name[locale] ?? t("title");
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-      {/* The products on this page of results, in order (schema.org ItemList). */}
-      <JsonLd
-        data={[
-          itemList(
-            listName,
-            page.content.map((p) => ({
-              name: p.name[locale],
-              path: `/${locale}/products/${p.slug}`,
-            })),
-          ),
-        ]}
-      />
-      <aside aria-label={t("filters")} className="hidden lg:block">
-        <FilterForm action={ACTION} auto>
-          <FilterFields id="d" filters={filters} data={data} hideCategory={Boolean(category)} />
-        </FilterForm>
-      </aside>
+    <FiltersProvider>
+      <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+        {/* The products on this page of results, in order (schema.org ItemList). */}
+        <JsonLd
+          data={[
+            itemList(
+              listName,
+              page.content.map((p) => ({
+                name: p.name[locale],
+                path: `/${locale}/products/${p.slug}`,
+              })),
+            ),
+          ]}
+        />
+        <aside aria-label={t("filters")} className="hidden lg:block">
+          {/* Rendered once; the mobile sheet borrows these fields while it is open. */}
+          <FilterSlot action={ACTION}>
+            <FilterFields id="f" filters={filters} data={data} hideCategory={Boolean(category)} />
+          </FilterSlot>
+        </aside>
 
-      <div className="flex min-w-0 flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <FiltersSheet
-              labels={{ open: t("filters"), title: t("filters"), close: tc("close") }}
-              count={activeCount}
-            >
-              <FilterForm action={ACTION}>
-                <FilterFields
-                  id="m"
-                  filters={filters}
-                  data={data}
-                  hideCategory={Boolean(category)}
-                />
-              </FilterForm>
-            </FiltersSheet>
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              {t("count", { count: page.totalElements })}
-            </p>
+        <div className="flex min-w-0 flex-col gap-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <FiltersSheet
+                labels={{ open: t("filters"), title: t("filters"), close: tc("close") }}
+                count={activeCount}
+              />
+              <p className="text-sm text-muted-foreground" aria-live="polite">
+                {t("count", { count: page.totalElements })}
+              </p>
+            </div>
+            <SortForm action={ACTION} filters={filters} />
           </div>
-          <SortForm action={ACTION} filters={filters} />
+
+          <ActiveFilterChips action={ACTION} filters={filters} data={data} />
+          {/* Keeps heading order h1 > h2 > h3 (card titles) for screen readers. */}
+          <h2 className="sr-only">{t("results")}</h2>
+
+          <ProductGrid
+            products={page.content}
+            empty={
+              <ProductGridEmpty title={t("emptyTitle")} text={t("emptyText")}>
+                <ul className="mt-2 flex flex-wrap justify-center gap-2">
+                  {suggestions.map((c) => (
+                    <li key={c.id}>
+                      <Link
+                        href={`${ACTION}?category=${c.slug}`}
+                        className="inline-flex h-8 items-center rounded-full border px-3 text-sm hover:bg-muted pointer-coarse:h-11 pointer-coarse:px-4"
+                      >
+                        {c.name[locale]}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {activeCount > 0 && (
+                  <Link href={ACTION} className="mt-2 link-underline text-sm font-medium">
+                    {t("clearAll")}
+                  </Link>
+                )}
+              </ProductGridEmpty>
+            }
+          />
+
+          <Pagination
+            action={ACTION}
+            filters={filters}
+            page={page.page}
+            totalPages={page.totalPages}
+          />
         </div>
-
-        <ActiveFilterChips action={ACTION} filters={filters} data={data} />
-        {/* Keeps heading order h1 > h2 > h3 (card titles) for screen readers. */}
-        <h2 className="sr-only">{t("results")}</h2>
-
-        <ProductGrid
-          products={page.content}
-          empty={
-            <ProductGridEmpty title={t("emptyTitle")} text={t("emptyText")}>
-              <ul className="mt-2 flex flex-wrap justify-center gap-2">
-                {suggestions.map((c) => (
-                  <li key={c.id}>
-                    <Link
-                      href={`${ACTION}?category=${c.slug}`}
-                      className="inline-flex h-8 items-center rounded-full border px-3 text-sm hover:bg-muted pointer-coarse:h-11 pointer-coarse:px-4"
-                    >
-                      {c.name[locale]}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              {activeCount > 0 && (
-                <Link href={ACTION} className="mt-2 link-underline text-sm font-medium">
-                  {t("clearAll")}
-                </Link>
-              )}
-            </ProductGridEmpty>
-          }
-        />
-
-        <Pagination
-          action={ACTION}
-          filters={filters}
-          page={page.page}
-          totalPages={page.totalPages}
-        />
       </div>
-    </div>
+    </FiltersProvider>
   );
 }

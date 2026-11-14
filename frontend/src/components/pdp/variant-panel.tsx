@@ -5,8 +5,10 @@ import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { compare, favorites } from "@/lib/saved-list";
+import { useDisplayCurrency } from "@/lib/use-display-currency";
 import { useSavedIds } from "@/lib/use-saved";
 import { cn } from "cn";
+import type { DisplayCurrency } from "@/types/api";
 
 /** Everything about a variant the client needs, already formatted on the server. */
 export type VariantView = {
@@ -20,6 +22,8 @@ export type VariantView = {
   updatedIso: string;
   updated: string;
   whatsappHref: string;
+  /** Approximate price in USD/EUR at the CBAR rate (#53), already formatted; empty without rates. */
+  approx: Partial<Record<DisplayCurrency, string>>;
 };
 
 type Labels = {
@@ -28,6 +32,8 @@ type Labels = {
   priceUpdated: string;
   whatsapp: string;
   metalLinkedNote: string | null;
+  /** Currency switch (#53); null when no rate is available. */
+  currency: { label: string; note: string } | null;
   actions: ProductActionLabels;
 };
 
@@ -44,12 +50,45 @@ export function VariantPanel({
   const v = variants.find((x) => x.id === id) ?? variants[0];
   const isFavorite = useSavedIds(favorites).includes(productId);
   const compared = useSavedIds(compare);
+  // AZN is the price; USD/EUR is an extra approximate line, remembered per browser.
+  const [currency, choose] = useDisplayCurrency();
   if (!v) return null;
+  const approx = currency === "AZN" ? undefined : v.approx[currency];
+  const options = (["AZN", "USD", "EUR"] as const).filter((c) => c === "AZN" || v.approx[c]);
 
   return (
     <div className="flex flex-col gap-5">
       <div data-keep-clear="">
         <p className="text-3xl font-semibold tabular-nums">{v.price}</p>
+        {labels.currency && options.length > 1 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <div
+              role="group"
+              aria-label={labels.currency.label}
+              className="inline-flex rounded-md border"
+            >
+              {options.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={currency === c}
+                  onClick={() => choose(c)}
+                  className={cn(
+                    "min-w-11 px-2.5 py-1 text-xs font-medium first:rounded-l-md last:rounded-r-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:min-h-11",
+                    currency === c ? "bg-primary text-primary-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            {approx && (
+              <p className="text-sm tabular-nums" aria-live="polite">
+                {approx} <span className="text-muted-foreground">({labels.currency.note})</span>
+              </p>
+            )}
+          </div>
+        )}
         <p className="mt-1 text-sm text-muted-foreground">
           {labels.priceUpdated} <time dateTime={v.updatedIso}>{v.updated}</time>
         </p>

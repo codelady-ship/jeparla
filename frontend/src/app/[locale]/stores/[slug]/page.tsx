@@ -18,6 +18,7 @@ import { alternates } from "@/i18n/alternates";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
+import { slugParams } from "@/lib/api/static-params";
 import { formatOpeningHours } from "@/lib/opening-hours";
 import { breadcrumbs, jewelryStore } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
@@ -25,7 +26,7 @@ import { cn } from "cn";
 
 export async function generateStaticParams() {
   const stores = await api.listStores();
-  return stores.map((s) => ({ slug: s.slug }));
+  return slugParams(stores.map((s) => s.slug));
 }
 
 export async function generateMetadata({
@@ -34,7 +35,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const locale = await rootLocale();
   const store = await api.getStore(slug);
-  if (!store || !hasLocale(routing.locales, locale)) return {};
+  // Resolved before the streamed body: an unknown store answers a real 404, not a soft 200.
+  if (!store) notFound();
+  if (!hasLocale(routing.locales, locale)) return {};
   return {
     title: `${store.name}, ${store.city}`,
     description: store.description[locale],

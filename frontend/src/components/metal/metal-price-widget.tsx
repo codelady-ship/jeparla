@@ -1,4 +1,4 @@
-import { Landmark } from "lucide-react";
+import { ArrowRight, Landmark } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -181,7 +181,19 @@ export async function MetalPriceWidget({
         </div>
       )}
 
+      {/* A manual admin correction is not the CBAR rate: say so instead of citing CBAR alone. */}
+      {data.latest.some((p) => p.source === "ADMIN") && (
+        <p className="text-xs text-muted-foreground">{t("adminSource")}</p>
+      )}
       <p className="text-xs text-muted-foreground">{t("note")}</p>
+      <Link
+        href="/calculator"
+        prefetch={false}
+        className="inline-flex items-center gap-1.5 self-start link-underline text-sm font-medium pointer-coarse:py-3"
+      >
+        {t("calculatorLink")}
+        <ArrowRight aria-hidden className="size-4" />
+      </Link>
     </>,
   );
 }

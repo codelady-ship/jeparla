@@ -1,6 +1,6 @@
 import { ArrowRight, Search, SearchX } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Catalog } from "@/components/catalog/catalog";
+import { Pagination } from "@/components/catalog/catalog-toolbar";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -10,7 +10,7 @@ import { StoreCard } from "@/components/stores/store-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import type { SearchParams } from "@/lib/catalog/filters";
+import { parseFilters, type SearchParams } from "@/lib/catalog/filters";
 import type { Category, SearchResult, StoreSummary } from "@/types/api";
 import { cn } from "cn";
 
@@ -38,10 +38,14 @@ export async function SearchResults({
   tab: SearchTab;
   searchParams: Promise<SearchParams>;
 }) {
-  const q = readQuery(await searchParams);
+  const sp = await searchParams;
+  const q = readQuery(sp);
+  // The products tab pages through the same ranked search the counts come from (#41 review:
+  // the catalog's word-start filter found fewer products than "Products N" promised).
+  const page = tab === "products" ? (parseFilters(sp).page ?? 0) : 0;
   const [t, result, categories] = await Promise.all([
     getTranslations("SearchPage"),
-    q ? api.search(q, "all") : Promise.resolve(null),
+    q ? api.search(q, "all", page) : Promise.resolve(null),
     api.listCategories(),
   ]);
   const topCategories = categories.filter((c) => c.parentId === null && c.productCount > 0);
@@ -77,13 +81,7 @@ export async function SearchResults({
       ) : (
         <>
           <Tabs tab={tab} q={q} result={result} />
-          <TabPanel
-            tab={tab}
-            q={q}
-            result={result}
-            categories={topCategories}
-            searchParams={searchParams}
-          />
+          <TabPanel tab={tab} q={q} result={result} categories={topCategories} />
         </>
       )}
     </div>
@@ -160,13 +158,11 @@ async function TabPanel({
   q,
   result,
   categories,
-  searchParams,
 }: {
   tab: SearchTab;
   q: string;
   result: SearchResult;
   categories: Category[];
-  searchParams: Promise<SearchParams>;
 }) {
   const t = await getTranslations("SearchPage");
   const empty = (
@@ -178,7 +174,20 @@ async function TabPanel({
   );
 
   if (tab === "products")
-    return <Catalog searchParams={searchParams} action={tabPath("products")} />;
+    return result.products.totalElements ? (
+      <div className="flex flex-col gap-6">
+        <h2 className="sr-only">{t("tab.products")}</h2>
+        <ProductGrid products={result.products.content} />
+        <Pagination
+          action={tabPath("products")}
+          filters={{ q }}
+          page={result.products.page}
+          totalPages={result.products.totalPages}
+        />
+      </div>
+    ) : (
+      empty
+    );
   if (tab === "stores") return result.stores.length ? <StoreGrid stores={result.stores} /> : empty;
   if (tab === "categories")
     return result.categories.length ? <CategoryTiles categories={result.categories} /> : empty;
