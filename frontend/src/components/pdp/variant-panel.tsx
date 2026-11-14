@@ -5,6 +5,8 @@ import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { compare, favorites } from "@/lib/saved-list";
+import { toggleFavorite } from "@/lib/saved-prices";
+import type { Money } from "@/types/api";
 import { useSavedIds } from "@/lib/use-saved";
 import { cn } from "cn";
 
@@ -33,10 +35,13 @@ type Labels = {
 
 export function VariantPanel({
   productId,
+  priceFrom,
   variants,
   labels,
 }: {
   productId: number;
+  /** The product "from" price, remembered when it is added to favourites (#112). */
+  priceFrom: Money;
   variants: VariantView[];
   labels: Labels;
 }) {
@@ -110,7 +115,7 @@ export function VariantPanel({
           variant="outline"
           className="pointer-coarse:h-11"
           aria-pressed={isFavorite}
-          onClick={() => favorites.toggle(productId)}
+          onClick={() => toggleFavorite(productId, priceFrom)}
         >
           <Heart aria-hidden className={cn(isFavorite && "fill-current text-gold-text")} />
           {isFavorite ? labels.actions.favoriteRemove : labels.actions.favoriteAdd}

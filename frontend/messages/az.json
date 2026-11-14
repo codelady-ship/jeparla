@@ -396,7 +396,18 @@
     "removeItem": "{name} müqayisədən çıxar",
     "noStones": "Daşsız",
     "stock": "Stok",
-    "gramUnit": "q"
+    "gramUnit": "q",
+    "priceChanges": {
+      "title": "Əlavə etdiyinizdən bəri qiymət dəyişib",
+      "item": "Əlavə edəndə {before}, indi {now}",
+      "up": "{difference} bahalaşıb",
+      "down": "{difference} ucuzlaşıb",
+      "reason": {
+        "METAL_LINKED": "Səbəb: AMB-nin metal qiyməti dəyişib",
+        "FIXED": "Səbəb: mağaza qiyməti dəyişib"
+      },
+      "note": "Müqayisə bu brauzerdə saxlanılan qiymətlədir."
+    }
   },
   "Auth": {
     "login": {

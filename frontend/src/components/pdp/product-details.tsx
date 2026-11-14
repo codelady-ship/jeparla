@@ -163,6 +163,7 @@ export async function ProductDetails({
 
           <VariantPanel
             productId={p.id}
+            priceFrom={p.priceFrom}
             variants={variants}
             labels={{
               choose: t("chooseVariant"),

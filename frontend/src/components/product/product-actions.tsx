@@ -3,6 +3,8 @@
 import { GitCompareArrows, Heart } from "lucide-react";
 import { notices } from "@/lib/notice";
 import { compare, favorites } from "@/lib/saved-list";
+import { toggleFavorite } from "@/lib/saved-prices";
+import type { Money } from "@/types/api";
 import { useSavedIds } from "@/lib/use-saved";
 import { cn } from "cn";
 
@@ -29,9 +31,12 @@ const button =
 export function ProductActions({
   id,
   variantId,
+  price,
   labels,
 }: {
   id: number;
+  /** Remembered when the product is added to favourites (#112). */
+  price: Money;
   /** Compare works per variant; a card adds the variant its "from" price belongs to. */
   variantId: number;
   labels: ProductActionLabels;
@@ -46,7 +51,7 @@ export function ProductActions({
         className={button}
         aria-pressed={isFavorite}
         aria-label={isFavorite ? labels.favoriteRemove : labels.favoriteAdd}
-        onClick={() => favorites.toggle(id)}
+        onClick={() => toggleFavorite(id, price)}
       >
         <Heart aria-hidden className={cn(isFavorite && "fill-current text-gold-text")} />
       </button>
