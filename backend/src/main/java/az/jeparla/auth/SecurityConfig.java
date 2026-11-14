@@ -71,7 +71,10 @@ public class SecurityConfig {
             AccessRule.of(HttpMethod.GET, Access.PUBLIC, API_DOCS),
             AccessRule.of(HttpMethod.POST, Access.PUBLIC,
                     "/api/v1/auth/register", "/api/v1/auth/register/merchant", "/api/v1/auth/login",
-                    "/api/v1/auth/refresh", "/api/v1/auth/logout"),
+                    "/api/v1/auth/refresh", "/api/v1/auth/logout",
+                    // Password reset and email verification links (#131): the caller is not signed in.
+                    "/api/v1/auth/password/forgot", "/api/v1/auth/password/reset", "/api/v1/auth/email/verify"),
+            // Includes POST /api/v1/auth/email/verification (resend the verification link, #131).
             AccessRule.anyMethod(Access.AUTHENTICATED, "/api/v1/auth/**"),
             AccessRule.anyMethod(Access.ADMIN, "/api/v1/admin", "/api/v1/admin/**"),
             AccessRule.anyMethod(Access.MERCHANT, "/api/v1/merchant", "/api/v1/merchant/**"),

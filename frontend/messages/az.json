@@ -64,6 +64,7 @@
     "legal": "Hüquqi",
     "aboutUs": "Haqqımızda",
     "contact": "Əlaqə",
+    "help": "Kömək və dəstək",
     "metalPrices": "Metal qiymətləri",
     "sizeGuide": "Ölçü bələdçisi",
     "openStore": "Mağaza aç",
@@ -71,7 +72,8 @@
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
-    "rights": "© Jeparla. Bütün hüquqlar qorunur."
+    "rights": "© Jeparla. Bütün hüquqlar qorunur.",
+    "calculator": "Qızıl kalkulyatoru"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -308,6 +310,45 @@
         "q": "Mağazamı Jeparla-ya necə əlavə edim?",
         "a": "\"Mağaza aç\" bölməsindən müraciət edin. Mağaza yoxlanıldıqdan sonra məhsullar moderasiyadan keçib kataloqda görünür."
       }
+    }
+  },
+  "Help": {
+    "title": "Kömək və dəstək",
+    "description": "Mağaza ilə necə əlaqə saxlamaq, kataloqu necə əlavə etmək, sənədləri necə yükləmək, yoxlamanın nə demək olduğu və problemi necə bildirmək.",
+    "intro": "Alıcılar və satıcılar üçün qısa cavablar.",
+    "faq": {
+      "contact": {
+        "q": "Mağaza ilə necə əlaqə saxlayım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsini basın: mesajda məhsulun adı, kodu və linki artıq olur. Qiymət, ödəniş və çatdırılma birbaşa mağaza ilə razılaşdırılır. Jeparla özü məhsul satmır və ödəniş qəbul etmir."
+      },
+      "sell": {
+        "q": "Mağazamın kataloqunu necə əlavə edim?",
+        "a": "\"Mağaza aç\" bölməsindən müraciət edin: hesab, mağaza məlumatları, sənədlər və istəyə görə ilk məhsul. Mağaza yoxlanıldıqdan sonra məhsulları kabinetdən əlavə edirsiniz; hər məhsul kataloqda görünməzdən əvvəl moderasiyadan keçir."
+      },
+      "documents": {
+        "q": "Sənədləri necə yükləyim?",
+        "a": "Qeydiyyatın \"Sənədlər\" addımında və ya sonra kabinetdən PDF, JPG və ya PNG kimi yükləyin. Sənədlər qapalı yaddaşda saxlanılır və yalnız yoxlama komandası onlara baxır. Qızıl, gümüş və brilyant satıcıları üçün sənəd yoxlaması aparılır; bijuteriya satıcılarından sertifikat tələb olunmur."
+      },
+      "verified": {
+        "q": "Yoxlama nə deməkdir?",
+        "a": "Satıcı və sənəd yoxlaması ayrı-ayrılıqda aparılır və hər biri mağaza və məhsul səhifəsində ayrıca göstərilir. Aparılmayan yoxlama \"aparılmayıb\" kimi yazılır. Yoxlama bizə təqdim olunan sənədləri təsdiqləyir, konkret məhsula zəmanət deyil: almadan əvvəl məhsulu mağaza ilə dəqiqləşdirin."
+      },
+      "report": {
+        "q": "Problemi necə bildirim?",
+        "a": "Məhsulun məlumatı səhvdirsə və ya məhsul şübhəli görünürsə, məhsul səhifəsindəki \"Şikayət et\" düyməsindən istifadə edin. Digər suallar üçün aşağıdakı \"Dəstək\" bölməsinə baxın."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "sell": "Mağaza aç",
+      "merchant": "Mağaza kabineti"
+    },
+    "support": {
+      "title": "Dəstək",
+      "text": "Sualınız və ya probleminiz varsa, bizə yazın:",
+      "email": "E-poçt",
+      "url": "Dəstək səhifəsi",
+      "none": "Dəstəyin birbaşa ünvanı hələ dərc olunmayıb; dərc olunanda bu səhifədə göstəriləcək. Satıcılar geri qaytarılan məhsulun və ya mağazanın məlumatlarını kabinetdə düzəldib yenidən yoxlamaya göndərə bilər."
     }
   },
   "Categories": {
@@ -1362,7 +1403,8 @@
     "perGram": "1 qram",
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
-    "empty": "Bugünkü qiymət hələ gəlməyib."
+    "empty": "Bugünkü qiymət hələ gəlməyib.",
+    "calculatorLink": "Zərgərliyin metal dəyərini hesablayın"
   },
   "Hero": {
     "label": "Jeparla: zərgərlik kolleksiyaları",
@@ -1396,5 +1438,51 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "Calculator": {
+    "title": "Qızıl və gümüş kalkulyatoru",
+    "description": "Çəki və əyara görə qızıl və gümüşün bu günkü metal dəyəri manatla, Azərbaycan Mərkəzi Bankının gündəlik məzənnəsi ilə.",
+    "intro": "Zərgərliyin çəkisini və əyarını daxil edin: metalın bu gün Azərbaycan Mərkəzi Bankının (AMB) məzənnəsi ilə nə qədər dəyərində olduğunu görəcəksiniz.",
+    "formLabel": "Metal dəyərinin hesablanması",
+    "weight": "Çəki (qram)",
+    "weightHint": "Məsələn 4,2 və ya 4.2; vergüldən sonra ən çox 3 rəqəm.",
+    "metal": "Metal",
+    "fineness": "Əyar",
+    "submit": "Hesabla",
+    "resultLabel": "Metal dəyəri",
+    "prompt": "Metal dəyərini görmək üçün çəkini daxil edin.",
+    "resultSummary": "{weight}, {metal} {fineness}",
+    "gramPrice": "{metal} {fineness}, 1 qram: {price}",
+    "purePrice": "AMB qiyməti ({metal}, təmiz metal): qramı {gram}, troy unsiyası {ounce}",
+    "weekendNote": "Həftəsonu və bayram günlərində AMB-nin son dərc etdiyi məzənnə istifadə olunur.",
+    "notShopPrice": "Bu, yalnız metalın dəyəridir, mağaza qiyməti deyil: işçilik, daşlar və mağazanın əlavəsi buraya daxil deyil.",
+    "products": "Kataloqda {metal} {fineness} zərgərliklərə baxın",
+    "errors": {
+      "empty": "Çəkini daxil edin.",
+      "format": "Çəkini rəqəmlə yazın, məsələn 4,2.",
+      "notPositive": "Çəki sıfırdan böyük olmalıdır.",
+      "tooPrecise": "Vergüldən sonra ən çox 3 rəqəm yazın (milliqrama qədər).",
+      "tooLarge": "Çəki 10 000 qramdan çox ola bilməz."
+    },
+    "unavailable": "Metal qiymətlərini indi yükləmək mümkün olmadı, ona görə dəyər göstərilmir. Bir az sonra yenidən yoxlayın.",
+    "noPrices": "Bu günün AMB qiyməti hələ gəlməyib, ona görə dəyər göstərilmir.",
+    "loading": "Metal qiymətləri yüklənir",
+    "howTitle": "Dəyər necə hesablanır",
+    "howText": "Metal dəyəri = çəki (qram) × əyar ÷ 1000 × 1 qram təmiz metalın AMB qiyməti. AMB metal məzənnələrini troy unsiyası (31,1034768 q) üçün manatla dərc edir; biz onu qrama çeviririk və nəticəni qəpiyə qədər yuvarlaqlaşdırırıq.",
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "price": {
+        "q": "Mağaza qiyməti niyə metal dəyərindən yüksəkdir?",
+        "a": "Mağaza qiymətinə işçilik, daşlar, mağazanın əlavəsi və digər xərclər də daxildir. Kalkulyator yalnız zərgərlikdəki metalın dəyərini göstərir."
+      },
+      "fineness": {
+        "q": "585 əyar nə deməkdir?",
+        "a": "Əyar təmiz metalın mində payıdır: 585 əyarlı qızılın 58,5%-i, 925 əyarlı gümüşün isə 92,5%-i təmiz metaldır."
+      },
+      "source": {
+        "q": "Qiymətlər haradan gəlir?",
+        "a": "Azərbaycan Mərkəzi Bankının gündəlik qiymətli metal məzənnələrindən. Həftəsonu və bayram günlərində son dərc olunan məzənnə istifadə olunur."
+      }
+    }
   }
 }

@@ -112,7 +112,7 @@ export function FilterFields({
   data,
   hideCategory = false,
 }: {
-  /** Prefix for element ids, since the desktop and mobile forms can both be in the DOM. */
+  /** Prefix for element ids. */
   id: string;
   filters: ProductFilters;
   data: FilterData;
