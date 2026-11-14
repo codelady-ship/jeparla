@@ -1,3 +1,4 @@
+import { haversineKm, parseNear, type LatLng } from "@/lib/geo/near";
 import { compareDecimal } from "@/lib/pricing";
 import { matchesQuery } from "@/lib/search/normalize";
 import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
@@ -11,6 +12,13 @@ import {
   PRODUCTS,
   STORES,
 } from "./fixtures";
+
+/** Demo only: sample stores have no own location, so "near me" uses the city centre. */
+const MOCK_CITY_CENTRES: Record<string, LatLng> = {
+  Bakı: { lat: 40.4093, lng: 49.8671 },
+  Gəncə: { lat: 40.6828, lng: 46.3606 },
+  Sumqayıt: { lat: 40.5897, lng: 49.6686 },
+};
 
 const DEFAULT_SIZE = 24;
 const MAX_SIZE = 96;
@@ -141,7 +149,7 @@ export const mockApi: JeparlaApi = {
     return FINENESSES;
   },
   async listStores(params = {}) {
-    return STORES.filter(
+    const found = STORES.filter(
       (s) =>
         (!params.city || s.city === params.city) &&
         (!params.q || matchesQuery(`${s.name} ${s.city}`, params.q)),
@@ -157,6 +165,15 @@ export const mockApi: JeparlaApi = {
         ...summary
       }) => summary,
     );
+    const near = parseNear(params.near);
+    if (!near) return found;
+    // Same contract as the backend: located stores first, nearest first, with distanceKm.
+    const located = found
+      .filter((s) => MOCK_CITY_CENTRES[s.city])
+      .map((s) => ({ ...s, km: haversineKm(near, MOCK_CITY_CENTRES[s.city]) }))
+      .sort((a, b) => a.km - b.km)
+      .map(({ km, ...s }) => ({ ...s, distanceKm: km.toFixed(1) }));
+    return [...located, ...found.filter((s) => !MOCK_CITY_CENTRES[s.city])];
   },
   async getStore(slug) {
     return STORES.find((s) => s.slug === slug) ?? null;
