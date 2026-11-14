@@ -38,8 +38,9 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
 | `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
-| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**` | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
+| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**`, `/share/{code}` (#100; `/stores/{slug}/facts` və `/preview` `/stores/**`-dədir, #108) | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
 | `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
+| `POST /api/v1/stores/{slug}/visits` | hamı, qonaq da: paylaşılmış linklə gələn baxış (#100), `referral-*` limitləri ilə |
 | `POST /internal/jobs/metal-prices` | paylaşılan sirr ilə (controller yoxlayır, #44) |
 | qalan hər şey | heç kim |
 
@@ -91,6 +92,18 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
   `FASHION` məhsula damğa yox, yalnız etiket şəkli (`409 merchant.hallmark_precious_only`). Test:
   `EvidencePhotoApiTests`.
 
+### Paylaşım linki və statistika (#100)
+
+- `/api/v1/merchant/store/share`, `/store/share/qr.svg`, `/store/share/regenerate`, `/merchant/referrals` (`MERCHANT`):
+  mağaza URL-də və sorğuda yoxdur, həmişə token sahibinin mağazasıdır (`MerchantStores`). Başqa mağazanın linkini
+  və ya statistikasını istəmək üçün parametr yoxdur, ona görə satıcı yalnız öz rəqəmlərini görür.
+- Linki yalnız sahibi dəyişir: `POST /store/share/regenerate` köhnə kodu dərhal etibarsız edir, auditə
+  (`STORE_SHARE_LINK_REPLACED`, köhnə və yeni kod) yazılır, `BLOCKED` mağaza üçün `403 merchant.store_blocked`,
+  hesab üzrə `share-regenerate-account` limiti var. Admin linki dəyişmir.
+- İctimai tərəf: `GET /share/{code}` yalnız `APPROVED` mağazanı açır; `/stores/{slug}/preview` kodu göstərmir.
+  `POST /stores/{slug}/visits` yalnız aqreqat sayğacı artırır (mağaza, gün, mənbə); IP və user agent saxlanılmır.
+- Testlər: `ShareApiTests` (rollar, başqa satıcının statistikası, bot və təkrar baxış, audit), `ShareUnitTests`.
+
 ### Yoxlama sənədləri (#40, #138)
 
 - `/api/v1/merchant/documents/**` (`MERCHANT`): sənədi yalnız qiymətli metal satan mağaza (`PRECIOUS`,
@@ -108,6 +121,10 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
 - `/api/v1/admin/documents/**` (`ADMIN`): növbə, detal, `POST /{id}/view` (5 dəqiqəlik presigned GET,
   `DOCUMENT_VIEWED` auditi), `POST /{id}/decision` (`APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada səbəb
   kateqoriyası məcburidir). Yalnız təsdiqlənmiş sənəd yoxlamanı `VERIFIED` edir.
+- Dörd göz (#138, `docs/legal/sellers-liability.md` 3.1): `AUTHENTICITY` (saxtalıq şübhəsi) səbəbli rədd yalnız
+  dayandırma sorğusu açır; mağazanı yalnız **başqa** admin `/api/v1/admin/store-suspensions/{id}/decision` ilə
+  dayandırır (`CONFIRM`) və ya sorğunu bağlayır (`DISMISS`). Bir nəfər mağazanı bu yolla dayandıra bilməz
+  (`409 verification.four_eyes`; `store_suspension_requests_four_eyes` CHECK-i bazada da yoxlayır).
 - Maraq toqquşması: admin öz mağazasının sənədinə, statusuna və məhsuluna qərar vermir (403).
 - `/api/v1/admin/stores`, `/admin/products`, `/admin/audit` (`ADMIN`): mağaza statusu (`REJECTED`/`BLOCKED`
   üçün ən az 10 simvol səbəb), satıcı yoxlaması, məhsul qərarı (`APPROVE`; `RETURN`/`DEACTIVATE` səbəblə).
@@ -271,7 +288,10 @@ Redis-də deyil (#151).
 | `email-verify-ip` | 30 / saat | hər təsdiq linki | IP |
 | `email-verification-account` | 3 / saat | hər "linki yenidən göndər" | user id: aşanda `429` |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
-| `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
+| `referral-ip` | 30 / saat | botdan olmayan, mənbəli hər baxış | IP: `POST /stores/{slug}/visits` (#100), bütün mağazalar üzrə; artığı 204 alır, sayılmır |
+| `referral-visit` | 1 / 30 dəq. | eyni baxış | IP + mağaza + mənbə: yeniləmə və linki təkrar açmaq bir baxışdır |
+| `share-regenerate-account` | 5 / gün | hər yeni link | user id: `POST /merchant/store/share/regenerate` (#100); 429 |
+| `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`, giriş) gələn sorğu `JEPARLA_FRONTEND_TOKEN` ilə ziyarətçinin IP-sini `X-Jeparla-Client-Ip`-də göndərir və o IP ilə sayılır (#41); token yoxdursa bütün ziyarətçilər frontend serverinin IP-si ilə sayılır |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
 

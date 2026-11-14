@@ -125,9 +125,9 @@ export function StoresList({
                       <div className="flex flex-col gap-1">
                         <span className="font-medium">{row.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {row.city}
-                          {" · "}
-                          {t("stores.products", { count: row.productCount })}
+                          {row.productCount === null
+                            ? row.city
+                            : `${row.city} · ${t("stores.products", { count: row.productCount })}`}
                         </span>
                         {row.note && <Note label={t("note")} text={row.note} />}
                       </div>

@@ -5,6 +5,7 @@ import { VerificationList } from "@/components/admin/verification-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CHECK_FILTERS, pickStatus } from "@/lib/admin/filter";
 import { adminContext } from "@/lib/admin/server";
+import { USING_MOCK } from "@/lib/api";
 
 export const generateMetadata = () => adminMetadata("checks");
 
@@ -19,6 +20,7 @@ async function List({ searchParams }: { searchParams: SP }) {
     <AdminIntl>
       <VerificationList
         rows={rows}
+        live={!USING_MOCK}
         initialQuery={first(sp.q)}
         initialStatus={pickStatus(first(sp.status), CHECK_FILTERS, "PENDING")}
       />

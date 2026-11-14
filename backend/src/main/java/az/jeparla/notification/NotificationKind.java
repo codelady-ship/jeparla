@@ -17,6 +17,8 @@ public enum NotificationKind {
     STORE_APPROVED(false),
     STORE_REJECTED(true),
     STORE_BLOCKED(true),
+    /** A second admin confirmed a suspected forged document: the store is hidden for review (#138, legal 2d). */
+    STORE_SUSPENDED(true),
     SELLER_VERIFIED(false),
     SELLER_REJECTED(true),
     /** A buyer complaint about the seller's product or store was upheld by an admin (#40). */

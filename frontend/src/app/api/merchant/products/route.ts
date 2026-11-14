@@ -1,21 +1,30 @@
+import { USING_MOCK } from "@/lib/api";
 import { merchantApi } from "@/lib/api/merchant";
-import { AUTH_AVAILABLE, readJson, unavailable } from "@/lib/auth/server";
+import { problemResponse } from "@/lib/api/problem";
 import { fieldErrors } from "@/lib/auth/schemas";
+import { readJson, requestLocale } from "@/lib/auth/server";
+import { saveProduct } from "@/lib/merchant/save";
 import { productSubmit } from "@/lib/merchant/schemas";
 import { merchantOr401 } from "@/lib/merchant/server";
 
 /**
- * POST /api/v1/merchant/products (demo). Validates, checks that only an approved
- * seller sends to review and that review has documents, then answers like the
- * backend would. Nothing is stored in demo mode.
+ * POST /api/v1/merchant/products for the product form (create, photos, optional review).
+ * With the sample data it only validates and answers like the backend; nothing is stored.
  */
 export async function POST(request: Request) {
-  if (!AUTH_AVAILABLE) return unavailable();
   const session = await merchantOr401();
   if (session instanceof Response) return session;
   const parsed = productSubmit.safeParse(await readJson(request));
   if (!parsed.success) return Response.json({ errors: fieldErrors(parsed.error) }, { status: 400 });
   const { intent, product } = parsed.data;
+  if (!USING_MOCK) {
+    try {
+      const saved = await saveProduct(intent, product, null, requestLocale(request));
+      return Response.json(saved, { status: 201 });
+    } catch (e) {
+      return problemResponse(e);
+    }
+  }
   if (intent === "REVIEW") {
     const store = await merchantApi(session).store();
     if (store.sellerStatus !== "VERIFIED")
