@@ -74,6 +74,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
         <ProductActions
           id={p.id}
           variantId={p.defaultVariantId}
+          price={p.priceFrom}
           labels={{
             favoriteAdd: t("favoriteAdd"),
             favoriteRemove: t("favoriteRemove"),

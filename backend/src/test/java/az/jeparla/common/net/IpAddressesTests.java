@@ -70,7 +70,7 @@ class IpAddressesTests {
     @ParameterizedTest
     @ValueSource(strings = {"caddy", "10.0.0.0/33", "10.0.0.0/-1", "10.0.0.0/x", "::1/129", "10.0.0.0/"})
     void malformedTrustedProxyStopsTheStartup(String spec) {
-        assertThatIllegalArgumentException().isThrownBy(() -> new ClientIpProperties(spec));
+        assertThatIllegalArgumentException().isThrownBy(() -> new ClientIpProperties(spec, null));
     }
 
     @Test

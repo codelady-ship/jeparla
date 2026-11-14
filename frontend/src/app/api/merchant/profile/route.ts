@@ -1,13 +1,17 @@
-import { AUTH_AVAILABLE, readJson, unavailable } from "@/lib/auth/server";
+import { USING_MOCK } from "@/lib/api";
+import { problemResponse } from "@/lib/api/problem";
+import { userFetch } from "@/lib/auth/backend";
 import { fieldErrors } from "@/lib/auth/schemas";
+import { readJson, requestLocale } from "@/lib/auth/server";
 import { normalizePhone } from "@/lib/seller/schemas";
 import { invalidDays, parseWeek } from "@/lib/merchant/hours";
 import { profileSchema } from "@/lib/merchant/schemas";
 import { merchantOr401 } from "@/lib/merchant/server";
 
-/** PUT /api/v1/merchant/store (demo): validates and echoes the saved profile. */
+type StoredStore = { phone: string | null; sellerKind: string };
+
+/** PUT /api/v1/merchant/store: the store profile. */
 export async function PUT(request: Request) {
-  if (!AUTH_AVAILABLE) return unavailable();
   const session = await merchantOr401();
   if (session instanceof Response) return session;
   const parsed = profileSchema.safeParse(await readJson(request));
@@ -15,7 +19,20 @@ export async function PUT(request: Request) {
   const profile = parsed.data;
   if (invalidDays(parseWeek(profile.openingHours)).length > 0)
     return Response.json({ errors: { openingHours: "hoursInvalid" } }, { status: 400 });
-  return Response.json({
-    profile: { ...profile, whatsapp: normalizePhone(profile.whatsapp) ?? profile.whatsapp },
-  });
+  const whatsapp = normalizePhone(profile.whatsapp) ?? profile.whatsapp;
+  if (USING_MOCK) return Response.json({ profile: { ...profile, whatsapp } });
+  try {
+    const locale = requestLocale(request);
+    // Fields the form does not edit (second phone, what the store sells) are kept.
+    const stored = await userFetch<StoredStore>("/merchant/store", { canRefresh: true, locale });
+    const saved = await userFetch<typeof profile>("/merchant/store", {
+      method: "PUT",
+      canRefresh: true,
+      locale,
+      body: { ...profile, whatsapp, phone: stored.phone, sellerKind: stored.sellerKind },
+    });
+    return Response.json({ profile: saved });
+  } catch (e) {
+    return problemResponse(e);
+  }
 }

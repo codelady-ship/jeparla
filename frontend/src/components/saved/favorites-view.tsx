@@ -8,6 +8,7 @@ import { favorites } from "@/lib/saved-list";
 import { useFetchIds } from "@/lib/use-fetch-ids";
 import { useSavedIds } from "@/lib/use-saved";
 import type { ProductSummary } from "@/types/api";
+import { PriceChanges } from "./price-changes";
 import { SavedEmpty, SavedError } from "./saved-empty";
 
 /** Guest favorites from localStorage, newest first. Synced to the account later (#24). */
@@ -43,6 +44,7 @@ export function FavoritesView() {
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">{t("deviceNote")}</p>
+      <PriceChanges products={products} />
       <ProductGrid products={products} />
     </div>
   );

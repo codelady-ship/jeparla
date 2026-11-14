@@ -56,7 +56,7 @@ final class SearchSql {
 
     /** A listed product (#37): p product, s store. */
     private static final String LISTED_PRODUCT = """
-            p.status = 'APPROVED' AND p.deleted_at IS NULL AND p.material_kind = 'PRECIOUS' AND s.status = 'APPROVED'
+            p.status = 'APPROVED' AND p.deleted_at IS NULL AND s.status = 'APPROVED'
               AND p.category_id IN (SELECT id FROM visible)
               AND EXISTS (SELECT 1 FROM product_variants lv WHERE lv.product_id = p.id AND lv.deleted_at IS NULL)""";
 

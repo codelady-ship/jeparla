@@ -45,7 +45,24 @@ export function mockRoleFor(email: string): Role {
   return local === "merchant" || local?.startsWith("merchant+") ? "MERCHANT" : "USER";
 }
 
-export const AUTH_AVAILABLE = USING_MOCK;
+/** Sign-in demo accounts exist only with the sample data; otherwise the backend decides. */
+export const DEMO_AUTH = USING_MOCK;
+
+/**
+ * The site language of a route handler call, for the backend's error texts: the page that
+ * sent it (Referer), else the next-intl cookie, else Azerbaijani.
+ */
+export function requestLocale(request: Request): string {
+  const locales = ["az", "en", "ru"];
+  try {
+    const first = new URL(request.headers.get("referer") ?? "").pathname.split("/")[1];
+    if (locales.includes(first)) return first;
+  } catch {
+    // no or bad Referer
+  }
+  const cookie = request.headers.get("cookie")?.match(/(?:^|;\s*)NEXT_LOCALE=(\w+)/)?.[1];
+  return cookie && locales.includes(cookie) ? cookie : "az";
+}
 
 export function unavailable() {
   return Response.json({ error: "unavailable" }, { status: 503 });

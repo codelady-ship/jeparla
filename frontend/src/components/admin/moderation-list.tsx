@@ -111,16 +111,16 @@ export function ModerationList({
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="line-clamp-2 font-medium">{row.name[locale]}</p>
                   <p className="text-sm text-muted-foreground">
-                    {row.store.name}
-                    {" · "}
-                    {row.fineness}
+                    {[row.store.name, row.fineness].filter(Boolean).join(" · ")}
                   </p>
                   <p className="text-sm tabular-nums">
-                    {formatPrice(row.priceFrom.amount, locale)}
-                    <span className="text-muted-foreground">
-                      {" · "}
-                      {t("submitted", { date: shortDate(row.submittedAt) })}
-                    </span>
+                    {row.priceFrom && formatPrice(row.priceFrom.amount, locale)}
+                    {row.submittedAt && (
+                      <span className="text-muted-foreground">
+                        {row.priceFrom && " · "}
+                        {t("submitted", { date: shortDate(row.submittedAt) })}
+                      </span>
+                    )}
                   </p>
                   <StatusBadge status={row.status} label={ts(row.status)} />
                   {row.note && <Note label={t("note")} text={row.note} />}
