@@ -14,6 +14,7 @@ const COLUMNS = [
   {
     title: "buyers",
     links: [
+      { href: "/guides", label: "Guides.navLabel" },
       { href: "/products", label: "Nav.catalog" },
       { href: "/stores", label: "Nav.stores" },
       { href: "/prices", label: "Footer.metalPrices" },
