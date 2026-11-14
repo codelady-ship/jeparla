@@ -2,6 +2,7 @@ package az.jeparla.product;
 
 import az.jeparla.auth.User;
 import az.jeparla.common.persistence.CreatedEntity;
+import az.jeparla.store.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,15 +12,25 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Objects;
 
-/** A buyer complaint about a product (PLAN 5.8). Guests can report: the reporter is optional. */
+/**
+ * A buyer complaint about a product or a store (PLAN 5.8, table {@code product_reports}). Guests can report: the
+ * reporter is optional. Every complaint names the store (for a product complaint the product's store); the product
+ * is set only for a product complaint (V17).
+ */
 @Entity
 @Table(name = "product_reports")
 public class ProductReport extends CreatedEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false, updatable = false)
+    /** Null for a complaint about the store itself. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", updatable = false)
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "store_id", nullable = false, updatable = false)
+    private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", updatable = false)
@@ -50,11 +61,27 @@ public class ProductReport extends CreatedEntity {
     protected ProductReport() {
     }
 
+    /** A complaint about a product; the store is the product's. */
     public ProductReport(Product product, User reporter, ReportReason reason, String message) {
+        this(product.getStore(), product, reporter, reason, message);
+    }
+
+    /** A complaint about a store as a whole. */
+    public static ProductReport aboutStore(Store store, User reporter, ReportReason reason, String message) {
+        return new ProductReport(Objects.requireNonNull(store, "store"), null, reporter, reason, message);
+    }
+
+    private ProductReport(Store store, Product product, User reporter, ReportReason reason, String message) {
+        this.store = store;
         this.product = product;
         this.reporter = reporter;
         this.reason = reason;
         this.message = message == null ? "" : message;
+    }
+
+    /** Whether the report is still waiting for an admin. */
+    public boolean isOpen() {
+        return status == ReportStatus.OPEN;
     }
 
     /** Admin closes the report as RESOLVED or DISMISSED. */
@@ -68,8 +95,13 @@ public class ProductReport extends CreatedEntity {
         this.resolvedAt = now;
     }
 
+    /** The reported product, or null for a complaint about the store. */
     public Product getProduct() {
         return product;
+    }
+
+    public Store getStore() {
+        return store;
     }
 
     public User getReporter() {

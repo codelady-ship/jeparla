@@ -146,7 +146,11 @@ Məhsul: metalType, purity, weight, verificationStatus, publishedAt.
 - Filtrlər URL-də saxlanılır (paylaşıla bilən link, SEO).
 - Texniki: PostgreSQL full-text + pg_trgm (səhv yazıya dözümlü), Azərbaycan hərflərinin
   normallaşdırılması ("uzuk" → "üzük", "sirga" → "sırğa", "qizil" → "qızıl"),
-  3 dildə ad/sinonimlər, indekslər, Redis keş. Gələcəkdə OpenSearch-ə keçid ayrıca issue.
+  3 dildə ad/sinonimlər, indekslər, keş. Gələcəkdə OpenSearch-ə keçid ayrıca issue.
+  Qərar (#151): axtarış keşi Redis-də deyil, API-nin yaddaşındadır (Caffeine, 60 saniyə; məhsul, variant,
+  mağaza, kateqoriya və ya sinonim dəyişəndə boşalır): bir API instansiyası var, Redis isə yalnız rate limit
+  sayğaclarını saxlayır və keş onları sıxışdırıb çıxarmamalıdır (#134). Hər söz əvvəl trigram GIN indeksi ilə
+  süzülür, skor yalnız süzgəcdən keçən sətirlər üçün hesablanır.
 - API: GET /api/v1/search?q=&type=&page=, GET /api/v1/search/suggest?q=
 - Boş nəticə vəziyyəti: təklif olunan kateqoriyalar və filtrləri təmizlə düyməsi.
 - Rate limit və sorğu uzunluğu limiti.

@@ -1,10 +1,14 @@
 package az.jeparla.support;
 
+import az.jeparla.auth.AccessRule;
+import az.jeparla.auth.AccessRule.Access;
 import az.jeparla.product.ProductAccess;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreAccess;
 import java.util.Map;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,10 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Test-only protected endpoints: one per URL rule (admin, merchant, signed-in), method security
- * on a public URL, and the ownership guards.
+ * on a public URL, and the ownership guards. The admin and merchant ones fall under the API's own rules; the
+ * others declare theirs here (the API denies every path without a rule, #134).
  */
 @TestConfiguration(proxyBeanMethods = false)
 public class SecuredTestEndpoints {
+
+    @Bean
+    AccessRule signedInTestEndpoints() {
+        return AccessRule.of(HttpMethod.POST, Access.AUTHENTICATED,
+                "/api/v1/test/secure/ping", "/api/v1/test/secure/user-only");
+    }
+
+    /** A public URL, so that only method security protects it. */
+    @Bean
+    AccessRule methodSecuredTestEndpoint() {
+        return AccessRule.of(HttpMethod.GET, Access.PUBLIC, "/api/v1/test/secure/merchant-only");
+    }
 
     @RestController
     public static class ProtectedController {

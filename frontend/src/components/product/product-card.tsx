@@ -38,6 +38,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
               fill
               sizes={CARD_SIZES}
               preload={preload}
+              fetchPriority={preload ? "high" : undefined}
               unoptimized={svg(main.url)}
               className="img-zoom object-cover"
             />
@@ -50,7 +51,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
             fill
             sizes={CARD_SIZES}
             unoptimized={svg(second.url)}
-            className="object-cover img-swap"
+            className="img-swap object-cover"
           />
         )}
         <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
@@ -89,6 +90,9 @@ export function ProductCard({ product: p, preload = false }: Props) {
           {/* The overlay makes the whole card clickable; the action buttons sit above it. */}
           <Link
             href={`/products/${p.slug}`}
+            // No viewport prefetch: a grid of cards would fetch every product page while
+            // the catalog is still loading (#160). Navigation fetches on click.
+            prefetch={false}
             className="outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-[3px] focus-visible:after:ring-ring/50"
           >
             {p.name[locale]}

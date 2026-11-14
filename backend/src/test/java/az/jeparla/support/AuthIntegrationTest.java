@@ -27,6 +27,9 @@ import org.springframework.context.annotation.Import;
         "jeparla.rate-limit.policies.login-account.limit=" + AuthIntegrationTest.LOGIN_ACCOUNT_LIMIT,
         "jeparla.rate-limit.policies.register-ip.limit=" + AuthIntegrationTest.REGISTER_IP_LIMIT,
         "jeparla.rate-limit.policies.image-upload-account.limit=" + AuthIntegrationTest.IMAGE_UPLOAD_LIMIT,
+        "jeparla.rate-limit.policies.password-forgot-ip.limit=" + AuthIntegrationTest.PASSWORD_FORGOT_IP_LIMIT,
+        // Keeps the "forgot password" tests fast; the floor itself is tested in AccountRecoveryTests.
+        "jeparla.auth.account-email.forgot-response-floor=" + AuthIntegrationTest.FORGOT_RESPONSE_FLOOR,
         // 192.0.2.0/24 stands for the Caddy network: X-Forwarded-For is believed only from there.
         "jeparla.client-ip.trusted-proxies=127.0.0.1/32,::1/128," + AuthIntegrationTest.TRUSTED_PROXIES,
 })
@@ -38,5 +41,7 @@ public @interface AuthIntegrationTest {
     int LOGIN_ACCOUNT_LIMIT = 8;
     int REGISTER_IP_LIMIT = 5;
     int IMAGE_UPLOAD_LIMIT = 15;
+    int PASSWORD_FORGOT_IP_LIMIT = 4;
+    String FORGOT_RESPONSE_FLOOR = "150ms";
     String TRUSTED_PROXIES = "192.0.2.0/24";
 }

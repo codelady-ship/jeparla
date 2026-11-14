@@ -12,6 +12,7 @@ import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Locale;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -44,13 +45,15 @@ public class AuthController {
     private final AuthProperties properties;
     private final RateLimitService rateLimits;
     private final LoginThrottle loginThrottle;
+    private final Clock clock;
 
     public AuthController(AuthService auth, AuthProperties properties, RateLimitService rateLimits,
-            LoginThrottle loginThrottle) {
+            LoginThrottle loginThrottle, Clock clock) {
         this.auth = auth;
         this.properties = properties;
         this.rateLimits = rateLimits;
         this.loginThrottle = loginThrottle;
+        this.clock = clock;
     }
 
     /**
@@ -133,7 +136,11 @@ public class AuthController {
     }
 
     private ResponseEntity<AuthResponse> respond(HttpStatus status, Session session) {
-        ResponseCookie cookie = refreshCookie(session.refreshToken().value(), properties.refreshTokenTtl());
+        // The cookie lives as long as its token: at most refresh-token-ttl, less near the end of the session (#134).
+        long millisLeft = Math.max(0, Duration.between(clock.instant(), session.refreshToken().expiresAt()).toMillis());
+        Duration maxAge = Duration.ofSeconds((millisLeft + 999) / 1000);
+        ResponseCookie cookie = refreshCookie(session.refreshToken().value(),
+                maxAge.compareTo(properties.refreshTokenTtl()) > 0 ? properties.refreshTokenTtl() : maxAge);
         AuthResponse body = new AuthResponse(session.accessToken().value(), session.accessToken().expiresIn(),
                 session.user());
         return ResponseEntity.status(status).header(HttpHeaders.SET_COOKIE, cookie.toString()).body(body);

@@ -9,6 +9,7 @@ import java.util.List;
  *
  * @param role  the main role: ADMIN, else MERCHANT, else USER (where the frontend sends the user)
  * @param roles every role of the account
+ * @param emailVerified whether the email address is confirmed (#131); false without an email
  */
 public record UserResponse(
         long id,
@@ -17,13 +18,14 @@ public record UserResponse(
         String phone,
         RoleName role,
         List<RoleName> roles,
-        String locale) {
+        String locale,
+        boolean emailVerified) {
 
     public static UserResponse of(User user) {
         List<RoleName> roles = user.getRoles().stream().map(r -> r.getName()).sorted().toList();
         RoleName main = roles.contains(RoleName.ADMIN) ? RoleName.ADMIN
                 : roles.contains(RoleName.MERCHANT) ? RoleName.MERCHANT : RoleName.USER;
         return new UserResponse(user.getId(), user.getDisplayName(), user.getEmail(), user.getPhone(), main, roles,
-                user.getPreferredLocale().code());
+                user.getPreferredLocale().code(), user.isEmailVerified());
     }
 }

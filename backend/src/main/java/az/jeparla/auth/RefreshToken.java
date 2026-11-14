@@ -32,6 +32,10 @@ public class RefreshToken extends CreatedEntity {
     @Column(name = "expires_at", nullable = false, updatable = false)
     private Instant expiresAt;
 
+    /** End of the whole family (V18, #134): the same on every token of the family, set at login. */
+    @Column(name = "family_expires_at", nullable = false, updatable = false)
+    private Instant familyExpiresAt;
+
     @Column(name = "used_at")
     private Instant usedAt;
 
@@ -41,11 +45,19 @@ public class RefreshToken extends CreatedEntity {
     protected RefreshToken() {
     }
 
-    public RefreshToken(User user, UUID familyId, String tokenHash, Instant expiresAt) {
+    /**
+     * @param expiresAt       end of this token, never after {@code familyExpiresAt}
+     * @param familyExpiresAt end of the family
+     */
+    public RefreshToken(User user, UUID familyId, String tokenHash, Instant expiresAt, Instant familyExpiresAt) {
+        if (expiresAt.isAfter(familyExpiresAt)) {
+            throw new IllegalArgumentException("A refresh token cannot outlive its family");
+        }
         this.user = user;
         this.familyId = familyId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
+        this.familyExpiresAt = familyExpiresAt;
     }
 
     /** Used (already exchanged) or revoked: presenting it again is reuse. */
@@ -53,8 +65,13 @@ public class RefreshToken extends CreatedEntity {
         return usedAt != null || revokedAt != null;
     }
 
+    /** The token or its whole family has expired. */
     public boolean isExpired(Instant now) {
-        return !expiresAt.isAfter(now);
+        return !expiresAt.isAfter(now) || !familyExpiresAt.isAfter(now);
+    }
+
+    public Instant getFamilyExpiresAt() {
+        return familyExpiresAt;
     }
 
     public void markUsed(Instant now) {

@@ -8,19 +8,23 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 /**
  * Authentication settings bound from {@code jeparla.auth.*}.
  *
- * @param jwtSecret       HMAC-SHA256 signing key of the access tokens (env {@code JEPARLA_JWT_SECRET}).
- *                        At least {@value #MIN_SECRET_BYTES} bytes; the application does not start
- *                        without it. Never logged.
- * @param accessTokenTtl  lifetime of an access token (short: it cannot be revoked)
- * @param refreshTokenTtl lifetime of a refresh token; every refresh issues a new one
- * @param cookieSecure    {@code Secure} flag of the refresh cookie (env {@code JEPARLA_COOKIE_SECURE}).
- *                        Keep {@code true}: browsers accept Secure cookies on http://localhost too.
+ * @param jwtSecret        HMAC-SHA256 signing key of the access tokens (env {@code JEPARLA_JWT_SECRET}).
+ *                         At least {@value #MIN_SECRET_BYTES} bytes; the application does not start
+ *                         without it. Never logged.
+ * @param accessTokenTtl   lifetime of an access token (short: it cannot be revoked)
+ * @param refreshTokenTtl  lifetime of a refresh token; every refresh issues a new one
+ * @param refreshFamilyTtl absolute lifetime of a session (#134): a refresh token family ends this long
+ *                         after the login that started it, however often it is refreshed; then the user
+ *                         signs in again. At least {@code refreshTokenTtl}.
+ * @param cookieSecure     {@code Secure} flag of the refresh cookie (env {@code JEPARLA_COOKIE_SECURE}).
+ *                         Keep {@code true}: browsers accept Secure cookies on http://localhost too.
  */
 @ConfigurationProperties("jeparla.auth")
 public record AuthProperties(
         String jwtSecret,
         @DefaultValue("15m") Duration accessTokenTtl,
         @DefaultValue("30d") Duration refreshTokenTtl,
+        @DefaultValue("90d") Duration refreshFamilyTtl,
         @DefaultValue("true") boolean cookieSecure) {
 
     /** 256 bits: the key size of HS256 (RFC 7518, section 3.2). */
@@ -36,8 +40,13 @@ public record AuthProperties(
         }
         requirePositive(accessTokenTtl, "access-token-ttl");
         requirePositive(refreshTokenTtl, "refresh-token-ttl");
+        requirePositive(refreshFamilyTtl, "refresh-family-ttl");
         if (refreshTokenTtl.compareTo(accessTokenTtl) <= 0) {
             throw new IllegalArgumentException("jeparla.auth.refresh-token-ttl must be longer than access-token-ttl");
+        }
+        if (refreshFamilyTtl.compareTo(refreshTokenTtl) < 0) {
+            throw new IllegalArgumentException(
+                    "jeparla.auth.refresh-family-ttl must be at least as long as refresh-token-ttl");
         }
     }
 
@@ -51,6 +60,6 @@ public record AuthProperties(
     @Override
     public String toString() {
         return "AuthProperties[jwtSecret=***, accessTokenTtl=" + accessTokenTtl + ", refreshTokenTtl="
-                + refreshTokenTtl + ", cookieSecure=" + cookieSecure + "]";
+                + refreshTokenTtl + ", refreshFamilyTtl=" + refreshFamilyTtl + ", cookieSecure=" + cookieSecure + "]";
     }
 }

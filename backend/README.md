@@ -33,6 +33,9 @@ cd backend
 - OpenAPI: http://localhost:8080/v3/api-docs
 - Swagger UI: http://localhost:8080/swagger-ui.html
 
+OpenAPI və Swagger UI yalnız `JEPARLA_API_DOCS=true` ilə açılır (`JEPARLA_API_DOCS=true ./gradlew bootRun`);
+default söndürülüb və prod-da 404 verir (#134).
+
 Az RAM-lı maşında: `./gradlew build --no-daemon` (Gradle JVM `gradle.properties`-də 1 GB ilə məhduddur).
 
 Docker (Docker olan maşında, `backend/` qovluğundan; amd64 və arm64 üçün):
@@ -56,10 +59,11 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_DB_URL` | `jdbc:postgresql://localhost:5432/jeparla` | PostgreSQL JDBC URL |
 | `JEPARLA_DB_MIGRATION_USER` / `JEPARLA_DB_MIGRATION_PASSWORD` | `jeparla_owner` / boş | Miqrasiya rolu: sxemin sahibi, yalnız Flyway qoşulur (`spring.flyway.user`). Superuser olmamalıdır. Aşağıda: "Verilənlər bazası rolları" |
 | `JEPARLA_DB_USER` / `JEPARLA_DB_PASSWORD` | `jeparla_app` / boş | API-nin iş rolu: superuser deyil, heç nəyin sahibi deyil, sübut cədvəllərində yalnız `SELECT`, `INSERT` (V16). Miqrasiya rolu ilə eyni olsa, superuser və ya sahib olsa API başlamır |
-| `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsinin yolu (`/help`) yazılır. Səhv dəyər tətbiqi başlatmır |
+| `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsi yazılır: saytda alıcının dilində yol (`/az/help`), e-poçtda tam URL (`JEPARLA_PUBLIC_SITE_URL` + `/az/help`, #167). Prod-da biri məcburi təyin olunur. Səhv dəyər tətbiqi başlatmır |
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
-| `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları. Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir |
+| `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları (yalnız onlar; `maxmemory-policy noeviction`, #134). Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir. Axtarış keşi API-nin yaddaşındadır (`jeparla.search.cache`, 60 san., #151) |
+| `JEPARLA_API_DOCS` | `false` | `true`: `/v3/api-docs` və Swagger UI açılır (yalnız lokal). Default-da hər ikisi 404 (#134) |
 | `JEPARLA_S3_PUBLIC_URL` | boş | Public bucket-in brauzer URL-i (məs. `https://img.jeparla.az`); şəkil URL-i = bu dəyər + `/` + açar. Demo şəkillər (`demo/...`) üçün lazım deyil |
 | `JEPARLA_S3_ENDPOINT` | boş | Satıcı şəkilləri üçün S3 uyğun API (R2: `https://<account>.r2.cloudflarestorage.com`, lokal MinIO). Boş və ya açar yoxdursa yükləmə endpoint-ləri `503 storage.unavailable` qaytarır, qalan API işləyir |
 | `JEPARLA_S3_PRESIGN_ENDPOINT` | boş (`JEPARLA_S3_ENDPOINT`) | Presigned URL-ə yazılan host (brauzer açır). Docker Compose-da `http://localhost:9000`, çünki API MinIO-ya `minio:9000` ilə gedir |
@@ -68,7 +72,12 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_S3_PUBLIC_BUCKET` | `jeparla-public` | Məhsul şəkillərinin bucket-i (public oxunur) |
 | `JEPARLA_S3_PRIVATE_BUCKET` | `jeparla-private` | Private bucket: yüklənən şəkil yoxlanana qədər `staging/` altında gözləyir (#154), sənədlər (#40). Public bucket ilə eyni olsa tətbiq başlamır; boşdursa yükləmə `503` |
 | `JEPARLA_UPLOAD_CLEANUP_CRON` | `0 7/30 * * * *` | Qoşulmamış yükləmələrin (şəkil və sənəd) təmizlənməsi (hər 30 dəq.); `-` söndürür |
-| `JEPARLA_EMAIL_OUTBOX_CRON` | `0 * * * * *` | E-poçt növbəsinin göndərilməsi (#138). Provayder seçilənə qədər (#131) heç nə göndərilmir, məktublar `PENDING` qalır; `-` söndürür |
+| `JEPARLA_EMAIL_OUTBOX_CRON` | `0 * * * * *` | E-poçt növbəsinin göndərilməsi (#138). `JEPARLA_SMTP_HOST` boşdursa heç nə göndərilmir, məktublar `PENDING` qalır; `-` söndürür |
+| `JEPARLA_PUBLIC_SITE_URL` | `http://localhost:3000` | Frontend-in ictimai origin-i (path-sız, məs. `https://jeparla.az`): e-poçtdakı linklər bununla qurulur (təsdiq, şifrə bərpası, kömək səhifəsi). Path, query və ya http(s) olmayan dəyər tətbiqi başlatmır |
+| `JEPARLA_SMTP_HOST` / `JEPARLA_SMTP_PORT` | boş / `587` | E-poçt növbəsinin SMTP relay-i (#131), STARTTLS məcburidir. Boş: heç nə göndərilmir. Aşağıda: "E-poçt göndərmə" |
+| `JEPARLA_SMTP_USERNAME` / `JEPARLA_SMTP_PASSWORD` | boş | Provayderin SMTP login-i və parolu/API açarı (yalnız env-də; logda maskalanır) |
+| `JEPARLA_MAIL_FROM` | boş | Göndərən, məs. `Jeparla <no-reply@jeparla.az>`; host varsa məcburidir (yoxdursa tətbiq başlamır). Domen provayderdə SPF/DKIM ilə təsdiqlənməlidir |
+| `JEPARLA_ACCOUNT_TOKEN_CLEANUP_CRON` | `0 40 * * * *` | Vaxtı keçmiş təsdiq/bərpa tokenlərinin silinməsi və növbədəki vaxtı keçmiş linklərin məktubdan çıxarılması (saatda bir); `-` söndürür |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
@@ -340,11 +349,12 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 - **Bildirişlər:** qərar (sənəd, məhsul, mağaza, satıcı yoxlaması) satıcıya onun dilində (`users.preferred_locale`)
   nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Məhsulun adı satıcının dilindədir (tərcüməsi yoxdursa
   Azərbaycanca). "Dəstəyə yazın" deyən bildirişlər `Dəstək: <JEPARLA_SUPPORT_EMAIL>, <JEPARLA_SUPPORT_URL>` sətri
-  ilə bitir, ikisi də yoxdursa kömək səhifəsinin yolu (`/help`) ilə. Apellyasiya yolu hazır olana qədər
+  ilə bitir, ikisi də yoxdursa satıcının dilində kömək səhifəsi ilə: saytda `/az/help`, e-poçtda tam URL
+  (`https://jeparla.az/az/help`, #167). Apellyasiya yolu hazır olana qədər
   "14 gün ərzində yenidən baxılma" vəd edilmir. Mətn hadisə anında yazılır (`notifications`).
   E-poçtu olan istifadəçi üçün eyni tranzaksiyada `email_outbox` sətri yaranır; `EmailOutboxJob`
-  (kilid `email-outbox`) onu `EmailSender` ilə göndərir. Provayder hələ yoxdur (#131): `NoEmailSender`
-  heç nə göndərmir və məktubu "göndərildi" saymır. Provayder açarları yalnız env-də olacaq.
+  (kilid `email-outbox`) onu `EmailSender` ilə göndərir: `JEPARLA_SMTP_HOST` varsa `SmtpEmailSender`, yoxdursa
+  `NoEmailSender` (heç nə göndərmir və məktubu "göndərildi" saymır). Aşağıda: "E-poçt göndərmə".
 - **Maraq toqquşması:** admin öz mağazası haqqında qərar vermir (403).
 
 ## Giriş və icazələr
@@ -359,8 +369,13 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 | `POST /api/v1/auth/refresh` | refresh cookie ilə yeni access token, cookie rotasiya olunur |
 | `POST /api/v1/auth/logout` | sessiyanı ləğv edir, cookie-ni silir, 204 |
 | `GET /api/v1/auth/me` | daxil olmuş istifadəçi |
+| `POST /api/v1/auth/password/forgot` | `{email}`; hesab olsa da, olmasa da **həmişə** 202, boş cavab (#131) |
+| `POST /api/v1/auth/password/reset` | `{token, password}`; 204, bütün sessiyalar bitir, refresh cookie silinir |
+| `POST /api/v1/auth/email/verify` | `{token}`; 204 (giriş tələb olunmur: link başqa brauzerdə açıla bilər) |
+| `POST /api/v1/auth/email/verification` | daxil olmuş istifadəçiyə təsdiq linkini yenidən göndərir, 202 |
+| `POST /api/v1/admin/users/{id}/password-reset-link` | `ADMIN`: telefonla qeydiyyatdan keçmiş satıcı üçün bərpa linki `{url, expiresAt}` |
 
-Uğurlu cavab: `{accessToken, tokenType: "Bearer", expiresIn, user: {id, name, email, phone, role, roles, locale}}`
+Uğurlu cavab: `{accessToken, tokenType: "Bearer", expiresIn, user: {id, name, email, phone, role, roles, locale, emailVerified}}`
 və `Set-Cookie: jeparla_refresh=...; Path=/api/v1/auth; HttpOnly; Secure; SameSite=Strict`.
 Xətalarda ProblemDetail-də `code` sahəsi var (`auth.invalid_credentials`, `auth.email_taken`,
 `auth.refresh_invalid`, `auth.forbidden`, `rate_limited` ...); 429-da `Retry-After`.
@@ -371,6 +386,31 @@ Lokal sınaq (Git Bash):
 curl -i -X POST localhost:8080/api/v1/auth/register -H 'Content-Type: application/json' \
   -d '{"name":"Aysel","email":"aysel@example.az","password":"parol123"}'
 ```
+
+### Şifrə bərpası və e-poçt təsdiqi (#131)
+
+Qaydalar və rate limit-lər: [docs/RBAC.md](../docs/RBAC.md#şifrə-bərpası-və-e-poçt-təsdiqi-131). Qısaca:
+
+- Token 256 bit təsadüfi, bazada (`account_tokens`, V19) yalnız SHA-256 hash-i; bir dəfə işləyir. Təsdiq linki
+  24 saat, bərpa linki 1 saat (`jeparla.auth.account-email.*`).
+- Link: `JEPARLA_PUBLIC_SITE_URL/{az|en|ru}/verify-email#token=...` və `.../reset-password#token=...`. Token
+  fragment-dədir (`#`): brauzer onu serverə və `Referer`-ə göndərmir; səhifə onu oxuyub API-yə `POST` edir.
+- Məktub yalnız e-poçtla gedir (in-app bildiriş yaranmır), hesabın dilində. `email_outbox.expires_at` doludur:
+  göndəriləndən sonra, ya da link vaxtı keçəndə məktubun mətni `[one-time link removed]` ilə əvəzlənir, növbədə
+  işləyən link qalmır. Vaxtı keçmiş link göndərilmir.
+- Lokal sınaq: provayder yoxdursa link növbədə qalır:
+  `SELECT body FROM email_outbox ORDER BY id DESC LIMIT 1;` (bir saat ərzində).
+
+### E-poçt göndərmə
+
+Provayderdən asılı olmayan SMTP (`spring-boot-starter-mail`, `SmtpEmailSender`): istənilən pulsuz SMTP relay
+işləyir, kod dəyişmir. Seçim sahibindir; pulsuz planın limitini və şərtlərini qoşmazdan əvvəl rəsmi səhifədən
+yoxlayıb tarixlə buraya yazın (PLAN 3a). Tələblər: SMTP + STARTTLS (587), öz domenindən göndərmə (SPF, DKIM),
+transaksional məktub üçün pulsuz gündəlik limit. Namizədlər: Brevo, Resend, Amazon SES (SMTP interfeysi ilə).
+Açar yalnız `JEPARLA_SMTP_PASSWORD`-dadır.
+
+Göndərmə alınmasa məktub 5, 20, 45, 80 dəqiqə sonra yenidən cəhd olunur, 5 cəhddən sonra `FAILED` qalır. Logda
+yalnız məktubun id-si yazılır (ünvan və mətn yox).
 
 ## Qaydalar
 

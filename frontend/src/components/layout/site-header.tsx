@@ -24,13 +24,14 @@ export function SiteHeader() {
       >
         {t("Common.skipToContent")}
       </a>
-      <div className="container-page flex h-16 items-center gap-2">
+      <div className="container-page flex h-16 items-center gap-1 min-[22.5rem]:gap-2">
         <MobileNav
           items={items}
           labels={{ menu: t("Nav.menu"), close: t("Common.close"), home: t("Nav.home") }}
         />
         <Link
           href="/"
+          prefetch={false}
           translate="no"
           className="touch-target relative font-heading text-2xl font-semibold tracking-tight"
         >
@@ -47,7 +48,8 @@ export function SiteHeader() {
             ))}
           </ul>
         </nav>
-        <div className="ml-auto flex items-center gap-1">
+        {/* 320px phones: no gaps between the icons, so the row fits without sideways scroll. */}
+        <div className="ml-auto flex items-center min-[22.5rem]:gap-1">
           <SearchLauncher
             labels={{
               open: t("Search.open"),
@@ -66,7 +68,8 @@ export function SiteHeader() {
               close: t("Common.close"),
             }}
           />
-          <Link href="/favorites" className={`${icon} relative`}>
+          {/* Header links are on every page: no prefetch during the first load (#160). */}
+          <Link href="/favorites" prefetch={false} className={`${icon} relative`}>
             <Heart aria-hidden />
             <span className="sr-only">{t("Nav.favorites")}</span>
             <SavedCount list="favorites" />

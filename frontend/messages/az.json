@@ -64,6 +64,7 @@
     "legal": "Hüquqi",
     "aboutUs": "Haqqımızda",
     "contact": "Əlaqə",
+    "help": "Kömək və dəstək",
     "metalPrices": "Metal qiymətləri",
     "openStore": "Mağaza aç",
     "merchantCabinet": "Mağaza kabineti",
@@ -308,6 +309,45 @@
         "q": "Mağazamı Jeparla-ya necə əlavə edim?",
         "a": "\"Mağaza aç\" bölməsindən müraciət edin. Mağaza yoxlanıldıqdan sonra məhsullar moderasiyadan keçib kataloqda görünür."
       }
+    }
+  },
+  "Help": {
+    "title": "Kömək və dəstək",
+    "description": "Mağaza ilə necə əlaqə saxlamaq, kataloqu necə əlavə etmək, sənədləri necə yükləmək, yoxlamanın nə demək olduğu və problemi necə bildirmək.",
+    "intro": "Alıcılar və satıcılar üçün qısa cavablar.",
+    "faq": {
+      "contact": {
+        "q": "Mağaza ilə necə əlaqə saxlayım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsini basın: mesajda məhsulun adı, kodu və linki artıq olur. Qiymət, ödəniş və çatdırılma birbaşa mağaza ilə razılaşdırılır. Jeparla özü məhsul satmır və ödəniş qəbul etmir."
+      },
+      "sell": {
+        "q": "Mağazamın kataloqunu necə əlavə edim?",
+        "a": "\"Mağaza aç\" bölməsindən müraciət edin: hesab, mağaza məlumatları, sənədlər və istəyə görə ilk məhsul. Mağaza yoxlanıldıqdan sonra məhsulları kabinetdən əlavə edirsiniz; hər məhsul kataloqda görünməzdən əvvəl moderasiyadan keçir."
+      },
+      "documents": {
+        "q": "Sənədləri necə yükləyim?",
+        "a": "Qeydiyyatın \"Sənədlər\" addımında və ya sonra kabinetdən PDF, JPG və ya PNG kimi yükləyin. Sənədlər qapalı yaddaşda saxlanılır və yalnız yoxlama komandası onlara baxır. Qızıl, gümüş və brilyant satıcıları üçün sənəd yoxlaması aparılır; bijuteriya satıcılarından sertifikat tələb olunmur."
+      },
+      "verified": {
+        "q": "Yoxlama nə deməkdir?",
+        "a": "Satıcı və sənəd yoxlaması ayrı-ayrılıqda aparılır və hər biri mağaza və məhsul səhifəsində ayrıca göstərilir. Aparılmayan yoxlama \"aparılmayıb\" kimi yazılır. Yoxlama bizə təqdim olunan sənədləri təsdiqləyir, konkret məhsula zəmanət deyil: almadan əvvəl məhsulu mağaza ilə dəqiqləşdirin."
+      },
+      "report": {
+        "q": "Problemi necə bildirim?",
+        "a": "Məhsulun məlumatı səhvdirsə və ya məhsul şübhəli görünürsə, məhsul səhifəsindəki \"Şikayət et\" düyməsindən istifadə edin. Digər suallar üçün aşağıdakı \"Dəstək\" bölməsinə baxın."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "sell": "Mağaza aç",
+      "merchant": "Mağaza kabineti"
+    },
+    "support": {
+      "title": "Dəstək",
+      "text": "Sualınız və ya probleminiz varsa, bizə yazın:",
+      "email": "E-poçt",
+      "url": "Dəstək səhifəsi",
+      "none": "Dəstəyin birbaşa ünvanı hələ dərc olunmayıb; dərc olunanda bu səhifədə göstəriləcək. Satıcılar geri qaytarılan məhsulun və ya mağazanın məlumatlarını kabinetdə düzəldib yenidən yoxlamaya göndərə bilər."
     }
   },
   "Categories": {

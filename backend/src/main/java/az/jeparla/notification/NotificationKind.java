@@ -18,7 +18,9 @@ public enum NotificationKind {
     STORE_REJECTED(true),
     STORE_BLOCKED(true),
     SELLER_VERIFIED(false),
-    SELLER_REJECTED(true);
+    SELLER_REJECTED(true),
+    /** A buyer complaint about the seller's product or store was upheld by an admin (#40). */
+    REPORT_RESOLVED(true);
 
     private final boolean supportContact;
 

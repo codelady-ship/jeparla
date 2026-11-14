@@ -1,5 +1,6 @@
 // Lighthouse CI (issue #60, PLAN 5.18). Mobile is the main profile; desktop uses
-// LH_PROFILE=desktop. Each page runs 3 times and the median is asserted.
+// LH_PROFILE=desktop. Each page runs 3 times and the median of the three is asserted
+// (aggregationMethod below; the LHCI default would assert the best run, #160).
 const desktop = process.env.LH_PROFILE === "desktop";
 const base = "http://localhost:3100";
 const pages = [
@@ -9,6 +10,7 @@ const pages = [
   "/az/stores/ayzer-zerger",
   "/az/categories/uzukler",
   "/az/search?q=qizil",
+  "/az/help",
 ];
 
 module.exports = {
@@ -20,6 +22,9 @@ module.exports = {
       numberOfRuns: 3,
       settings: {
         ...(desktop && { preset: "desktop" }),
+        // Canonical links use the build-time NEXT_PUBLIC_SITE_URL (CI: this origin). A local
+        // audit of a build made for another origin (default http://localhost:3000, or
+        // 127.0.0.1 vs localhost) fails the canonical audit: SEO 92, not a site bug.
         // Demo and product pages are noindex while mock data is on; SEO is asserted
         // without that audit so the score reflects what will ship with real data.
         skipAudits: ["is-crawlable"],
@@ -27,6 +32,7 @@ module.exports = {
       },
     },
     assert: {
+      aggregationMethod: "median",
       // PLAN 5.18: mobile performance >= 90, desktop >= 95 (the aim is 95+ everywhere;
       // the mobile gate is 90 because simulated runs vary by 3-5 points). Measured
       // 2026-11-03 after moving body text to the system font: home 90, catalog 92,

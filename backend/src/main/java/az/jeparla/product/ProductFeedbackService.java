@@ -1,7 +1,11 @@
 package az.jeparla.product;
 
 import az.jeparla.auth.User;
+import az.jeparla.common.error.ApiException;
 import az.jeparla.product.dto.ProductReportRequest;
+import az.jeparla.store.Store;
+import az.jeparla.store.StoreRepository;
+import az.jeparla.store.StoreStatus;
 import jakarta.persistence.EntityManager;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -11,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * What visitors send about a listed product (#37): WhatsApp contact clicks (statistics for the
- * merchant dashboard) and complaints for the admin queue (PLAN 5.8). Guests may do both; the
- * controller applies the rate limits. Hidden or unknown products give 404.
+ * merchant dashboard) and complaints about a product or a store for the admin queue (PLAN 5.8). Guests
+ * may do both; the controller applies the rate limits. Hidden or unknown products and stores give 404.
  */
 @Service
 public class ProductFeedbackService {
@@ -23,14 +27,16 @@ public class ProductFeedbackService {
     private final ProductCatalogService catalog;
     private final ProductContactClickRepository clicks;
     private final ProductReportRepository reports;
+    private final StoreRepository stores;
     private final EntityManager entityManager;
     private final Clock clock;
 
     public ProductFeedbackService(ProductCatalogService catalog, ProductContactClickRepository clicks,
-            ProductReportRepository reports, EntityManager entityManager, Clock clock) {
+            ProductReportRepository reports, StoreRepository stores, EntityManager entityManager, Clock clock) {
         this.catalog = catalog;
         this.clicks = clicks;
         this.reports = reports;
+        this.stores = stores;
         this.entityManager = entityManager;
         this.clock = clock;
     }
@@ -54,5 +60,20 @@ public class ProductFeedbackService {
         User reporter = reporterId == null ? null : entityManager.getReference(User.class, reporterId);
         String message = request.message() == null ? "" : request.message().strip();
         return reports.save(new ProductReport(product, reporter, request.reason(), message)).getId();
+    }
+
+    /**
+     * Saves a complaint about a public (APPROVED) store as a whole; other stores give 404.
+     *
+     * @param reporterId the signed-in user, or null for a guest
+     * @return the report id
+     */
+    @Transactional
+    public long reportStore(long storeId, ProductReportRequest request, Long reporterId) {
+        Store store = stores.findById(storeId).filter(s -> s.getStatus() == StoreStatus.APPROVED)
+                .orElseThrow(ApiException::notFound);
+        User reporter = reporterId == null ? null : entityManager.getReference(User.class, reporterId);
+        String message = request.message() == null ? "" : request.message().strip();
+        return reports.save(ProductReport.aboutStore(store, reporter, request.reason(), message)).getId();
     }
 }

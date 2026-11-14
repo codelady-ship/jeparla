@@ -52,6 +52,23 @@ public class AuditService {
         return auditLogs.save(entry);
     }
 
+    /**
+     * Like {@link #record}, for an action whose actor is known although nobody is signed in: a password reset
+     * or an email verification by link (#131), where the link proves who acts.
+     *
+     * @param actor the account acting (also the target in these cases)
+     */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public AuditLog recordAs(User actor, String action, AuditTargetType targetType, Object targetId,
+            String targetName, String reason, String detailsJson) {
+        ActorRole role = actor.hasRole(RoleName.ADMIN) ? ActorRole.ADMIN
+                : actor.hasRole(RoleName.MERCHANT) ? ActorRole.MERCHANT : ActorRole.USER;
+        AuditLog entry = new AuditLog(actor, actorLabel(actor), role, action, targetType,
+                targetId == null ? null : String.valueOf(targetId), targetName)
+                .withContext(reason, detailsJson, clientIp());
+        return auditLogs.save(entry);
+    }
+
     private static String actorLabel(User user) {
         String contact = user.getEmail() != null ? user.getEmail() : user.getPhone();
         return user.getDisplayName() + " <" + contact + ">";

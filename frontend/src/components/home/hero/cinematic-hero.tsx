@@ -27,10 +27,13 @@ export function CinematicHero() {
           Jeparla
         </p>
         <h1 className="hero-title font-heading text-balance">{t("title")}</h1>
-        <p className="hero-rv mt-4 max-w-sm text-sm text-pretty sm:text-base" style={delay(0)}>
+        <p
+          className="hero-rv hero-text mt-4 max-w-sm text-sm text-pretty sm:text-base"
+          style={delay(0)}
+        >
           {t("text")}
         </p>
-        <div className="hero-rv mt-6 flex flex-wrap gap-3" style={delay(1)}>
+        <div className="hero-rv hero-ctas mt-6" style={delay(1)}>
           <Link
             href="/products"
             className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-11 px-5 text-sm")}

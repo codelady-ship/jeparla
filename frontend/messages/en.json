@@ -64,6 +64,7 @@
     "legal": "Legal",
     "aboutUs": "About us",
     "contact": "Contact",
+    "help": "Help and support",
     "metalPrices": "Metal prices",
     "openStore": "Open a store",
     "merchantCabinet": "Store dashboard",
@@ -308,6 +309,45 @@
         "q": "How do I add my store to Jeparla?",
         "a": "Apply through Open a store. After the store is checked, its products go through moderation and then appear in the catalog."
       }
+    }
+  },
+  "Help": {
+    "title": "Help and support",
+    "description": "How to contact a store, list your catalog, upload documents, what verification means and how to report a problem.",
+    "intro": "Short answers for buyers and sellers.",
+    "faq": {
+      "contact": {
+        "q": "How do I contact a store?",
+        "a": "Press the WhatsApp button on a product page: the message already includes the product name, code and link. Price, payment and delivery are agreed directly with the store. Jeparla itself does not sell products or take payments."
+      },
+      "sell": {
+        "q": "How do I list my store's catalog?",
+        "a": "Apply through Open a store: account, store details, documents and an optional first product. After the store is checked you add products from your dashboard; each product is reviewed before it appears in the catalog."
+      },
+      "documents": {
+        "q": "How do I upload documents?",
+        "a": "Upload them as PDF, JPG or PNG in the Documents step of the sign-up, or later from your dashboard. Documents are kept in private storage and only the checking team looks at them. Gold, silver and diamond sellers go through a document check; bijouterie sellers are not asked for certificates."
+      },
+      "verified": {
+        "q": "What does verification mean?",
+        "a": "Seller and document checks are done separately and each is shown on its own on the store and product pages. A check that was not done is shown as not performed. A check confirms the documents we were shown; it is not a guarantee for a particular piece, so confirm the product with the store before you buy."
+      },
+      "report": {
+        "q": "How do I report a problem?",
+        "a": "If a product's details are wrong or the product looks suspicious, use the Report button on the product page. For anything else, see Support below."
+      }
+    },
+    "links": {
+      "catalog": "Go to the catalog",
+      "sell": "Open a store",
+      "merchant": "Store dashboard"
+    },
+    "support": {
+      "title": "Support",
+      "text": "If you have a question or a problem, write to us:",
+      "email": "Email",
+      "url": "Support page",
+      "none": "A direct support address has not been published yet; it will be shown on this page once it is. Sellers can correct the details of a returned product or store in the dashboard and send it for review again."
     }
   },
   "Categories": {
