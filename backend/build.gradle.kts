@@ -56,6 +56,8 @@ dependencies {
     implementation("software.amazon.awssdk:url-connection-client")
     // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    // Error tracking (#56): Sentry Free. Off unless SENTRY_DSN is set (env only); no personal data is sent.
+    implementation("io.sentry:sentry-spring-boot-4-starter:8.60.0")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
