@@ -56,6 +56,8 @@ dependencies {
     implementation("software.amazon.awssdk:url-connection-client")
     // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
