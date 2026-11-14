@@ -69,4 +69,5 @@ export const liveApi: JeparlaApi = {
   latestMetalPrices: () => cached("/metal-prices/latest", undefined, "prices"),
   metalPriceHistory: (metal, days = 30) =>
     cached("/metal-prices/history", { metal, days }, "prices"),
+  latestExchangeRates: () => cached("/exchange-rates/latest", undefined, "prices"),
 };
