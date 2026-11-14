@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { headers } from "next/headers";
-import { apiFetch, httpApi, isNotFound, type Query } from "./http";
+import { apiFetch, isNotFound, postImageSearch, type Query } from "./http";
 import { relayHeaders } from "@/lib/auth/tokens";
 import type { JeparlaApi } from "./types";
 
@@ -66,9 +66,10 @@ export const liveApi: JeparlaApi = {
     apiFetch("/search", { query: { q, type, page }, headers: await visitorHeaders() }),
   suggest: async (q) =>
     apiFetch("/search/suggest", { query: { q }, headers: await visitorHeaders() }),
-  // Search by photo (#163): never cached, the photo goes straight to the backend.
+  // Search by photo (#163): never cached, the photo goes straight to the backend, which
+  // counts its limit per visitor (#222).
   imageSearchStatus: () => apiFetch("/search/image/status"),
-  searchByImage: (image) => httpApi.searchByImage(image),
+  searchByImage: async (image) => postImageSearch(image, await visitorHeaders()),
   latestMetalPrices: () => cached("/metal-prices/latest", undefined, "prices"),
   metalPriceHistory: (metal, days = 30) =>
     cached("/metal-prices/history", { metal, days }, "prices"),
