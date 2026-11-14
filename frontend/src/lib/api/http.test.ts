@@ -19,6 +19,20 @@ const json = (body: unknown, status = 200) =>
 afterEach(() => vi.unstubAllGlobals());
 
 describe("apiFetch", () => {
+  it("sends a raw CSV body as is and can answer text", async () => {
+    const fetch = stubFetch(new Response("a;b\n", { status: 200 }));
+    const text = await apiFetch<string>("/merchant/products/import", {
+      method: "POST",
+      rawBody: "category;name_az\n1;Üzük\n",
+      headers: { "Content-Type": "text/csv; charset=utf-8" },
+      asText: true,
+    });
+    const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(init.body).toBe("category;name_az\n1;Üzük\n");
+    expect(init.headers).toMatchObject({ "Content-Type": "text/csv; charset=utf-8" });
+    expect(text).toBe("a;b\n");
+  });
+
   it("sends the token, the language and a JSON body", async () => {
     const fetch = stubFetch(json({ ok: true }));
     await apiFetch("/merchant/store", {

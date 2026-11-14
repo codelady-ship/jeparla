@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, FileCheck, LayoutDashboard, Package, Store } from "lucide-react";
+import { Bell, FileCheck, FileUp, LayoutDashboard, Package, Store } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "cn";
@@ -8,6 +8,7 @@ import { cn } from "cn";
 const ITEMS = [
   { href: "/merchant", key: "dashboard", icon: LayoutDashboard },
   { href: "/merchant/products", key: "products", icon: Package },
+  { href: "/merchant/import", key: "import", icon: FileUp },
   { href: "/merchant/profile", key: "profile", icon: Store },
   { href: "/merchant/documents", key: "documents", icon: FileCheck },
   { href: "/merchant/notifications", key: "notifications", icon: Bell },

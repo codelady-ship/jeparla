@@ -768,7 +768,8 @@
       "profile": "Mağaza profili",
       "documents": "Sənədlər",
       "notifications": "Bildirişlər",
-      "unread": "{count} oxunmamış"
+      "unread": "{count} oxunmamış",
+      "import": "Toplu əlavə"
     },
     "demoNote": "Demo rejimi: statistika nümunədir və dəyişikliklər serverdə saxlanılmır. Qaralamalar bu brauzerdə qalır.",
     "status": {
@@ -839,7 +840,10 @@
       "toggleFailed": "Status dəyişmədi. Yenidən cəhd edin.",
       "variants": "{count, plural, one {# variant} other {# variant}}",
       "fromPrice": "{price}-dan",
-      "adminNote": "Admin qeydi"
+      "adminNote": "Admin qeydi",
+      "bulkReview": "Göstərilən qaralamaları yoxlamaya göndər ({count})",
+      "bulkSent": "{total} məhsuldan {done} yoxlamaya göndərildi.",
+      "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin."
     },
     "form": {
       "newTitle": "Yeni məhsul",
@@ -1121,6 +1125,68 @@
       "readAll": "Hamısını oxunmuş et",
       "unread": "Yeni",
       "open": "Ətraflı"
+    },
+    "import": {
+      "title": "Toplu əlavə",
+      "intro": "Çox məhsulu bir dəfəyə əlavə edin: cədvəldən (CSV) və ya şəkillərdən və PDF kataloqdan. Hər şey əvvəl qaralama olur; heç nə avtomatik saytda görünmür.",
+      "csvTitle": "Cədvəldən (CSV)",
+      "csvStep1": "Şablonu endirin və Excel və ya Google Sheets-də açın.",
+      "csvStep2": "Hər sətirdə bir məhsul yazın; kateqoriya, ad (az) və qiymət mütləqdir.",
+      "csvStep3": "Faylı CSV kimi saxlayıb buradan yükləyin.",
+      "template": "Şablon ({lang})",
+      "csvLabel": "CSV faylı",
+      "csvHint": "Ən çox 1 MB və 200 sətir. Ayırıcı vergül, nöqtəli vergül və ya TAB ola bilər; 4,20 və 4.20 eynidir.",
+      "notPrecious": "Faylda bijuteriya varsa: həmin məhsulların qiymətli metal və daş olmadığını təsdiq edirəm.",
+      "importSubmit": "Faylı yüklə",
+      "importing": "Yüklənir",
+      "importDone": "{rows, plural, other {# sətir}} oxundu: {created, plural, other {# məhsul}} qaralama kimi yaradıldı, {failed, plural, other {# sətirdə}} səhv var.",
+      "importRepeated": "{count, plural, other {# sətir}} əvvəl yüklənmişdi və təkrar yaradılmadı.",
+      "toProducts": "Məhsullara bax",
+      "errorsTitle": "Səhvli sətirlər",
+      "line": "Sətir",
+      "column": "Sütun",
+      "problem": "Səbəb",
+      "draftsTitle": "Şəkillərdən və PDF-dən",
+      "draftsIntro": "Hər şəkil bir qaralama olur. PDF kataloqdan şəkillər çıxarılır; səhifədə bir məhsul varsa ad, qiymət və çəki təklif kimi oxunur. Təklifləri yoxlayıb məhsul formasında tamamlayın.",
+      "takePhoto": "Şəkil çək",
+      "choosePhotos": "Şəkilləri seç",
+      "choosePdf": "PDF kataloq",
+      "draftLimits": "Şəkil: JPEG, PNG və ya WebP, ən çox 15 MB. PDF: ən çox 20 MB və 30 səhifə, şifrəsiz. Günə ən çox 300 qaralama.",
+      "uploading": "Yüklənir və oxunur",
+      "uploadingMany": "Yüklənir: {done} / {total}",
+      "photosDone": "{count, plural, =0 {Qaralama yaradılmadı.} other {# qaralama yaradıldı.}}",
+      "pdfDone": "{count, plural, =0 {PDF-də məhsul şəkli tapılmadı.} other {PDF-dən # qaralama yaradıldı.}}",
+      "pdfLimited": "Gündəlik və ya fayl limiti səbəbindən hamısı götürülmədi.",
+      "draftsListTitle": "Qaralamalar",
+      "draftsListIntro": "Qaralama yalnız sizə görünür. Məhsul formasında şəkli və məlumatları əlavə edib saxlayın, sonra qaralamanı silin.",
+      "draftsEmpty": "Hələ qaralama yoxdur.",
+      "draftLabel": "Qaralama {id}",
+      "draftPhotoAlt": "{name}: qaralama şəkli",
+      "pdfPage": "PDF, səhifə {page}",
+      "suggestionsTitle": "PDF-dən təklif (yoxlayın)",
+      "name": "Ad",
+      "price": "Qiymət",
+      "weight": "Çəki",
+      "makeProduct": "Məhsul yarat",
+      "delete": "Sil",
+      "deleteDraft": "{name} qaralamasını sil",
+      "deleteFailed": "Silmək alınmadı. Yenidən cəhd edin.",
+      "source": {
+        "PHOTO": "Şəkil",
+        "CAMERA": "Kamera",
+        "PDF": "PDF"
+      },
+      "errors": {
+        "fileRequired": "Fayl seçin.",
+        "csvType": "CSV faylı seçin (.csv).",
+        "csvSize": "Fayl çox böyükdür (ən çox 1 MB).",
+        "importFile": "Faylı oxumaq olmadı. CSV kimi yenidən saxlayın.",
+        "photoType": "yalnız JPEG, PNG və ya WebP.",
+        "photoSize": "şəkil ən çox 15 MB ola bilər.",
+        "pdfType": "PDF faylı seçin.",
+        "pdfSize": "PDF ən çox 20 MB ola bilər.",
+        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+      }
     }
   },
   "Admin": {

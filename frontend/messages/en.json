@@ -768,7 +768,8 @@
       "profile": "Store profile",
       "documents": "Documents",
       "notifications": "Notifications",
-      "unread": "{count} unread"
+      "unread": "{count} unread",
+      "import": "Bulk add"
     },
     "demoNote": "Demo mode: statistics are sample data and changes are not saved on the server. Drafts stay in this browser.",
     "status": {
@@ -839,7 +840,10 @@
       "toggleFailed": "The status did not change. Try again.",
       "variants": "{count, plural, one {# variant} other {# variants}}",
       "fromPrice": "from {price}",
-      "adminNote": "Admin note"
+      "adminNote": "Admin note",
+      "bulkReview": "Send the drafts shown to review ({count})",
+      "bulkSent": "{done} of {total} products sent to review.",
+      "bulkFailed": "The bulk change failed. Try again."
     },
     "form": {
       "newTitle": "New product",
@@ -1121,6 +1125,68 @@
       "readAll": "Mark all as read",
       "unread": "New",
       "open": "Details"
+    },
+    "import": {
+      "title": "Bulk add",
+      "intro": "Add many products at once: from a spreadsheet (CSV), or from photos and a PDF catalog. Everything starts as a draft; nothing appears on the site by itself.",
+      "csvTitle": "From a spreadsheet (CSV)",
+      "csvStep1": "Download the template and open it in Excel or Google Sheets.",
+      "csvStep2": "Write one product per row; category, name (az) and price are required.",
+      "csvStep3": "Save the file as CSV and upload it here.",
+      "template": "Template ({lang})",
+      "csvLabel": "CSV file",
+      "csvHint": "At most 1 MB and 200 rows. Comma, semicolon or TAB separated; 4,20 and 4.20 are the same.",
+      "notPrecious": "If the file has bijouterie: I confirm those products are not precious metal or stones.",
+      "importSubmit": "Upload file",
+      "importing": "Uploading",
+      "importDone": "{rows, plural, one {# row} other {# rows}} read: {created, plural, one {# product} other {# products}} created as drafts, {failed, plural, one {# row} other {# rows}} with errors.",
+      "importRepeated": "{count, plural, one {# row was} other {# rows were}} uploaded before and not created again.",
+      "toProducts": "See products",
+      "errorsTitle": "Rows with errors",
+      "line": "Line",
+      "column": "Column",
+      "problem": "Reason",
+      "draftsTitle": "From photos and PDF",
+      "draftsIntro": "Each photo becomes a draft. Photos are taken out of a PDF catalog; when a page has one product, its name, price and weight are read as suggestions. Check them and finish each draft in the product form.",
+      "takePhoto": "Take a photo",
+      "choosePhotos": "Choose photos",
+      "choosePdf": "PDF catalog",
+      "draftLimits": "Photo: JPEG, PNG or WebP, at most 15 MB. PDF: at most 20 MB and 30 pages, no password. At most 300 drafts a day.",
+      "uploading": "Uploading and reading",
+      "uploadingMany": "Uploading: {done} / {total}",
+      "photosDone": "{count, plural, =0 {No draft was created.} one {# draft created.} other {# drafts created.}}",
+      "pdfDone": "{count, plural, =0 {No product photo was found in the PDF.} one {# draft created from the PDF.} other {# drafts created from the PDF.}}",
+      "pdfLimited": "Not all were taken because of the daily or file limit.",
+      "draftsListTitle": "Drafts",
+      "draftsListIntro": "Only you see drafts. Add the photo and details in the product form and save it, then delete the draft.",
+      "draftsEmpty": "No drafts yet.",
+      "draftLabel": "Draft {id}",
+      "draftPhotoAlt": "{name}: draft photo",
+      "pdfPage": "PDF, page {page}",
+      "suggestionsTitle": "Suggested from the PDF (check)",
+      "name": "Name",
+      "price": "Price",
+      "weight": "Weight",
+      "makeProduct": "Create product",
+      "delete": "Delete",
+      "deleteDraft": "Delete draft {name}",
+      "deleteFailed": "Could not delete. Try again.",
+      "source": {
+        "PHOTO": "Photo",
+        "CAMERA": "Camera",
+        "PDF": "PDF"
+      },
+      "errors": {
+        "fileRequired": "Choose a file.",
+        "csvType": "Choose a CSV file (.csv).",
+        "csvSize": "The file is too large (at most 1 MB).",
+        "importFile": "The file could not be read. Save it as CSV again.",
+        "photoType": "only JPEG, PNG or WebP.",
+        "photoSize": "a photo can be at most 15 MB.",
+        "pdfType": "Choose a PDF file.",
+        "pdfSize": "The PDF can be at most 20 MB.",
+        "upload": "The file was not uploaded. Check the connection and try again."
+      }
     }
   },
   "Admin": {

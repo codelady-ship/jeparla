@@ -18,11 +18,14 @@ export async function forwardJson(
     status = 200,
     body,
     query,
+    timeoutMs,
   }: {
     method?: "POST" | "PUT" | "PATCH" | "DELETE";
     status?: number;
     body?: unknown;
     query?: Query;
+    /** Longer than the default for slow work, e.g. reading a catalog PDF. */
+    timeoutMs?: number;
   } = {},
 ): Promise<Response> {
   if (USING_MOCK) return Response.json({ errors: { form: "unavailable" } }, { status: 503 });
@@ -33,6 +36,7 @@ export async function forwardJson(
       method,
       body: payload ?? undefined,
       query,
+      timeoutMs,
       canRefresh: true,
       locale: requestLocale(request),
     });
