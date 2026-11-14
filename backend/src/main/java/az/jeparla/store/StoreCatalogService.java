@@ -10,6 +10,9 @@ import az.jeparla.product.dto.ProductSummaryDto;
 import az.jeparla.store.dto.StoreDto;
 import az.jeparla.store.dto.StoreDtos;
 import az.jeparla.store.dto.StoreSummaryDto;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,14 +47,37 @@ public class StoreCatalogService {
      * folded), like the frontend mock. Not paged: the store list is short.
      */
     public List<StoreSummaryDto> list(String q, String city) {
+        return list(q, city, null);
+    }
+
+    /**
+     * {@link #list(String, String)} nearest first when {@code near} is given (#116): stores with coordinates by
+     * their distance (ties: oldest first) with {@code distanceKm}, then the stores without coordinates in the
+     * usual order. The buyer's point is used for this answer only: not stored, not logged, not cached.
+     */
+    public List<StoreSummaryDto> list(String q, String city, GeoPoint near) {
         List<String> words = SearchText.words(q, MAX_QUERY_WORDS);
         String cityFilter = city == null || city.isBlank() ? null : city.strip();
         Map<Long, Long> counts = products.listedCountsByStore();
-        return stores.findAllPublic().stream()
+        List<Store> found = stores.findAllPublic().stream()
                 .filter(store -> cityFilter == null || cityFilter.equals(store.getCity()))
                 .filter(store -> SearchText.matches(SearchText.fold(store.getName() + " " + store.getCity()), words))
+                .toList();
+        if (near == null) {
+            return found.stream().map(store -> StoreDtos.summary(store, imageUrls.url(store.getLogoKey()),
+                    counts.getOrDefault(store.getId(), 0L))).toList();
+        }
+        Map<Long, BigDecimal> distances = new HashMap<>();
+        for (Store store : found) {
+            if (store.getLatitude() != null && store.getLongitude() != null) {
+                distances.put(store.getId(), near.distanceKm(new GeoPoint(store.getLatitude(), store.getLongitude())));
+            }
+        }
+        Comparator<Store> nearest = Comparator.comparing((Store store) -> !distances.containsKey(store.getId()))
+                .thenComparing(store -> distances.getOrDefault(store.getId(), BigDecimal.ZERO));
+        return found.stream().sorted(nearest)
                 .map(store -> StoreDtos.summary(store, imageUrls.url(store.getLogoKey()),
-                        counts.getOrDefault(store.getId(), 0L)))
+                        counts.getOrDefault(store.getId(), 0L), distances.get(store.getId())))
                 .toList();
     }
 

@@ -3,6 +3,7 @@ package az.jeparla.product;
 import az.jeparla.auth.User;
 import az.jeparla.common.error.ApiException;
 import az.jeparla.product.dto.ProductReportRequest;
+import az.jeparla.share.ReferralService;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreRepository;
 import az.jeparla.store.StoreStatus;
@@ -29,23 +30,32 @@ public class ProductFeedbackService {
     private final ProductReportRepository reports;
     private final StoreRepository stores;
     private final EntityManager entityManager;
+    private final ReferralService referrals;
     private final Clock clock;
 
     public ProductFeedbackService(ProductCatalogService catalog, ProductContactClickRepository clicks,
-            ProductReportRepository reports, StoreRepository stores, EntityManager entityManager, Clock clock) {
+            ProductReportRepository reports, StoreRepository stores, EntityManager entityManager,
+            ReferralService referrals, Clock clock) {
         this.catalog = catalog;
         this.clicks = clicks;
         this.reports = reports;
         this.stores = stores;
         this.entityManager = entityManager;
+        this.referrals = referrals;
         this.clock = clock;
     }
 
-    /** Counts one WhatsApp click on a listed product. */
+    /**
+     * Counts one WhatsApp click on a listed product and, when the visitor came through a shared store link
+     * ({@code referral} names a source, #100), counts it for that source of the store as well.
+     */
     @Transactional
-    public void contactClick(long productId) {
-        catalog.requireListed(productId);
+    public void contactClick(long productId, ReferralService.Hit referral) {
+        Product product = catalog.requireListed(productId);
         clicks.increment(productId, LocalDate.now(clock.withZone(BAKU)));
+        if (referral != null) {
+            referrals.whatsappClick(product.getStore().getId(), referral);
+        }
     }
 
     /**

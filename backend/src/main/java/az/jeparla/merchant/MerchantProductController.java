@@ -3,7 +3,10 @@ package az.jeparla.merchant;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
+import az.jeparla.merchant.dto.EvidenceAttachRequest;
 import az.jeparla.merchant.dto.ImageAttachRequest;
+import az.jeparla.merchant.dto.MerchantEvidencePhotoDto;
+import az.jeparla.product.EvidenceKind;
 import az.jeparla.merchant.dto.ImageOrderRequest;
 import az.jeparla.merchant.dto.ImageUploadDto;
 import az.jeparla.merchant.dto.ImageUploadRequest;
@@ -143,6 +146,35 @@ public class MerchantProductController {
     @DeleteMapping("/{id}/images/{imageId}")
     public ResponseEntity<Void> removeImage(@PathVariable long id, @PathVariable long imageId) {
         images.remove(id, imageId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ------------------------------------------------------------------ hallmark and label photos (#106)
+
+    @PostMapping("/{id}/evidence/{kind}/uploads")
+    @Operation(summary = "Presigned upload URL for the hallmark (HALLMARK) or label (TAG) photo",
+            description = "Same type, size and rate limits as a gallery photo; 409 merchant.evidence_upload_limit with 3 open"
+                    + " uploads of the kind, 409 merchant.hallmark_precious_only for a hallmark of a FASHION product")
+    public ImageUploadDto uploadEvidence(@PathVariable long id, @PathVariable EvidenceKind kind,
+            @Valid @RequestBody ImageUploadRequest request) {
+        rateLimits.check(RateLimitPolicy.IMAGE_UPLOAD_ACCOUNT, "user:" + CurrentUser.id());
+        return images.uploadEvidence(id, kind, request);
+    }
+
+    @PutMapping("/{id}/evidence/{kind}")
+    @Operation(summary = "Set the hallmark or label photo from a checked upload (replaces the previous one)",
+            description = "201 set; 200 when the key is already the photo of that kind. The photo waits for an admin"
+                    + " check (PENDING); an APPROVED product goes back to review.")
+    public ResponseEntity<MerchantEvidencePhotoDto> attachEvidence(@PathVariable long id,
+            @PathVariable EvidenceKind kind, @Valid @RequestBody EvidenceAttachRequest request) {
+        Created<MerchantEvidencePhotoDto> result = images.attachEvidence(id, kind, request);
+        return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(result.body());
+    }
+
+    @DeleteMapping("/{id}/evidence/{kind}")
+    @Operation(summary = "Remove the hallmark or label photo (404 when there is none)")
+    public ResponseEntity<Void> removeEvidence(@PathVariable long id, @PathVariable EvidenceKind kind) {
+        images.removeEvidence(id, kind);
         return ResponseEntity.noContent().build();
     }
 }

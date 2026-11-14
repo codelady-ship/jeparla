@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -25,6 +27,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * prove nothing). {@code X-Forwarded-Proto} ({@code http}/{@code https}) sets the scheme.</li>
  * <li>The standard {@code Forwarded} header (RFC 7239) is never believed: the proxy (Caddy) does
  * not write it and would pass a client's copy through unchanged.</li>
+ * <li>A request with the frontend server's shared secret in {@value #FRONTEND_TOKEN} names its
+ * visitor in {@value #FRONTEND_CLIENT_IP}: the Next.js server calls the API for every visitor, and
+ * without this they would all share its one address in rate limits (#41). With no configured token,
+ * a wrong token or a value that is not an IP literal, both headers are ignored.</li>
  * </ul>
  *
  * <p>Forwarding headers are hidden from the rest of the application, so nothing downstream can
@@ -35,15 +41,24 @@ public class ClientIpFilter extends OncePerRequestFilter {
 
     static final String X_FORWARDED_FOR = "X-Forwarded-For";
     static final String X_FORWARDED_PROTO = "X-Forwarded-Proto";
+    public static final String FRONTEND_TOKEN = "X-Jeparla-Frontend-Token";
+    public static final String FRONTEND_CLIENT_IP = "X-Jeparla-Client-Ip";
 
     /** Lowercase names of the headers that are consumed here and hidden downstream. */
     static final Set<String> FORWARDING_HEADERS = Set.of("forwarded", "x-forwarded-for", "x-forwarded-proto",
-            "x-forwarded-host", "x-forwarded-port", "x-forwarded-prefix", "x-forwarded-ssl", "x-real-ip");
+            "x-forwarded-host", "x-forwarded-port", "x-forwarded-prefix", "x-forwarded-ssl", "x-real-ip",
+            "x-jeparla-frontend-token", "x-jeparla-client-ip");
 
     private final TrustedProxies trustedProxies;
+    private final byte[] frontendToken;
 
     public ClientIpFilter(TrustedProxies trustedProxies) {
+        this(trustedProxies, null);
+    }
+
+    public ClientIpFilter(TrustedProxies trustedProxies, String frontendToken) {
         this.trustedProxies = trustedProxies;
+        this.frontendToken = frontendToken == null ? null : frontendToken.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -59,7 +74,23 @@ public class ClientIpFilter extends OncePerRequestFilter {
                 scheme = proto.toLowerCase(Locale.ROOT);
             }
         }
+        String relayed = relayedClient(request);
+        if (relayed != null) {
+            client = relayed;
+        }
         chain.doFilter(new ClientRequest(request, client, scheme), response);
+    }
+
+    /** The visitor the frontend server names, or null without a matching token and an IP literal. */
+    private String relayedClient(HttpServletRequest request) {
+        if (frontendToken == null) {
+            return null;
+        }
+        String token = request.getHeader(FRONTEND_TOKEN);
+        if (token == null || !MessageDigest.isEqual(frontendToken, token.strip().getBytes(StandardCharsets.UTF_8))) {
+            return null;
+        }
+        return IpAddresses.canonical(request.getHeader(FRONTEND_CLIENT_IP));
     }
 
     /** Should run for error dispatches too, so the error page sees the same client address. */

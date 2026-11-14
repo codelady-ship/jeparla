@@ -15,12 +15,13 @@ interface ImageUploadSlotRepository extends JpaRepository<ImageUploadSlot, Long>
 
     Optional<ImageUploadSlot> findByStorageKey(String storageKey);
 
-    /** Open uploads of a product whose URL still works. */
+    /** Open uploads of a product for {@code kind} whose URL still works. */
     @Query("""
             select count(s) from ImageUploadSlot s
-            where s.productId = :productId and s.attachedAt is null and s.discardedAt is null and s.expiresAt > :now
+            where s.productId = :productId and s.kind = :kind and s.attachedAt is null and s.discardedAt is null
+              and s.expiresAt > :now
             """)
-    long countOpen(@Param("productId") long productId, @Param("now") Instant now);
+    long countOpen(@Param("productId") long productId, @Param("kind") ImageUploadKind kind, @Param("now") Instant now);
 
     /** Uploads a store was given since {@code since}, attached or not. */
     long countByStoreIdAndCreatedAtAfter(long storeId, Instant since);

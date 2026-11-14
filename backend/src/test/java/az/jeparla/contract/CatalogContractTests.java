@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -49,6 +50,9 @@ import tools.jackson.databind.node.ObjectNode;
  *   <li>Search (#38) ranks every group, the mock keeps the catalog order: those cases are
  *       {@code unordered} (groups compared as sets, see {@link #groupsAsSets}). Suggestions keep only
  *       the top 5, so a query with more than 5 matches is compared by shape.</li>
+ *   <li>Fields the backend has before the frontend mock ({@link #BACKEND_AHEAD}): removed from the
+ *       backend response before the comparison. When the mock and {@code catalog-cases.json} have them,
+ *       take them out of that set.</li>
  * </ul>
  */
 @CatalogApiTest
@@ -86,7 +90,7 @@ class CatalogContractTests {
             return;
         }
         assertThat(response.getContentType()).startsWith(MediaType.APPLICATION_JSON_VALUE);
-        JsonNode actual = JSON.readTree(response.getContentAsString(StandardCharsets.UTF_8));
+        JsonNode actual = withoutBackendAhead(JSON.readTree(response.getContentAsString(StandardCharsets.UTF_8)));
         if ("unordered".equals(compare)) {
             mock = groupsAsSets(mock);
             actual = groupsAsSets(actual);
@@ -140,6 +144,28 @@ class CatalogContractTests {
         ArrayNode out = JSON.createArrayNode();
         items.forEach(out::add);
         return out;
+    }
+
+    /**
+     * Keys the backend sends before the frontend mock knows them: {@code Variant.priceBreakdown} (#104) and
+     * {@code Product.evidencePhotos} (#106).
+     */
+    static final Set<String> BACKEND_AHEAD = Set.of("priceBreakdown", "evidencePhotos");
+
+    /** A copy of {@code node} without the {@link #BACKEND_AHEAD} keys at any depth. */
+    static JsonNode withoutBackendAhead(JsonNode node) {
+        JsonNode copy = node.deepCopy();
+        strip(copy);
+        return copy;
+    }
+
+    private static void strip(JsonNode node) {
+        if (node instanceof ObjectNode object) {
+            BACKEND_AHEAD.forEach(object::remove);
+            object.forEach(CatalogContractTests::strip);
+        } else if (node.isArray()) {
+            node.forEach(CatalogContractTests::strip);
+        }
     }
 
     /** Product-level {@code verification.documents} differs on purpose (see the class comment). */

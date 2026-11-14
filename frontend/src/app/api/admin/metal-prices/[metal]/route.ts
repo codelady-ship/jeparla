@@ -1,8 +1,16 @@
+import { USING_MOCK } from "@/lib/api";
 import { adminApi } from "@/lib/api/admin";
+import { ApiError } from "@/lib/api/http";
+import { problemResponse } from "@/lib/api/problem";
 import { decisionSchema, nextStatus } from "@/lib/admin/decisions";
+import { decideQuote } from "@/lib/admin/live";
 import { conflict, fieldConflict, notFound, readAdmin } from "@/lib/admin/server";
 import { overrideSchema, priceJump } from "@/lib/admin/settings";
+import { userFetch } from "@/lib/auth/backend";
+import { requestLocale } from "@/lib/auth/server";
 import { gramPrice } from "@/lib/pricing";
+
+const METALS = new Set(["GOLD", "SILVER", "PLATINUM", "PALLADIUM"]);
 
 async function find(ctx: RouteContext<"/api/admin/metal-prices/[metal]">) {
   const metal = (await ctx.params).metal;
@@ -17,8 +25,12 @@ export async function PATCH(
   request: Request,
   ctx: RouteContext<"/api/admin/metal-prices/[metal]">,
 ) {
-  const read = await readAdmin(request, decisionSchema);
+  const read = await readAdmin(request, decisionSchema, { live: true });
   if (read instanceof Response) return read;
+  if (!USING_MOCK) {
+    const metal = (await ctx.params).metal;
+    return METALS.has(metal) ? decideQuote(request, metal, read.data) : notFound();
+  }
   const item = await find(ctx);
   if (!item) return notFound();
   if (!item.held) return conflict();
@@ -33,11 +45,29 @@ export async function PATCH(
  * explicit second confirmation; without it the answer is 409 largeChange.
  */
 export async function PUT(request: Request, ctx: RouteContext<"/api/admin/metal-prices/[metal]">) {
-  const read = await readAdmin(request, overrideSchema);
+  const read = await readAdmin(request, overrideSchema, { live: true });
   if (read instanceof Response) return read;
+  const { pricePerOunce, reason, confirmLarge } = read.data;
+  if (!USING_MOCK) {
+    const metal = (await ctx.params).metal;
+    if (!METALS.has(metal)) return notFound();
+    try {
+      return Response.json(
+        await userFetch(`/admin/metal-prices/${metal}`, {
+          method: "PUT",
+          body: { pricePerOunce, reason, confirmLarge },
+          canRefresh: true,
+          locale: requestLocale(request),
+        }),
+      );
+    } catch (e) {
+      if (e instanceof ApiError && e.code === "metal_prices.large_change")
+        return fieldConflict("pricePerOunce", "largeChange");
+      return problemResponse(e);
+    }
+  }
   const item = await find(ctx);
   if (!item) return notFound();
-  const { pricePerOunce, reason, confirmLarge } = read.data;
   const jump = priceJump(item.pricePerOunce, pricePerOunce);
   if (jump.large && !confirmLarge) return fieldConflict("pricePerOunce", "largeChange");
   return Response.json({

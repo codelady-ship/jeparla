@@ -23,6 +23,7 @@ import { DocUpload } from "./doc-upload";
 import { RadioGroupField, SelectField, TextField } from "./fields";
 import { SellerDone } from "./seller-done";
 import { Stepper } from "./stepper";
+import { isMessage } from "@/lib/api/problem";
 
 export type Option = { value: string; label: string };
 const STEP_KEYS = ["1", "2", "3", "4"] as const;
@@ -88,6 +89,8 @@ export function SellerWizard({
 
   const err = (key: string | undefined) => {
     if (!key) return undefined;
+    // The backend's own sentence (already in the page language) is shown as it is.
+    if (isMessage(key)) return key;
     if (key === "passwordShort") return ta("errors.passwordShort", { min: PASSWORD_MIN });
     // Keys come from the zod schemas; unknown ones fall back to a generic message.
     const k = `errors.${key}` as "errors.server";

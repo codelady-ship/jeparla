@@ -6,6 +6,7 @@ import {
   MapPin,
   Store as StoreIcon,
 } from "lucide-react";
+import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
@@ -17,7 +18,8 @@ import { shareLabels } from "@/components/share/share-labels";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
+import { breadcrumbs, isRealPrice, product as productLd } from "@/lib/seo/json-ld";
+import type { ReactNode } from "react";
 import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
@@ -38,7 +40,7 @@ export async function ProductDetails({
   product: Product;
   store: Store | null;
 }) {
-  const [t, tp, tc, format, locale, categories, similar, share] = await Promise.all([
+  const [t, tp, tc, format, locale, categories, similar, share, rates] = await Promise.all([
     getTranslations("Pdp"),
     getTranslations("Product"),
     getTranslations("Common"),
@@ -47,7 +49,10 @@ export async function ProductDetails({
     api.listCategories(),
     api.listProducts({ category: undefined, size: 96 }),
     shareLabels(),
+    // USD/EUR is an extra (#53): without rates the page shows AZN only.
+    api.latestExchangeRates().catch(() => []),
   ]);
+  const rateDate = rates[0]?.date;
   const name = p.name[locale];
   const category = categories.find((c) => c.id === p.categoryId);
   const parent = category?.parentId ? categories.find((c) => c.id === category.parentId) : null;
@@ -87,17 +92,36 @@ export async function ProductDetails({
         label: t(`contact.questions.${q}`),
         href: store ? whatsappLink(store.whatsapp, message(q)) : "#",
       })),
+      approx: approxPrices(v.price.amount, rates, locale),
     };
   });
   const first = p.variants[0];
 
-  const facts: [string, string][] = [
+  // The latest price change among the variants (metal-linked ones move every business day).
+  const updatedIso = p.variants
+    .map((v) => v.priceUpdatedAt)
+    .sort()
+    .at(-1);
+  // Quotable facts in the initial HTML; the price is the same "from" price as the JSON-LD offer.
+  const facts: [string, ReactNode][] = [
     [t("facts.metal"), tp(`metal.${p.metal}`)],
     [t("facts.fineness"), first?.fineness.label ?? String(p.fineness)],
     [t("facts.weight"), formatGrams(p.weightGrams, locale)],
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
-    [t("facts.price"), formatPrice(p.priceFrom.amount, locale)],
+    ...(isRealPrice(p.priceFrom)
+      ? [[t("facts.price"), formatPrice(p.priceFrom.amount, locale)] as [string, string]]
+      : []),
     [t("facts.pricing"), t(`pricing.${p.pricingMode}`)],
+    ...(updatedIso
+      ? [
+          [
+            t("facts.updated"),
+            <time key="updated" dateTime={updatedIso}>
+              {format.dateTime(new Date(updatedIso), "priceUpdated")}
+            </time>,
+          ] as [string, ReactNode],
+        ]
+      : []),
     [t("facts.store"), p.store.name],
     [t("facts.city"), p.store.city],
   ];
@@ -192,6 +216,19 @@ export async function ProductDetails({
                 closedHint: t("contact.closedHint"),
               },
               metalLinkedNote: p.pricingMode === "METAL_LINKED" ? t("metalLinkedNote") : null,
+              currency: rateDate
+                ? {
+                    label: t("currency"),
+                    note: t("approxNote", {
+                      date: format.dateTime(new Date(`${rateDate}T00:00:00Z`), {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      }),
+                    }),
+                  }
+                : null,
               actions: {
                 favoriteAdd: tp("favoriteAdd"),
                 favoriteRemove: tp("favoriteRemove"),

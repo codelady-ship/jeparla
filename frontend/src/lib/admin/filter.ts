@@ -37,6 +37,7 @@ export const AUDIT_FILTERS = [
   "STORE",
   "PRODUCT",
   "CHECK",
+  "DOCUMENT",
   "USER",
   "CATALOG",
   "PRICE",

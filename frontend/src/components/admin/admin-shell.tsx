@@ -15,7 +15,8 @@ export type AdminPage =
   | "users"
   | "reports"
   | "audit"
-  | "prices";
+  | "prices"
+  | "suspensions";
 
 /** Private area: titled per page, never indexed. */
 export async function adminMetadata(page: AdminPage): Promise<Metadata> {

@@ -43,7 +43,7 @@ export function ReportsList({
     filter.q,
     filter.status,
     (r) =>
-      `${r.product.name.az} ${r.product.name.en} ${r.product.name.ru} ${r.store.name} ${r.message}`,
+      `${r.product ? `${r.product.name.az} ${r.product.name.en} ${r.product.name.ru}` : ""} ${r.store.name} ${r.message}`,
   );
 
   return (
@@ -72,7 +72,12 @@ export function ReportsList({
       ) : (
         <ul className="flex flex-col gap-3">
           {shown.map((row) => {
-            const name = row.product.name[locale];
+            const name = row.product ? row.product.name[locale] : row.store.name;
+            const href = row.product
+              ? `/products/${row.product.slug}`
+              : row.store.slug
+                ? `/stores/${row.store.slug}`
+                : null;
             return (
               <li key={row.id} className="flex flex-col gap-3 rounded-lg border bg-card p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -83,13 +88,19 @@ export function ReportsList({
                         {t("submitted", { date: shortDate(row.createdAt) })}
                       </span>
                     </p>
-                    <Link
-                      href={`/products/${row.product.slug}`}
-                      className="font-medium break-words underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
-                    >
-                      {name}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">{row.store.name}</p>
+                    {href ? (
+                      <Link
+                        href={href}
+                        className="font-medium break-words underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+                      >
+                        {name}
+                      </Link>
+                    ) : (
+                      <p className="font-medium break-words">{name}</p>
+                    )}
+                    <p className="text-sm text-muted-foreground">
+                      {row.product ? row.store.name : t("reports.aboutStore")}
+                    </p>
                   </div>
                   <Badge variant={VARIANT[row.status]}>{t(`reportStatus.${row.status}`)}</Badge>
                 </div>
@@ -102,6 +113,7 @@ export function ReportsList({
                   name={name}
                   actions={REPORT_ACTIONS[row.status]}
                   reasonLabel={t("reason.reporter")}
+                  reasonAlways
                   onDone={({ status, note }) => {
                     setRows((all) =>
                       all.map((r) => (r.id === row.id ? { ...r, status, note } : r)),
