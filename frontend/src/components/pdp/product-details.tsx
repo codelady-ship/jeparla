@@ -6,9 +6,9 @@ import {
   MapPin,
   Store as StoreIcon,
 } from "lucide-react";
+import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -18,8 +18,9 @@ import { shareLabels } from "@/components/share/share-labels";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
-import { whatsappLink } from "@/lib/whatsapp";
+import { breadcrumbs, isRealPrice, product as productLd } from "@/lib/seo/json-ld";
+import type { ReactNode } from "react";
+import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
 import { RecentlyViewed } from "./recently-viewed";
@@ -41,7 +42,7 @@ export async function ProductDetails({
   product: Product;
   store: Store | null;
 }) {
-  const [t, tp, tc, format, locale, categories, similar, share] = await Promise.all([
+  const [t, tp, tc, format, locale, categories, similar, share, rates] = await Promise.all([
     getTranslations("Pdp"),
     getTranslations("Product"),
     getTranslations("Common"),
@@ -50,7 +51,10 @@ export async function ProductDetails({
     api.listCategories(),
     api.listProducts({ category: undefined, size: 96 }),
     shareLabels(),
+    // USD/EUR is an extra (#53): without rates the page shows AZN only.
+    api.latestExchangeRates().catch(() => []),
   ]);
+  const rateDate = rates[0]?.date;
   const name = p.name[locale];
   const category = categories.find((c) => c.id === p.categoryId);
   const parent = category?.parentId ? categories.find((c) => c.id === category.parentId) : null;
@@ -60,32 +64,52 @@ export async function ProductDetails({
     .sort((a, b) => Number(b.categoryId === p.categoryId) - Number(a.categoryId === p.categoryId))
     .slice(0, 4);
 
-  const variants: VariantView[] = p.variants.map((v) => ({
-    id: v.id,
-    label: [
+  const variants: VariantView[] = p.variants.map((v) => {
+    const label = [
       v.fineness.label,
       formatGrams(v.weightGrams, locale),
       v.size && t("size", { size: v.size }),
     ]
       .filter(Boolean)
-      .join(" ·"),
-    price: formatPrice(v.price.amount, locale),
-    sku: v.sku,
-    stock: tp(`stock.${v.stockStatus}`),
-    inStock: v.stockStatus !== "OUT_OF_STOCK",
-    updatedIso: v.priceUpdatedAt,
-    updated: format.dateTime(new Date(v.priceUpdatedAt), "priceUpdated"),
-    whatsappHref: store
-      ? whatsappLink(store.whatsapp, t("whatsappMessage", { name, sku: v.sku, url }))
-      : "#",
-  }));
+      .join(" ·");
+    // The size question only makes sense for a variant that has a size.
+    const questions = CONTACT_QUESTIONS.filter((q) => q !== "SIZE" || Boolean(v.size));
+    const message = (q: ContactQuestion) =>
+      q === "GENERAL"
+        ? t("whatsappMessage", { name, sku: v.sku, url })
+        : t(`contact.messages.${q}`, {
+            product: t("contact.product", { name, variant: label, sku: v.sku, url }),
+          });
+    return {
+      id: v.id,
+      label,
+      price: formatPrice(v.price.amount, locale),
+      sku: v.sku,
+      stock: tp(`stock.${v.stockStatus}`),
+      inStock: v.stockStatus !== "OUT_OF_STOCK",
+      updatedIso: v.priceUpdatedAt,
+      updated: format.dateTime(new Date(v.priceUpdatedAt), "priceUpdated"),
+      whatsapp: questions.map((q) => ({
+        question: q,
+        label: t(`contact.questions.${q}`),
+        href: store ? whatsappLink(store.whatsapp, message(q)) : "#",
+      })),
+      approx: approxPrices(v.price.amount, rates, locale),
+    };
+  });
   const first = p.variants[0];
 
   // A term key adds a "what is this" hint next to the label (#174).
   const hint = (key: "fineness" | "carat" | "color" | "clarity", term: string) => (
     <TermHint term={term} label={t(`terms.${key}.label`)} text={t(`terms.${key}.text`)} />
   );
-  const facts: [string, string, ReactNode?][] = [
+  // The latest price change among the variants (metal-linked ones move every business day).
+  const updatedIso = p.variants
+    .map((v) => v.priceUpdatedAt)
+    .sort()
+    .at(-1);
+  // Quotable facts in the initial HTML; the price is the same "from" price as the JSON-LD offer.
+  const facts: [string, ReactNode, ReactNode?][] = [
     [t("facts.metal"), tp(`metal.${p.metal}`)],
     [
       t("facts.fineness"),
@@ -94,8 +118,20 @@ export async function ProductDetails({
     ],
     [t("facts.weight"), formatGrams(p.weightGrams, locale)],
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
-    [t("facts.price"), formatPrice(p.priceFrom.amount, locale)],
+    ...(isRealPrice(p.priceFrom)
+      ? [[t("facts.price"), formatPrice(p.priceFrom.amount, locale)] as [string, string]]
+      : []),
     [t("facts.pricing"), t(`pricing.${p.pricingMode}`)],
+    ...(updatedIso
+      ? [
+          [
+            t("facts.updated"),
+            <time key="updated" dateTime={updatedIso}>
+              {format.dateTime(new Date(updatedIso), "priceUpdated")}
+            </time>,
+          ] as [string, ReactNode],
+        ]
+      : []),
     [t("facts.store"), p.store.name],
     [t("facts.city"), p.store.city],
   ];
@@ -174,13 +210,36 @@ export async function ProductDetails({
 
           <VariantPanel
             productId={p.id}
+            priceFrom={p.priceFrom}
+            openingHours={store?.openingHours ?? null}
             variants={variants}
             labels={{
               choose: t("chooseVariant"),
               sku: t("sku"),
               priceUpdated: t("priceUpdated"),
               whatsapp: t("whatsapp"),
+              questionLegend: t("contact.legend"),
+              status: {
+                open: t("contact.open"),
+                closedToday: t.raw("contact.closedToday") as string,
+                closedTomorrow: t.raw("contact.closedTomorrow") as string,
+                closedOn: t.raw("contact.closedOn") as string,
+                closedHint: t("contact.closedHint"),
+              },
               metalLinkedNote: p.pricingMode === "METAL_LINKED" ? t("metalLinkedNote") : null,
+              currency: rateDate
+                ? {
+                    label: t("currency"),
+                    note: t("approxNote", {
+                      date: format.dateTime(new Date(`${rateDate}T00:00:00Z`), {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      }),
+                    }),
+                  }
+                : null,
               actions: {
                 favoriteAdd: tp("favoriteAdd"),
                 favoriteRemove: tp("favoriteRemove"),
@@ -291,7 +350,16 @@ export async function ProductDetails({
           <h2 id="verification" className="mb-1 text-xl">
             {t("verificationTitle")}
           </h2>
-          <p className="mb-3 text-sm text-muted-foreground">{t("verificationText")}</p>
+          <p className="mb-3 text-sm text-muted-foreground">
+            {t("verificationText")}{" "}
+            <Link
+              href="/verified"
+              prefetch={false}
+              className="link-underline font-medium text-foreground"
+            >
+              {t("howWeVerify")}
+            </Link>
+          </p>
           <ul className="flex flex-col gap-2">
             {(["seller", "documents", "expertise"] as const).map((k) => {
               const status = p.verification[k];

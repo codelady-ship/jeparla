@@ -41,7 +41,12 @@
     },
     "sellerTitle": "Do you run a jewelry store?",
     "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",
-    "sellerCta": "Open a store"
+    "sellerCta": "Open a store",
+    "budget": {
+      "title": "By budget",
+      "upTo": "Up to {amount, number} AZN",
+      "note": "Prices are as shown today; metal-linked prices follow the Central Bank rate every day."
+    }
   },
   "Nav": {
     "home": "Home",
@@ -64,13 +69,18 @@
     "legal": "Legal",
     "aboutUs": "About us",
     "contact": "Contact",
+    "help": "Help and support",
     "metalPrices": "Metal prices",
+    "sizeGuide": "Size guide",
     "openStore": "Open a store",
     "merchantCabinet": "Store dashboard",
     "privacy": "Privacy policy",
     "terms": "Terms of use",
     "tagline": "Jewelry stores of Azerbaijan in one place.",
-    "rights": "© Jeparla. All rights reserved."
+    "rights": "© Jeparla. All rights reserved.",
+    "calculator": "Gold calculator",
+    "cookies": "Cookie notice",
+    "howWeVerify": "How we verify"
   },
   "Errors": {
     "notFoundTitle": "Page not found",
@@ -187,8 +197,32 @@
     "sku": "Code",
     "priceUpdated": "Price updated:",
     "metalLinkedNote": "Metal-linked price: it updates automatically with the daily CBAR rate.",
+    "currency": "Currency",
+    "approxNote": "approximate, CBAR rate of {date}. The price is agreed in AZN.",
     "whatsapp": "Message the store on WhatsApp",
     "whatsappMessage": "Hello! I found this on Jeparla and I am interested: {name} (code {sku}). {url}",
+    "contact": {
+      "legend": "What would you like to ask?",
+      "questions": {
+        "GENERAL": "General question",
+        "AVAILABILITY": "Is it available?",
+        "SIZE": "Is this size available?",
+        "VISIT": "I want to see it in store",
+        "PRICE": "Confirm the final price"
+      },
+      "messages": {
+        "AVAILABILITY": "Hello! Is this item available now? {product}",
+        "SIZE": "Hello! Do you have this item in this size? {product}",
+        "VISIT": "Hello! I would like to see this item in your store. When can I come? {product}",
+        "PRICE": "Hello! I would like to confirm the final price of this item. {product}"
+      },
+      "product": "{name}, {variant}, code {sku}. {url}",
+      "open": "The store is open now",
+      "closedToday": "The store is closed now. Opens today at {time}",
+      "closedTomorrow": "The store is closed now. Opens tomorrow at {time}",
+      "closedOn": "The store is closed now. Opens {day} at {time}",
+      "closedHint": "You can still send your message now."
+    },
     "factsTitle": "Key facts",
     "facts": {
       "metal": "Metal",
@@ -197,6 +231,7 @@
       "size": "Size",
       "price": "Price",
       "pricing": "Pricing",
+      "updated": "Price updated",
       "store": "Store",
       "city": "City"
     },
@@ -254,6 +289,7 @@
       "submit": "Send",
       "unavailable": "Sending reports will be available soon. Nothing is sent yet."
     },
+    "howWeVerify": "How we verify",
     "recentlyViewed": "Recently viewed",
     "terms": {
       "fineness": {
@@ -298,7 +334,15 @@
     "allCategories": "All categories",
     "noProductsTitle": "No products found",
     "noProductsText": "Change the search or see all products.",
-    "showAllProducts": "All products"
+    "showAllProducts": "All products",
+    "nearMe": "Near me",
+    "nearLocating": "Finding your location",
+    "nearClear": "Stop sorting by distance",
+    "nearPrivacy": "Your location is asked only when you press the button, sent to about 1 km and not saved.",
+    "nearActive": "Stores are sorted by distance from you. Stores without a saved address are at the end of the list.",
+    "nearDenied": "Location access was not allowed. Choose a city or search for a store by name.",
+    "nearUnavailable": "Your location could not be found. Choose a city or search for a store by name.",
+    "distance": "{km} km"
   },
   "About": {
     "title": "What is Jeparla?",
@@ -328,6 +372,45 @@
       }
     }
   },
+  "Help": {
+    "title": "Help and support",
+    "description": "How to contact a store, list your catalog, upload documents, what verification means and how to report a problem.",
+    "intro": "Short answers for buyers and sellers.",
+    "faq": {
+      "contact": {
+        "q": "How do I contact a store?",
+        "a": "Press the WhatsApp button on a product page: the message already includes the product name, code and link. Price, payment and delivery are agreed directly with the store. Jeparla itself does not sell products or take payments."
+      },
+      "sell": {
+        "q": "How do I list my store's catalog?",
+        "a": "Apply through Open a store: account, store details, documents and an optional first product. After the store is checked you add products from your dashboard; each product is reviewed before it appears in the catalog."
+      },
+      "documents": {
+        "q": "How do I upload documents?",
+        "a": "Upload them as PDF, JPG or PNG in the Documents step of the sign-up, or later from your dashboard. Documents are kept in private storage and only the checking team looks at them. Gold, silver and diamond sellers go through a document check; bijouterie sellers are not asked for certificates."
+      },
+      "verified": {
+        "q": "What does verification mean?",
+        "a": "Seller and document checks are done separately and each is shown on its own on the store and product pages. A check that was not done is shown as not performed. A check confirms the documents we were shown; it is not a guarantee for a particular piece, so confirm the product with the store before you buy."
+      },
+      "report": {
+        "q": "How do I report a problem?",
+        "a": "If a product's details are wrong or the product looks suspicious, use the Report button on the product page. For anything else, see Support below."
+      }
+    },
+    "links": {
+      "catalog": "Go to the catalog",
+      "sell": "Open a store",
+      "merchant": "Store dashboard"
+    },
+    "support": {
+      "title": "Support",
+      "text": "If you have a question or a problem, write to us:",
+      "email": "Email",
+      "url": "Support page",
+      "none": "A direct support address has not been published yet; it will be shown on this page once it is. Sellers can correct the details of a returned product or store in the dashboard and send it for review again."
+    }
+  },
   "Categories": {
     "title": "Categories",
     "description": "Jewelry categories: rings, earrings, necklaces, bracelets and more.",
@@ -336,6 +419,12 @@
     "categoryDescription": "{name}: gold, silver and diamond pieces from jewelry stores in Azerbaijan, with fineness, weight and price.",
     "breadcrumb": "Breadcrumb",
     "subcategories": "Subcategories",
+    "factsTitle": "{name}: facts",
+    "facts": {
+      "products": "Products",
+      "priceFrom": "Lowest price",
+      "priceTo": "Highest price"
+    },
     "faqTitle": "{name}: questions",
     "faq": {
       "fineness": {
@@ -350,6 +439,156 @@
         "q": "How do I buy a piece I like?",
         "a": "Use the WhatsApp button on the product page; the message includes the product name, code and link. The purchase is agreed directly with the store."
       }
+    }
+  },
+  "SizeGuide": {
+    "title": "Size guide: rings, bracelets and chains",
+    "metaTitle": "Ring size chart, bracelet and chain lengths",
+    "description": "How to find your ring size at home: inner diameter and circumference in mm, the ISO 8653 size, a size helper, and bracelet and chain lengths.",
+    "breadcrumb": "Breadcrumb",
+    "updated": "Updated:",
+    "answer": "In Azerbaijan a ring size is the ring's inner diameter in millimetres: a size 17 ring is 17 mm across inside. Sizes usually go in steps of 0.5. Measure around your finger and enter it in the helper below to see the nearest size.",
+    "toc": "On this page",
+    "honest": {
+      "title": "Measuring at home is approximate",
+      "text": "A measurement taken at home can be off by half a size to a full size. Confirm the size with the store before you order: many stores measure in person, and some can resize a ring.",
+      "noPrintable": "We do not offer a printable ring sizer: printers and PDF viewers often shrink or enlarge the page, so a printed ruler can be off by several millimetres. That is more than the step between two sizes (0.5 mm of diameter)."
+    },
+    "rings": {
+      "title": "Ring size chart",
+      "intro": "The size number equals the inner diameter. The circumference is the diameter times π, rounded to one decimal.",
+      "caption": "Ring sizes: Azerbaijan size, inner diameter, inner circumference and ISO 8653 size",
+      "colSize": "Size (AZ, CIS)",
+      "colDiameter": "Inner diameter, mm",
+      "colCircumference": "Inner circumference, mm",
+      "colIso": "ISO 8653 size",
+      "sourceTitle": "Source and calculation",
+      "sourceAz": "Azerbaijan and CIS size: the inner diameter in millimetres, in steps of 0.5. This is the convention stores use; we did not find the text of a current standard we could cite.",
+      "sourceIso": "ISO 8653:2016 (Jewellery — Ring-sizes — Definition, measurement and designation) designates a ring size by its inner circumference in mm; most of Europe uses this system. In the chart the ISO size is the circumference rounded to a whole millimetre.",
+      "sourceUs": "US sizes are not shown: we found no current published standard for that conversion, and we will not invent one.",
+      "rounding": "Every number comes from exact decimal arithmetic, with halves rounded up."
+    },
+    "helper": {
+      "title": "Ring size helper",
+      "intro": "Enter the number you measured. Measure around the finger with a thread or a paper strip, or measure across an existing ring.",
+      "modeLegend": "What did you measure?",
+      "circumference": "Around the finger",
+      "diameter": "Inside diameter of a ring",
+      "inputCircumference": "Circumference, mm",
+      "inputDiameter": "Inner diameter, mm",
+      "hint": "For example 53.5. A dot or a comma, at most two decimals.",
+      "empty": "The nearest size appears here once you enter a number.",
+      "invalid": "Enter a number in millimetres, for example 53.5.",
+      "outOfRange": "This is outside the chart (sizes 15 to 24). Check that you chose the right measurement, or ask the store.",
+      "result": "Nearest size: {size}",
+      "details": "Inner diameter {diameter} mm, inner circumference {circumference} mm, ISO 8653 size {iso}.",
+      "tie": "Exactly half-way between two sizes, the helper picks the larger one.",
+      "confirm": "This is an estimate. Confirm with the store before you order."
+    },
+    "measure": {
+      "title": "How to find your ring size at home",
+      "ringTitle": "With a ring you already have",
+      "ringSteps": {
+        "s1": "Pick a thin, round ring that fits the same finger comfortably.",
+        "s2": "Lay it on a ruler marked in millimetres.",
+        "s3": "Measure across the widest part, from inside edge to inside edge, without the metal.",
+        "s4": "That number in millimetres is your size. In the helper, choose \"Inside diameter of a ring\"."
+      },
+      "stringTitle": "With a thread or a paper strip",
+      "stringSteps": {
+        "s1": "Take a thread that does not stretch, or a paper strip about 5 mm wide.",
+        "s2": "Wrap it around the base of the finger, snug but not tight.",
+        "s3": "Mark where the ends meet with a pen.",
+        "s4": "Unwrap it and measure up to the mark with a ruler, in millimetres: that is the circumference.",
+        "s5": "Enter the number in the helper and check that the ring will pass over the knuckle."
+      },
+      "tipsTitle": "For a more accurate result",
+      "tips": {
+        "t1": "Measure at the end of the day in a warm room: fingers are thinner in the cold and fuller in the heat.",
+        "t2": "Measure two or three times and compare.",
+        "t3": "If the knuckle is wider than the base of the finger, the ring has to pass over it: measure both.",
+        "t4": "A wide band (about 6 mm or more) sits tighter; ask the store whether you need half a size up."
+      },
+      "diagram": {
+        "title": "Inner diameter and inner circumference of a ring",
+        "desc": "The straight line across the inside of the ring is the inner diameter; the circle along the inside edge is the inner circumference.",
+        "diameter": "diameter",
+        "circumference": "circumference"
+      }
+    },
+    "bracelets": {
+      "title": "Bracelet length",
+      "intro": "Measure the wrist just above the wrist bone with a thread or a strip. For a chain bracelet to sit comfortably, 1 to 2 cm is usually added to the wrist measurement.",
+      "caption": "Bracelet lengths and who they usually fit",
+      "colLength": "Length",
+      "colUse": "Usually",
+      "rows": {
+        "r1": {
+          "length": "15–16 cm",
+          "use": "Slim wrist, sits close"
+        },
+        "r2": {
+          "length": "17–18 cm",
+          "use": "A frequent length for women's bracelets"
+        },
+        "r3": {
+          "length": "19–20 cm",
+          "use": "A looser women's fit or a smaller men's bracelet"
+        },
+        "r4": {
+          "length": "21–22 cm",
+          "use": "A frequent length for men's bracelets"
+        }
+      },
+      "bangle": "A rigid bangle that does not open has to pass over the hand: touch the thumb to the little finger, measure around the widest part of the hand, and ask the store for the bangle's inner size.",
+      "note": "These lengths are general guidance, not a standard; stores and designs differ."
+    },
+    "chains": {
+      "title": "Chain length",
+      "intro": "A chain is measured laid flat, clasp included. Where it sits depends on the neck and on any pendant.",
+      "caption": "Chain lengths and where they usually sit",
+      "colLength": "Length",
+      "colUse": "Usually sits",
+      "rows": {
+        "r1": {
+          "length": "40 cm",
+          "use": "Close to the base of the neck"
+        },
+        "r2": {
+          "length": "45 cm",
+          "use": "At the collarbone; a frequent choice for a pendant"
+        },
+        "r3": {
+          "length": "50 cm",
+          "use": "Just below the collarbone"
+        },
+        "r4": {
+          "length": "55 cm",
+          "use": "At the neckline; frequent for men's chains"
+        },
+        "r5": {
+          "length": "60 cm",
+          "use": "Below the neckline, over clothing"
+        },
+        "r6": {
+          "length": "70 cm and longer",
+          "use": "A long chain over clothing; can be worn doubled"
+        }
+      },
+      "note": "The simplest way: lay a chain you already own flat, measure it, and choose shorter or longer from how you like it."
+    },
+    "sources": {
+      "title": "Sources",
+      "iso": "ISO 8653:2016, Jewellery — Ring-sizes — Definition, measurement and designation (International Organization for Standardization).",
+      "trade": "Azerbaijan and CIS size numbers (inner diameter, mm): the convention used by stores.",
+      "lengths": "Bracelet and chain lengths: general guidance, not a standard."
+    },
+    "howTo": {
+      "name": "How to find your ring size at home",
+      "description": "Find a ring size by measuring the inner diameter of an existing ring or the circumference of the finger in millimetres.",
+      "supplyStrip": "A thread that does not stretch, or a paper strip",
+      "toolRuler": "A ruler marked in millimetres",
+      "toolPen": "A pen"
     }
   },
   "Search": {
@@ -415,7 +654,18 @@
     "removeItem": "Remove {name} from compare",
     "noStones": "No stones",
     "stock": "Stock",
-    "gramUnit": "g"
+    "gramUnit": "g",
+    "priceChanges": {
+      "title": "Price changes since you added them",
+      "item": "When added {before}, now {now}",
+      "up": "{difference} more",
+      "down": "{difference} less",
+      "reason": {
+        "METAL_LINKED": "Reason: the Central Bank metal rate changed",
+        "FIXED": "Reason: the store changed the price"
+      },
+      "note": "Compared with the price saved in this browser."
+    }
   },
   "Auth": {
     "login": {
@@ -438,16 +688,18 @@
     "forgot": {
       "title": "Reset password",
       "description": "Reset the password of your Jeparla account.",
-      "intro": "Enter your e-mail.",
+      "intro": "Enter the e-mail of your account. We will send a link to set a new password.",
       "submit": "Continue",
-      "notice": "Password reset does not work yet: recovery by SMS and e-mail turns on when the backend is ready. No e-mail was sent.",
-      "back": "Back to sign in"
+      "notice": "If an account with this e-mail exists, we have sent a link to set a new password. It works for 1 hour. Check the spam folder too.",
+      "back": "Back to sign in",
+      "phone": "Signed up with a phone number? Contact Jeparla support: an administrator checks that it is you and sends a reset link to that phone number."
     },
     "fields": {
       "name": "Name",
       "email": "E-mail",
       "password": "Password",
-      "confirm": "Repeat password"
+      "confirm": "Repeat password",
+      "login": "E-mail or phone"
     },
     "hints": {
       "password": "At least {min} characters, with a letter and a digit."
@@ -464,12 +716,51 @@
       "passwordMismatch": "The passwords do not match.",
       "unavailable": "Sign-in is not available yet. Please try again later.",
       "network": "Could not connect. Check your internet and try again.",
-      "server": "Something went wrong. Please try again."
+      "server": "Something went wrong. Please try again.",
+      "loginInvalid": "Enter your e-mail (name@example.az) or mobile number (050 123 45 67).",
+      "rateLimited": "Too many attempts in a short time. Try again a little later.",
+      "sessionExpired": "Your session has expired. Sign in again.",
+      "rateLimitedUntil": "Too many attempts. Please try again after {time}."
     },
     "pending": "Please wait",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored."
+    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored.",
+    "reset": {
+      "title": "New password",
+      "description": "Set a new password for your Jeparla account.",
+      "intro": "Choose a new password for your account.",
+      "submit": "Save password",
+      "checking": "Checking the link",
+      "done": "Your password has been changed. You were signed out on every device; sign in with the new password.",
+      "signIn": "Sign in",
+      "invalid": "This link is invalid, expired or already used. A reset link works for 1 hour and only once.",
+      "requestNew": "Request a new link"
+    },
+    "verify": {
+      "title": "Confirm e-mail",
+      "description": "Confirm the e-mail address of your Jeparla account.",
+      "intro": "We are confirming your e-mail address.",
+      "checking": "Confirming your e-mail",
+      "done": "Your e-mail is confirmed. Thank you.",
+      "toHome": "Go to the home page",
+      "invalid": "This link is invalid, expired or already used. A confirmation link works for 24 hours and only once.",
+      "signInForNew": "Sign in to get a new link.",
+      "retry": "Try again"
+    },
+    "resend": {
+      "button": "Send the link again",
+      "sent": "We sent a new confirmation link. Check your inbox and the spam folder.",
+      "alreadyVerified": "Your e-mail is already confirmed.",
+      "noEmail": "Your account has no e-mail address.",
+      "signIn": "Please sign in again.",
+      "unavailable": "Sending the link again is not available yet. Please try again later."
+    },
+    "verifyBanner": {
+      "text": "Please confirm your e-mail address: we sent you a link.",
+      "detail": "Your account already works in full. A confirmed address is where password reset links and notices reliably reach you."
+    },
+    "recoveryDemo": "Demo mode: no e-mail is sent and no password is changed."
   },
   "Sell": {
     "title": "Join as a seller",
@@ -582,13 +873,108 @@
       "startOver": "Start a new sign-up"
     }
   },
+  "SellLanding": {
+    "eyebrow": "For sellers",
+    "title": "Put your jewellery store where buyers are searching",
+    "lead": "Jeparla brings Azerbaijan's jewellery stores together in one catalogue. Buyers search by fineness, weight and price, then message you directly on WhatsApp. Listing in the catalogue is free.",
+    "start": "Start registration",
+    "seeHow": "How it works",
+    "valuesTitle": "What you get",
+    "values": {
+      "catalog": {
+        "title": "A free catalogue and your own link",
+        "text": "All your products on one page, with fineness, weight, size and stones. Put your store link in your Instagram bio or in a message."
+      },
+      "price": {
+        "title": "Prices update themselves every day",
+        "text": "Mark a product as \"metal-linked\" and its price follows the Central Bank of Azerbaijan's daily rate. No more editing the price list by hand every morning."
+      },
+      "verified": {
+        "title": "Jeparla Verified badge",
+        "text": "Once your documents are checked, a badge appears on your store and products. Buyers see who was checked and what was checked."
+      },
+      "search": {
+        "title": "Buyers from search",
+        "text": "Buyers search for things like \"585 gold ring\" and filter. Your products are found by category, metal and price."
+      },
+      "whatsapp": {
+        "title": "Straight to WhatsApp",
+        "text": "No middleman: the buyer writes to you with the product name, code and link. The sale and payment are between you and the buyer."
+      }
+    },
+    "howTitle": "How it works",
+    "steps": {
+      "1": {
+        "title": "Account and store",
+        "text": "Name, phone, store name, city, opening hours and WhatsApp number. A few minutes."
+      },
+      "2": {
+        "title": "Documents",
+        "text": "Upload your tax ID (VÖEN) and store documents; the team checks them. The result appears in your dashboard."
+      },
+      "3": {
+        "title": "Products",
+        "text": "Add photos, fineness, weight and price. A product appears in the catalogue after review."
+      }
+    },
+    "demo": "See a sample store",
+    "demoNote": "Sample: an invented store and products, only to show how your page will look.",
+    "compareTitle": "Comparison",
+    "compareIntro": "Only features are compared. Each option has its place; Jeparla does not replace your Instagram page, it links to it.",
+    "compareCaption": "Three ways to show a store online",
+    "feature": "Feature",
+    "columns": {
+      "bio": "Instagram bio link",
+      "classifieds": "Classifieds site",
+      "jeparla": "Jeparla"
+    },
+    "rows": {
+      "structured": "Product card with fineness, weight and stones",
+      "autoPrice": "Automatic price from the metal rate",
+      "filters": "Fineness, metal and price filters",
+      "verified": "Document checks",
+      "whatsapp": "Buyer writes straight to WhatsApp",
+      "free": "Free listing"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "partly": "Partly",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "fee": {
+        "q": "How much does it cost to be on Jeparla?",
+        "a": "Listing your store and products in the catalogue is free. Commission terms are still being decided; if any apply, they will be agreed in advance in a written agreement, and nothing is charged without your consent."
+      },
+      "documents": {
+        "q": "Which documents do I need?",
+        "a": "Your tax ID (VÖEN), the store registration certificate or the hallmark stamp document (PDF, JPG or PNG). Documents are used only for the check and are never shown publicly."
+      },
+      "time": {
+        "q": "How long does it take?",
+        "a": "The registration form takes a few minutes. Document checks depend on the team's queue; you see the result in your dashboard."
+      },
+      "prices": {
+        "q": "Can I set my own prices?",
+        "a": "Yes. For each product you choose a fixed price or a \"metal-linked\" price. A metal-linked price is calculated from the Central Bank rate, the weight and your making charge."
+      },
+      "sales": {
+        "q": "Do sales go through Jeparla?",
+        "a": "No. Jeparla does not take orders or payments. The buyer writes to you on WhatsApp; the deal and payment are between you and the buyer."
+      }
+    },
+    "wizardTitle": "Registration"
+  },
   "Merchant": {
     "title": "Store cabinet",
     "nav": {
       "label": "Cabinet sections",
       "dashboard": "Dashboard",
       "products": "Products",
-      "profile": "Store profile"
+      "profile": "Store profile",
+      "documents": "Documents",
+      "notifications": "Notifications",
+      "unread": "{count} unread",
+      "import": "Bulk add"
     },
     "demoNote": "Demo mode: statistics are sample data and changes are not saved on the server. Drafts stay in this browser.",
     "status": {
@@ -631,7 +1017,8 @@
       "draftUntitled": "An untitled draft is saved in this browser.",
       "draftResume": "Continue",
       "demoData": "Sample data",
-      "fix": "Fix"
+      "fix": "Fix",
+      "notCounted": "Views are not counted yet"
     },
     "products": {
       "title": "Products",
@@ -658,7 +1045,10 @@
       "toggleFailed": "The status did not change. Try again.",
       "variants": "{count, plural, one {# variant} other {# variants}}",
       "fromPrice": "from {price}",
-      "adminNote": "Admin note"
+      "adminNote": "Admin note",
+      "bulkReview": "Send the drafts shown to review ({count})",
+      "bulkSent": "{done} of {total} products sent to review.",
+      "bulkFailed": "The bulk change failed. Try again."
     },
     "form": {
       "newTitle": "New product",
@@ -757,7 +1147,8 @@
         "labGrown": "Lab-grown"
       },
       "docs": {
-        "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document."
+        "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document.",
+        "separate": "Files in this step are not sent with the product. Add expertise documents (hallmark, lab report) in the Documents section through the protected upload."
       },
       "review": {
         "title": "Before sending",
@@ -878,7 +1269,129 @@
       "check": "The form has errors, check the fields in red.",
       "moneyInvalid": "Enter 0 or a positive amount, for example 12.50.",
       "percentInvalid": "Enter a percent between 0 and 1000.",
-      "maxBelowMin": "The maximum price cannot be lower than the minimum."
+      "maxBelowMin": "The maximum price cannot be lower than the minimum.",
+      "unavailable": "The server is not answering right now. Try again a little later.",
+      "network": "Could not connect. Check your internet and try again.",
+      "server": "Something went wrong. Try again.",
+      "rateLimited": "Too many attempts in a short time. Try again a little later."
+    },
+    "sampleOnly": "This section works with the real server only. In sample data mode no documents are uploaded and there are no notifications.",
+    "documents": {
+      "title": "Documents",
+      "intro": "Verification documents are visible to Jeparla administrators only: they are kept in private storage, with no public link.",
+      "listTitle": "Submitted documents",
+      "empty": "You have not sent any documents yet.",
+      "uploadTitle": "New document",
+      "kindLabel": "Document type",
+      "productLabel": "Product",
+      "productPick": "Choose the product",
+      "fileLabel": "File (PDF, JPEG or PNG, up to 10 MB)",
+      "declarationTitle": "Seller declaration",
+      "declarationDraft": "Draft: the text has not been approved by a lawyer yet.",
+      "accept": "I have read and confirm the declaration",
+      "submit": "Send the document",
+      "sending": "Sending",
+      "sent": "The document was sent and is waiting for review.",
+      "uploaded": "{name} · uploaded {date}",
+      "fashionNote": "Stores selling bijouterie do not upload documents: an administrator checks the seller.",
+      "errors": {
+        "fileRequired": "Choose a file.",
+        "fileType": "Only PDF, JPEG or PNG files can be uploaded.",
+        "fileSize": "The file cannot be larger than 10 MB.",
+        "productRequired": "Choose the product for an expertise document.",
+        "declaration": "Confirm the declaration to send.",
+        "upload": "The file was not uploaded. Check the connection and try again."
+      },
+      "kind": {
+        "TAX_ID": "Tax ID (VOEN) certificate",
+        "TRADE_LICENSE": "Trade licence",
+        "ASSAY_CERTIFICATE": "Assay (hallmark) certificate",
+        "LAB_REPORT": "Laboratory report (stone)"
+      },
+      "status": {
+        "PENDING": "In review",
+        "VERIFIED": "Approved",
+        "REJECTED": "Not accepted",
+        "CHANGES_REQUESTED": "Changes requested"
+      },
+      "reason": {
+        "UNREADABLE": "Not readable",
+        "EXPIRED": "Expired",
+        "MISMATCH": "Does not match the store details",
+        "WRONG_TYPE": "Wrong document type",
+        "HALLMARK_MISSING": "Hallmark not visible",
+        "AUTHENTICITY": "Authenticity not confirmed"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "intro": "Decisions about your store, products and documents appear here.",
+      "empty": "No notifications.",
+      "readAll": "Mark all as read",
+      "unread": "New",
+      "open": "Details"
+    },
+    "import": {
+      "title": "Bulk add",
+      "intro": "Add many products at once: from a spreadsheet (CSV), or from photos and a PDF catalog. Everything starts as a draft; nothing appears on the site by itself.",
+      "csvTitle": "From a spreadsheet (CSV)",
+      "csvStep1": "Download the template and open it in Excel or Google Sheets.",
+      "csvStep2": "Write one product per row; category, name (az) and price are required.",
+      "csvStep3": "Save the file as CSV and upload it here.",
+      "template": "Template ({lang})",
+      "csvLabel": "CSV file",
+      "csvHint": "At most 1 MB and 200 rows. Comma, semicolon or TAB separated; 4,20 and 4.20 are the same.",
+      "notPrecious": "If the file has bijouterie: I confirm those products are not precious metal or stones.",
+      "importSubmit": "Upload file",
+      "importing": "Uploading",
+      "importDone": "{rows, plural, one {# row} other {# rows}} read: {created, plural, one {# product} other {# products}} created as drafts, {failed, plural, one {# row} other {# rows}} with errors.",
+      "importRepeated": "{count, plural, one {# row was} other {# rows were}} uploaded before and not created again.",
+      "toProducts": "See products",
+      "errorsTitle": "Rows with errors",
+      "line": "Line",
+      "column": "Column",
+      "problem": "Reason",
+      "draftsTitle": "From photos and PDF",
+      "draftsIntro": "Each photo becomes a draft. Photos are taken out of a PDF catalog; when a page has one product, its name, price and weight are read as suggestions. Check them and finish each draft in the product form.",
+      "takePhoto": "Take a photo",
+      "choosePhotos": "Choose photos",
+      "choosePdf": "PDF catalog",
+      "draftLimits": "Photo: JPEG, PNG or WebP, at most 15 MB. PDF: at most 20 MB and 30 pages, no password. At most 300 drafts a day.",
+      "uploading": "Uploading and reading",
+      "uploadingMany": "Uploading: {done} / {total}",
+      "photosDone": "{count, plural, =0 {No draft was created.} one {# draft created.} other {# drafts created.}}",
+      "pdfDone": "{count, plural, =0 {No product photo was found in the PDF.} one {# draft created from the PDF.} other {# drafts created from the PDF.}}",
+      "pdfLimited": "Not all were taken because of the daily or file limit.",
+      "draftsListTitle": "Drafts",
+      "draftsListIntro": "Only you see drafts. Add the photo and details in the product form and save it, then delete the draft.",
+      "draftsEmpty": "No drafts yet.",
+      "draftLabel": "Draft {id}",
+      "draftPhotoAlt": "{name}: draft photo",
+      "pdfPage": "PDF, page {page}",
+      "suggestionsTitle": "Suggested from the PDF (check)",
+      "name": "Name",
+      "price": "Price",
+      "weight": "Weight",
+      "makeProduct": "Create product",
+      "delete": "Delete",
+      "deleteDraft": "Delete draft {name}",
+      "deleteFailed": "Could not delete. Try again.",
+      "source": {
+        "PHOTO": "Photo",
+        "CAMERA": "Camera",
+        "PDF": "PDF"
+      },
+      "errors": {
+        "fileRequired": "Choose a file.",
+        "csvType": "Choose a CSV file (.csv).",
+        "csvSize": "The file is too large (at most 1 MB).",
+        "importFile": "The file could not be read. Save it as CSV again.",
+        "photoType": "only JPEG, PNG or WebP.",
+        "photoSize": "a photo can be at most 15 MB.",
+        "pdfType": "Choose a PDF file.",
+        "pdfSize": "The PDF can be at most 20 MB.",
+        "upload": "The file was not uploaded. Check the connection and try again."
+      }
     }
   },
   "Admin": {
@@ -950,7 +1463,12 @@
       "docs": "Documents",
       "view": "View document: {name}",
       "viewText": "Documents are stored privately and open through a short-lived signed link on every view. Demo mode has no files.",
-      "pages": "{count, plural, one {# page} other {# pages}}"
+      "pages": "{count, plural, one {# page} other {# pages}}",
+      "product": "Product: {name}",
+      "viewFailed": "The document did not open. Try again.",
+      "owner": "Owner",
+      "contact": "Contact",
+      "taxId": "Tax ID"
     },
     "checkStatus": {
       "ALL": "All",
@@ -1053,7 +1571,12 @@
       "self": "You can't change your own role.",
       "sameRole": "The new role is the same as the current one.",
       "lastAdmin": "This is the only admin; make someone else admin first.",
-      "largeChange": "The change is above the limit: confirm that you checked the source."
+      "largeChange": "The change is above the limit: confirm that you checked the source.",
+      "codeRequired": "Choose the reason type.",
+      "rateLimited": "Too many requests. Try again in a moment.",
+      "ownsStore": "This user owns a store: hand it over or block the store first.",
+      "resetNotAllowed": "No link for this account: its email is verified, it is an admin, or it is blocked.",
+      "fourEyes": "You opened this request. Another admin has to decide on suspending the store (four-eyes rule)."
     },
     "metal": {
       "GOLD": "Gold",
@@ -1092,7 +1615,8 @@
       "USER": "User",
       "CATALOG": "Catalog",
       "PRICE": "Metal price",
-      "REPORT": "Complaint"
+      "REPORT": "Complaint",
+      "DOCUMENT": "Document"
     },
     "auditAction": {
       "approve": "Approved",
@@ -1140,30 +1664,24 @@
       "label": "Shown as",
       "labelHint": "E.g. 585 (14K).",
       "synonyms": "Search synonyms",
-      "synonymsIntro": "Searching for any word of a group gives the same results.",
-      "addSynonym": "Add synonym group",
-      "synonymText": "The main word and its spellings or synonyms.",
+      "synonymsIntro": "Searching for either word of a pair gives the same results.",
+      "addSynonym": "Add synonym pair",
+      "synonymText": "Two words, e.g. serqa and sırğa.",
       "noSynonyms": "No synonyms yet.",
-      "language": "Language",
-      "lang": {
-        "az": "Azerbaijani",
-        "en": "English",
-        "ru": "Russian"
-      },
-      "term": "Main word",
-      "words": "Synonyms",
-      "wordsHint": "Separate with commas, at most 10.",
+      "term": "Word",
       "save": "Save",
       "delete": "Delete",
       "deleteTitle": "Delete {name}?",
       "deleteText": "This can't be undone and is written to the audit log.",
       "deleted": "{name} deleted",
-      "added": "{name} added"
+      "added": "{name} added",
+      "synonym": "Its synonym",
+      "same": "is the same as"
     },
     "users": {
       "title": "Users",
       "intro": "Accounts and roles. Role changes are written to the audit log with a reason.",
-      "search": "Name, email or store",
+      "search": "Name, email, phone or store",
       "roleLabel": "Role",
       "count": "{count, plural, =0 {No users} one {# user} other {# users}}",
       "since": "Joined: {date}",
@@ -1174,14 +1692,32 @@
       "changeTitle": "Change the role of {name}?",
       "changeText": "The new role applies from the next sign-in.",
       "newRole": "New role",
-      "adminWarning": "An admin can manage every store, product and price."
+      "adminWarning": "An admin can manage every store, product and price.",
+      "active": "Active",
+      "blocked": "Blocked",
+      "block": "Block",
+      "unblock": "Unblock",
+      "blockTitle": "Block {name}?",
+      "blockText": "The account is signed out everywhere and can't sign in. The reason stays in the audit log.",
+      "unblockTitle": "Unblock {name}?",
+      "unblockText": "The account can sign in again.",
+      "resetLink": "Password reset link",
+      "resetTitle": "Create a password reset link for {name}?",
+      "resetText": "This seller has no email. Send the link only to their own number ({phone}).",
+      "linkTitle": "One-time link for {name}",
+      "linkExpires": "The link works once and is valid until {date}.",
+      "linkWarning": "The link is shown only now. Whoever opens it can change the password: don't store it anywhere and send it only to the seller.",
+      "linkLabel": "Link",
+      "copy": "Copy",
+      "copied": "Copied"
     },
     "reports": {
       "title": "Complaints",
-      "intro": "What buyers reported about products.",
+      "intro": "What buyers reported about products and stores.",
       "search": "Product, store or text",
       "count": "{count, plural, =0 {No complaints} one {# complaint} other {# complaints}}",
-      "queueEmpty": "No open complaints."
+      "queueEmpty": "No open complaints.",
+      "aboutStore": "Complaint about the store"
     },
     "audit": {
       "title": "Audit log",
@@ -1215,6 +1751,96 @@
       "largeWarning": "The change is {change}, above the {limit}% limit.",
       "confirmLarge": "I checked the source and the price is right",
       "overridden": "{name} price changed"
+    },
+    "rejectReason": {
+      "label": "Reason type",
+      "pick": "Choose",
+      "UNREADABLE": "Not readable",
+      "EXPIRED": "Expired",
+      "MISMATCH": "Does not match the store details",
+      "WRONG_TYPE": "Wrong document type",
+      "HALLMARK_MISSING": "Hallmark not visible",
+      "AUTHENTICITY": "Authenticity not confirmed"
+    },
+    "auditCode": {
+      "STORE_CREATED": "Store created",
+      "STORE_UPDATED": "Store edited",
+      "STORE_APPROVED": "Store approved",
+      "STORE_REJECTED": "Store rejected",
+      "STORE_BLOCKED": "Store blocked",
+      "STORE_PENDING": "Store sent back to review",
+      "SELLER_VERIFIED": "Seller verified",
+      "SELLER_REJECTED": "Seller check rejected",
+      "DECLARATION_CONFIRMED": "Seller confirmed the declaration",
+      "PRODUCT_CREATED": "Product created",
+      "PRODUCT_UPDATED": "Product edited",
+      "PRODUCT_DELETED": "Product deleted",
+      "PRODUCT_STATUS_CHANGED": "Product status changed",
+      "PRODUCT_APPROVED": "Product approved",
+      "PRODUCT_RETURNED": "Product returned",
+      "PRODUCT_DEACTIVATED": "Product taken down",
+      "VARIANT_ADDED": "Variant added",
+      "VARIANT_UPDATED": "Variant edited",
+      "VARIANT_REMOVED": "Variant removed",
+      "IMAGE_ADDED": "Image added",
+      "IMAGE_REMOVED": "Image removed",
+      "DOCUMENT_UPLOADED": "Document uploaded",
+      "DOCUMENT_VIEWED": "Document viewed",
+      "DOCUMENT_APPROVED": "Document approved",
+      "DOCUMENT_REJECTED": "Document rejected",
+      "DOCUMENT_CHANGES_REQUESTED": "New document requested",
+      "METAL_PRICE_ACCEPTED": "Metal price applied",
+      "METAL_PRICE_DISCARDED": "Metal price discarded",
+      "METAL_PRICE_OVERRIDDEN": "Metal price set by hand",
+      "CATEGORY_CREATED": "Category added",
+      "CATEGORY_UPDATED": "Category edited",
+      "CATEGORY_DELETED": "Category deleted",
+      "FINENESS_CREATED": "Fineness added",
+      "FINENESS_UPDATED": "Fineness edited",
+      "FINENESS_DELETED": "Fineness deleted",
+      "SYNONYM_CREATED": "Synonym added",
+      "SYNONYM_UPDATED": "Synonym edited",
+      "SYNONYM_DELETED": "Synonym deleted",
+      "USER_ROLE_CHANGED": "Role changed",
+      "USER_BLOCKED": "Account blocked",
+      "USER_UNBLOCKED": "Account unblocked",
+      "REPORT_RESOLVED": "Complaint resolved",
+      "REPORT_DISMISSED": "Complaint dismissed",
+      "PASSWORD_RESET_LINK_ISSUED": "Password reset link issued",
+      "PASSWORD_RESET_REQUESTED": "Password reset requested",
+      "PASSWORD_RESET": "Password changed",
+      "EMAIL_VERIFIED": "Email verified"
+    },
+    "suspensions": {
+      "title": "Suspension requests",
+      "intro": "Rejecting a document for authenticity opens a request to suspend the store. The store is suspended only after a second admin confirms it, and then the seller is notified.",
+      "sampleOnly": "There are no suspension requests in sample data mode. This section works only with the real API.",
+      "empty": "No requests with this status.",
+      "status": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Suspended",
+        "DISMISSED": "Dismissed"
+      },
+      "requested": "Opened",
+      "decided": "Decision",
+      "byAdmin": "{date}, admin #{admin}",
+      "deletedAccount": "deleted account",
+      "document": "Document",
+      "openDocument": "Open document",
+      "internalNote": "Internal note",
+      "decisionNote": "Decision note",
+      "confirm": "Confirm suspension",
+      "dismiss": "Dismiss request",
+      "confirmNamed": "Confirm suspending {name}",
+      "dismissNamed": "Dismiss the request for {name}",
+      "confirmTitle": "Suspend {name}?",
+      "confirmText": "The store is blocked, all its products leave the catalog and the seller gets the notice with the draft legal text. The decision goes to the audit log.",
+      "dismissTitle": "Dismiss the request for {name}?",
+      "dismissText": "The store keeps working and the seller is not notified. The decision goes to the audit log.",
+      "noteLabel": "Internal note (optional)",
+      "noteHint": "Kept only in the audit log; the seller never sees it. At most 1000 characters.",
+      "doneConfirm": "{name} is suspended.",
+      "doneDismiss": "The request for {name} is dismissed."
     }
   },
   "MetalPrices": {
@@ -1230,7 +1856,10 @@
     "perGram": "1 gram",
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
-    "empty": "Today's price has not arrived yet."
+    "empty": "Today's price has not arrived yet.",
+    "calculatorLink": "Calculate the metal value of a piece",
+    "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it.",
+    "allPrices": "All prices and how they are calculated"
   },
   "Hero": {
     "label": "Jeparla: jewelry collections",
@@ -1264,5 +1893,145 @@
     "copy": "Copy link",
     "copied": "Link copied",
     "copyFailed": "Could not copy the link"
+  },
+  "Calculator": {
+    "title": "Gold and silver calculator",
+    "description": "Today's metal value of gold and silver by weight and fineness, in manat, at the daily rate of the Central Bank of Azerbaijan.",
+    "intro": "Enter the weight and fineness of a piece to see what its metal is worth today at the rate of the Central Bank of Azerbaijan (CBAR).",
+    "formLabel": "Metal value calculation",
+    "weight": "Weight (grams)",
+    "weightHint": "For example 4.2 or 4,2; at most 3 decimals.",
+    "metal": "Metal",
+    "fineness": "Fineness",
+    "submit": "Calculate",
+    "resultLabel": "Metal value",
+    "prompt": "Enter the weight to see the metal value.",
+    "resultSummary": "{weight}, {metal} {fineness}",
+    "gramPrice": "{metal} {fineness}, 1 gram: {price}",
+    "purePrice": "CBAR price ({metal}, pure metal): {gram} per gram, {ounce} per troy ounce",
+    "weekendNote": "On weekends and holidays the last rate CBAR published is used.",
+    "notShopPrice": "This is the value of the metal only, not a shop price: workmanship, stones and the store's margin are extra.",
+    "products": "See {metal} {fineness} jewelry in the catalog",
+    "errors": {
+      "empty": "Enter the weight.",
+      "format": "Enter the weight as a number, for example 4.2.",
+      "notPositive": "The weight must be greater than zero.",
+      "tooPrecise": "Use at most 3 decimals (down to a milligram).",
+      "tooLarge": "The weight cannot be more than 10,000 grams."
+    },
+    "unavailable": "Metal prices could not be loaded right now, so no value is shown. Check again a little later.",
+    "noPrices": "Today's CBAR price has not arrived yet, so no value is shown.",
+    "loading": "Loading metal prices",
+    "howTitle": "How the value is calculated",
+    "howText": "Metal value = weight in grams × fineness ÷ 1000 × CBAR price of 1 gram of pure metal. CBAR publishes metal rates in manat per troy ounce (31.1034768 g); we convert them to grams and round the result to the nearest qəpik.",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "price": {
+        "q": "Why is a shop price higher than the metal value?",
+        "a": "A shop price also includes workmanship, stones, the store's margin and other costs. The calculator shows only the value of the metal in the piece."
+      },
+      "fineness": {
+        "q": "What does fineness 585 mean?",
+        "a": "Fineness is the share of pure metal in parts per thousand: 585 gold is 58.5% pure gold, 925 silver is 92.5% pure silver."
+      },
+      "source": {
+        "q": "Where do the prices come from?",
+        "a": "From the daily precious metal rates of the Central Bank of Azerbaijan (CBAR). On weekends and holidays the last published rate is used."
+      }
+    }
+  },
+  "SampleData": {
+    "label": "Sample data",
+    "banner": "The stores, products and prices on this site are samples, not real."
+  },
+  "Legal": {
+    "draftTitle": "Draft.",
+    "draftText": "This text has not been approved by the owner and a lawyer yet and is not in force. The marked places will be filled in.",
+    "reviewLabel": "Awaiting review:"
+  },
+  "PricesPage": {
+    "title": "Gold and silver price per gram today",
+    "description": "Today's price of 1 gram of gold, silver and platinum by fineness, in Azerbaijani manat, calculated from the daily metal rates of the Central Bank of Azerbaijan (CBAR).",
+    "answer": "On <date>{day}</date>, by the CBAR rate, 1 gram of 585 gold costs {price}.",
+    "tableTitle": "Price of 1 gram by metal and fineness",
+    "caption": "Rate date: <date>{day}</date>. Metal value only, in manat.",
+    "metal": "Metal",
+    "fineness": "Fineness",
+    "perGram": "1 gram",
+    "source": "Source:",
+    "sourceLink": "CBAR daily bank metal rates",
+    "methodTitle": "How the prices are calculated",
+    "method": {
+      "source": "Every business day the Central Bank of Azerbaijan (CBAR) publishes rates for bank metals (gold, silver, platinum, palladium) in manat per troy ounce of pure metal.",
+      "gram": "The ounce price is divided by 31.1034768 (the grams in a troy ounce) to get the price of 1 gram of pure metal.",
+      "fineness": "The pure gram price is multiplied by the fineness: 585 gold is 58.5% gold, so its gram price is 0.585 of the pure price. The result is rounded to 0.01 manat.",
+      "weekend": "On weekends and holidays CBAR publishes no new rate, so the last published rate stays in force; the date above is the date of that rate.",
+      "jewelry": "These are metal values, not jewelry prices. A piece also includes labor, stones and the store's margin, and the store confirms the final price."
+    }
+  },
+  "Verified": {
+    "title": "How we verify",
+    "description": "What the Jeparla Verified badge means and what it does not: seller, document and physical expertise checks, the complaint process and the seller code of conduct.",
+    "lead": "\"Jeparla Verified\" is not one check but three. Each is shown separately on product and store pages. Here we say plainly what each check covers and what it does not.",
+    "badgeRule": "The badge appears only when both the seller check and the document check have passed.",
+    "checksTitle": "Three checks",
+    "what": "What is checked",
+    "who": "Who checks",
+    "not": "What is not checked",
+    "checks": {
+      "seller": {
+        "title": "Seller",
+        "what": "That the store is real: name, address, contact number and tax ID (VÖEN) or sole trader registration.",
+        "who": "The Jeparla team, by hand.",
+        "not": "It does not check service quality or individual sales."
+      },
+      "documents": {
+        "title": "Documents",
+        "what": "Documents the seller uploads: registration certificate, VÖEN certificate or hallmark stamp document. Documents are stored privately and never shown publicly.",
+        "who": "The Jeparla team, by hand; every decision is logged.",
+        "not": "It does not confirm the fineness and weight of each product separately."
+      },
+      "expertise": {
+        "title": "Physical expertise",
+        "what": "An expert looks at the product itself: fineness, weight and stones.",
+        "who": "An independent expert or laboratory. Expertise was done only where the product shows \"Verified\".",
+        "not": "We do not claim a product marked \"Not performed\" was physically checked."
+      }
+    },
+    "limitsTitle": "What verification does not mean",
+    "limits": "No check is a full guarantee. Before buying, check the hallmark, the weight and the receipt in the store. The sale and payment are between the store and the buyer.",
+    "complaintTitle": "What happens after a complaint",
+    "complaint": {
+      "1": "On the product page you choose a reason under \"Report\" and add a note. No account needed.",
+      "2": "The complaint goes to the admin queue; the team checks the product, the store and the documents again.",
+      "3": "If needed, the product is hidden or returned to the seller for correction. For serious or repeated violations the store can be suspended."
+    },
+    "responseTime": "We do not give a response time yet: we will only publish one we can actually keep.",
+    "codeTitle": "Seller code of conduct",
+    "codeIntro": "This is what we expect from stores selling on Jeparla. Violations are checked through complaints.",
+    "code": {
+      "1": "Fineness and weight are stated correctly and match the product's hallmark.",
+      "2": "No unhallmarked precious metal items are sold.",
+      "3": "If the product and terms have not changed, the buyer is not quoted a higher price than shown on Jeparla.",
+      "4": "Stones are described honestly: natural, lab-grown or imitation; certificate numbers are given correctly.",
+      "5": "Photos show the actual product; AI-generated images are labelled.",
+      "6": "No fake reviews, fake discounts or invented numbers.",
+      "7": "The buyer's contact details are used only to answer them and for the sale."
+    },
+    "faqTitle": "Questions",
+    "faq": {
+      "meaning": {
+        "q": "What does the Jeparla Verified badge mean?",
+        "a": "It shows that the store passed the seller check and the document check. Physical expertise is a separate status shown on each product."
+      },
+      "guarantee": {
+        "q": "Is the badge a guarantee?",
+        "a": "No. Checks lower the risk but are not a full guarantee. Before buying, check the hallmark and weight and ask for a receipt."
+      },
+      "report": {
+        "q": "What should I do if a product looks suspicious?",
+        "a": "Press \"Report\" on the product page. The team checks the product and the store again."
+      }
+    }
   }
 }

@@ -1,6 +1,7 @@
 package az.jeparla.store.dto;
 
 import az.jeparla.verification.dto.VerificationDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -17,5 +18,7 @@ public record StoreSummaryDto(
         String city,
         @Schema(nullable = true) String logoUrl,
         VerificationDto verification,
-        long productCount) {
+        long productCount,
+        @Schema(description = "Kilometres from the near point, 0.1 km; only with ?near=", example = "2.4")
+        @JsonInclude(JsonInclude.Include.NON_NULL) String distanceKm) {
 }

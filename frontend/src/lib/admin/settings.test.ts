@@ -9,7 +9,6 @@ import {
   overrideSchema,
   priceJump,
   roleSchema,
-  splitSynonyms,
   synonymSchema,
 } from "./settings";
 
@@ -40,11 +39,12 @@ describe("catalog schemas", () => {
     }
   });
 
-  it("splits synonyms on commas and caps the group", () => {
-    expect(splitSynonyms(" uzuk, üzüy ,,")).toEqual(["uzuk", "üzüy"]);
-    const many = Array.from({ length: 11 }, (_, i) => `s${i}`);
-    const r = synonymSchema.safeParse({ locale: "az", term: "üzük", synonyms: many });
-    expect(fieldErrors(r.error!).synonyms).toBe("tooMany");
+  it("takes a synonym as a pair of two different words", () => {
+    expect(synonymSchema.safeParse({ term: "serqa", synonym: "sırğa" }).success).toBe(true);
+    const same = synonymSchema.safeParse({ term: "Üzük", synonym: "üzük" });
+    expect(fieldErrors(same.error!).synonym).toBe("invalid");
+    const empty = synonymSchema.safeParse({ term: "üzük", synonym: " " });
+    expect(fieldErrors(empty.error!).synonym).toBe("required");
   });
 });
 

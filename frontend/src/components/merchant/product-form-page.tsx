@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing } from "@/i18n/routing";
-import { api as publicApi } from "@/lib/api";
+import { api as publicApi, USING_MOCK } from "@/lib/api";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
 import { ProductForm } from "./product-form";
@@ -56,6 +56,7 @@ export async function ProductFormPage({ id }: { id?: string }) {
           }))}
           quotes={quotes}
           sellerApproved={store.sellerStatus === "VERIFIED"}
+          requireDocs={USING_MOCK}
         />
       </MerchantIntl>
     </div>
