@@ -639,7 +639,9 @@
       "toggleFailed": "The status did not change. Try again.",
       "variants": "{count, plural, one {# variant} other {# variants}}",
       "fromPrice": "from {price}",
-      "adminNote": "Admin note"
+      "adminNote": "Admin note",
+      "aiStudio": "AI Studio",
+      "aiStudioNamed": "{name}: AI Studio"
     },
     "form": {
       "newTitle": "New product",
@@ -860,6 +862,76 @@
       "moneyInvalid": "Enter 0 or a positive amount, for example 12.50.",
       "percentInvalid": "Enter a percent between 0 and 1000.",
       "maxBelowMin": "The maximum price cannot be lower than the minimum."
+    },
+    "ai": {
+      "title": "AI Studio",
+      "intro": "Make a studio-style or on-model image from the product's original photo. You review every result.",
+      "back": "{name}: back to editing",
+      "notConfigured": {
+        "title": "AI Studio is not connected yet",
+        "text": "Once an image service is connected you can create new images here. Nothing is generated now and the original photos stay as they are."
+      },
+      "rules": {
+        "original": "The original photo never changes and always stays first.",
+        "approval": "No result is published until you approve it.",
+        "badge": "Every approved AI image shows the \"AI-generated\" badge."
+      },
+      "sourceLegend": "Original photo",
+      "sourceAlt": "Original photo {n}",
+      "noImages": "Add at least one original photo to the product first.",
+      "kindLegend": "What to create",
+      "kinds": {
+        "AI_PHOTOSHOOT": {
+          "title": "Studio photo",
+          "text": "Cream background, soft golden light, 4:5 crop. The item's shape and colour stay the same."
+        },
+        "VIRTUAL_TRY_ON": {
+          "title": "On a model",
+          "text": "The item worn by an AI model (not a real person), focused on where it is worn."
+        }
+      },
+      "create": "Create",
+      "quota": "Left today: {left} / {limit}",
+      "queued": "The job is queued.",
+      "jobsTitle": "Jobs",
+      "noJobs": "No jobs yet.",
+      "resultAlt": "Result {n}",
+      "aiBadge": "AI-generated",
+      "approve": "Approve and add",
+      "reject": "Reject",
+      "retry": "Try again ({attempts}/{max})",
+      "delete": "Delete",
+      "done": {
+        "approve": "The image was added to the product and sent to review.",
+        "reject": "The result was rejected and deleted.",
+        "retry": "The job is queued again.",
+        "delete": "The job was deleted."
+      },
+      "status": {
+        "QUEUED": "Queued",
+        "PROCESSING": "In progress",
+        "REVIEW_REQUIRED": "Waiting for your review",
+        "APPROVED": "Approved",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again a little later.",
+        "ai": {
+          "not_configured": "AI Studio is not connected yet.",
+          "cost_limit": "AI Studio has reached its limit for this month. Please try again later.",
+          "provider_error": "The service could not make the image. You can try again.",
+          "provider_refused": "The service refused this photo. Choose another original photo.",
+          "timeout": "The service did not answer in time. You can try again.",
+          "bad_result": "The result is not usable. You can try again.",
+          "source_gone": "The original photo was removed. Create a new job.",
+          "job_state": "This job cannot do that in its current state.",
+          "no_attempts_left": "This job has no attempts left.",
+          "source_image": "Choose an original photo of this product.",
+          "source_ai_generated": "A new image cannot be made from an AI image. Choose the original photo.",
+          "quota": "Today's limit is used up. Please try again tomorrow."
+        }
+      }
     }
   },
   "Admin": {
