@@ -85,5 +85,15 @@ public class StorageConfig {
         public void deletePrivate(String key) {
             throw unavailable();
         }
+
+        @Override
+        public void putPrivate(String key, byte[] bytes, String contentType) {
+            throw unavailable();
+        }
+
+        @Override
+        public void publishPrivate(String privateKey, String publicKey) {
+            throw unavailable();
+        }
     }
 }

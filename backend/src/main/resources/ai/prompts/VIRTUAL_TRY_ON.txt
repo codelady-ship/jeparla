@@ -1,0 +1,9 @@
+Photograph of the exact jewelry item shown in the input image, worn by an AI-generated adult model (not a real
+person, no resemblance to any real person).
+Keep the item identical: same shape, metal colour, stones, engraving, proportions and true size relative to the
+body. Do not add, remove or redesign any part of the item. Do not add text, logos or watermarks.
+Framing: close crop on the body part that wears the item ({pose}); the item is the sharpest part of the image.
+Model: {audience}; simple, neutral clothing; calm expression.
+Background: plain warm cream (#F7F3EA) or a soft neutral studio backdrop.
+Light: soft, diffused, slightly golden; natural skin texture.
+Format: 4:5 portrait, photographic, calm premium look.

@@ -1,0 +1,7 @@
+Studio product photograph of the exact jewelry item shown in the input image.
+Keep the item identical: same shape, metal colour, stones, engraving, proportions and size. Do not add, remove or
+redesign any part of the item. Do not add text, logos or watermarks.
+Background: plain warm cream (#F7F3EA), seamless, no props.
+Light: soft, diffused, slightly golden key light from the upper left; gentle natural shadow under the item.
+Composition: item centred, about 70% of the frame, sharp focus on the whole item.
+Format: 4:5 portrait, photographic, calm premium look.
