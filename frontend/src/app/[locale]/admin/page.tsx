@@ -20,7 +20,7 @@ async function Overview() {
   const o = await api.overview();
   const num = (n: number) => formatDecimal(String(n), locale);
 
-  const queues = [
+  const queues: { icon: typeof Store; label: string; value: number; href: string }[] = [
     {
       icon: Store,
       label: t("pendingStores"),
@@ -39,12 +39,7 @@ async function Overview() {
       value: o.pendingChecks,
       href: "/admin/verification",
     },
-    {
-      icon: Flag,
-      label: t("openReports"),
-      value: o.openReports,
-      href: "/admin/reports",
-    },
+    { icon: Flag, label: t("openReports"), value: o.openReports, href: "/admin/reports" },
     {
       icon: Coins,
       label: t("heldPrices"),
@@ -94,7 +89,7 @@ async function Overview() {
           {[
             { label: t("stores"), value: num(o.stores) },
             { label: t("liveProducts"), value: num(o.liveProducts) },
-            { label: t("metalPrice"), value: shortDate(o.metalPriceDate) },
+            { label: t("metalPrice"), value: o.metalPriceDate ? shortDate(o.metalPriceDate) : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-1 rounded-lg border p-5">
               <dt className="text-sm text-muted-foreground">{label}</dt>
