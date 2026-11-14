@@ -80,7 +80,12 @@ async function Dashboard() {
                   </p>
                   {USING_MOCK && <Badge variant="outline">{t("demoData")}</Badge>}
                 </div>
-                <p className="text-3xl font-semibold tabular-nums">{num(value)}</p>
+                {value === null ? (
+                  // Views are not counted yet: say so instead of showing an invented number.
+                  <p className="text-base text-muted-foreground">{t("notCounted")}</p>
+                ) : (
+                  <p className="text-3xl font-semibold tabular-nums">{num(value)}</p>
+                )}
                 <p className="text-xs text-muted-foreground">{t("last30")}</p>
               </div>
             ))}

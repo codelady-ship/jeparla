@@ -9,6 +9,7 @@ const COLUMNS = [
     links: [
       { href: "/about", label: "Footer.aboutUs" },
       { href: "/contact", label: "Footer.contact" },
+      { href: "/help", label: "Footer.help" },
     ],
   },
   {
@@ -17,6 +18,8 @@ const COLUMNS = [
       { href: "/products", label: "Nav.catalog" },
       { href: "/stores", label: "Nav.stores" },
       { href: "/prices", label: "Footer.metalPrices" },
+      { href: "/size-guide", label: "Footer.sizeGuide" },
+      { href: "/calculator", label: "Footer.calculator" },
     ],
   },
   {

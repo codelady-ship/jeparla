@@ -1,10 +1,13 @@
 package az.jeparla.store;
 
 import az.jeparla.common.dto.PageDto;
+import az.jeparla.common.error.ApiException;
 import az.jeparla.common.web.CachePolicy;
 import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductSummaryDto;
 import az.jeparla.store.dto.StoreDto;
+import az.jeparla.store.dto.StoreFactsDto;
+import az.jeparla.store.dto.StorePreviewDto;
 import az.jeparla.store.dto.StoreSummaryDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +17,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +33,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
 
     private final StoreCatalogService stores;
+    private final StoreFactsService facts;
 
-    public StoreController(StoreCatalogService stores) {
+    public StoreController(StoreCatalogService stores, StoreFactsService facts) {
         this.stores = stores;
+        this.facts = facts;
     }
 
     @GetMapping
@@ -40,8 +47,17 @@ public class StoreController {
     public ResponseEntity<List<StoreSummaryDto>> list(
             @Parameter(description = "Words that start a word of the store name or city")
             @RequestParam(required = false) @Size(max = ProductQuery.MAX_QUERY_LENGTH) String q,
-            @Parameter(description = "City, exact, e.g. Bakı") @RequestParam(required = false) @Size(max = 120) String city) {
-        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.list(q, city));
+            @Parameter(description = "City, exact, e.g. Bakı") @RequestParam(required = false) @Size(max = 120) String city,
+            @Parameter(description = "Buyer's position \"latitude,longitude\" for nearest first with distanceKm (#116);"
+                    + " used for this answer only, never stored or logged, and the answer is not cached")
+            @RequestParam(required = false) @Size(max = 64) String near) {
+        if (near == null || near.isBlank()) {
+            return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.list(q, city));
+        }
+        GeoPoint point = GeoPoint.parse(near)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "catalog.invalid_near", "near"));
+        // A personal answer: no shared cache keeps it.
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(stores.list(q, city, point));
     }
 
     @GetMapping("/{slug}")
@@ -61,5 +77,27 @@ public class StoreController {
     public ResponseEntity<PageDto<ProductSummaryDto>> products(@PathVariable String slug,
             @Valid @ParameterObject ProductQuery query) {
         return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.products(slug, query));
+    }
+
+    @GetMapping("/{slug}/facts")
+    @Operation(summary = "Trust facts of a store",
+            description = "Measured from the database on the request (#108): months on Jeparla, listed products, "
+                    + "share with verified expertise and with a metal-linked price, latest catalog change, verified "
+                    + "store documents. Unknown facts are null, never a made-up zero; no ratings, no WhatsApp "
+                    + "response time.")
+    @ApiResponse(responseCode = "200", description = "Facts")
+    @ApiResponse(responseCode = "404", description = "Unknown or not approved")
+    public ResponseEntity<StoreFactsDto> facts(@PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(facts.facts(slug));
+    }
+
+    @GetMapping("/{slug}/preview")
+    @Operation(summary = "Link preview of a store",
+            description = "Open Graph data for the store page and its share image (#100): name, city, verified "
+                    + "badge, product count, cover image and logo.")
+    @ApiResponse(responseCode = "200", description = "Preview")
+    @ApiResponse(responseCode = "404", description = "Unknown or not approved")
+    public ResponseEntity<StorePreviewDto> preview(@PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(facts.previewBySlug(slug));
     }
 }

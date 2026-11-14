@@ -39,6 +39,12 @@ public interface VerificationDocumentRepository extends JpaRepository<Verificati
     @Query("select d.status from VerificationDocument d where d.store.id = :storeId and d.checkKind = :checkKind")
     List<DocumentStatus> statusesOfStore(@Param("storeId") long storeId, @Param("checkKind") CheckKind checkKind);
 
+    /** Kinds of the store's documents (DOCUMENTS check) an admin approved: the store facts (#108). */
+    @Query("select distinct d.kind from VerificationDocument d where d.store.id = :storeId"
+            + " and d.checkKind = az.jeparla.verification.CheckKind.DOCUMENTS"
+            + " and d.status = az.jeparla.verification.DocumentStatus.VERIFIED")
+    List<DocumentKind> verifiedDocumentKindsOfStore(@Param("storeId") long storeId);
+
     /** Statuses of the expertise documents of a product. */
     @Query("select d.status from VerificationDocument d where d.product.id = :productId"
             + " and d.checkKind = az.jeparla.verification.CheckKind.EXPERTISE")

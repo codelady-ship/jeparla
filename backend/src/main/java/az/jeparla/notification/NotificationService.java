@@ -60,14 +60,18 @@ public class NotificationService {
         if (note != null && !note.isBlank()) {
             body = body + "\n\n" + messages.getMessage("notification.note", new Object[] {note.strip()}, locale);
         }
+        String appBody = body;
+        String emailBody = body;
         if (kind.supportContact()) {
-            body = body + "\n\n" + supportLine(locale);
+            appBody = appBody + "\n\n" + supportLine(locale, support.helpPath(language));
+            emailBody = emailBody + "\n\n" + supportLine(locale, support.helpUrl(language));
         }
-        Notification notification = notifications.save(new Notification(recipient, kind, language, title, body, link));
+        Notification notification = notifications.save(
+                new Notification(recipient, kind, language, title, appBody, link));
         if (recipient.getEmail() != null && !recipient.getEmail().isBlank()) {
             String footer = messages.getMessage("notification.email.footer", null, locale);
             outbox.save(new EmailOutboxMessage(notification.getId(), recipient.getId(), recipient.getEmail(), language,
-                    title, body + "\n\n" + footer, clock.instant()));
+                    title, emailBody + "\n\n" + footer, clock.instant()));
         }
         return notification;
     }
@@ -103,14 +107,14 @@ public class NotificationService {
     }
 
     /**
-     * Where to turn (#138): the configured support email and URL, or else the in-app help page. The email is
-     * read outside the site, so "contact support" alone would not tell the seller where to write.
+     * Where to turn (#138): the configured support email and URL, or else the help page {@code help}. The email is
+     * read outside the site, so it names the absolute URL of the help page (#167), the app its path.
      */
-    private String supportLine(Locale locale) {
+    private String supportLine(Locale locale, String help) {
         if (support.hasContact()) {
             return messages.getMessage("notification.support", new Object[] {support.contact()}, locale);
         }
-        return messages.getMessage("notification.support.help", new Object[] {support.helpPath()}, locale);
+        return messages.getMessage("notification.support.help", new Object[] {help}, locale);
     }
 
     /** The signed-in user's notifications, newest first. */

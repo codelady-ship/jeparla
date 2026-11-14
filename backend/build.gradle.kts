@@ -24,6 +24,8 @@ val springdocVersion = "3.2.0"
 val shedlockVersion = "7.10.1"
 // AWS SDK v2 for S3-compatible storage (Cloudflare R2, MinIO locally): presigned uploads and object checks (#39).
 val awsSdkVersion = "2.56.0"
+// QR code of the store share link as SVG (#100): Nayuki's encoder, MIT, one 38 KB jar without dependencies.
+val qrcodegenVersion = "1.8.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -58,6 +60,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // Error tracking (#56): Sentry Free. Off unless SENTRY_DSN is set (env only); no personal data is sent.
     implementation("io.sentry:sentry-spring-boot-4-starter:8.60.0")
+    // Store share link QR code, rendered as SVG on the server so the frontend ships no QR library (#100).
+    implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
+    // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
