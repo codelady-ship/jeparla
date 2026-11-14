@@ -156,12 +156,14 @@
   }
 }
 
-/* Second product image cross-fades in on hover. */
+/* Second product image cross-fades in on hover, and on keyboard focus inside the card
+   (#118). Opacity only, so it stays on the compositor. */
 @utility img-swap {
   opacity: 0;
-  transition: opacity var(--duration-slow) var(--ease-luxe);
+  transition: opacity var(--duration-swap) var(--ease-standard);
   @media (hover: hover) {
-    :where(.group):hover & {
+    :where(.group):hover &,
+    :where(.group):has(:focus-visible) & {
       opacity: 1;
     }
   }
@@ -199,6 +201,37 @@
   }
 }
 
+/* Short press response on icon toggles (favourite, compare): the icon dips while the
+   button is held down. Transform only (#118). */
+@utility press-icon {
+  transition: transform var(--duration-fast) var(--ease-standard);
+  :where(button:active) > & {
+    transform: scale(0.82);
+  }
+}
+
+/* A number that changed since the visitor's last visit (<ChangingValue>, #118): the old
+   value lifts away and the new one settles in. Two stacked layers, opacity and
+   transform only; no counting animation. */
+@keyframes value-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -0.4em, 0);
+  }
+}
+@keyframes value-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.4em, 0);
+  }
+}
+@utility value-out {
+  animation: value-out var(--duration-slow) var(--ease-luxe) forwards;
+}
+@utility value-in {
+  animation: value-in var(--duration-slow) var(--ease-luxe) var(--duration-fast) backwards;
+}
+
 /* Route change: quiet cross-fade of the whole page. Shared elements (product
    image from card to product page) use <ViewTransition share="morph">. */
 ::view-transition-old(root),
@@ -219,11 +252,19 @@
   }
   .img-zoom,
   .img-swap,
-  .link-underline {
+  .link-underline,
+  .press-icon {
     transition: none !important;
   }
-  .img-zoom {
+  .img-zoom,
+  .press-icon {
     transform: none !important;
+  }
+  .value-in {
+    animation: none !important;
+  }
+  .value-out {
+    display: none !important;
   }
   ::view-transition-group(*),
   ::view-transition-old(*),

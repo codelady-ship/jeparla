@@ -9,6 +9,7 @@
   --duration-reveal: 800ms;
   --duration-zoom: 1200ms;
   --duration-morph: 500ms;
+  --duration-swap: 250ms;
   --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);

@@ -190,7 +190,10 @@ export function VariantPanel({
           aria-pressed={isFavorite}
           onClick={() => favorites.toggle(productId)}
         >
-          <Heart aria-hidden className={cn(isFavorite && "fill-current text-gold-text")} />
+          <Heart
+            aria-hidden
+            className={cn("press-icon", isFavorite && "fill-current text-gold-text")}
+          />
           {isFavorite ? labels.actions.favoriteRemove : labels.actions.favoriteAdd}
         </Button>
         {/* Compare is per variant: switching the variant above changes what is added. */}
@@ -203,7 +206,7 @@ export function VariantPanel({
         >
           <GitCompareArrows
             aria-hidden
-            className={cn(compared.includes(v.id) && "text-gold-text")}
+            className={cn("press-icon", compared.includes(v.id) && "text-gold-text")}
           />
           {compared.includes(v.id) ? labels.actions.compareRemove : labels.actions.compareAdd}
         </Button>
