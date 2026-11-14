@@ -1,8 +1,17 @@
 "use client";
 
-import { Clock, Loader2, Search, Store, Tag, Gem, X } from "lucide-react";
+import { Camera, Clock, Loader2, Search, Store, Tag, Gem, X } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/navigation";
@@ -10,6 +19,10 @@ import { addRecent, clearRecent, readRecent } from "@/lib/search/recent";
 import type { Suggestions } from "@/types/api";
 import { cn } from "cn";
 import { formatPrice } from "@/lib/money";
+import type { PhotoSearchLabels } from "./image-search-panel";
+
+// Search by photo (#163) is its own chunk: loaded only when the camera button is pressed.
+const ImageSearchPanel = lazy(() => import("./image-search-panel"));
 
 export type SearchLabels = {
   open: string;
@@ -27,6 +40,8 @@ export type SearchLabels = {
   /** Raw ICU-free template with {count}: "{count} results". */
   results: string;
   close: string;
+  /** Camera button and search by photo (#163). */
+  photo: PhotoSearchLabels & { open: string; back: string };
 };
 
 type Item = {
@@ -63,6 +78,7 @@ export default function SearchDialog({
   const [state, setState] = useState<State>({ status: "idle" });
   const [recent, setRecent] = useState<string[]>(() => (defaultOpen ? readRecent() : []));
   const [active, setActive] = useState(-1);
+  const [mode, setMode] = useState<"text" | "photo">("text");
   const router = useRouter();
   const locale = useLocale();
   const listId = useId();
@@ -89,6 +105,7 @@ export default function SearchDialog({
 
   function changeOpen(next: boolean) {
     if (next) setRecent(readRecent());
+    else setMode("text");
     setOpen(next);
   }
 
@@ -254,7 +271,16 @@ export default function SearchDialog({
           )}
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={() => setMode(mode === "photo" ? "text" : "photo")}
+            aria-label={mode === "photo" ? labels.photo.back : labels.photo.open}
+            aria-pressed={mode === "photo"}
+            className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted aria-pressed:bg-muted"
+          >
+            <Camera aria-hidden className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => changeOpen(false)}
             aria-label={labels.close}
             className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted"
           >
@@ -270,87 +296,101 @@ export default function SearchDialog({
               : ""}
         </p>
 
-        <div className="max-h-[60vh] overflow-y-auto p-2">
-          {state.status === "error" && (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">{labels.error}</p>
-          )}
-          {state.status === "done" && count === 0 && (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">{labels.empty}</p>
-          )}
-          <div id={listId} role="listbox" aria-label={labels.title}>
-            {groups.map((g) => {
-              const Icon = GROUP_ICON[g.key];
-              const headingId = `${listId}-${g.key}`;
-              return (
-                <div key={g.key} role="group" aria-labelledby={headingId} className="py-1">
-                  <div className="flex items-center justify-between px-3 py-1.5">
-                    <span
-                      id={headingId}
-                      className="text-xs font-semibold text-muted-foreground uppercase"
-                    >
-                      {g.title}
-                    </span>
-                    {g.key === "recent" && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          clearRecent();
-                          setRecent([]);
-                        }}
-                        className="text-xs text-muted-foreground underline-offset-2 hover:underline"
-                      >
-                        {labels.clearRecent}
-                      </button>
-                    )}
-                  </div>
-                  {g.items.map((item) => {
-                    index += 1;
-                    const i = index;
-                    return (
-                      <div
-                        key={item.id}
-                        id={optionId(item)}
-                        role="option"
-                        aria-selected={i === active}
-                        onMouseEnter={() => setActive(i)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => go(item.href)}
-                        className={cn(
-                          "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm",
-                          i === active && "bg-muted",
-                        )}
-                      >
-                        <Icon aria-hidden className="size-4 shrink-0 text-gold-text" />
-                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                        {item.sub && (
-                          <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                            {item.sub}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
+        {mode === "photo" ? (
+          <div className="max-h-[70vh] overflow-y-auto">
+            <Suspense
+              fallback={
+                <div className="flex justify-center p-8">
+                  <Loader2 aria-hidden className="size-5 animate-spin text-muted-foreground" />
                 </div>
-              );
-            })}
-          </div>
-          {state.status === "loading" && (
-            <ul aria-hidden className="flex flex-col gap-2 p-3">
-              {[0, 1, 2].map((i) => (
-                <li key={i} className="h-5 animate-pulse rounded bg-muted" />
-              ))}
-            </ul>
-          )}
-          {query.trim() && state.status === "done" && (
-            <button
-              type="button"
-              onClick={submit}
-              className="mt-1 w-full rounded-md px-3 py-2 text-left text-sm font-medium hover:bg-muted"
+              }
             >
-              {labels.seeAll.replace("{query}", query.trim())}
-            </button>
-          )}
-        </div>
+              <ImageSearchPanel labels={labels.photo} onNavigate={() => changeOpen(false)} />
+            </Suspense>
+          </div>
+        ) : (
+          <div className="max-h-[60vh] overflow-y-auto p-2">
+            {state.status === "error" && (
+              <p className="px-3 py-6 text-center text-sm text-muted-foreground">{labels.error}</p>
+            )}
+            {state.status === "done" && count === 0 && (
+              <p className="px-3 py-6 text-center text-sm text-muted-foreground">{labels.empty}</p>
+            )}
+            <div id={listId} role="listbox" aria-label={labels.title}>
+              {groups.map((g) => {
+                const Icon = GROUP_ICON[g.key];
+                const headingId = `${listId}-${g.key}`;
+                return (
+                  <div key={g.key} role="group" aria-labelledby={headingId} className="py-1">
+                    <div className="flex items-center justify-between px-3 py-1.5">
+                      <span
+                        id={headingId}
+                        className="text-xs font-semibold text-muted-foreground uppercase"
+                      >
+                        {g.title}
+                      </span>
+                      {g.key === "recent" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            clearRecent();
+                            setRecent([]);
+                          }}
+                          className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+                        >
+                          {labels.clearRecent}
+                        </button>
+                      )}
+                    </div>
+                    {g.items.map((item) => {
+                      index += 1;
+                      const i = index;
+                      return (
+                        <div
+                          key={item.id}
+                          id={optionId(item)}
+                          role="option"
+                          aria-selected={i === active}
+                          onMouseEnter={() => setActive(i)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => go(item.href)}
+                          className={cn(
+                            "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm",
+                            i === active && "bg-muted",
+                          )}
+                        >
+                          <Icon aria-hidden className="size-4 shrink-0 text-gold-text" />
+                          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                          {item.sub && (
+                            <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                              {item.sub}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+            {state.status === "loading" && (
+              <ul aria-hidden className="flex flex-col gap-2 p-3">
+                {[0, 1, 2].map((i) => (
+                  <li key={i} className="h-5 animate-pulse rounded bg-muted" />
+                ))}
+              </ul>
+            )}
+            {query.trim() && state.status === "done" && (
+              <button
+                type="button"
+                onClick={submit}
+                className="mt-1 w-full rounded-md px-3 py-2 text-left text-sm font-medium hover:bg-muted"
+              >
+                {labels.seeAll.replace("{query}", query.trim())}
+              </button>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -85,6 +85,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_AI_MONTHLY_COST_LIMIT` / `JEPARLA_AI_COST_CURRENCY` | `0` / `USD` | Bütün mağazalar üçün aylıq sərt xərc limiti. `0`: provayder olsa da heç bir tapşırıq işə düşmür (büdcəni sahib açıq təyin edir) |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
+| `JEPARLA_IMAGE_SEARCH_PROVIDER` | `none` | Şəkillə axtarışın embedding modeli (#163). `none`: header-də "hələ qoşulmayıb", `POST /api/v1/search/image` `503 search.image_not_configured`. Başqa dəyər quraşdırılmış provayderin id-si olmalıdır: `docs/image-search.md` |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
 | `JEPARLA_FRONTEND_TOKEN` | boş | Frontend serverinin paylaşılan sirri (ən azı 32 bayt, frontend-də eyni dəyər). Next.js serveri ziyarətçi adından API-yə gedəndə (giriş, axtarış) bu token ilə `X-Jeparla-Client-Ip` başlığında ziyarətçinin IP-sini yazır; rate limit və audit həmin IP ilə sayılır (#41). Boş: başlıq nəzərə alınmır. Qısa dəyər tətbiqi başlatmır |
 

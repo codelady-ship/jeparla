@@ -11,6 +11,12 @@ spring:
     encoding: UTF-8
     # Never fall back to the server OS locale: az is the default via messages.properties.
     fallback-to-system-locale: false
+  servlet:
+    multipart:
+      # The only multipart endpoint is search by photo (#163, ImageSearchService.MAX_BYTES = 5 MB); product
+      # photos go straight to storage with a presigned PUT.
+      max-file-size: 5MB
+      max-request-size: 6MB
   mvc:
     problemdetails:
       enabled: true
@@ -204,6 +210,12 @@ jeparla:
     # Empty: the endpoint answers 404.
     job-token: ${JEPARLA_INTERNAL_JOB_TOKEN:}
   search:
+    image:
+      # Search by photo (#163, docs/image-search.md). "none": no embedding model, the header shows the camera
+      # button as not available and requests answer 503. Another value must be an installed provider id.
+      provider: ${JEPARLA_IMAGE_SEARCH_PROVIDER:none}
+      # How often new product photos get their embedding (idle without a model).
+      embed-delay: 5m
     cache:
       # Ranked search results and header suggestions per query (#151), in the API's memory. Emptied when a
       # product, variant, store, category or synonym changes; 0s turns the cache off.

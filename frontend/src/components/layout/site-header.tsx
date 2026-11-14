@@ -66,6 +66,28 @@ export function SiteHeader() {
               seeAll: t.raw("Search.seeAll") as string,
               results: t.raw("Search.results") as string,
               close: t("Common.close"),
+              photo: {
+                open: t("Search.photo.open"),
+                back: t("Search.photo.back"),
+                title: t("Search.photo.title"),
+                hint: t("Search.photo.hint"),
+                pick: t("Search.photo.pick"),
+                camera: t("Search.photo.camera"),
+                drop: t("Search.photo.drop"),
+                searching: t("Search.photo.searching"),
+                results: t("Search.photo.results"),
+                empty: t("Search.photo.empty"),
+                notConfigured: t("Search.photo.notConfigured"),
+                aiBadge: t("Search.photo.aiBadge"),
+                errors: {
+                  "search.image_not_configured": t("Search.photo.notConfigured"),
+                  "search.image_size": t("Search.photo.errors.size"),
+                  "search.image_type": t("Search.photo.errors.type"),
+                  "search.image_unreadable": t("Search.photo.errors.unreadable"),
+                  rate_limited: t("Search.photo.errors.rateLimited"),
+                  generic: t("Search.photo.errors.generic"),
+                },
+              },
             }}
           />
           {/* Header links are on every page: no prefetch during the first load (#160). */}

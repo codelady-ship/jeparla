@@ -195,6 +195,14 @@ export const mockApi: JeparlaApi = {
       categories: type === "all" || type === "categories" ? categories : [],
     };
   },
+  // No embedding model is connected (owner decision): exactly what the API answers without one, never
+  // sample "similar" products.
+  async imageSearchStatus() {
+    return { configured: false, maxBytes: 5 * 1024 * 1024 };
+  },
+  async searchByImage() {
+    return { ok: false, error: "search.image_not_configured" };
+  },
   async suggest(q) {
     if (!q.trim()) return { query: q, stores: [], categories: [], products: [] };
     const stores = (await this.listStores({ q })).slice(0, 5);

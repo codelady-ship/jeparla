@@ -251,6 +251,23 @@ export type SearchResult = {
 };
 
 /** Grouped autocomplete (PLAN 5.3), up to 5 per group. */
+/** GET /api/v1/search/image/status (#163). */
+export type ImageSearchStatus = { configured: boolean; maxBytes: number };
+
+/** Error codes of POST /api/v1/search/image. */
+export const IMAGE_SEARCH_ERRORS = [
+  "search.image_not_configured",
+  "search.image_size",
+  "search.image_type",
+  "search.image_unreadable",
+  "rate_limited",
+] as const;
+export type ImageSearchError = (typeof IMAGE_SEARCH_ERRORS)[number];
+
+/** POST /api/v1/search/image: products most similar first (no score, honesty rule). */
+export type ImageSearchResult =
+  { ok: true; products: ProductSummary[] } | { ok: false; error: ImageSearchError };
+
 export type Suggestions = {
   query: string;
   stores: Pick<StoreSummary, "slug" | "name" | "city">[];

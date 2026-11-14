@@ -40,6 +40,7 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
 | `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**`, `/share/{code}` (#100; `/stores/{slug}/facts` və `/preview` `/stores/**`-dədir, #108) | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
 | `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
+| `POST /api/v1/search/image` (şəkillə axtarış) | hamı, qonaq da (rate limit ilə; şəkil saxlanılmır, #163) |
 | `POST /api/v1/stores/{slug}/visits` | hamı, qonaq da: paylaşılmış linklə gələn baxış (#100), `referral-*` limitləri ilə |
 | `POST /internal/jobs/metal-prices` | paylaşılan sirr ilə (controller yoxlayır, #44) |
 | qalan hər şey | heç kim |
@@ -292,6 +293,8 @@ Redis-də deyil (#151).
 | `referral-visit` | 1 / 30 dəq. | eyni baxış | IP + mağaza + mənbə: yeniləmə və linki təkrar açmaq bir baxışdır |
 | `share-regenerate-account` | 5 / gün | hər yeni link | user id: `POST /merchant/store/share/regenerate` (#100); 429 |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`, giriş) gələn sorğu `JEPARLA_FRONTEND_TOKEN` ilə ziyarətçinin IP-sini `X-Jeparla-Client-Ip`-də göndərir və o IP ilə sayılır (#41); token yoxdursa bütün ziyarətçilər frontend serverinin IP-si ilə sayılır |
+| `image-search-ip` | 30 / 10 dəq. | hər şəkillə axtarış | IP: `POST /search/image` (#163); hər sorğu API-nin CPU-sunda model işlədir |
+| `image-search-account` | 60 / saat | hər şəkillə axtarış | user id (daxil olubsa), IP limitinə əlavə |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
 | `ai-job-account` | 30 / saat | hər AI Studio tapşırığı və təkrar cəhd | user id: `POST /merchant/ai/jobs`, `POST /merchant/ai/jobs/{id}/retry` (#55). Bundan əlavə mağaza üzrə gündə `JEPARLA_AI_DAILY_JOBS_PER_STORE` tapşırıq (429, `Retry-After` Bakı vaxtı ilə gecə yarısına qədər) və bütün mağazalar üçün aylıq sərt xərc limiti (503 `ai.cost_limit`) |

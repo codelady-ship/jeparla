@@ -106,6 +106,14 @@ public interface ObjectStorage {
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {
     }
 
+    /**
+     * A public object (a listed product photo) for an internal job, e.g. its visual embedding (#163); empty when it
+     * does not exist, is larger than {@code maxBytes} or this storage cannot read it back.
+     */
+    default Optional<byte[]> readPublic(String key, int maxBytes) {
+        return Optional.empty();
+    }
+
     /** A stored object as a HEAD sees it; {@code etag} is null when the storage sends none. */
     record StoredObject(long sizeBytes, String contentType, String etag) {
     }

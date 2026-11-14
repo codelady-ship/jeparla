@@ -604,7 +604,28 @@
     "loading": "Searching",
     "empty": "Nothing found. Try another word.",
     "error": "Search failed. Please try again.",
-    "results": "{count} results"
+    "results": "{count} results",
+    "photo": {
+      "open": "Search by photo",
+      "back": "Back to search by words",
+      "title": "Search by photo",
+      "hint": "Upload a photo of jewelry you like and we will find similar pieces in every store. The photo is not stored.",
+      "pick": "Choose a photo",
+      "camera": "Camera",
+      "drop": "or drop the photo here",
+      "searching": "Looking for similar pieces",
+      "results": "Similar pieces",
+      "empty": "No similar piece found. Try a photo from another angle.",
+      "notConfigured": "Search by photo is not available yet. Search with words for now.",
+      "aiBadge": "Made with AI",
+      "errors": {
+        "size": "The photo is too large or empty.",
+        "type": "The photo could not be read: choose a JPEG, PNG or WebP.",
+        "unreadable": "The photo could not be read. Try another photo.",
+        "rateLimited": "Too many searches. Please try again in a moment.",
+        "generic": "Search failed. Please try again."
+      }
+    }
   },
   "SearchPage": {
     "title": "Search",

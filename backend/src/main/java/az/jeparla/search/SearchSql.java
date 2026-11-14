@@ -47,7 +47,7 @@ final class SearchSql {
     static final String PREFILTER_THRESHOLD = "0.45";
 
     /** Category ids the public sees: active, under active ancestors only (CategoryTree in SQL). */
-    private static final String VISIBLE_CATEGORIES = """
+    static final String VISIBLE_CATEGORIES = """
             WITH RECURSIVE visible (id) AS (
                 SELECT c.id FROM categories c WHERE c.parent_id IS NULL AND c.active
                 UNION ALL
@@ -55,7 +55,7 @@ final class SearchSql {
             """;
 
     /** A listed product (#37): p product, s store. */
-    private static final String LISTED_PRODUCT = """
+    static final String LISTED_PRODUCT = """
             p.status = 'APPROVED' AND p.deleted_at IS NULL AND s.status = 'APPROVED'
               AND p.category_id IN (SELECT id FROM visible)
               AND EXISTS (SELECT 1 FROM product_variants lv WHERE lv.product_id = p.id AND lv.deleted_at IS NULL)""";
