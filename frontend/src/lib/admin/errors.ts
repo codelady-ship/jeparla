@@ -24,6 +24,7 @@ export const ADMIN_ERRORS = [
   "rateLimited",
   "ownsStore",
   "resetNotAllowed",
+  "fourEyes",
 ] as const;
 
 export type AdminError = (typeof ADMIN_ERRORS)[number];

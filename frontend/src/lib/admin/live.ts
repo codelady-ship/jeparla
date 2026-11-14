@@ -27,6 +27,8 @@ const KNOWN: Record<string, [field: string, key: string]> = {
   "admin.role_not_assignable": ["role", "invalid"],
   "admin.report_closed": ["form", "conflict"],
   "admin.reason_required": ["reason", "reasonRequired"],
+  "verification.four_eyes": ["form", "fourEyes"],
+  "verification.suspension_decided": ["form", "conflict"],
   "auth.reset_link_not_allowed": ["form", "resetNotAllowed"],
 };
 

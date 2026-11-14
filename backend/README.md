@@ -332,6 +332,8 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 | `GET /api/v1/admin/documents/{id}` | Detal: SHA-256 və satıcının təsdiqlədiyi bəyanat |
 | `POST /api/v1/admin/documents/{id}/view` | 5 dəqiqəlik presigned GET (`attachment`), `DOCUMENT_VIEWED` auditi |
 | `POST /api/v1/admin/documents/{id}/decision` | `APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada `reason` (`UNREADABLE`, `EXPIRED`, `MISMATCH`, `WRONG_TYPE`, `HALLMARK_MISSING`, `AUTHENTICITY`) və istəyə görə `note` |
+| `GET /api/v1/admin/store-suspensions?status=` | Saxtalıq şübhəsi üzrə dayandırma sorğuları (#138, default `PENDING`, köhnələr əvvəl). `AUTHENTICITY` səbəbli rədd sorğunu avtomatik açır (`STORE_SUSPENSION_REQUESTED` auditi), mağaza hələ dayandırılmır |
+| `POST /api/v1/admin/store-suspensions/{id}/decision` | `CONFIRM` (mağaza `BLOCKED`, bütün məhsulları gizlənir, satıcıya `store_suspended` bildirişi: hüquqi mətnin 2d bəndi, ittihamsız, 3 dildə, email də) və ya `DISMISS`; `note` yalnız audit üçündür. Sorğunu açan admin qərar verə bilməz (`409 verification.four_eyes`, baza CHECK-i da), qərar verilmiş sorğu `409 verification.suspension_decided` (V22) |
 | `GET /api/v1/admin/stores?status=`, `GET /api/v1/admin/stores/{id}` | Mağaza müraciətləri (default `PENDING`) |
 | `POST /api/v1/admin/stores/{id}/status` | `APPROVED`, `REJECTED`, `BLOCKED` (son ikisi ən az 10 simvol səbəblə) |
 | `POST /api/v1/admin/stores/{id}/seller-check` | Satıcı yoxlaması: `VERIFIED` və ya `REJECTED` (səbəblə) |

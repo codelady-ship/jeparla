@@ -1370,7 +1370,8 @@
       "codeRequired": "Choose the reason type.",
       "rateLimited": "Too many requests. Try again in a moment.",
       "ownsStore": "This user owns a store: hand it over or block the store first.",
-      "resetNotAllowed": "No link for this account: its email is verified, it is an admin, or it is blocked."
+      "resetNotAllowed": "No link for this account: its email is verified, it is an admin, or it is blocked.",
+      "fourEyes": "You opened this request. Another admin has to decide on suspending the store (four-eyes rule)."
     },
     "metal": {
       "GOLD": "Gold",
@@ -1604,6 +1605,37 @@
       "PASSWORD_RESET_REQUESTED": "Password reset requested",
       "PASSWORD_RESET": "Password changed",
       "EMAIL_VERIFIED": "Email verified"
+    },
+    "suspensions": {
+      "title": "Suspension requests",
+      "intro": "Rejecting a document for authenticity opens a request to suspend the store. The store is suspended only after a second admin confirms it, and then the seller is notified.",
+      "sampleOnly": "There are no suspension requests in sample data mode. This section works only with the real API.",
+      "empty": "No requests with this status.",
+      "status": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Suspended",
+        "DISMISSED": "Dismissed"
+      },
+      "requested": "Opened",
+      "decided": "Decision",
+      "byAdmin": "{date}, admin #{admin}",
+      "deletedAccount": "deleted account",
+      "document": "Document",
+      "openDocument": "Open document",
+      "internalNote": "Internal note",
+      "decisionNote": "Decision note",
+      "confirm": "Confirm suspension",
+      "dismiss": "Dismiss request",
+      "confirmNamed": "Confirm suspending {name}",
+      "dismissNamed": "Dismiss the request for {name}",
+      "confirmTitle": "Suspend {name}?",
+      "confirmText": "The store is blocked, all its products leave the catalog and the seller gets the notice with the draft legal text. The decision goes to the audit log.",
+      "dismissTitle": "Dismiss the request for {name}?",
+      "dismissText": "The store keeps working and the seller is not notified. The decision goes to the audit log.",
+      "noteLabel": "Internal note (optional)",
+      "noteHint": "Kept only in the audit log; the seller never sees it. At most 1000 characters.",
+      "doneConfirm": "{name} is suspended.",
+      "doneDismiss": "The request for {name} is dismissed."
     }
   },
   "MetalPrices": {
