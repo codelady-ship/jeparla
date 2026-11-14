@@ -319,6 +319,8 @@ function buildProduct(i: number): Product {
       city: st.city,
       verification: st.verification,
     },
+    materialKind: "PRECIOUS",
+    material: null,
     metal,
     priceFrom: { amount, currency: "AZN" },
     defaultVariantId: id * 10,

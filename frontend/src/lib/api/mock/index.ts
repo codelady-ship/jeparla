@@ -60,6 +60,7 @@ function filterProducts(f: ProductFilters): Product[] {
     if (p.status !== "APPROVED") return false;
     if (cats && !cats.has(p.categoryId)) return false;
     if (f.store?.length && !f.store.includes(p.store.slug)) return false;
+    if (f.kind && p.materialKind !== f.kind) return false;
     if (f.metal && p.metal !== f.metal) return false;
     if (f.fineness?.length && !f.fineness.includes(p.fineness)) return false;
     if (f.minWeight && compareDecimal(p.weightGrams, f.minWeight) < 0) return false;
