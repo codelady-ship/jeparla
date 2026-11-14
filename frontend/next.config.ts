@@ -21,6 +21,13 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
   },
   partialPrefetching: false,
+  // Pages opened from a link with a one-time token (#131): the URL never leaves in a Referer.
+  async headers() {
+    return ["reset-password", "verify-email"].map((page) => ({
+      source: `/:locale(az|en|ru)/${page}`,
+      headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+    }));
+  },
   async rewrites() {
     return {
       beforeFiles: [],
