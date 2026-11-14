@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -94,5 +95,28 @@ class StoreCatalogApiTests {
         em.flush();
         mvc.perform(get("/api/v1/stores/" + store.getSlug()))
                 .andExpect(jsonPath("$.logoUrl").value("http://localhost:9000/jeparla-public/" + store.getLogoKey()));
+    }
+
+    @Test
+    void nearMeSortsByDistanceWithoutCachingTheAnswer() throws Exception {
+        Store lale = em.createQuery("select s from Store s where s.slug = 'lale-atelye'", Store.class).getSingleResult();
+        Store nergiz = em.createQuery("select s from Store s where s.slug = 'nergiz-gold'", Store.class)
+                .getSingleResult();
+        lale.setGeo(new java.math.BigDecimal("40.377700"), new java.math.BigDecimal("49.841400"));
+        nergiz.setGeo(new java.math.BigDecimal("40.682800"), new java.math.BigDecimal("46.360600"));
+        em.flush();
+
+        mvc.perform(get("/api/v1/stores?near=40.3800,49.8400"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Cache-Control", "no-store"))
+                .andExpect(jsonPath("$", hasSize(6)))
+                .andExpect(jsonPath("$[0].slug").value("lale-atelye"))
+                .andExpect(jsonPath("$[0].distanceKm").value("0.3"))
+                .andExpect(jsonPath("$[1].slug").value("nergiz-gold"))
+                // Stores without coordinates come last, without a distance.
+                .andExpect(jsonPath("$[2].distanceKm").doesNotExist());
+        mvc.perform(get("/api/v1/stores")).andExpect(jsonPath("$[0].distanceKm").doesNotExist());
+        mvc.perform(get("/api/v1/stores?near=north")).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("catalog.invalid_near"));
     }
 }
