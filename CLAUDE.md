@@ -1,7 +1,8 @@
 # Jeparla
 
-Azərbaycanda (sonra bütün dünyada) qızıl, gümüş və brilyant zərgərlik mağazalarını bir
-platformada toplayan çoxmağazalı kataloq. Alıcı mağaza və kateqoriya üzrə axtarır, məhsulun
+Azərbaycanda (sonra bütün dünyada) qızıl, gümüş və brilyant zərgərlik mağazalarını, eləcə də
+bijuteriya və əl işi satıcılarını (ayrıca bölmədə, sertifikatsız, #128) bir platformada toplayan
+çoxmağazalı kataloq. Alıcı mağaza və kateqoriya üzrə axtarır, məhsulun
 yoxlanılmış məlumatlarını görür və WhatsApp ilə mağazaya yazır. Metal qiymətləri AMB-nin
 gündəlik məzənnəsindən gəlir və satıcının "metala bağlı" qiymətləri avtomatik yenilənir.
 

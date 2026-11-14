@@ -5,13 +5,15 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { reportError } from "@/lib/monitoring/report-error";
 
 export default function ErrorPage({ error, retry }: { error: unknown; retry: () => void }) {
   const t = useTranslations("Errors");
 
   useEffect(() => {
-    // Sentry hook comes with #56; keep the digest visible in the console meanwhile.
+    // Sent to Sentry when NEXT_PUBLIC_SENTRY_DSN is set (#56); the console keeps the digest for local runs.
     console.error(error);
+    reportError(error);
   }, [error]);
 
   return (

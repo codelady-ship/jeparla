@@ -8,7 +8,16 @@ import { IntlProvider } from "@/components/i18n/intl-provider";
 import { routing } from "@/i18n/routing";
 import type { SellerStatus } from "@/types/merchant";
 
-type PageKey = "dashboard" | "products" | "newProduct" | "editProduct" | "profile" | "aiStudio";
+type PageKey =
+  | "dashboard"
+  | "products"
+  | "newProduct"
+  | "editProduct"
+  | "profile"
+  | "documents"
+  | "notifications"
+  | "import"
+  | "aiStudio";
 
 /** Cabinet pages are private: noindex, and robots.txt already disallows /merchant. */
 export async function merchantMetadata(page: PageKey): Promise<Metadata> {
@@ -25,9 +34,15 @@ export async function merchantMetadata(page: PageKey): Promise<Metadata> {
           ? t("form.editTitle")
           : page === "profile"
             ? t("profile.title")
-            : page === "products"
-              ? t("products.title")
-              : t("dashboard.title");
+            : page === "documents"
+              ? t("documents.title")
+              : page === "import"
+                ? t("import.title")
+                : page === "notifications"
+                  ? t("notifications.title")
+                  : page === "products"
+                    ? t("products.title")
+                    : t("dashboard.title");
   return { title: `${title} · ${t("title")}`, robots: { index: false, follow: false } };
 }
 

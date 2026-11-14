@@ -2,10 +2,14 @@ import { Search, Store } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { Reveal } from "@/components/motion/reveal";
+import { JsonLd } from "@/components/seo/json-ld";
+import { itemList } from "@/lib/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 import type { SearchParams } from "@/lib/catalog/filters";
+import { normalizeNear } from "@/lib/geo/near";
+import { NearMeButton } from "./near-me-button";
 import { StoreCard } from "./store-card";
 
 const field =
@@ -17,17 +21,27 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
     (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
   const q = one(sp.q)?.slice(0, 80);
   const city = one(sp.city)?.slice(0, 60);
+  const near = normalizeNear(one(sp.near)) ?? undefined;
   const [t, locale, all, stores] = await Promise.all([
     getTranslations("Stores"),
     getLocale(),
     api.listStores(),
-    api.listStores({ q, city }),
+    api.listStores({ q, city, near }),
   ]);
   const cities = [...new Set(all.map((s) => s.city))].sort((a, b) => a.localeCompare(b, locale));
 
   return (
     <div className="flex flex-col gap-6">
+      <JsonLd
+        data={[
+          itemList(
+            t("title"),
+            stores.map((s) => ({ name: s.name, path: `/${locale}/stores/${s.slug}` })),
+          ),
+        ]}
+      />
       <FilterForm action="/stores" className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        {near && <input type="hidden" name="near" value={near} />}
         <label className="flex flex-1 flex-col gap-1 text-sm">
           {t("searchLabel")}
           <span className="relative">
@@ -53,6 +67,8 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
           {t("search")}
         </Button>
       </FilterForm>
+
+      <NearMeButton q={q} city={city} near={near} />
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {t("count", { count: stores.length })}

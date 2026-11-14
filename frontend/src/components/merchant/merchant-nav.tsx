@@ -1,22 +1,29 @@
 "use client";
 
-import { LayoutDashboard, Package, Store } from "lucide-react";
+import { Bell, FileCheck, FileUp, LayoutDashboard, Package, Store } from "lucide-react";
+import type { ReactNode } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "cn";
 
 const ITEMS = [
   { href: "/merchant", key: "dashboard", icon: LayoutDashboard },
   { href: "/merchant/products", key: "products", icon: Package },
+  { href: "/merchant/import", key: "import", icon: FileUp },
   { href: "/merchant/profile", key: "profile", icon: Store },
+  { href: "/merchant/documents", key: "documents", icon: FileCheck },
+  { href: "/merchant/notifications", key: "notifications", icon: Bell },
 ] as const;
 
 /** Section tabs; the current one carries aria-current="page". */
 export function MerchantNav({
   label,
   labels,
+  badges = {},
 }: {
   label: string;
   labels: Record<(typeof ITEMS)[number]["key"], string>;
+  /** Server-rendered extras after a label, e.g. the unread notification count. */
+  badges?: Partial<Record<(typeof ITEMS)[number]["key"], ReactNode>>;
 }) {
   const pathname = usePathname();
   return (
@@ -38,6 +45,7 @@ export function MerchantNav({
               >
                 <Icon aria-hidden className="size-4" />
                 {labels[key]}
+                {badges[key]}
               </Link>
             </li>
           );

@@ -5,6 +5,7 @@ import az.jeparla.common.dto.LocalizedTextDto;
 import az.jeparla.common.dto.MoneyDto;
 import az.jeparla.common.storage.ImageUrls;
 import az.jeparla.product.dto.CompareItemDto;
+import az.jeparla.product.dto.EvidencePhotoDto;
 import az.jeparla.product.dto.ProductDto;
 import az.jeparla.product.dto.ProductImageDto;
 import az.jeparla.product.dto.ProductSummaryDto;
@@ -12,6 +13,7 @@ import az.jeparla.product.dto.StoneDto;
 import az.jeparla.product.dto.VariantDto;
 import az.jeparla.store.Store;
 import az.jeparla.store.dto.StoreRefDto;
+import az.jeparla.verification.CheckStatus;
 import az.jeparla.verification.dto.VerificationDto;
 import java.util.Comparator;
 import java.util.List;
@@ -45,11 +47,13 @@ public class CatalogMapper {
                 LocalizedTextDto.of(product.getName()),
                 product.getCategory().getId(),
                 StoreRefDto.of(store),
+                product.getMaterialKind(),
+                product.getMaterial(),
                 product.getMetal(),
                 MoneyDto.of(cheapest.getPrice(), cheapest.getCurrency()),
                 cheapest.getId(),
                 cheapest.getPricingMode(),
-                cheapest.getFineness().getValue(),
+                cheapest.getFineness() == null ? null : cheapest.getFineness().getValue(),
                 Decimal.of(cheapest.getWeightGrams()),
                 images(product),
                 !product.getStones().isEmpty(),
@@ -60,7 +64,18 @@ public class CatalogMapper {
 
     public ProductDto detail(Product product) {
         return ProductDto.of(summary(product), LocalizedTextDto.of(product.getDescription()),
-                product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus());
+                product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus(),
+                evidencePhotos(product));
+    }
+
+    /** Hallmark and label photos of a listed product (#106); rejected ones are not shown. */
+    private List<EvidencePhotoDto> evidencePhotos(Product product) {
+        return product.getEvidencePhotos().stream()
+                .filter(photo -> photo.getStatus() != CheckStatus.REJECTED)
+                .sorted(Comparator.comparing(ProductEvidencePhoto::getKind))
+                .map(photo -> new EvidencePhotoDto(photo.getKind(), imageUrls.url(photo.getStorageKey()),
+                        photo.getWidth(), photo.getHeight(), photo.getStatus() == CheckStatus.VERIFIED))
+                .toList();
     }
 
     public CompareItemDto compareItem(ProductVariant variant) {
@@ -68,9 +83,16 @@ public class CatalogMapper {
         return new CompareItemDto(summary(product), VariantDto.of(variant), stones(product));
     }
 
-    /** Seller and documents checks of the store, expertise of this product (PLAN 5.9). */
+    /**
+     * Seller and documents checks of the store, expertise of this product (PLAN 5.9). A FASHION product shows
+     * only the seller check (#128): its documents are NONE even in a MIXED store whose documents passed, so it
+     * never borrows the trust of the store's precious products.
+     */
     public static VerificationDto verification(Product product) {
         Store store = product.getStore();
+        if (product.getMaterialKind() == MaterialKind.FASHION) {
+            return new VerificationDto(store.getSellerStatus(), CheckStatus.NONE, CheckStatus.NONE);
+        }
         return new VerificationDto(store.getSellerStatus(), store.getDocumentsStatus(), product.getExpertiseStatus());
     }
 

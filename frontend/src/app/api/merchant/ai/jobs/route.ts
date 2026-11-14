@@ -1,6 +1,7 @@
+import { USING_MOCK } from "@/lib/api";
 import { aiStudioApi } from "@/lib/api/ai";
 import { merchantApi } from "@/lib/api/merchant";
-import { AUTH_AVAILABLE, readJson, unavailable } from "@/lib/auth/server";
+import { readJson, unavailable } from "@/lib/auth/server";
 import { aiJobRequest } from "@/lib/merchant/ai";
 import { merchantOr401 } from "@/lib/merchant/server";
 
@@ -10,7 +11,7 @@ import { merchantOr401 } from "@/lib/merchant/server";
  * and no image is made.
  */
 export async function POST(request: Request) {
-  if (!AUTH_AVAILABLE) return unavailable();
+  if (!USING_MOCK) return unavailable();
   const session = await merchantOr401();
   if (session instanceof Response) return session;
   const parsed = aiJobRequest.safeParse(await readJson(request));

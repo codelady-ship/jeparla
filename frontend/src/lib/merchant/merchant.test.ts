@@ -181,7 +181,7 @@ describe("demo merchant", () => {
       new Set(["DRAFT", "IN_REVIEW", "APPROVED", "RETURNED", "INACTIVE"]),
     );
     expect(Object.values(stats.counts).reduce((a, b) => a + b, 0)).toBe(rows.length);
-    expect(stats.views).toBe(rows.reduce((a, r) => a + r.views, 0));
+    expect(stats.views).toBe(rows.reduce((a, r) => a + (r.views ?? 0), 0));
     const edit = await api.product(rows[0].id);
     expect(edit?.input.variants[0].price).toMatch(/^\d+\.\d{2}$/);
     expect(await api.product(123456)).toBeNull();

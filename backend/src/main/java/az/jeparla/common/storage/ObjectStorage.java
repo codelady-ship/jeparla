@@ -87,8 +87,9 @@ public interface ObjectStorage {
     PresignedDownload presignPrivateDownload(String key, String contentType, String fileName, Duration ttl);
 
     /**
-     * Stores a file the API produced itself (an AI Studio result, #55) in the <b>private</b> bucket under
-     * {@code key}. It is never public until {@link #publishPrivate} copies it after the seller's approval.
+     * Stores a file the API produced itself (an AI Studio result, #55, or an image taken out of a catalog PDF,
+     * #129) in the <b>private</b> bucket under {@code key}. Never a staged or a public key.
+     * It is never public until {@link #publishPrivate} copies it after the seller's approval.
      */
     void putPrivate(String key, byte[] bytes, String contentType);
 

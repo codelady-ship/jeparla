@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ProductGridSkeleton } from "@/components/product/product-grid";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
+import { openGraph } from "@/lib/seo/open-graph";
 import type { SearchParams } from "@/lib/catalog/filters";
 import { SearchResults, tabPath, type SearchTab } from "./search-results";
 
@@ -19,6 +20,7 @@ export async function searchMetadata(tab: SearchTab): Promise<Metadata> {
     title: t("title"),
     description: t("description"),
     alternates: alternates(locale, tabPath(tab)),
+    openGraph: openGraph(locale, tabPath(tab)),
     robots: { index: false, follow: true },
   };
 }
