@@ -69,6 +69,11 @@ public enum RateLimitPolicy {
      */
     IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1)),
     /**
+     * Product spreadsheet imports by one seller account (#109): each creates up to 200 DRAFT products, so a day
+     * allows a few thousand, more than any seller moving a catalog needs, and a script cannot fill the database.
+     */
+    PRODUCT_IMPORT_ACCOUNT("product-import-account", 20, Duration.ofDays(1)),
+    /**
      * Presigned verification document uploads asked for by one seller account (#40): each lets the browser write
      * up to 10 MB into the private bucket. The open and daily limits per store apply as well.
      */
