@@ -147,7 +147,8 @@ export async function ProductDetails({
           }}
         />
 
-        <div className="flex flex-col gap-6">
+        {/* Desktop: price, WhatsApp and facts stay in view while the photos scroll (#173). */}
+        <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <Link

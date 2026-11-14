@@ -171,6 +171,18 @@
   }
 }
 
+/* Product page magnifier (#173): the photo scales 2x around the mouse position, which
+   <Gallery> writes to --lens-x / --lens-y. Transform only; fine pointers only. */
+@utility gallery-lens {
+  transform-origin: var(--lens-x, 50%) var(--lens-y, 50%);
+  transition: transform var(--duration-base) var(--ease-standard);
+  @media (hover: hover) and (pointer: fine) {
+    :where(.group\/lens):hover & {
+      transform: scale(2);
+    }
+  }
+}
+
 /* Invisible hit area of at least 44x44px around a smaller control (WCAG 2.5.5, #148).
    It does not change the look; the element itself (or an ancestor box) must be
    positioned, so add `relative` unless it is already `absolute`/`fixed`. */
@@ -219,7 +231,8 @@
   }
   .img-zoom,
   .img-swap,
-  .link-underline {
+  .link-underline,
+  .gallery-lens {
     transition: none !important;
   }
   .img-zoom {
