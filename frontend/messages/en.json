@@ -41,7 +41,12 @@
     },
     "sellerTitle": "Do you run a jewelry store?",
     "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",
-    "sellerCta": "Open a store"
+    "sellerCta": "Open a store",
+    "budget": {
+      "title": "By budget",
+      "upTo": "Up to {amount, number} AZN",
+      "note": "Prices are as shown today; metal-linked prices follow the Central Bank rate every day."
+    }
   },
   "Nav": {
     "home": "Home",

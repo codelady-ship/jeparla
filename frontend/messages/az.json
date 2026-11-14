@@ -41,7 +41,12 @@
     },
     "sellerTitle": "Zərgərlik mağazanız var?",
     "sellerText": "Məhsullarınızı Jeparla-da göstərin: alıcılar sizə birbaşa WhatsApp ilə yazır.",
-    "sellerCta": "Mağaza aç"
+    "sellerCta": "Mağaza aç",
+    "budget": {
+      "title": "Büdcəyə görə",
+      "upTo": "{amount, number} manata qədər",
+      "note": "Qiymət bu gün göstərilən qiymətdir; metala bağlı məhsullarda hər gün AMB məzənnəsi ilə dəyişir."
+    }
   },
   "Nav": {
     "home": "Ana səhifə",
