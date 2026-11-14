@@ -37,5 +37,7 @@ public record MerchantProductDto(
         Instant updatedAt,
         List<MerchantImageDto> images,
         List<MerchantVariantDto> variants,
-        List<StoneDto> stones) {
+        List<StoneDto> stones,
+        @Schema(description = "Hallmark and label photos (#106), at most one of each kind")
+        List<MerchantEvidencePhotoDto> evidencePhotos) {
 }

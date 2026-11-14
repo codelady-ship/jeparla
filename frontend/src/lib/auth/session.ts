@@ -4,7 +4,8 @@
  * (header menu, redirects). Never treat it as proof of a role.
  */
 export type Role = "USER" | "MERCHANT" | "ADMIN";
-export type Session = { name: string; email: string; role: Role };
+/** emailVerified comes from the backend user (#131); unknown (sample data) when absent. */
+export type Session = { name: string; email: string; role: Role; emailVerified?: boolean };
 
 export const SESSION_COOKIE = "jeparla_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
@@ -36,7 +37,9 @@ export function decodeSession(raw: string | undefined): Session | null {
     const v = JSON.parse(new TextDecoder().decode(bytes)) as Partial<Session>;
     if (typeof v.name !== "string" || !v.name || typeof v.email !== "string") return null;
     if (!ROLES.includes(v.role as Role)) return null;
-    return { name: v.name, email: v.email, role: v.role as Role };
+    const s: Session = { name: v.name, email: v.email, role: v.role as Role };
+    if (typeof v.emailVerified === "boolean") s.emailVerified = v.emailVerified;
+    return s;
   } catch {
     return null;
   }

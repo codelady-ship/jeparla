@@ -11,9 +11,10 @@ import type {
   AuditEntry,
   ModerationItem,
   ProductReport,
-  SynonymGroup,
+  SynonymPair,
   VerificationRequest,
 } from "@/types/admin";
+import { httpAdminApi } from "./admin-http";
 import { USING_MOCK } from "./index";
 import {
   CATEGORIES,
@@ -36,10 +37,10 @@ export interface AdminApi {
   products(): Promise<ModerationItem[]>;
   product(id: number): Promise<ModerationItem | null>;
   verifications(): Promise<VerificationRequest[]>;
-  verification(id: number): Promise<VerificationRequest | null>;
+  verification(id: string): Promise<VerificationRequest | null>;
   categories(): Promise<AdminCategory[]>;
   finenesses(): Promise<AdminFineness[]>;
-  synonyms(): Promise<SynonymGroup[]>;
+  synonyms(): Promise<SynonymPair[]>;
   users(): Promise<AdminUser[]>;
   user(id: number): Promise<AdminUser | null>;
   reports(): Promise<ProductReport[]>;
@@ -148,7 +149,7 @@ const ref = (id: number) => ({ id, name: at(id).name, city: at(id).city });
 
 const VERIFICATIONS: VerificationRequest[] = [
   {
-    id: 1,
+    id: "1",
     store: ref(6),
     check: "seller",
     documents: [
@@ -160,7 +161,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 2,
+    id: "2",
     store: ref(3),
     check: "documents",
     documents: [
@@ -171,7 +172,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 3,
+    id: "3",
     store: ref(5),
     check: "expertise",
     documents: [
@@ -183,7 +184,7 @@ const VERIFICATIONS: VerificationRequest[] = [
     note: null,
   },
   {
-    id: 4,
+    id: "4",
     store: ref(1),
     check: "documents",
     documents: [{ id: "d6", kind: "TRADE_LICENSE", fileName: "lisenziya.pdf", pages: 2 }],
@@ -198,14 +199,14 @@ const ADMIN_FINENESSES: AdminFineness[] = FINENESSES.map((f) => ({
   productCount: PRODUCTS.filter((p) => p.variants.some((v) => v.fineness.id === f.id)).length,
 }));
 
-const SYNONYMS: SynonymGroup[] = [
-  { id: 1, locale: "az", term: "üzük", synonyms: ["uzuk", "üzüy"] },
-  { id: 2, locale: "az", term: "boyunbağı", synonyms: ["boyunbagi", "kulon"] },
-  { id: 3, locale: "az", term: "qolbaq", synonyms: ["qolbag", "bilərzik"] },
-  { id: 4, locale: "en", term: "necklace", synonyms: ["pendant", "chain"] },
-  { id: 5, locale: "en", term: "earrings", synonyms: ["studs", "hoops"] },
-  { id: 6, locale: "ru", term: "кольцо", synonyms: ["колечко", "перстень"] },
-  { id: 7, locale: "ru", term: "серьги", synonyms: ["сережки"] },
+const SYNONYMS: SynonymPair[] = [
+  { id: 1, term: "üzük", synonym: "uzuk" },
+  { id: 2, term: "boyunbağı", synonym: "kulon" },
+  { id: 3, term: "qolbaq", synonym: "bilərzik" },
+  { id: 4, term: "necklace", synonym: "pendant" },
+  { id: 5, term: "earrings", synonym: "studs" },
+  { id: 6, term: "кольцо", synonym: "перстень" },
+  { id: 7, term: "серьги", synonym: "сережки" },
 ];
 
 const USERS: AdminUser[] = [
@@ -214,6 +215,8 @@ const USERS: AdminUser[] = [
     name: "Jeparla Admin",
     email: "admin@example.com",
     role: "ADMIN",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-08-20T09:00:00+04:00",
   },
@@ -222,6 +225,8 @@ const USERS: AdminUser[] = [
     name: OWNERS[i % OWNERS.length],
     email: `seller${s.id}@example.com`,
     role: "MERCHANT" as const,
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: s.name,
     createdAt: s.createdAt,
   })),
@@ -230,6 +235,8 @@ const USERS: AdminUser[] = [
     name: "Leyla A.",
     email: "leyla@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-10-12T14:20:00+04:00",
   },
@@ -238,6 +245,8 @@ const USERS: AdminUser[] = [
     name: "Murad İ.",
     email: "murad@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-10-30T19:05:00+04:00",
   },
@@ -246,6 +255,8 @@ const USERS: AdminUser[] = [
     name: "Günel S.",
     email: "gunel@example.com",
     role: "USER",
+    phone: null,
+    status: "ACTIVE" as const,
     storeName: null,
     createdAt: "2026-11-04T08:40:00+04:00",
   },
@@ -475,27 +486,4 @@ const mockAdminApi: AdminApi = {
   },
 };
 
-function httpAdminApi(): AdminApi {
-  // Connected with the backend auth (Day 6, issue #40); until then the panel runs on the mock.
-  const fail = () => Promise.reject(new Error("Admin API is not connected yet"));
-  return {
-    overview: fail,
-    stores: fail,
-    store: fail,
-    products: fail,
-    product: fail,
-    verifications: fail,
-    verification: fail,
-    categories: fail,
-    finenesses: fail,
-    synonyms: fail,
-    users: fail,
-    user: fail,
-    reports: fail,
-    report: fail,
-    audit: fail,
-    metalPrices: fail,
-  };
-}
-
-export const adminApi: AdminApi = USING_MOCK ? mockAdminApi : httpAdminApi();
+export const adminApi: AdminApi = USING_MOCK ? mockAdminApi : httpAdminApi;

@@ -96,3 +96,5 @@ export function modelBox(f: Format, i: number) {
 export const DESKTOP = format(1920, 1080, 0.4, 0.66, 0.64);
 /** Phone: narrow enough that cover-cropping on tall phones (19.5:9) keeps the outer figures. */
 export const MOBILE = format(1080, 1920, 0.82, 0.41);
+/** Darker gold for words on cream (large text, AA 3:1). */
+export const GOLD_TEXT = "#9A7A35";

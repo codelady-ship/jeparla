@@ -137,7 +137,7 @@ public class FakeObjectStorage implements ObjectStorage {
 
     @Override
     public void putPrivate(String key, byte[] bytes, String contentType) {
-        privateObjects.put(key, new Stored(bytes.clone(), contentType, null));
+        privateObjects.put(key, new Stored(bytes.clone(), contentType, etag(bytes)));
     }
 
     @Override

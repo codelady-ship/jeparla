@@ -1,12 +1,17 @@
 import type { JeparlaApi } from "./types";
 
 /**
- * REST implementation against the Spring Boot backend. Wired up and verified in
- * issue #41 (6.5); until then the mock is the default.
+ * REST client of the Spring Boot backend (PLAN 5.5). Plain fetch, no Next.js imports: the
+ * backend contract generator (backend/src/test/resources/contract/generate.mjs) loads this file
+ * in Node to record the exact requests. Pages use the cached wrapper in ./live.ts.
  */
-const BASE = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/$/, "");
+export const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(
+  /\/$/,
+  "",
+);
 
-type Query = Record<string, string | number | boolean | string[] | number[] | undefined>;
+type QueryValue = string | number | boolean | string[] | number[] | undefined;
+export type Query = Record<string, QueryValue>;
 
 export function toSearchParams(query: Query = {}): string {
   const sp = new URLSearchParams();
@@ -19,30 +24,112 @@ export function toSearchParams(query: Query = {}): string {
   return s ? `?${s}` : "";
 }
 
-async function get<T>(path: string, query?: Query): Promise<T> {
-  const res = await fetch(`${BASE}/api/v1${path}${toSearchParams(query)}`, {
-    headers: { Accept: "application/json" },
-    signal: AbortSignal.timeout(10_000),
-  });
-  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
-  return (await res.json()) as T;
+/**
+ * A failed API call. `status` 0 means the backend did not answer (down, timeout, DNS);
+ * `code` is the ProblemDetail code (`merchant.no_store`, `rate_limited` ...) when there is one.
+ */
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly path: string,
+    readonly code: string | null = null,
+    readonly detail: string | null = null,
+    readonly fieldErrors: { field: string; message: string }[] = [],
+  ) {
+    super(`${path} failed: ${status}${code ? ` (${code})` : ""}`);
+    this.name = "ApiError";
+  }
 }
+
+export const isNotFound = (e: unknown) => e instanceof ApiError && e.status === 404;
+
+export type RequestOptions = {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  query?: Query;
+  body?: unknown;
+  /** Access token of the signed-in user (cabinet and admin calls). */
+  token?: string | null;
+  /** UI language: the backend answers error texts in it. Data always has az, en and ru. */
+  locale?: string;
+  headers?: Record<string, string>;
+  timeoutMs?: number;
+  /** A body sent as is (e.g. a CSV file) instead of JSON; set its Content-Type in `headers`. */
+  rawBody?: string;
+  /** Answer the response body as text (e.g. a CSV template) instead of JSON. */
+  asText?: boolean;
+};
+
+/** ProblemDetail fields the backend sends (RFC 9457 + `code`, `errors`). */
+type Problem = { code?: string; detail?: string; errors?: { field: string; message: string }[] };
+
+/** One call to `/api/v1{path}`; JSON in, JSON out, `null` for 204. Throws ApiError. */
+export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const {
+    method = "GET",
+    query,
+    body,
+    token,
+    locale,
+    headers = {},
+    timeoutMs = 6_000,
+    rawBody,
+    asText = false,
+  } = options;
+  const url = `${API_BASE}/api/v1${path}${toSearchParams(query)}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method,
+      headers: {
+        Accept: asText ? "*/*" : "application/json",
+        ...(body !== undefined && { "Content-Type": "application/json" }),
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(locale && { "Accept-Language": locale }),
+        ...headers,
+      },
+      ...(body !== undefined && { body: JSON.stringify(body) }),
+      ...(rawBody !== undefined && { body: rawBody }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch {
+    throw new ApiError(0, `${method} ${path}`);
+  }
+  if (!res.ok) {
+    const problem = (await res.json().catch(() => ({}))) as Problem;
+    throw new ApiError(
+      res.status,
+      `${method} ${path}`,
+      problem.code ?? null,
+      problem.detail ?? null,
+      problem.errors ?? [],
+    );
+  }
+  if (res.status === 204) return null as T;
+  const text = await res.text();
+  if (asText) return text as T;
+  // 202 Accepted and similar answers may have no body at all.
+  return (text ? JSON.parse(text) : null) as T;
+}
+
+const get = <T>(path: string, query?: Query) => apiFetch<T>(path, { query });
 
 async function getOrNull<T>(path: string): Promise<T | null> {
   try {
     return await get<T>(path);
   } catch (e) {
-    if (e instanceof Error && e.message.endsWith(": 404")) return null;
+    if (isNotFound(e)) return null;
     throw e;
   }
 }
 
 const enc = encodeURIComponent;
 
+/** Uncached REST implementation of the public catalog API. */
 export const httpApi: JeparlaApi = {
   listProducts: (f = {}) => get("/products", f),
-  getProductsByIds: (ids) => get("/products", { ids: ids.join(",") }),
-  getCompareItems: (ids) => get("/variants", { ids: ids.join(",") }),
+  // An empty ids list would turn into the paged list (no ids param): answer it here.
+  getProductsByIds: async (ids) => (ids.length ? get("/products", { ids: ids.join(",") }) : []),
+  getCompareItems: async (ids) => (ids.length ? get("/variants", { ids: ids.join(",") }) : []),
   getProduct: (slug) => getOrNull(`/products/${enc(slug)}`),
   listCategories: () => get("/categories"),
   listFinenesses: () => get("/finenesses"),
@@ -52,5 +139,6 @@ export const httpApi: JeparlaApi = {
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),
   latestMetalPrices: () => get("/metal-prices/latest"),
+  latestExchangeRates: () => get("/exchange-rates/latest"),
   metalPriceHistory: (metal, days = 30) => get("/metal-prices/history", { metal, days }),
 };
