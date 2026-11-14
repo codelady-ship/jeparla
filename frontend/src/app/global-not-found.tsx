@@ -1,39 +1,46 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { routing } from "@/i18n/routing";
+import { defaultLocale, routing } from "@/i18n/routing";
 import az from "../../messages/az.json";
 import en from "../../messages/en.json";
 import ru from "../../messages/ru.json";
 import "./globals.css";
 
-// Shown for URLs that match no route. It renders outside app/[locale], so the
-// language is unknown: the message appears in all three languages, az first.
+// Only for URLs with no language: anything under /az, /en or /ru reaches
+// [locale]/[...rest] and gets the localized 404 with the site header and footer,
+// and the proxy sends other paths to the visitor's language first.
+// The language is unknown here, so the page is in az, the default, with links to
+// the home page in the other languages, each labelled in its own language.
 const MESSAGES = { az, en, ru } as const;
+const t = MESSAGES[defaultLocale].Errors;
+const others = routing.locales.filter((l) => l !== defaultLocale);
 
 export const metadata: Metadata = {
-  title: `404 | Jeparla`,
+  title: `${t.notFoundTitle} | Jeparla`,
   robots: { index: false, follow: false },
 };
 
 export default function GlobalNotFound() {
   return (
-    <html lang="az" className="h-full antialiased" suppressHydrationWarning>
+    <html lang={defaultLocale} className="h-full antialiased" suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
-          <main className="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center gap-8 px-4 py-24 text-center">
-            <h1 className="text-6xl font-semibold text-gold-text">404</h1>
-            {routing.locales.map((locale) => {
-              const t = MESSAGES[locale].Errors;
-              return (
-                <section key={locale} lang={locale} className="flex flex-col items-center gap-2">
-                  <h2 className="text-xl font-semibold">{t.notFoundTitle}</h2>
-                  <p className="text-sm text-muted-foreground">{t.notFoundText}</p>
-                  <a href={`/${locale}`} className="link-underline text-sm font-medium">
-                    {t.backHome}
+          <main className="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center gap-4 px-4 py-24 text-center">
+            <p className="text-6xl font-semibold text-gold-text">404</p>
+            <h1 className="text-3xl font-semibold">{t.notFoundTitle}</h1>
+            <p className="text-muted-foreground">{t.notFoundText}</p>
+            <a href={`/${defaultLocale}`} className="link-underline font-medium">
+              {t.backHome}
+            </a>
+            <ul className="flex gap-6 text-sm">
+              {others.map((locale) => (
+                <li key={locale}>
+                  <a href={`/${locale}`} lang={locale} hrefLang={locale} className="link-underline">
+                    {MESSAGES[locale].LocaleSwitcher.locale[locale]}
                   </a>
-                </section>
-              );
-            })}
+                </li>
+              ))}
+            </ul>
           </main>
         </ThemeProvider>
       </body>

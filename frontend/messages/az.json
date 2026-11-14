@@ -64,13 +64,16 @@
     "legal": "Hüquqi",
     "aboutUs": "Haqqımızda",
     "contact": "Əlaqə",
+    "help": "Kömək və dəstək",
     "metalPrices": "Metal qiymətləri",
+    "sizeGuide": "Ölçü bələdçisi",
     "openStore": "Mağaza aç",
     "merchantCabinet": "Mağaza kabineti",
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
-    "rights": "© Jeparla. Bütün hüquqlar qorunur."
+    "rights": "© Jeparla. Bütün hüquqlar qorunur.",
+    "calculator": "Qızıl kalkulyatoru"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -309,6 +312,45 @@
       }
     }
   },
+  "Help": {
+    "title": "Kömək və dəstək",
+    "description": "Mağaza ilə necə əlaqə saxlamaq, kataloqu necə əlavə etmək, sənədləri necə yükləmək, yoxlamanın nə demək olduğu və problemi necə bildirmək.",
+    "intro": "Alıcılar və satıcılar üçün qısa cavablar.",
+    "faq": {
+      "contact": {
+        "q": "Mağaza ilə necə əlaqə saxlayım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsini basın: mesajda məhsulun adı, kodu və linki artıq olur. Qiymət, ödəniş və çatdırılma birbaşa mağaza ilə razılaşdırılır. Jeparla özü məhsul satmır və ödəniş qəbul etmir."
+      },
+      "sell": {
+        "q": "Mağazamın kataloqunu necə əlavə edim?",
+        "a": "\"Mağaza aç\" bölməsindən müraciət edin: hesab, mağaza məlumatları, sənədlər və istəyə görə ilk məhsul. Mağaza yoxlanıldıqdan sonra məhsulları kabinetdən əlavə edirsiniz; hər məhsul kataloqda görünməzdən əvvəl moderasiyadan keçir."
+      },
+      "documents": {
+        "q": "Sənədləri necə yükləyim?",
+        "a": "Qeydiyyatın \"Sənədlər\" addımında və ya sonra kabinetdən PDF, JPG və ya PNG kimi yükləyin. Sənədlər qapalı yaddaşda saxlanılır və yalnız yoxlama komandası onlara baxır. Qızıl, gümüş və brilyant satıcıları üçün sənəd yoxlaması aparılır; bijuteriya satıcılarından sertifikat tələb olunmur."
+      },
+      "verified": {
+        "q": "Yoxlama nə deməkdir?",
+        "a": "Satıcı və sənəd yoxlaması ayrı-ayrılıqda aparılır və hər biri mağaza və məhsul səhifəsində ayrıca göstərilir. Aparılmayan yoxlama \"aparılmayıb\" kimi yazılır. Yoxlama bizə təqdim olunan sənədləri təsdiqləyir, konkret məhsula zəmanət deyil: almadan əvvəl məhsulu mağaza ilə dəqiqləşdirin."
+      },
+      "report": {
+        "q": "Problemi necə bildirim?",
+        "a": "Məhsulun məlumatı səhvdirsə və ya məhsul şübhəli görünürsə, məhsul səhifəsindəki \"Şikayət et\" düyməsindən istifadə edin. Digər suallar üçün aşağıdakı \"Dəstək\" bölməsinə baxın."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "sell": "Mağaza aç",
+      "merchant": "Mağaza kabineti"
+    },
+    "support": {
+      "title": "Dəstək",
+      "text": "Sualınız və ya probleminiz varsa, bizə yazın:",
+      "email": "E-poçt",
+      "url": "Dəstək səhifəsi",
+      "none": "Dəstəyin birbaşa ünvanı hələ dərc olunmayıb; dərc olunanda bu səhifədə göstəriləcək. Satıcılar geri qaytarılan məhsulun və ya mağazanın məlumatlarını kabinetdə düzəldib yenidən yoxlamaya göndərə bilər."
+    }
+  },
   "Categories": {
     "title": "Kateqoriyalar",
     "description": "Zərgərlik kateqoriyaları: üzük, sırğa, boyunbağı, qolbaq və digərləri.",
@@ -331,6 +373,156 @@
         "q": "Bəyəndiyim modeli necə alım?",
         "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
       }
+    }
+  },
+  "SizeGuide": {
+    "title": "Ölçü bələdçisi: üzük, bilərzik və zəncir",
+    "metaTitle": "Üzük ölçüsü cədvəli, bilərzik və zəncir uzunluqları",
+    "description": "Üzük ölçüsünü evdə necə bilmək olar: daxili diametr və çevrə (mm), ISO 8653 qarşılığı, ölçü köməkçisi, bilərzik və zəncir uzunluqları.",
+    "breadcrumb": "Səhifə yolu",
+    "updated": "Yeniləndi:",
+    "answer": "Azərbaycanda üzük ölçüsü üzüyün daxili diametridir, millimetrlə: 17 ölçülü üzüyün içi 17 mm-dir. Ölçülər adətən 0,5 addımla gedir. Barmağınızın çevrəsini ölçüb aşağıdakı köməkçiyə yazın, ən yaxın ölçünü göstərəcək.",
+    "toc": "Bu səhifədə",
+    "honest": {
+      "title": "Evdə ölçmə təxminidir",
+      "text": "Evdə alınan ölçü 0,5–1 ölçü qədər yanıla bilər. Sifarişdən əvvəl ölçünü mağaza ilə dəqiqləşdirin: çox mağaza üzüyü yerində ölçür, bəziləri ölçünü dəyişə bilir.",
+      "noPrintable": "Çap üçün ölçü lenti vermirik: printer və PDF proqramları səhifəni tez-tez kiçildir və ya böyüdür, çap olunmuş xətkeş bir neçə millimetr yanıla bilər. Bu, iki qonşu ölçü arasındakı fərqdən (diametrdə 0,5 mm) çoxdur."
+    },
+    "rings": {
+      "title": "Üzük ölçüləri cədvəli",
+      "intro": "Ölçü nömrəsi daxili diametrə bərabərdir. Çevrə diametrin π-yə hasilidir, bir onluq rəqəmə yuvarlaqlaşdırılıb.",
+      "caption": "Üzük ölçüləri: Azərbaycan ölçüsü, daxili diametr, daxili çevrə və ISO 8653 ölçüsü",
+      "colSize": "Ölçü (AZ, MDB)",
+      "colDiameter": "Daxili diametr, mm",
+      "colCircumference": "Daxili çevrə, mm",
+      "colIso": "ISO 8653 ölçüsü",
+      "sourceTitle": "Mənbə və hesablama",
+      "sourceAz": "Azərbaycan və MDB ölçüsü: daxili diametr millimetrlə, 0,5 addımla. Bu, mağazalarda qəbul olunmuş qaydadır; istinad edə biləcəyimiz qüvvədə olan standart mətnini tapmadıq.",
+      "sourceIso": "ISO 8653:2016 «Jewellery — Ring-sizes — Definition, measurement and designation» üzük ölçüsünü daxili çevrə ilə (mm) ifadə edir; Avropanın çox ölkəsində bu sistem işlənir. Cədvəldə ISO ölçüsü çevrənin tam millimetrə yuvarlaqlaşdırılmış qiymətidir.",
+      "sourceUs": "ABŞ ölçülərini göstərmirik: bu çevirmə üçün qüvvədə olan dərc olunmuş standart tapmadıq, uydurma qarşılıq vermək istəmirik.",
+      "rounding": "Bütün rəqəmlər dəqiq onluq hesabla alınır, yarım hal yuxarı yuvarlaqlaşdırılır."
+    },
+    "helper": {
+      "title": "Ölçü köməkçisi",
+      "intro": "Ölçdüyünüz rəqəmi yazın. Barmağın çevrəsini sap və ya kağız zolaqla, diametri isə mövcud üzükdən ölçmək olar.",
+      "modeLegend": "Nəyi ölçmüsünüz?",
+      "circumference": "Barmağın çevrəsi",
+      "diameter": "Üzüyün daxili diametri",
+      "inputCircumference": "Çevrə, mm",
+      "inputDiameter": "Daxili diametr, mm",
+      "hint": "Məsələn 53,5. Nöqtə və ya vergül, ən çox iki onluq rəqəm.",
+      "empty": "Rəqəmi yazanda ən yaxın ölçü burada görünəcək.",
+      "invalid": "Millimetrlə rəqəm yazın, məsələn 53,5.",
+      "outOfRange": "Bu ölçü cədvəldən kənardadır (15–24). Ölçmə növünü düzgün seçdiyinizi yoxlayın və ya mağazadan soruşun.",
+      "result": "Ən yaxın ölçü: {size}",
+      "details": "Daxili diametr {diameter} mm, daxili çevrə {circumference} mm, ISO 8653 ölçüsü {iso}.",
+      "tie": "İki ölçünün tam ortasında olsanız, köməkçi böyük ölçünü seçir.",
+      "confirm": "Bu təxmini nəticədir. Sifarişdən əvvəl mağaza ilə dəqiqləşdirin."
+    },
+    "measure": {
+      "title": "Üzük ölçüsünü evdə necə bilmək olar",
+      "ringTitle": "Mövcud üzüklə",
+      "ringSteps": {
+        "s1": "Həmin barmağa rahat olan, nazik və dairəvi bir üzük seçin.",
+        "s2": "Üzüyü millimetr bölgülü xətkeşin üstünə qoyun.",
+        "s3": "Ən geniş yerdən içəri kənardan içəri kənara qədər ölçün, metalın qalınlığını saymayın.",
+        "s4": "Alınan rəqəm millimetrlə ölçünüzdür. Köməkçidə «Üzüyün daxili diametri» seçin."
+      },
+      "stringTitle": "Sap və ya kağız zolaqla",
+      "stringSteps": {
+        "s1": "Uzanmayan sap və ya 5 mm enində kağız zolaq götürün.",
+        "s2": "Onu barmağın dibinə sıx, amma sıxmadan dolayın.",
+        "s3": "Ucların görüşdüyü yeri qələmlə işarələyin.",
+        "s4": "Zolağı açın və işarəyə qədər uzunluğu xətkeşlə millimetrlə ölçün: bu, çevrədir.",
+        "s5": "Rəqəmi köməkçiyə yazın və üzüyün oynaqdan keçəcəyini yoxlayın."
+      },
+      "tipsTitle": "Daha dəqiq nəticə üçün",
+      "tips": {
+        "t1": "Günün sonunda, isti otaqda ölçün: soyuqda barmaqlar incəlir, istidə qalınlaşır.",
+        "t2": "İki-üç dəfə ölçün və nəticələri müqayisə edin.",
+        "t3": "Oynaq barmağın dibindən enlidirsə, üzük oynaqdan keçməlidir: hər iki yeri ölçün.",
+        "t4": "Enli üzük (təxminən 6 mm və artıq) daha sıx oturur; yarım ölçü böyük lazım olub-olmadığını mağazadan soruşun."
+      },
+      "diagram": {
+        "title": "Üzüyün daxili diametri və daxili çevrəsi",
+        "desc": "Üzüyün içindən keçən düz xətt daxili diametrdir; içəri kənar boyunca dairə daxili çevrədir.",
+        "diameter": "diametr",
+        "circumference": "çevrə"
+      }
+    },
+    "bracelets": {
+      "title": "Bilərzik uzunluğu",
+      "intro": "Biləyi sümüyün üstündən sap və ya zolaqla ölçün. Zəncir bilərziyin rahat oturması üçün adətən biləyin çevrəsinə 1–2 sm əlavə edilir.",
+      "caption": "Bilərzik uzunluqları və adətən kimə uyğun gəldiyi",
+      "colLength": "Uzunluq",
+      "colUse": "Adətən",
+      "rows": {
+        "r1": {
+          "length": "15–16 sm",
+          "use": "İncə bilək, biləyə yaxın oturur"
+        },
+        "r2": {
+          "length": "17–18 sm",
+          "use": "Qadın bilərziklərində tez-tez rast gəlinən uzunluq"
+        },
+        "r3": {
+          "length": "19–20 sm",
+          "use": "Sərbəst qadın bilərziyi və ya kiçik kişi bilərziyi"
+        },
+        "r4": {
+          "length": "21–22 sm",
+          "use": "Kişi bilərziklərində tez-tez rast gəlinən uzunluq"
+        }
+      },
+      "bangle": "Bərk bilərzik (qolbaq) açılmırsa, əlin ən enli yerindən keçməlidir: baş barmağı kiçik barmağa toxundurub əlin ən enli yerini ölçün və qolbağın daxili ölçüsünü mağazadan soruşun.",
+      "note": "Bu uzunluqlar standart deyil, ümumi bələdçidir; mağazalar və modellər fərqlənir."
+    },
+    "chains": {
+      "title": "Zəncir uzunluğu",
+      "intro": "Zəncirin uzunluğu qıfılla birlikdə, düz uzadılmış halda ölçülür. Boyunda harada duracağı boyun ölçüsündən və asqıdan asılıdır.",
+      "caption": "Zəncir uzunluqları və boyunda adətən harada durduğu",
+      "colLength": "Uzunluq",
+      "colUse": "Adətən harada durur",
+      "rows": {
+        "r1": {
+          "length": "40 sm",
+          "use": "Boynun dibinə yaxın"
+        },
+        "r2": {
+          "length": "45 sm",
+          "use": "Körpücük sümüyü səviyyəsində; asqı üçün tez-tez seçilir"
+        },
+        "r3": {
+          "length": "50 sm",
+          "use": "Körpücük sümüyündən bir az aşağı"
+        },
+        "r4": {
+          "length": "55 sm",
+          "use": "Yaxanın səviyyəsində; kişi zəncirlərində tez-tez rast gəlinir"
+        },
+        "r5": {
+          "length": "60 sm",
+          "use": "Yaxadan aşağı, paltarın üstündən"
+        },
+        "r6": {
+          "length": "70 sm və artıq",
+          "use": "Uzun zəncir, paltarın üstündən; ikiqat taxmaq olar"
+        }
+      },
+      "note": "Ən sadə yol: evdə olan zənciri düz uzadıb ölçün və onu nə qədər bəyəndiyinizə görə qısa və ya uzun seçin."
+    },
+    "sources": {
+      "title": "Mənbələr",
+      "iso": "ISO 8653:2016, Jewellery — Ring-sizes — Definition, measurement and designation (Beynəlxalq Standartlaşdırma Təşkilatı).",
+      "trade": "Azərbaycan və MDB ölçü nömrəsi (daxili diametr, mm): mağazalarda qəbul olunmuş qayda.",
+      "lengths": "Bilərzik və zəncir uzunluqları: ümumi bələdçi, standart deyil."
+    },
+    "howTo": {
+      "name": "Üzük ölçüsünü evdə necə bilmək olar",
+      "description": "Mövcud üzüyün daxili diametrini və ya barmağın çevrəsini millimetrlə ölçüb üzük ölçüsünü tapmaq.",
+      "supplyStrip": "Uzanmayan sap və ya kağız zolaq",
+      "toolRuler": "Millimetr bölgülü xətkeş",
+      "toolPen": "Qələm"
     }
   },
   "Search": {
@@ -613,7 +805,8 @@
       "profile": "Mağaza profili",
       "documents": "Sənədlər",
       "notifications": "Bildirişlər",
-      "unread": "{count} oxunmamış"
+      "unread": "{count} oxunmamış",
+      "import": "Toplu əlavə"
     },
     "demoNote": "Demo rejimi: statistika nümunədir və dəyişikliklər serverdə saxlanılmır. Qaralamalar bu brauzerdə qalır.",
     "status": {
@@ -684,7 +877,10 @@
       "toggleFailed": "Status dəyişmədi. Yenidən cəhd edin.",
       "variants": "{count, plural, one {# variant} other {# variant}}",
       "fromPrice": "{price}-dan",
-      "adminNote": "Admin qeydi"
+      "adminNote": "Admin qeydi",
+      "bulkReview": "Göstərilən qaralamaları yoxlamaya göndər ({count})",
+      "bulkSent": "{total} məhsuldan {done} yoxlamaya göndərildi.",
+      "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin."
     },
     "form": {
       "newTitle": "Yeni məhsul",
@@ -966,6 +1162,68 @@
       "readAll": "Hamısını oxunmuş et",
       "unread": "Yeni",
       "open": "Ətraflı"
+    },
+    "import": {
+      "title": "Toplu əlavə",
+      "intro": "Çox məhsulu bir dəfəyə əlavə edin: cədvəldən (CSV) və ya şəkillərdən və PDF kataloqdan. Hər şey əvvəl qaralama olur; heç nə avtomatik saytda görünmür.",
+      "csvTitle": "Cədvəldən (CSV)",
+      "csvStep1": "Şablonu endirin və Excel və ya Google Sheets-də açın.",
+      "csvStep2": "Hər sətirdə bir məhsul yazın; kateqoriya, ad (az) və qiymət mütləqdir.",
+      "csvStep3": "Faylı CSV kimi saxlayıb buradan yükləyin.",
+      "template": "Şablon ({lang})",
+      "csvLabel": "CSV faylı",
+      "csvHint": "Ən çox 1 MB və 200 sətir. Ayırıcı vergül, nöqtəli vergül və ya TAB ola bilər; 4,20 və 4.20 eynidir.",
+      "notPrecious": "Faylda bijuteriya varsa: həmin məhsulların qiymətli metal və daş olmadığını təsdiq edirəm.",
+      "importSubmit": "Faylı yüklə",
+      "importing": "Yüklənir",
+      "importDone": "{rows, plural, other {# sətir}} oxundu: {created, plural, other {# məhsul}} qaralama kimi yaradıldı, {failed, plural, other {# sətirdə}} səhv var.",
+      "importRepeated": "{count, plural, other {# sətir}} əvvəl yüklənmişdi və təkrar yaradılmadı.",
+      "toProducts": "Məhsullara bax",
+      "errorsTitle": "Səhvli sətirlər",
+      "line": "Sətir",
+      "column": "Sütun",
+      "problem": "Səbəb",
+      "draftsTitle": "Şəkillərdən və PDF-dən",
+      "draftsIntro": "Hər şəkil bir qaralama olur. PDF kataloqdan şəkillər çıxarılır; səhifədə bir məhsul varsa ad, qiymət və çəki təklif kimi oxunur. Təklifləri yoxlayıb məhsul formasında tamamlayın.",
+      "takePhoto": "Şəkil çək",
+      "choosePhotos": "Şəkilləri seç",
+      "choosePdf": "PDF kataloq",
+      "draftLimits": "Şəkil: JPEG, PNG və ya WebP, ən çox 15 MB. PDF: ən çox 20 MB və 30 səhifə, şifrəsiz. Günə ən çox 300 qaralama.",
+      "uploading": "Yüklənir və oxunur",
+      "uploadingMany": "Yüklənir: {done} / {total}",
+      "photosDone": "{count, plural, =0 {Qaralama yaradılmadı.} other {# qaralama yaradıldı.}}",
+      "pdfDone": "{count, plural, =0 {PDF-də məhsul şəkli tapılmadı.} other {PDF-dən # qaralama yaradıldı.}}",
+      "pdfLimited": "Gündəlik və ya fayl limiti səbəbindən hamısı götürülmədi.",
+      "draftsListTitle": "Qaralamalar",
+      "draftsListIntro": "Qaralama yalnız sizə görünür. Məhsul formasında şəkli və məlumatları əlavə edib saxlayın, sonra qaralamanı silin.",
+      "draftsEmpty": "Hələ qaralama yoxdur.",
+      "draftLabel": "Qaralama {id}",
+      "draftPhotoAlt": "{name}: qaralama şəkli",
+      "pdfPage": "PDF, səhifə {page}",
+      "suggestionsTitle": "PDF-dən təklif (yoxlayın)",
+      "name": "Ad",
+      "price": "Qiymət",
+      "weight": "Çəki",
+      "makeProduct": "Məhsul yarat",
+      "delete": "Sil",
+      "deleteDraft": "{name} qaralamasını sil",
+      "deleteFailed": "Silmək alınmadı. Yenidən cəhd edin.",
+      "source": {
+        "PHOTO": "Şəkil",
+        "CAMERA": "Kamera",
+        "PDF": "PDF"
+      },
+      "errors": {
+        "fileRequired": "Fayl seçin.",
+        "csvType": "CSV faylı seçin (.csv).",
+        "csvSize": "Fayl çox böyükdür (ən çox 1 MB).",
+        "importFile": "Faylı oxumaq olmadı. CSV kimi yenidən saxlayın.",
+        "photoType": "yalnız JPEG, PNG və ya WebP.",
+        "photoSize": "şəkil ən çox 15 MB ola bilər.",
+        "pdfType": "PDF faylı seçin.",
+        "pdfSize": "PDF ən çox 20 MB ola bilər.",
+        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+      }
     }
   },
   "Admin": {
@@ -1037,7 +1295,12 @@
       "docs": "Sənədlər",
       "view": "Sənədə bax: {name}",
       "viewText": "Sənədlər gizli saxlanılır və hər baxışda qısa müddətli imzalı linklə açılır. Demo rejimində fayl yoxdur.",
-      "pages": "{count, plural, one {# səhifə} other {# səhifə}}"
+      "pages": "{count, plural, one {# səhifə} other {# səhifə}}",
+      "product": "Məhsul: {name}",
+      "viewFailed": "Sənəd açılmadı. Yenidən cəhd edin.",
+      "owner": "Sahibi",
+      "contact": "Əlaqə",
+      "taxId": "VÖEN"
     },
     "checkStatus": {
       "ALL": "Hamısı",
@@ -1140,7 +1403,12 @@
       "self": "Öz rolunuzu dəyişə bilməzsiniz.",
       "sameRole": "Yeni rol hazırkı ilə eynidir.",
       "lastAdmin": "Bu yeganə admindir; əvvəlcə başqa admin təyin edin.",
-      "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin."
+      "largeChange": "Dəyişmə həddən böyükdür: mənbəni yoxladığınızı təsdiqləyin.",
+      "codeRequired": "Səbəb növünü seçin.",
+      "rateLimited": "Çox sorğu göndərildi. Bir az sonra yenidən cəhd edin.",
+      "ownsStore": "Bu istifadəçinin mağazası var: əvvəlcə mağazanı başqasına keçirin və ya bloklayın.",
+      "resetNotAllowed": "Bu hesab üçün link verilmir: e-poçtu təsdiqlənib, admindir və ya bloklanıb.",
+      "fourEyes": "Bu sorğunu siz açmısınız. Mağazanı dayandırmaq üçün qərarı başqa admin verməlidir (dörd göz qaydası)."
     },
     "metal": {
       "GOLD": "Qızıl",
@@ -1179,7 +1447,8 @@
       "USER": "İstifadəçi",
       "CATALOG": "Kataloq",
       "PRICE": "Metal qiyməti",
-      "REPORT": "Şikayət"
+      "REPORT": "Şikayət",
+      "DOCUMENT": "Sənəd"
     },
     "auditAction": {
       "approve": "Təsdiqləndi",
@@ -1227,30 +1496,24 @@
       "label": "Görünən ad",
       "labelHint": "Məsələn: 585 (14K).",
       "synonyms": "Axtarış sinonimləri",
-      "synonymsIntro": "Qrupdakı sözlərdən hər biri ilə axtarış eyni nəticəni verir.",
-      "addSynonym": "Sinonim qrupu əlavə et",
-      "synonymText": "Əsas söz və onun yazılış variantları və ya sinonimləri.",
+      "synonymsIntro": "Cütün bir sözü ilə axtarış digəri ilə eyni nəticəni verir.",
+      "addSynonym": "Sinonim cütü əlavə et",
+      "synonymText": "İki söz: məsələn, serqa və sırğa.",
       "noSynonyms": "Hələ sinonim yoxdur.",
-      "language": "Dil",
-      "lang": {
-        "az": "Azərbaycanca",
-        "en": "İngiliscə",
-        "ru": "Rusca"
-      },
-      "term": "Əsas söz",
-      "words": "Sinonimlər",
-      "wordsHint": "Vergüllə ayırın, ən çoxu 10.",
+      "term": "Söz",
       "save": "Yadda saxla",
       "delete": "Sil",
       "deleteTitle": "{name} silinsin?",
       "deleteText": "Bu əməliyyat geri qaytarılmır və audit jurnalına yazılır.",
       "deleted": "{name} silindi",
-      "added": "{name} əlavə edildi"
+      "added": "{name} əlavə edildi",
+      "synonym": "Sinonimi",
+      "same": "eynidir"
     },
     "users": {
       "title": "İstifadəçilər",
       "intro": "Hesablar və rollar. Rol dəyişikliyi səbəblə audit jurnalına yazılır.",
-      "search": "Ad, e-poçt və ya mağaza",
+      "search": "Ad, e-poçt, telefon və ya mağaza",
       "roleLabel": "Rol",
       "count": "{count, plural, =0 {İstifadəçi yoxdur} other {# istifadəçi}}",
       "since": "Qeydiyyat: {date}",
@@ -1261,14 +1524,32 @@
       "changeTitle": "{name}: rol dəyişsin?",
       "changeText": "Yeni rol növbəti girişdə qüvvəyə minir.",
       "newRole": "Yeni rol",
-      "adminWarning": "Admin bütün mağazaları, məhsulları və qiymətləri idarə edə bilir."
+      "adminWarning": "Admin bütün mağazaları, məhsulları və qiymətləri idarə edə bilir.",
+      "active": "Aktiv",
+      "blocked": "Bloklanıb",
+      "block": "Blokla",
+      "unblock": "Blokdan çıxar",
+      "blockTitle": "{name} bloklansın?",
+      "blockText": "Hesab bütün cihazlardan çıxarılır və daxil ola bilmir. Səbəb audit jurnalında qalır.",
+      "unblockTitle": "{name} blokdan çıxarılsın?",
+      "unblockText": "Hesab yenidən daxil ola biləcək.",
+      "resetLink": "Şifrə bərpa linki",
+      "resetTitle": "{name} üçün şifrə bərpa linki yaradılsın?",
+      "resetText": "Bu satıcının e-poçtu yoxdur. Linki yalnız onun öz nömrəsinə ({phone}) göndərin.",
+      "linkTitle": "{name} üçün birdəfəlik link",
+      "linkExpires": "Link bir dəfə işləyir və {date} tarixinə qədər etibarlıdır.",
+      "linkWarning": "Link yalnız indi göstərilir. Onu kim açsa, şifrəni dəyişə bilər: heç yerdə saxlamayın və yalnız satıcının özünə göndərin.",
+      "linkLabel": "Link",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı"
     },
     "reports": {
       "title": "Şikayətlər",
-      "intro": "Alıcıların məhsul haqqında şikayətləri.",
+      "intro": "Alıcıların məhsul və mağazalar barədə şikayətləri.",
       "search": "Məhsul, mağaza və ya mətn",
       "count": "{count, plural, =0 {Şikayət yoxdur} other {# şikayət}}",
-      "queueEmpty": "Açıq şikayət yoxdur."
+      "queueEmpty": "Açıq şikayət yoxdur.",
+      "aboutStore": "Mağaza barədə şikayət"
     },
     "audit": {
       "title": "Audit jurnalı",
@@ -1302,6 +1583,96 @@
       "largeWarning": "Dəyişmə {change}, {limit}% həddindən böyükdür.",
       "confirmLarge": "Mənbəni yoxladım, qiymət düzgündür",
       "overridden": "{name} qiyməti dəyişdi"
+    },
+    "rejectReason": {
+      "label": "Səbəb növü",
+      "pick": "Seçin",
+      "UNREADABLE": "Oxunmur",
+      "EXPIRED": "Müddəti bitib",
+      "MISMATCH": "Mağaza məlumatı ilə uyğun deyil",
+      "WRONG_TYPE": "Səhv sənəd növü",
+      "HALLMARK_MISSING": "Əyar möhürü görünmür",
+      "AUTHENTICITY": "Həqiqiliyi təsdiqlənmədi"
+    },
+    "auditCode": {
+      "STORE_CREATED": "Mağaza yaradıldı",
+      "STORE_UPDATED": "Mağaza dəyişdirildi",
+      "STORE_APPROVED": "Mağaza təsdiqləndi",
+      "STORE_REJECTED": "Mağaza rədd edildi",
+      "STORE_BLOCKED": "Mağaza bloklandı",
+      "STORE_PENDING": "Mağaza yenidən yoxlamaya qaytarıldı",
+      "SELLER_VERIFIED": "Satıcı yoxlandı",
+      "SELLER_REJECTED": "Satıcı yoxlaması rədd edildi",
+      "DECLARATION_CONFIRMED": "Satıcı bəyannaməni təsdiqlədi",
+      "PRODUCT_CREATED": "Məhsul yaradıldı",
+      "PRODUCT_UPDATED": "Məhsul dəyişdirildi",
+      "PRODUCT_DELETED": "Məhsul silindi",
+      "PRODUCT_STATUS_CHANGED": "Məhsulun statusu dəyişdi",
+      "PRODUCT_APPROVED": "Məhsul təsdiqləndi",
+      "PRODUCT_RETURNED": "Məhsul qaytarıldı",
+      "PRODUCT_DEACTIVATED": "Məhsul yayından çıxarıldı",
+      "VARIANT_ADDED": "Variant əlavə edildi",
+      "VARIANT_UPDATED": "Variant dəyişdirildi",
+      "VARIANT_REMOVED": "Variant silindi",
+      "IMAGE_ADDED": "Şəkil əlavə edildi",
+      "IMAGE_REMOVED": "Şəkil silindi",
+      "DOCUMENT_UPLOADED": "Sənəd yükləndi",
+      "DOCUMENT_VIEWED": "Sənədə baxıldı",
+      "DOCUMENT_APPROVED": "Sənəd təsdiqləndi",
+      "DOCUMENT_REJECTED": "Sənəd rədd edildi",
+      "DOCUMENT_CHANGES_REQUESTED": "Sənəd yenidən istənildi",
+      "METAL_PRICE_ACCEPTED": "Metal qiyməti tətbiq edildi",
+      "METAL_PRICE_DISCARDED": "Metal qiyməti atıldı",
+      "METAL_PRICE_OVERRIDDEN": "Metal qiyməti əllə təyin edildi",
+      "CATEGORY_CREATED": "Kateqoriya əlavə edildi",
+      "CATEGORY_UPDATED": "Kateqoriya dəyişdirildi",
+      "CATEGORY_DELETED": "Kateqoriya silindi",
+      "FINENESS_CREATED": "Əyar əlavə edildi",
+      "FINENESS_UPDATED": "Əyar dəyişdirildi",
+      "FINENESS_DELETED": "Əyar silindi",
+      "SYNONYM_CREATED": "Sinonim əlavə edildi",
+      "SYNONYM_UPDATED": "Sinonim dəyişdirildi",
+      "SYNONYM_DELETED": "Sinonim silindi",
+      "USER_ROLE_CHANGED": "Rol dəyişdirildi",
+      "USER_BLOCKED": "Hesab bloklandı",
+      "USER_UNBLOCKED": "Hesab blokdan çıxarıldı",
+      "REPORT_RESOLVED": "Şikayət həll edildi",
+      "REPORT_DISMISSED": "Şikayət rədd edildi",
+      "PASSWORD_RESET_LINK_ISSUED": "Şifrə bərpa linki verildi",
+      "PASSWORD_RESET_REQUESTED": "Şifrə bərpası istənildi",
+      "PASSWORD_RESET": "Şifrə dəyişdirildi",
+      "EMAIL_VERIFIED": "E-poçt təsdiqləndi"
+    },
+    "suspensions": {
+      "title": "Dayandırma sorğuları",
+      "intro": "Sənəd həqiqilik səbəbi ilə rədd edildikdə mağazanın dayandırılması üçün sorğu açılır. Mağaza yalnız ikinci admin təsdiq etdikdən sonra dayandırılır və satıcıya bildiriş gedir.",
+      "sampleOnly": "Nümunə data rejimində dayandırma sorğuları yoxdur. Bu bölmə yalnız real API ilə işləyir.",
+      "empty": "Bu statusda sorğu yoxdur.",
+      "status": {
+        "PENDING": "Gözləyir",
+        "CONFIRMED": "Dayandırılıb",
+        "DISMISSED": "Rədd edilib"
+      },
+      "requested": "Açılıb",
+      "decided": "Qərar",
+      "byAdmin": "{date}, admin #{admin}",
+      "deletedAccount": "silinmiş hesab",
+      "document": "Sənəd",
+      "openDocument": "Sənədi aç",
+      "internalNote": "Daxili qeyd",
+      "decisionNote": "Qərar qeydi",
+      "confirm": "Dayandırmanı təsdiqlə",
+      "dismiss": "Sorğunu rədd et",
+      "confirmNamed": "{name} mağazasının dayandırılmasını təsdiqlə",
+      "dismissNamed": "{name} mağazası üçün sorğunu rədd et",
+      "confirmTitle": "{name} dayandırılsın?",
+      "confirmText": "Mağaza bloklanır, bütün məhsulları kataloqdan çıxır və satıcıya hüquqi qaralama mətni ilə bildiriş gedir. Qərar audit log-a yazılır.",
+      "dismissTitle": "{name} üçün sorğu rədd edilsin?",
+      "dismissText": "Mağaza işləməyə davam edir, satıcıya bildiriş getmir. Qərar audit log-a yazılır.",
+      "noteLabel": "Daxili qeyd (istəyə görə)",
+      "noteHint": "Yalnız audit log-da qalır, satıcı görmür. Ən çox 1000 simvol.",
+      "doneConfirm": "{name} dayandırıldı.",
+      "doneDismiss": "{name} üçün sorğu rədd edildi."
     }
   },
   "MetalPrices": {
@@ -1318,6 +1689,7 @@
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
     "empty": "Bugünkü qiymət hələ gəlməyib.",
+    "calculatorLink": "Zərgərliyin metal dəyərini hesablayın",
     "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək."
   },
   "Hero": {
@@ -1352,6 +1724,52 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "Calculator": {
+    "title": "Qızıl və gümüş kalkulyatoru",
+    "description": "Çəki və əyara görə qızıl və gümüşün bu günkü metal dəyəri manatla, Azərbaycan Mərkəzi Bankının gündəlik məzənnəsi ilə.",
+    "intro": "Zərgərliyin çəkisini və əyarını daxil edin: metalın bu gün Azərbaycan Mərkəzi Bankının (AMB) məzənnəsi ilə nə qədər dəyərində olduğunu görəcəksiniz.",
+    "formLabel": "Metal dəyərinin hesablanması",
+    "weight": "Çəki (qram)",
+    "weightHint": "Məsələn 4,2 və ya 4.2; vergüldən sonra ən çox 3 rəqəm.",
+    "metal": "Metal",
+    "fineness": "Əyar",
+    "submit": "Hesabla",
+    "resultLabel": "Metal dəyəri",
+    "prompt": "Metal dəyərini görmək üçün çəkini daxil edin.",
+    "resultSummary": "{weight}, {metal} {fineness}",
+    "gramPrice": "{metal} {fineness}, 1 qram: {price}",
+    "purePrice": "AMB qiyməti ({metal}, təmiz metal): qramı {gram}, troy unsiyası {ounce}",
+    "weekendNote": "Həftəsonu və bayram günlərində AMB-nin son dərc etdiyi məzənnə istifadə olunur.",
+    "notShopPrice": "Bu, yalnız metalın dəyəridir, mağaza qiyməti deyil: işçilik, daşlar və mağazanın əlavəsi buraya daxil deyil.",
+    "products": "Kataloqda {metal} {fineness} zərgərliklərə baxın",
+    "errors": {
+      "empty": "Çəkini daxil edin.",
+      "format": "Çəkini rəqəmlə yazın, məsələn 4,2.",
+      "notPositive": "Çəki sıfırdan böyük olmalıdır.",
+      "tooPrecise": "Vergüldən sonra ən çox 3 rəqəm yazın (milliqrama qədər).",
+      "tooLarge": "Çəki 10 000 qramdan çox ola bilməz."
+    },
+    "unavailable": "Metal qiymətlərini indi yükləmək mümkün olmadı, ona görə dəyər göstərilmir. Bir az sonra yenidən yoxlayın.",
+    "noPrices": "Bu günün AMB qiyməti hələ gəlməyib, ona görə dəyər göstərilmir.",
+    "loading": "Metal qiymətləri yüklənir",
+    "howTitle": "Dəyər necə hesablanır",
+    "howText": "Metal dəyəri = çəki (qram) × əyar ÷ 1000 × 1 qram təmiz metalın AMB qiyməti. AMB metal məzənnələrini troy unsiyası (31,1034768 q) üçün manatla dərc edir; biz onu qrama çeviririk və nəticəni qəpiyə qədər yuvarlaqlaşdırırıq.",
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "price": {
+        "q": "Mağaza qiyməti niyə metal dəyərindən yüksəkdir?",
+        "a": "Mağaza qiymətinə işçilik, daşlar, mağazanın əlavəsi və digər xərclər də daxildir. Kalkulyator yalnız zərgərlikdəki metalın dəyərini göstərir."
+      },
+      "fineness": {
+        "q": "585 əyar nə deməkdir?",
+        "a": "Əyar təmiz metalın mində payıdır: 585 əyarlı qızılın 58,5%-i, 925 əyarlı gümüşün isə 92,5%-i təmiz metaldır."
+      },
+      "source": {
+        "q": "Qiymətlər haradan gəlir?",
+        "a": "Azərbaycan Mərkəzi Bankının gündəlik qiymətli metal məzənnələrindən. Həftəsonu və bayram günlərində son dərc olunan məzənnə istifadə olunur."
+      }
+    }
   },
   "SampleData": {
     "label": "Nümunə data",

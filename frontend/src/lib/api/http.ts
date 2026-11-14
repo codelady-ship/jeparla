@@ -53,6 +53,10 @@ export type RequestOptions = {
   locale?: string;
   headers?: Record<string, string>;
   timeoutMs?: number;
+  /** A body sent as is (e.g. a CSV file) instead of JSON; set its Content-Type in `headers`. */
+  rawBody?: string;
+  /** Answer the response body as text (e.g. a CSV template) instead of JSON. */
+  asText?: boolean;
 };
 
 /** ProblemDetail fields the backend sends (RFC 9457 + `code`, `errors`). */
@@ -60,20 +64,31 @@ type Problem = { code?: string; detail?: string; errors?: { field: string; messa
 
 /** One call to `/api/v1{path}`; JSON in, JSON out, `null` for 204. Throws ApiError. */
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", query, body, token, locale, headers = {}, timeoutMs = 6_000 } = options;
+  const {
+    method = "GET",
+    query,
+    body,
+    token,
+    locale,
+    headers = {},
+    timeoutMs = 6_000,
+    rawBody,
+    asText = false,
+  } = options;
   const url = `${API_BASE}/api/v1${path}${toSearchParams(query)}`;
   let res: Response;
   try {
     res = await fetch(url, {
       method,
       headers: {
-        Accept: "application/json",
+        Accept: asText ? "*/*" : "application/json",
         ...(body !== undefined && { "Content-Type": "application/json" }),
         ...(token && { Authorization: `Bearer ${token}` }),
         ...(locale && { "Accept-Language": locale }),
         ...headers,
       },
       ...(body !== undefined && { body: JSON.stringify(body) }),
+      ...(rawBody !== undefined && { body: rawBody }),
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
@@ -90,8 +105,9 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     );
   }
   if (res.status === 204) return null as T;
-  // 202 Accepted and similar answers may have no body at all.
   const text = await res.text();
+  if (asText) return text as T;
+  // 202 Accepted and similar answers may have no body at all.
   return (text ? JSON.parse(text) : null) as T;
 }
 

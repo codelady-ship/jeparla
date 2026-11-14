@@ -1,7 +1,8 @@
-import { Landmark } from "lucide-react";
+import { ArrowRight, Landmark } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/navigation";
 import { api, USING_MOCK } from "@/lib/api";
 import { formatDecimal, formatPrice } from "@/lib/money";
 import { alloyGramPrice, compareDecimal, percentChange } from "@/lib/pricing";
@@ -174,6 +175,14 @@ export async function MetalPriceWidget({
         <p className="text-xs text-muted-foreground">{t("adminSource")}</p>
       )}
       <p className="text-xs text-muted-foreground">{t("note")}</p>
+      <Link
+        href="/calculator"
+        prefetch={false}
+        className="inline-flex items-center gap-1.5 self-start link-underline text-sm font-medium pointer-coarse:py-3"
+      >
+        {t("calculatorLink")}
+        <ArrowRight aria-hidden className="size-4" />
+      </Link>
     </>,
   );
 }

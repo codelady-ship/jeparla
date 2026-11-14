@@ -33,7 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
  * ({@code DOCUMENT_VIEWED}, a presigned GET valid for {@link DocumentProperties#viewUrlTtl}) and every decision.
  * A refusal (REJECT or REQUEST_CHANGES) needs a reason category and notifies the seller politely, in their
  * language, in the app and by email, with what to do next. Only an approval makes a check VERIFIED
- * ({@link VerificationChecks}). An admin never reviews the documents of a store they own.
+ * ({@link VerificationChecks}). An admin never reviews the documents of a store they own. A rejection for
+ * AUTHENTICITY also opens a suspension request that a second admin decides ({@link StoreSuspensionService}).
  */
 @Service
 @PreAuthorize("hasRole('ADMIN')")
@@ -50,11 +51,12 @@ public class AdminDocumentService {
     private final AuditService audit;
     private final MessageSource messages;
     private final DocumentProperties properties;
+    private final StoreSuspensionService suspensions;
     private final Clock clock;
 
     public AdminDocumentService(VerificationDocumentRepository documents, UserRepository users,
             VerificationChecks checks, ObjectStorage storage, NotificationService notifications, AuditService audit,
-            MessageSource messages, DocumentProperties properties, Clock clock) {
+            MessageSource messages, DocumentProperties properties, StoreSuspensionService suspensions, Clock clock) {
         this.documents = documents;
         this.users = users;
         this.checks = checks;
@@ -63,6 +65,7 @@ public class AdminDocumentService {
         this.audit = audit;
         this.messages = messages;
         this.properties = properties;
+        this.suspensions = suspensions;
         this.clock = clock;
     }
 
@@ -145,6 +148,10 @@ public class AdminDocumentService {
             default -> NotificationKind.DOCUMENT_CHANGES_REQUESTED;
         };
         RejectReason reason = request.reason();
+        if (decision == DocumentStatus.REJECTED && reason == RejectReason.AUTHENTICITY) {
+            // Suspected forgery: a second admin decides whether the store is suspended (four eyes, #138).
+            suspensions.open(document, admin, note);
+        }
         // The product's name in the seller's language when it has one (Azerbaijani otherwise).
         notifications.notify(store.getOwner(), kind, locale -> new Object[] {
             reason == null ? "" : messages.getMessage("verification.reason." + reason.name(), null, locale),
