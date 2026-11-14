@@ -77,7 +77,7 @@ docker compose down -v                    # dayandır və bütün verilənləri 
    V15-ə qədər tək `jeparla` istifadəçisi ilə qurulmuş bazanı yenidən yaradın və ya backend README-dəki keçid
    addımlarını edin: miqrasiya iş rolu olmadan dayanır.
 
-3. `.env`-i yükləyib API-ni qaldırın (Git Bash, Linux, macOS):
+3. `.env`-i yükləyib API-ni qaldırın (Git Bash, Linux, macOS; Windows PowerShell üçün aşağıya baxın):
 
    ```bash
    set -a; . ./.env; set +a
@@ -86,6 +86,77 @@ docker compose down -v                    # dayandır və bütün verilənləri 
 
 Redis olmadan API işləməyə davam edir. Şəkil yükləməni yoxlamaq üçün yalnız MinIO-nu Docker ilə
 qaldırmaq olar: `docker compose up -d minio minio-init`. Ətraflı: [backend/README.md](./backend/README.md).
+
+#### Windows (Docker-siz, PowerShell)
+
+Təmiz Windows maşınında `/actuator/health`-ə qədər addımlar. Əmrlər repo kökündən, PowerShell-dən.
+
+1. **Quraşdırma:** JDK 21 (məsələn Microsoft Build of OpenJDK; `java -version` 21 göstərməlidir) və
+   PostgreSQL 16 (EDB installer; `pg_trgm` daxil olan contrib paketi onunla gəlir). Redis lazım deyil:
+   onsuz rate limit sayğacları yaddaşda saxlanılır.
+2. **`psql`-in yeri:** standart quraşdırmada PATH-da deyil. Cari pəncərə üçün əlavə edin:
+
+   ```powershell
+   $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
+   psql --version
+   ```
+
+3. **Rollar və baza.** Baza mütləq UTF8 olmalıdır: V1 miqrasiyasında Azərbaycan və kiril hərfləri var,
+   Windows-da isə default kodlaşdırma çox vaxt `WIN1252`/`WIN1254` olur və miqrasiya dayanır. `template0`
+   ilə yaradın (Windows-da UTF8 istənilən locale ilə işləyir). Parollar `.env`-dəki
+   `JEPARLA_DB_MIGRATION_PASSWORD` və `JEPARLA_DB_PASSWORD` ilə eyni olsun:
+
+   ```powershell
+   psql -U postgres -c "CREATE ROLE jeparla_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';"
+   psql -U postgres -c "CREATE ROLE jeparla_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '...';"
+   psql -U postgres -c "CREATE DATABASE jeparla OWNER jeparla_owner ENCODING 'UTF8' TEMPLATE template0;"
+   psql -U postgres -d jeparla -c "REVOKE ALL ON DATABASE jeparla FROM PUBLIC; GRANT CONNECT, TEMPORARY ON DATABASE jeparla TO jeparla_app;"
+   psql -U postgres -d jeparla -c "SHOW server_encoding;"   # UTF8
+   ```
+
+4. **`.env`:** `Copy-Item .env.example .env`, sonra boş sirləri doldurun (yuxarıdakı qaydalar;
+   `JEPARLA_JWT_SECRET` üçün `openssl` yoxdursa:
+   `-join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })`).
+5. **`.env`-i yükləyib API-ni qaldırın** (dəyişənlər yalnız bu PowerShell pəncərəsində qalır; boş dəyərlər
+   təyin olunmur, API öz default-unu götürür):
+
+   ```powershell
+   Get-Content .env | Where-Object { $_ -match '^\s*[A-Za-z_][A-Za-z0-9_]*=' } | ForEach-Object {
+     $name, $value = $_ -split '=', 2
+     [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim(), 'Process')
+   }
+   cd backend
+   .\gradlew.bat bootRun
+   ```
+
+   Başqa pəncərədə: `Invoke-RestMethod http://localhost:8080/actuator/health` cavabı `status: UP` olmalıdır.
+
+6. **Şəkil yükləmə (S3):** Docker-siz, `.env`-də `JEPARLA_S3_ACCESS_KEY` və `JEPARLA_S3_SECRET_KEY` boş qalsa yükləmə
+   endpoint-ləri 503 qaytarır, qalan hər şey işləyir. Yükləməni yoxlamaq lazımdırsa, lokal S3 serverini
+   (compose-dakı `pgsty/silo` ilə eyni proqram) Windows binarı ilə qaldırmaq olar:
+   [github.com/pgsty/silo/releases](https://github.com/pgsty/silo/releases)-dən `silo_*_windows_amd64.zip`
+   (`silo.exe`) və [github.com/pgsty/mc/releases](https://github.com/pgsty/mc/releases)-dən
+   `mcli_*_windows_amd64.zip` (`mcli.exe`). `.env` yüklənmiş pəncərədə:
+
+   ```powershell
+   $env:MINIO_ROOT_USER = $env:JEPARLA_S3_ACCESS_KEY
+   $env:MINIO_ROOT_PASSWORD = $env:JEPARLA_S3_SECRET_KEY
+   .\silo.exe server C:\jeparla-s3 --address 127.0.0.1:9000 --console-address 127.0.0.1:9001
+   ```
+
+   Bucket-lər (ikinci pəncərədə, eyni `.env` ilə; `minio-init` servisi ilə eyni addımlar):
+
+   ```powershell
+   .\mcli.exe alias set local http://127.0.0.1:9000 $env:JEPARLA_S3_ACCESS_KEY $env:JEPARLA_S3_SECRET_KEY
+   .\mcli.exe mb --ignore-existing local/jeparla-public local/jeparla-private
+   .\mcli.exe anonymous set download local/jeparla-public
+   ```
+
+   Bu yol CI-da yoxlanılmır; işləməsə yükləməni Docker olan maşında yoxlayın. `staging/` üçün 1 günlük
+   silmə qaydası burada yoxdur (API-nin təmizləmə işi yenə işləyir).
+7. **Testlər:** `.\gradlew.bat test` Docker-siz işləyir, amma PostgreSQL və Redis tələb edən testlərin demək olar
+   hamısı (Testcontainers, `disabledWithoutDocker`) **keçilir** (skipped), yalnız unit testlər işləyir. Yaşıl nəticə
+   burada tam yoxlama demək deyil; tam test dəsti CI-da (Docker ilə) işləyir.
 
 ## Alətlər
 
