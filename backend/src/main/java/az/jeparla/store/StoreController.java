@@ -6,6 +6,8 @@ import az.jeparla.common.web.CachePolicy;
 import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductSummaryDto;
 import az.jeparla.store.dto.StoreDto;
+import az.jeparla.store.dto.StoreFactsDto;
+import az.jeparla.store.dto.StorePreviewDto;
 import az.jeparla.store.dto.StoreSummaryDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,9 +33,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
 
     private final StoreCatalogService stores;
+    private final StoreFactsService facts;
 
-    public StoreController(StoreCatalogService stores) {
+    public StoreController(StoreCatalogService stores, StoreFactsService facts) {
         this.stores = stores;
+        this.facts = facts;
     }
 
     @GetMapping
@@ -73,5 +77,27 @@ public class StoreController {
     public ResponseEntity<PageDto<ProductSummaryDto>> products(@PathVariable String slug,
             @Valid @ParameterObject ProductQuery query) {
         return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.products(slug, query));
+    }
+
+    @GetMapping("/{slug}/facts")
+    @Operation(summary = "Trust facts of a store",
+            description = "Measured from the database on the request (#108): months on Jeparla, listed products, "
+                    + "share with verified expertise and with a metal-linked price, latest catalog change, verified "
+                    + "store documents. Unknown facts are null, never a made-up zero; no ratings, no WhatsApp "
+                    + "response time.")
+    @ApiResponse(responseCode = "200", description = "Facts")
+    @ApiResponse(responseCode = "404", description = "Unknown or not approved")
+    public ResponseEntity<StoreFactsDto> facts(@PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(facts.facts(slug));
+    }
+
+    @GetMapping("/{slug}/preview")
+    @Operation(summary = "Link preview of a store",
+            description = "Open Graph data for the store page and its share image (#100): name, city, verified "
+                    + "badge, product count, cover image and logo.")
+    @ApiResponse(responseCode = "200", description = "Preview")
+    @ApiResponse(responseCode = "404", description = "Unknown or not approved")
+    public ResponseEntity<StorePreviewDto> preview(@PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(facts.previewBySlug(slug));
     }
 }

@@ -15,13 +15,14 @@ import { openGraph } from "@/lib/seo/open-graph";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api } from "@/lib/api";
+import { slugParams } from "@/lib/api/static-params";
 import { breadcrumbs, faqPage } from "@/lib/seo/json-ld";
 
 const FAQ_KEYS = ["fineness", "price", "contact"] as const;
 
 export async function generateStaticParams() {
   const categories = await api.listCategories();
-  return categories.map((c) => ({ slug: c.slug }));
+  return slugParams(categories.map((c) => c.slug));
 }
 
 export async function generateMetadata({
@@ -31,7 +32,9 @@ export async function generateMetadata({
   const locale = await rootLocale();
   const categories = await api.listCategories();
   const c = categories.find((x) => x.slug === slug);
-  if (!c || !hasLocale(routing.locales, locale)) return {};
+  // Resolved before the streamed body: an unknown category answers a real 404, not a soft 200.
+  if (!c) notFound();
+  if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Categories" });
   return {
     title: c.name[locale],
