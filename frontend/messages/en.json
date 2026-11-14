@@ -279,7 +279,15 @@
     "allCategories": "All categories",
     "noProductsTitle": "No products found",
     "noProductsText": "Change the search or see all products.",
-    "showAllProducts": "All products"
+    "showAllProducts": "All products",
+    "nearMe": "Near me",
+    "nearLocating": "Finding your location",
+    "nearClear": "Stop sorting by distance",
+    "nearPrivacy": "Your location is asked only when you press the button, sent to about 1 km and not saved.",
+    "nearActive": "Stores are sorted by distance from you. Stores without a saved address are at the end of the list.",
+    "nearDenied": "Location access was not allowed. Choose a city or search for a store by name.",
+    "nearUnavailable": "Your location could not be found. Choose a city or search for a store by name.",
+    "distance": "{km} km"
   },
   "About": {
     "title": "What is Jeparla?",

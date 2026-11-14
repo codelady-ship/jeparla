@@ -54,6 +54,8 @@ export type StoreSummary = {
   logoUrl: string | null;
   verification: Verification;
   productCount: number;
+  /** Kilometres from the `near` point, 0.1 km; only in a list asked with `near`. */
+  distanceKm?: Decimal;
 };
 
 export type Store = StoreSummary & {

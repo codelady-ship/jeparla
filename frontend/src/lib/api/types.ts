@@ -33,8 +33,11 @@ export interface JeparlaApi {
   listCategories(): Promise<Category[]>;
   /** GET /api/v1/finenesses */
   listFinenesses(): Promise<Fineness[]>;
-  /** GET /api/v1/stores */
-  listStores(params?: { q?: string; city?: string }): Promise<StoreSummary[]>;
+  /**
+   * GET /api/v1/stores. With `near` ("lat,lng"), stores with a location come first,
+   * nearest first, with `distanceKm`; the rest follow in the usual order.
+   */
+  listStores(params?: { q?: string; city?: string; near?: string }): Promise<StoreSummary[]>;
   /** GET /api/v1/stores/{slug} */
   getStore(slug: string): Promise<Store | null>;
   /** GET /api/v1/stores/{slug}/products */

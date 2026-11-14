@@ -279,7 +279,15 @@
     "allCategories": "Bütün kateqoriyalar",
     "noProductsTitle": "Məhsul tapılmadı",
     "noProductsText": "Axtarışı dəyişin və ya bütün məhsullara baxın.",
-    "showAllProducts": "Bütün məhsullar"
+    "showAllProducts": "Bütün məhsullar",
+    "nearMe": "Yaxınımdakılar",
+    "nearLocating": "Məkan təyin olunur",
+    "nearClear": "Yaxınlığa görə sıralamanı sıfırla",
+    "nearPrivacy": "Məkanınız yalnız düyməni basanda soruşulur, təxminən 1 km dəqiqliklə göndərilir və saxlanılmır.",
+    "nearActive": "Mağazalar sizə yaxınlığa görə sıralanıb. Ünvanı qeyd olunmayan mağazalar siyahının sonundadır.",
+    "nearDenied": "Məkan icazəsi verilmədi. Şəhəri seçin və ya mağazanı adla axtarın.",
+    "nearUnavailable": "Məkanı təyin etmək alınmadı. Şəhəri seçin və ya mağazanı adla axtarın.",
+    "distance": "{km} km"
   },
   "About": {
     "title": "Jeparla nədir?",
