@@ -100,6 +100,10 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
 - `/api/v1/admin/documents/**` (`ADMIN`): növbə, detal, `POST /{id}/view` (5 dəqiqəlik presigned GET,
   `DOCUMENT_VIEWED` auditi), `POST /{id}/decision` (`APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada səbəb
   kateqoriyası məcburidir). Yalnız təsdiqlənmiş sənəd yoxlamanı `VERIFIED` edir.
+- Dörd göz (#138, `docs/legal/sellers-liability.md` 3.1): `AUTHENTICITY` (saxtalıq şübhəsi) səbəbli rədd yalnız
+  dayandırma sorğusu açır; mağazanı yalnız **başqa** admin `/api/v1/admin/store-suspensions/{id}/decision` ilə
+  dayandırır (`CONFIRM`) və ya sorğunu bağlayır (`DISMISS`). Bir nəfər mağazanı bu yolla dayandıra bilməz
+  (`409 verification.four_eyes`; `store_suspension_requests_four_eyes` CHECK-i bazada da yoxlayır).
 - Maraq toqquşması: admin öz mağazasının sənədinə, statusuna və məhsuluna qərar vermir (403).
 - `/api/v1/admin/stores`, `/admin/products`, `/admin/audit` (`ADMIN`): mağaza statusu (`REJECTED`/`BLOCKED`
   üçün ən az 10 simvol səbəb), satıcı yoxlaması, məhsul qərarı (`APPROVE`; `RETURN`/`DEACTIVATE` səbəblə).
