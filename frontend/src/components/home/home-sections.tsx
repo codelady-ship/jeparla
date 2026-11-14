@@ -50,6 +50,38 @@ export async function HomeCategories() {
   );
 }
 
+/** Budget entry points in AZN (#115); each opens the catalogue filtered by maximum price. */
+const BUDGETS = [200, 500, 1000, 3000] as const;
+
+export async function BudgetPicks() {
+  const [t, pages] = await Promise.all([
+    getTranslations("Home"),
+    Promise.all(BUDGETS.map((max) => api.listProducts({ maxPrice: String(max), size: 1 }))),
+  ]);
+  // A budget with nothing under it is not offered.
+  const budgets = BUDGETS.filter((_, i) => pages[i].totalElements > 0);
+  if (budgets.length === 0) return null;
+  return (
+    <section aria-labelledby="home-budget" className={cn(WRAP, "pb-16")}>
+      <SectionHead id="home-budget" title={t("budget.title")} />
+      <ul className="flex flex-wrap gap-2">
+        {budgets.map((max) => (
+          <li key={max}>
+            <Link
+              href={`/products?maxPrice=${max}`}
+              prefetch={false}
+              className="inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium tabular-nums transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:h-11"
+            >
+              {t("budget.upTo", { amount: max })}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-sm text-muted-foreground">{t("budget.note")}</p>
+    </section>
+  );
+}
+
 export async function FeaturedStores() {
   const [t, stores] = await Promise.all([getTranslations("Home"), api.listStores()]);
   // Checked stores first; no paid placement exists, so the order says nothing else.
