@@ -203,6 +203,7 @@ Hamısı anonim `GET`-dir, cavablar `frontend/src/types/api.ts` tipləri ilə ey
 | `GET /api/v1/variants?ids=10,20` | `CompareItem[]` (müqayisə), ən çox 4 |
 | `GET /api/v1/categories`, `/finenesses` | `Category[]` (say alt kateqoriyalarla), `Fineness[]` |
 | `GET /api/v1/stores?q=&city=`, `/stores/{slug}`, `/stores/{slug}/products` | `StoreSummary[]`, `Store`, `Page<ProductSummary>` |
+| `GET /api/v1/stores?near=40.4093,49.8671` | Yaxınımdakılar (#116): koordinatı olan mağazalar məsafəyə görə (haversine, 0.1 km, `distanceKm`), sonra koordinatsız mağazalar adi sırada (`distanceKm` açarı yoxdur). Alıcının mövqeyi yalnız bu cavab üçündür: saxlanılmır, loglanmır, cavab `Cache-Control: no-store` (Redis/CDN keşi yoxdur). Yanlış dəyər 400 `catalog.invalid_near`. Mağazanın koordinatını satıcı `PUT /merchant/store`-da verir: `mapLink` (Google Maps `@lat,lng`, `!3d..!4d..`, `?q=lat,lng`; Yandex `ll=lng,lat`, `pt=`) və ya `latitude`+`longitude`; qısa link (`maps.app.goo.gl`) 400 `merchant.map_link`. 6 onluğa yuvarlaqlaşdırılır (`NUMERIC(9,6)`) |
 | `GET /api/v1/metal-prices/latest`, `/metal-prices/history?metal=GOLD&days=30` | `MetalPrice[]` (yalnız `APPLIED` kotirovkalar) |
 | `POST /api/v1/products/{id}/contact-click` | 204; WhatsApp klik statistikası (`product_contact_clicks`, gün üzrə), qonaq da olar |
 | `POST /api/v1/products/{id}/reports` | 204; `{reason, message?}` şikayət, qonaq da olar, `report-ip`/`report-account` limiti |

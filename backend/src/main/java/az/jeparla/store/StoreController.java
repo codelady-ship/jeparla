@@ -1,6 +1,7 @@
 package az.jeparla.store;
 
 import az.jeparla.common.dto.PageDto;
+import az.jeparla.common.error.ApiException;
 import az.jeparla.common.web.CachePolicy;
 import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductSummaryDto;
@@ -14,6 +15,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +43,17 @@ public class StoreController {
     public ResponseEntity<List<StoreSummaryDto>> list(
             @Parameter(description = "Words that start a word of the store name or city")
             @RequestParam(required = false) @Size(max = ProductQuery.MAX_QUERY_LENGTH) String q,
-            @Parameter(description = "City, exact, e.g. Bakı") @RequestParam(required = false) @Size(max = 120) String city) {
-        return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.list(q, city));
+            @Parameter(description = "City, exact, e.g. Bakı") @RequestParam(required = false) @Size(max = 120) String city,
+            @Parameter(description = "Buyer's position \"latitude,longitude\" for nearest first with distanceKm (#116);"
+                    + " used for this answer only, never stored or logged, and the answer is not cached")
+            @RequestParam(required = false) @Size(max = 64) String near) {
+        if (near == null || near.isBlank()) {
+            return ResponseEntity.ok().cacheControl(CachePolicy.CATALOG).body(stores.list(q, city));
+        }
+        GeoPoint point = GeoPoint.parse(near)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "catalog.invalid_near", "near"));
+        // A personal answer: no shared cache keeps it.
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(stores.list(q, city, point));
     }
 
     @GetMapping("/{slug}")
