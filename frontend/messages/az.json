@@ -253,6 +253,25 @@
       "details": "Ətraflı (istəyə bağlı)",
       "submit": "Göndər",
       "unavailable": "Şikayət göndərmək tezliklə aktiv olacaq. Hələlik heç nə göndərilmir."
+    },
+    "recentlyViewed": "Son baxdıqlarınız",
+    "terms": {
+      "fineness": {
+        "label": "Əyar nədir?",
+        "text": "Əyar ərintidə təmiz metalın payını mində hissə ilə göstərir: 585 əyarlı qızılda 58,5% təmiz qızıl var. Məhsulun üzərindəki damğa ilə uyğun gəlməlidir."
+      },
+      "carat": {
+        "label": "Karat nədir?",
+        "text": "Karat (ct) qiymətli daşın çəkisidir: 1 karat 0,2 qramdır. Qızılın \"karatı\" ilə qarışdırmayın: o, əyarın başqa ölçü sistemidir."
+      },
+      "color": {
+        "label": "Brilyantın rəngi nədir?",
+        "text": "Rəng D-dən (rəngsiz) Z-ə (açıq sarı və ya qəhvəyi çalar) qədər hərflə qiymətləndirilir. D-F rəngsiz, G-J demək olar ki rəngsiz sayılır."
+      },
+      "clarity": {
+        "label": "Təmizlik nədir?",
+        "text": "Təmizlik daşın daxili və xarici qüsurlarının nə qədər görünməsini göstərir: FL və IF (qüsursuz), VVS1-VVS2, VS1-VS2, SI1-SI2, I1-I3. 10 dəfə böyütmə ilə qiymətləndirilir."
+      }
     }
   },
   "Stores": {

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -21,7 +22,9 @@ import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
+import { RecentlyViewed } from "./recently-viewed";
 import { ReportDialog } from "./report-dialog";
+import { TermHint } from "./term-hint";
 import { VariantPanel, type VariantView } from "./variant-panel";
 
 const STATUS_ICON: Record<CheckStatus, typeof CircleCheck> = {
@@ -78,9 +81,17 @@ export async function ProductDetails({
   }));
   const first = p.variants[0];
 
-  const facts: [string, string][] = [
+  // A term key adds a "what is this" hint next to the label (#174).
+  const hint = (key: "fineness" | "carat" | "color" | "clarity", term: string) => (
+    <TermHint term={term} label={t(`terms.${key}.label`)} text={t(`terms.${key}.text`)} />
+  );
+  const facts: [string, string, ReactNode?][] = [
     [t("facts.metal"), tp(`metal.${p.metal}`)],
-    [t("facts.fineness"), first?.fineness.label ?? String(p.fineness)],
+    [
+      t("facts.fineness"),
+      first?.fineness.label ?? String(p.fineness),
+      hint("fineness", t("facts.fineness")),
+    ],
     [t("facts.weight"), formatGrams(p.weightGrams, locale)],
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
     [t("facts.price"), formatPrice(p.priceFrom.amount, locale)],
@@ -189,13 +200,14 @@ export async function ProductDetails({
             </h2>
             <table data-keep-clear="" className="w-full text-sm">
               <tbody>
-                {facts.map(([k, v]) => (
+                {facts.map(([k, v, h]) => (
                   <tr key={k} className="border-b last:border-0">
                     <th
                       scope="row"
                       className="py-2 pr-4 text-left font-normal text-muted-foreground"
                     >
                       {k}
+                      {h}
                     </th>
                     <td className="py-2 text-right font-medium tabular-nums">{v}</td>
                   </tr>
@@ -243,6 +255,8 @@ export async function ProductDetails({
                       (h) => (
                         <th key={h} scope="col" className="py-2 pr-3 font-normal">
                           {t(`stones.${h}`)}
+                          {(h === "carat" || h === "color" || h === "clarity") &&
+                            hint(h, t(`stones.${h}`))}
                         </th>
                       ),
                     )}
@@ -339,6 +353,8 @@ export async function ProductDetails({
           <ProductGrid products={related} />
         </section>
       )}
+
+      <RecentlyViewed productId={p.id} title={t("recentlyViewed")} />
     </article>
   );
 }
