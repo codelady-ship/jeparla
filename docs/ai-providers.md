@@ -62,6 +62,19 @@ Namizədlər (#54 pilotu seçir): Higgsfield (məhsul şəkli və "product on mo
 şəkil redaktəsi). Seçim meyarı: əşyanın forması, rəngi və daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir.
 Xərc və lisenziya seçiləndə bu sənədə yazılır.
 
+### AI model kitabxanası (#130)
+
+- Admin `/api/v1/admin/ai-models` ilə model əlavə edir (ad, auditoriya WOMEN/MEN/KIDS, dəri tonu, üslub,
+  mənşə), istinad şəkillərini poza ilə yükləyir (məhsul şəkilləri ilə eyni yoxlanılmış yükləmə, public
+  bucket `ai-models/<id>/`), sıralayır, auditoriya üzrə "əsas" seçir, deaktiv edir. Model silinmir.
+- Satıcı `GET /api/v1/merchant/ai/models?audience=` ilə yalnız aktiv və şəkli olan modelləri görür;
+  `VIRTUAL_TRY_ON` tapşırığında `modelId` göndərir. Deaktiv model yeni tapşırıqda qəbul olunmur
+  (`ai.model_inactive`), əvvəl təsdiqlənmiş şəkillər məhsulda qalır.
+- Worker modelin istinad şəkillərini `GenerationRequest.referenceImageUrls`-də, auditoriyanı isə prompt
+  parametrində provayderə verir: provayder eyni üzü və bədən nisbətini saxlamaq üçün bunlardan istifadə edir.
+- Başlanğıc dəsti (~10 model) bir dəfə yaradılır (provayder və xərc sahibin təsdiqi ilə) və `docs/credits.md`-də
+  qeyd olunur.
+
 ### Dürüstlük
 
 - Provayder qoşulmayanda heç bir nümunə AI şəkil göstərilmir.

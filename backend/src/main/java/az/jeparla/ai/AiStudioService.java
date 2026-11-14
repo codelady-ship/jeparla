@@ -5,6 +5,7 @@ import az.jeparla.admin.AuditTargetType;
 import az.jeparla.ai.dto.AiAssetDto;
 import az.jeparla.ai.dto.AiJobDto;
 import az.jeparla.ai.dto.AiJobRequest;
+import az.jeparla.ai.dto.AiModelDto;
 import az.jeparla.ai.dto.AiStatusDto;
 import az.jeparla.ai.provider.ImageGenerationException;
 import az.jeparla.ai.provider.ImageGenerationProvider;
@@ -17,6 +18,7 @@ import az.jeparla.common.storage.ObjectStorage;
 import az.jeparla.merchant.Created;
 import az.jeparla.merchant.MerchantImageService;
 import az.jeparla.merchant.MerchantProducts;
+import az.jeparla.product.Audience;
 import az.jeparla.product.Product;
 import az.jeparla.product.ProductImage;
 import az.jeparla.store.StoreRepository;
@@ -69,10 +71,12 @@ public class AiStudioService {
     private final AuditService audit;
     private final AiProperties properties;
     private final Clock clock;
+    private final AiModelCatalog modelCatalog;
 
     public AiStudioService(MerchantProducts products, AiJobRepository jobs, AiAssetRepository assets,
             AiApprovalRepository approvals, AiUsage usage, ImageGenerationProviders providers, ObjectStorage storage,
-            StoreRepository stores, AuditService audit, AiProperties properties, Clock clock) {
+            StoreRepository stores, AuditService audit, AiProperties properties, Clock clock,
+            AiModelCatalog modelCatalog) {
         this.products = products;
         this.jobs = jobs;
         this.assets = assets;
@@ -84,6 +88,7 @@ public class AiStudioService {
         this.audit = audit;
         this.properties = properties;
         this.clock = clock;
+        this.modelCatalog = modelCatalog;
     }
 
     /** Whether AI Studio is on, and the quota of the seller's store today. */
@@ -120,14 +125,23 @@ public class AiStudioService {
             // Generating from a generated image drifts away from the real item.
             throw new ApiException(HttpStatus.BAD_REQUEST, "ai.source_ai_generated", "sourceImageId");
         }
+        Long modelId = modelCatalog.checkForJob(request.kind(), request.modelId());
         requireAvailable(storeId);
         Instant now = clock.instant();
-        AiJob job = jobs.save(new AiJob(storeId, product.getId(), source.getId(), request.kind(),
-                properties.maxAttempts(), idempotencyKey, CurrentUser.id(), now));
+        AiJob job = new AiJob(storeId, product.getId(), source.getId(), request.kind(), properties.maxAttempts(),
+                idempotencyKey, CurrentUser.id(), now);
+        job.useModel(modelId);
+        job = jobs.save(job);
         jobs.flush();
         audit.record("AI_JOB_CREATED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"jobId\":" + job.getId() + ",\"kind\":\"" + job.getKind() + "\"}");
         return new Created<>(view(job), true);
+    }
+
+    /** AI models of the library a seller can pick (#130), the default first; {@code audience} null for all. */
+    @Transactional(readOnly = true)
+    public List<AiModelDto> models(Audience audience) {
+        return modelCatalog.selectable(audience);
     }
 
     /** The product's jobs, newest first (at most 50). */
@@ -283,7 +297,8 @@ public class AiStudioService {
             dtos.add(new AiAssetDto(asset.getId(), preview, asset.getWidth(), asset.getHeight(),
                     asset.getProductImageId()));
         }
-        return new AiJobDto(job.getId(), job.getProductId(), job.getSourceImageId(), job.getKind(), job.getStatus(),
+        return new AiJobDto(job.getId(), job.getProductId(), job.getSourceImageId(), job.getKind(), job.getModelId(),
+                job.getStatus(),
                 job.getAttempts(), job.getMaxAttempts(), job.getErrorCode(), job.canRetry(), job.getCreatedAt(),
                 job.getUpdatedAt(), dtos);
     }

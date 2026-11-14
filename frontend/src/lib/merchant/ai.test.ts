@@ -12,6 +12,8 @@ describe("AI Studio (#55)", () => {
     await expect(api.status()).resolves.toEqual(NOT_CONFIGURED);
     expect(NOT_CONFIGURED.configured).toBe(false);
     await expect(api.jobs(1)).resolves.toEqual([]);
+    // The model library (#130) is empty until the admin uploads models: no sample models.
+    await expect(api.models("WOMEN")).resolves.toEqual([]);
   });
 
   it("validates job requests and actions", () => {
@@ -21,6 +23,10 @@ describe("AI Studio (#55)", () => {
     expect(aiJobRequest.safeParse({ productId: 1, sourceImageId: 5, kind: "OTHER" }).success).toBe(
       false,
     );
+    expect(
+      aiJobRequest.safeParse({ productId: 1, sourceImageId: 5, kind: "VIRTUAL_TRY_ON", modelId: 2 })
+        .success,
+    ).toBe(true);
     expect(aiJobAction.safeParse({ action: "approve" }).success).toBe(false);
     expect(aiJobAction.safeParse({ action: "approve", assetId: 3 }).success).toBe(true);
   });

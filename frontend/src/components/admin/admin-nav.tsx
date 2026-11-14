@@ -10,6 +10,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Store,
+  UserRound,
   Users,
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -24,6 +25,7 @@ const ITEMS = [
   { href: "/admin/reports", key: "reports", icon: Flag },
   { href: "/admin/prices", key: "prices", icon: Coins },
   { href: "/admin/catalog", key: "catalog", icon: FolderTree },
+  { href: "/admin/ai-models", key: "aiModels", icon: UserRound },
   { href: "/admin/users", key: "users", icon: Users },
   { href: "/admin/audit", key: "audit", icon: History },
 ] as const;

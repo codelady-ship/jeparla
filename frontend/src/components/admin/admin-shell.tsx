@@ -16,6 +16,7 @@ export type AdminPage =
   | "reports"
   | "audit"
   | "prices"
+  | "aiModels"
   | "suspensions";
 
 /** Private area: titled per page, never indexed. */

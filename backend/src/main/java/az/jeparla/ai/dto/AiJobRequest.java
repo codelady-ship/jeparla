@@ -10,7 +10,8 @@ import jakarta.validation.constraints.Positive;
  * @param productId     the seller's product
  * @param sourceImageId one of its photos that is not AI-generated itself
  * @param kind          what to make
+ * @param modelId       AI model of the library for VIRTUAL_TRY_ON (#130); null: the default of the audience
  */
 public record AiJobRequest(@NotNull @Positive Long productId, @NotNull @Positive Long sourceImageId,
-        @NotNull AiJobKind kind) {
+        @NotNull AiJobKind kind, @Positive Long modelId) {
 }

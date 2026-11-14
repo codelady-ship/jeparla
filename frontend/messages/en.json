@@ -1461,8 +1461,19 @@
           "no_attempts_left": "This job has no attempts left.",
           "source_image": "Choose an original photo of this product.",
           "source_ai_generated": "A new image cannot be made from an AI image. Choose the original photo.",
-          "quota": "Today's limit is used up. Please try again tomorrow."
+          "quota": "Today's limit is used up. Please try again tomorrow.",
+          "model_inactive": "This model is no longer offered. Choose another model.",
+          "model_kind": "A model is chosen only for an on-model image."
         }
+      },
+      "modelLegend": "AI model",
+      "modelEmpty": "The model library is empty. You can pick a model here once the admin adds them.",
+      "modelDefault": "default",
+      "modelStyle": {
+        "CLASSIC": "Classic",
+        "CASUAL": "Casual",
+        "EVENING": "Evening",
+        "MINIMAL": "Minimal"
       }
     }
   },
@@ -1913,6 +1924,55 @@
       "noteHint": "Kept only in the audit log; the seller never sees it. At most 1000 characters.",
       "doneConfirm": "{name} is suspended.",
       "doneDismiss": "The request for {name} is dismissed."
+    },
+    "aiModels": {
+      "title": "AI models",
+      "intro": "Library of AI models for on-model images: the seller picks a model that fits the product's audience.",
+      "rules": {
+        "notReal": "The models are AI-made, not real people; no photo of a real person is uploaded.",
+        "uploaded": "The admin uploads each model's reference photos; the site never generates a model.",
+        "deactivate": "Models are deactivated, never deleted: they leave new jobs, images approved earlier stay.",
+        "credits": "Each model's origin is recorded in docs/credits.md."
+      },
+      "empty": {
+        "title": "The library is empty",
+        "text": "The first models are added in the admin panel once the real API is connected (name, audience, skin tone, style, origin and pose photos)."
+      },
+      "photoAlt": "{name}: reference photo",
+      "default": "Default",
+      "active": "Active",
+      "inactive": "Inactive",
+      "audienceLabel": "Audience",
+      "skinToneLabel": "Skin tone",
+      "styleLabel": "Style",
+      "posesLabel": "Poses",
+      "noPhotos": "No photos",
+      "origin": "Origin: {origin}",
+      "audience": {
+        "WOMEN": "Woman",
+        "MEN": "Man",
+        "KIDS": "Child"
+      },
+      "skinTone": {
+        "LIGHT": "Light",
+        "MEDIUM_LIGHT": "Medium light",
+        "MEDIUM": "Medium",
+        "MEDIUM_DARK": "Medium dark",
+        "DARK": "Dark"
+      },
+      "style": {
+        "CLASSIC": "Classic",
+        "CASUAL": "Casual",
+        "EVENING": "Evening",
+        "MINIMAL": "Minimal"
+      },
+      "pose": {
+        "HAND": "Hand",
+        "EAR": "Ear",
+        "NECK": "Neck",
+        "WRIST": "Wrist",
+        "HALF_PORTRAIT": "Half portrait"
+      }
     }
   },
   "MetalPrices": {

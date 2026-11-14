@@ -20,6 +20,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             reports: t("reports.title"),
             prices: t("prices.title"),
             catalog: t("catalog.title"),
+            aiModels: t("aiModels.title"),
             users: t("users.title"),
             audit: t("audit.title"),
           }}

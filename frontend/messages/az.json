@@ -1461,8 +1461,19 @@
           "no_attempts_left": "Bu tapşırıq üçün cəhdlər bitib.",
           "source_image": "Bu məhsulun orijinal şəklini seçin.",
           "source_ai_generated": "AI şəklindən yeni şəkil yaratmaq olmaz. Orijinal şəkli seçin.",
-          "quota": "Bugünkü limit dolub. Sabah yenidən cəhd edin."
+          "quota": "Bugünkü limit dolub. Sabah yenidən cəhd edin.",
+          "model_inactive": "Bu model artıq təklif olunmur. Başqa model seçin.",
+          "model_kind": "Model yalnız \"model üzərində\" şəkil üçün seçilir."
         }
+      },
+      "modelLegend": "AI model",
+      "modelEmpty": "Model kitabxanası hələ boşdur. Admin modelləri əlavə edəndə burada seçə biləcəksiniz.",
+      "modelDefault": "əsas",
+      "modelStyle": {
+        "CLASSIC": "Klassik",
+        "CASUAL": "Gündəlik",
+        "EVENING": "Axşam",
+        "MINIMAL": "Minimalist"
       }
     }
   },
@@ -1913,6 +1924,55 @@
       "noteHint": "Yalnız audit log-da qalır, satıcı görmür. Ən çox 1000 simvol.",
       "doneConfirm": "{name} dayandırıldı.",
       "doneDismiss": "{name} üçün sorğu rədd edildi."
+    },
+    "aiModels": {
+      "title": "AI modellər",
+      "intro": "Model üzərində şəkillər üçün AI model kitabxanası: satıcı məhsulun auditoriyasına uyğun modeli seçir.",
+      "rules": {
+        "notReal": "Modellər AI ilə yaradılıb, real şəxs deyil; real insan şəkli yüklənmir.",
+        "uploaded": "Modelin istinad şəkillərini admin yükləyir, sayt özü model yaratmır.",
+        "deactivate": "Model silinmir, deaktiv edilir: yeni tapşırıqlarda görünmür, əvvəl təsdiqlənmiş şəkillər qalır.",
+        "credits": "Hər modelin mənşəyi docs/credits.md-də qeyd olunur."
+      },
+      "empty": {
+        "title": "Kitabxana hələ boşdur",
+        "text": "İlk modellər real API qoşulanda admin paneldən əlavə olunur (ad, auditoriya, dəri tonu, üslub, mənşə və poza şəkilləri)."
+      },
+      "photoAlt": "{name}: istinad şəkli",
+      "default": "Əsas",
+      "active": "Aktiv",
+      "inactive": "Deaktiv",
+      "audienceLabel": "Auditoriya",
+      "skinToneLabel": "Dəri tonu",
+      "styleLabel": "Üslub",
+      "posesLabel": "Pozalar",
+      "noPhotos": "Şəkil yoxdur",
+      "origin": "Mənşə: {origin}",
+      "audience": {
+        "WOMEN": "Qadın",
+        "MEN": "Kişi",
+        "KIDS": "Uşaq"
+      },
+      "skinTone": {
+        "LIGHT": "Açıq",
+        "MEDIUM_LIGHT": "Orta açıq",
+        "MEDIUM": "Orta",
+        "MEDIUM_DARK": "Orta tünd",
+        "DARK": "Tünd"
+      },
+      "style": {
+        "CLASSIC": "Klassik",
+        "CASUAL": "Gündəlik",
+        "EVENING": "Axşam",
+        "MINIMAL": "Minimalist"
+      },
+      "pose": {
+        "HAND": "Əl",
+        "EAR": "Qulaq",
+        "NECK": "Boyun",
+        "WRIST": "Bilək",
+        "HALF_PORTRAIT": "Yarım portret"
+      }
     }
   },
   "MetalPrices": {

@@ -56,6 +56,36 @@ export const AI_ERROR_CODES = [
   "ai.source_image",
   "ai.source_ai_generated",
   "ai.quota",
+  "ai.model_inactive",
+  "ai.model_kind",
 ] as const;
 
 export type AiErrorCode = (typeof AI_ERROR_CODES)[number];
+
+/** AI model library (#130): admin-managed AI models (not real people). */
+export type ModelAudience = "WOMEN" | "MEN" | "KIDS";
+export type SkinTone = "LIGHT" | "MEDIUM_LIGHT" | "MEDIUM" | "MEDIUM_DARK" | "DARK";
+export type ModelStyle = "CLASSIC" | "CASUAL" | "EVENING" | "MINIMAL";
+export type ModelPose = "HAND" | "EAR" | "NECK" | "WRIST" | "HALF_PORTRAIT";
+
+export type AiModelImage = {
+  id: number;
+  url: string;
+  pose: ModelPose;
+  width: number;
+  height: number;
+};
+
+export type AiModel = {
+  id: number;
+  name: string;
+  audience: ModelAudience;
+  skinTone: SkinTone;
+  style: ModelStyle;
+  origin: string;
+  active: boolean;
+  isDefault: boolean;
+  sortOrder: number;
+  poses: ModelPose[];
+  images: AiModelImage[];
+};
