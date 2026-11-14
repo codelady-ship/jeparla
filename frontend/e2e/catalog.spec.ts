@@ -46,8 +46,8 @@ test.describe("catalog filter -> product page -> WhatsApp", () => {
     ).toBeVisible();
   });
 
-  // The streamed page sometimes sends 200 before notFound() runs: soft 404, issue #93.
-  test.fixme("an unknown product slug answers with HTTP 404", async ({ request }) => {
+  // The proxy checks the slug before the page streams (#93, #41).
+  test("an unknown product slug answers with HTTP 404", async ({ request }) => {
     const res = await request.get("/az/products/movcud-olmayan-mehsul", {
       headers: {
         "user-agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",

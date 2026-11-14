@@ -85,6 +85,9 @@ jeparla:
     # anyone else are keyed by their TCP peer address. Empty: trust nothing. In production set it to
     # the Caddy container network (backend/README.md, "Reverse proxy").
     trusted-proxies: ${JEPARLA_TRUSTED_PROXIES:127.0.0.1/32,::1/128}
+    # Shared secret of the frontend server (32+ bytes): with it, X-Jeparla-Client-Ip names the visitor
+    # the Next.js server calls the API for (sign-in, search). Empty: the header is ignored (#41).
+    frontend-token: ${JEPARLA_FRONTEND_TOKEN:}
   auth:
     # HS256 key of the access tokens, 32+ bytes (openssl rand -hex 32). Required: no default.
     jwt-secret: ${JEPARLA_JWT_SECRET:}
@@ -137,11 +140,13 @@ jeparla:
       cleanup-lock-at-most-for: 15m
   support:
     # Contact at the end of every notification that asks the seller to contact support (#138), also in the
-    # email. Empty both: the in-app help page (help-path) is named instead.
+    # email. Empty both: the help page is named instead, /{lang}/help in the app and its absolute URL on
+    # site-url in the email (#167).
     email: ${JEPARLA_SUPPORT_EMAIL:}
     url: ${JEPARLA_SUPPORT_URL:}
     help-path: /help
-    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az.
+    # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az. Also the base of
+    # a store's share link <site-url>/s/<code> and its QR code (#100).
     site-url: ${JEPARLA_PUBLIC_SITE_URL:http://localhost:3000}
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
@@ -188,6 +193,20 @@ jeparla:
     store: redis
     # Defaults are in RateLimitPolicy; override one with e.g.
     # policies.login-ip.limit: 20 and policies.login-ip.window: 5m
+
+# Error tracking (#56). Without SENTRY_DSN (local, tests, CI) the SDK stays off. send-default-pii: false keeps
+# IPs, cookies, headers and user ids out of events; request bodies are never attached (seller documents,
+# passwords). Only unhandled errors are sent: no performance tracing, no logs.
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: ${SENTRY_ENVIRONMENT:production}
+  release: ${SENTRY_RELEASE:}
+  send-default-pii: false
+  max-request-body-size: none
+  traces-sample-rate: 0.0
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info
 
 management:
   endpoints:

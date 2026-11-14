@@ -34,6 +34,8 @@ jobs:
         working-directory: frontend
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # No backend in these jobs: the labelled sample data ("Nümunə data") is switched on explicitly (#41).
+      NEXT_PUBLIC_USE_MOCK: "true"
       NEXT_PUBLIC_SITE_URL: https://jeparla.az
     steps:
       - uses: actions/checkout@v4
@@ -92,6 +94,8 @@ jobs:
         working-directory: frontend
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # No backend in these jobs: the labelled sample data ("Nümunə data") is switched on explicitly (#41).
+      NEXT_PUBLIC_USE_MOCK: "true"
       # Canonical links must match the audited origin, or the SEO audit fails.
       NEXT_PUBLIC_SITE_URL: http://localhost:3100
       # Not LHCI_*: lhci reads those env vars as its own CLI options.
@@ -117,6 +121,8 @@ jobs:
         working-directory: frontend
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # No backend in these jobs: the labelled sample data ("Nümunə data") is switched on explicitly (#41).
+      NEXT_PUBLIC_USE_MOCK: "true"
       NEXT_PUBLIC_SITE_URL: http://localhost:3200
     steps:
       - uses: actions/checkout@v4

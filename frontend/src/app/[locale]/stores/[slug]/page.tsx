@@ -19,14 +19,15 @@ import { Link } from "@/i18n/navigation";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
+import { slugParams } from "@/lib/api/static-params";
 import { formatOpeningHours } from "@/lib/opening-hours";
-import { jewelryStore } from "@/lib/seo/json-ld";
+import { breadcrumbs, jewelryStore } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import { cn } from "cn";
 
 export async function generateStaticParams() {
   const stores = await api.listStores();
-  return stores.map((s) => ({ slug: s.slug }));
+  return slugParams(stores.map((s) => s.slug));
 }
 
 export async function generateMetadata({
@@ -35,7 +36,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const locale = await rootLocale();
   const store = await api.getStore(slug);
-  if (!store || !hasLocale(routing.locales, locale)) return {};
+  // Resolved before the streamed body: an unknown store answers a real 404, not a soft 200.
+  if (!store) notFound();
+  if (!hasLocale(routing.locales, locale)) return {};
   return {
     title: `${store.name}, ${store.city}`,
     description: store.description[locale],
@@ -73,7 +76,15 @@ export default async function StorePage({
 
   return (
     <div className="container-page py-8 sm:py-12">
-      <JsonLd data={[jewelryStore(store, locale)]} />
+      <JsonLd
+        data={[
+          jewelryStore(store, locale),
+          breadcrumbs([
+            { name: t("title"), path: `/${locale}/stores` },
+            { name: store.name, path: `/${locale}/stores/${store.slug}` },
+          ]),
+        ]}
+      />
       <header className="flex flex-col gap-6 border-b pb-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-5">
           <StoreMonogram name={store.name} size="lg" />

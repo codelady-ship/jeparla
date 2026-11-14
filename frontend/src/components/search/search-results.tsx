@@ -1,14 +1,16 @@
 import { ArrowRight, Search, SearchX } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Catalog } from "@/components/catalog/catalog";
+import { Pagination } from "@/components/catalog/catalog-toolbar";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { ProductGrid } from "@/components/product/product-grid";
+import { JsonLd } from "@/components/seo/json-ld";
+import { itemList } from "@/lib/seo/json-ld";
 import { StoreCard } from "@/components/stores/store-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import type { SearchParams } from "@/lib/catalog/filters";
+import { parseFilters, type SearchParams } from "@/lib/catalog/filters";
 import type { Category, SearchResult, StoreSummary } from "@/types/api";
 import { cn } from "cn";
 
@@ -36,10 +38,14 @@ export async function SearchResults({
   tab: SearchTab;
   searchParams: Promise<SearchParams>;
 }) {
-  const q = readQuery(await searchParams);
+  const sp = await searchParams;
+  const q = readQuery(sp);
+  // The products tab pages through the same ranked search the counts come from (#41 review:
+  // the catalog's word-start filter found fewer products than "Products N" promised).
+  const page = tab === "products" ? (parseFilters(sp).page ?? 0) : 0;
   const [t, result, categories] = await Promise.all([
     getTranslations("SearchPage"),
-    q ? api.search(q, "all") : Promise.resolve(null),
+    q ? api.search(q, "all", page) : Promise.resolve(null),
     api.listCategories(),
   ]);
   const topCategories = categories.filter((c) => c.parentId === null && c.productCount > 0);
@@ -75,13 +81,7 @@ export async function SearchResults({
       ) : (
         <>
           <Tabs tab={tab} q={q} result={result} />
-          <TabPanel
-            tab={tab}
-            q={q}
-            result={result}
-            categories={topCategories}
-            searchParams={searchParams}
-          />
+          <TabPanel tab={tab} q={q} result={result} categories={topCategories} />
         </>
       )}
     </div>
@@ -97,8 +97,35 @@ async function Tabs({ tab, q, result }: { tab: SearchTab; q: string; result: Sea
     all: 0,
   };
   counts.all = counts.products + counts.stores + counts.categories;
+  const locale = await getLocale();
+  // The results shown in this tab, in page order, as a schema.org ItemList: only what the
+  // panel renders (previews on "all"), so the inline JSON stays small. It is serialized into
+  // the HTML and the RSC payload, so every listed item costs bytes on a mobile first load.
+  // The products tab renders the catalog, which emits its own ItemList.
+  const all = tab === "all";
+  const found =
+    tab === "products"
+      ? []
+      : [
+          ...(all || tab === "stores"
+            ? result.stores
+                .slice(0, all ? PREVIEW.stores : undefined)
+                .map((s) => ({ name: s.name, path: `/stores/${s.slug}` }))
+            : []),
+          ...(all || tab === "categories"
+            ? result.categories
+                .slice(0, all ? PREVIEW.categories : undefined)
+                .map((c) => ({ name: c.name[locale], path: `/categories/${c.slug}` }))
+            : []),
+          ...(all
+            ? result.products.content
+                .slice(0, PREVIEW.products)
+                .map((p) => ({ name: p.name[locale], path: `/products/${p.slug}` }))
+            : []),
+        ].map((it) => ({ ...it, path: `/${locale}${it.path}` }));
   return (
     <nav aria-label={t("tabs")} className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      {found.length > 0 && <JsonLd data={[itemList(`${t("title")}: ${q}`, found)]} />}
       <ul className="flex min-w-max gap-1 border-b">
         {SEARCH_TABS.map((key) => (
           <li key={key}>
@@ -131,13 +158,11 @@ async function TabPanel({
   q,
   result,
   categories,
-  searchParams,
 }: {
   tab: SearchTab;
   q: string;
   result: SearchResult;
   categories: Category[];
-  searchParams: Promise<SearchParams>;
 }) {
   const t = await getTranslations("SearchPage");
   const empty = (
@@ -149,7 +174,20 @@ async function TabPanel({
   );
 
   if (tab === "products")
-    return <Catalog searchParams={searchParams} action={tabPath("products")} />;
+    return result.products.totalElements ? (
+      <div className="flex flex-col gap-6">
+        <h2 className="sr-only">{t("tab.products")}</h2>
+        <ProductGrid products={result.products.content} />
+        <Pagination
+          action={tabPath("products")}
+          filters={{ q }}
+          page={result.products.page}
+          totalPages={result.products.totalPages}
+        />
+      </div>
+    ) : (
+      empty
+    );
   if (tab === "stores") return result.stores.length ? <StoreGrid stores={result.stores} /> : empty;
   if (tab === "categories")
     return result.categories.length ? <CategoryTiles categories={result.categories} /> : empty;

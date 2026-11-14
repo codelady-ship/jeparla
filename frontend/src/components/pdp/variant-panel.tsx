@@ -5,8 +5,12 @@ import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { compare, favorites } from "@/lib/saved-list";
+import { useDisplayCurrency } from "@/lib/use-display-currency";
 import { useSavedIds } from "@/lib/use-saved";
+import type { ContactQuestion } from "@/lib/whatsapp";
 import { cn } from "cn";
+import { StoreOpenStatus, type StoreStatusLabels } from "./store-open-status";
+import type { DisplayCurrency } from "@/types/api";
 
 /** Everything about a variant the client needs, already formatted on the server. */
 export type VariantView = {
@@ -19,7 +23,10 @@ export type VariantView = {
   /** ISO date-time for <time dateTime>. */
   updatedIso: string;
   updated: string;
-  whatsappHref: string;
+  /** One prefilled WhatsApp link per ready question (#111). */
+  whatsapp: { question: ContactQuestion; label: string; href: string }[];
+  /** Approximate price in USD/EUR at the CBAR rate (#53), already formatted; empty without rates. */
+  approx: Partial<Record<DisplayCurrency, string>>;
 };
 
 type Labels = {
@@ -27,29 +34,71 @@ type Labels = {
   sku: string;
   priceUpdated: string;
   whatsapp: string;
+  questionLegend: string;
+  status: StoreStatusLabels;
   metalLinkedNote: string | null;
+  /** Currency switch (#53); null when no rate is available. */
+  currency: { label: string; note: string } | null;
   actions: ProductActionLabels;
 };
 
 export function VariantPanel({
   productId,
+  openingHours,
   variants,
   labels,
 }: {
   productId: number;
+  /** schema.org openingHours of the store; null when the store is unknown. */
+  openingHours: string | null;
   variants: VariantView[];
   labels: Labels;
 }) {
   const [id, setId] = useState(variants[0]?.id);
+  const [question, setQuestion] = useState<ContactQuestion>("GENERAL");
   const v = variants.find((x) => x.id === id) ?? variants[0];
   const isFavorite = useSavedIds(favorites).includes(productId);
   const compared = useSavedIds(compare);
+  // AZN is the price; USD/EUR is an extra approximate line, remembered per browser.
+  const [currency, choose] = useDisplayCurrency();
   if (!v) return null;
+  const contact = v.whatsapp.find((w) => w.question === question) ?? v.whatsapp[0];
+  const approx = currency === "AZN" ? undefined : v.approx[currency];
+  const options = (["AZN", "USD", "EUR"] as const).filter((c) => c === "AZN" || v.approx[c]);
 
   return (
     <div className="flex flex-col gap-5">
       <div data-keep-clear="">
         <p className="text-3xl font-semibold tabular-nums">{v.price}</p>
+        {labels.currency && options.length > 1 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <div
+              role="group"
+              aria-label={labels.currency.label}
+              className="inline-flex rounded-md border"
+            >
+              {options.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={currency === c}
+                  onClick={() => choose(c)}
+                  className={cn(
+                    "min-w-11 px-2.5 py-1 text-xs font-medium first:rounded-l-md last:rounded-r-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:min-h-11",
+                    currency === c ? "bg-primary text-primary-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            {approx && (
+              <p className="text-sm tabular-nums" aria-live="polite">
+                {approx} <span className="text-muted-foreground">({labels.currency.note})</span>
+              </p>
+            )}
+          </div>
+        )}
         <p className="mt-1 text-sm text-muted-foreground">
           {labels.priceUpdated} <time dateTime={v.updatedIso}>{v.updated}</time>
         </p>
@@ -93,8 +142,34 @@ export function VariantPanel({
         </span>
       </p>
 
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-2 text-sm font-semibold">{labels.questionLegend}</legend>
+        <div className="flex flex-wrap gap-2">
+          {v.whatsapp.map((w) => (
+            <label
+              key={w.question}
+              className={cn(
+                "inline-flex min-h-8 cursor-pointer items-center rounded-full border px-3 text-sm has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 pointer-coarse:min-h-11",
+                w.question === contact?.question &&
+                  "border-primary bg-primary text-primary-foreground",
+              )}
+            >
+              <input
+                type="radio"
+                name="contact-question"
+                value={w.question}
+                checked={w.question === contact?.question}
+                onChange={() => setQuestion(w.question)}
+                className="sr-only"
+              />
+              {w.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <a
-        href={v.whatsappHref}
+        href={contact?.href ?? "#"}
         target="_blank"
         rel="noopener noreferrer"
         data-keep-clear=""
@@ -103,6 +178,9 @@ export function VariantPanel({
         <MessageCircle aria-hidden />
         {labels.whatsapp}
       </a>
+      {openingHours && (
+        <StoreOpenStatus openingHours={openingHours} labels={labels.status} className="-mt-3" />
+      )}
 
       <div className="grid grid-cols-2 gap-2">
         <Button

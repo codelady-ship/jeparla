@@ -9,6 +9,7 @@ const COLUMNS = [
     links: [
       { href: "/about", label: "Footer.aboutUs" },
       { href: "/contact", label: "Footer.contact" },
+      { href: "/help", label: "Footer.help" },
     ],
   },
   {
@@ -18,6 +19,8 @@ const COLUMNS = [
       { href: "/stores", label: "Nav.stores" },
       { href: "/prices", label: "Footer.metalPrices" },
       { href: "/verified", label: "Footer.howWeVerify" },
+      { href: "/size-guide", label: "Footer.sizeGuide" },
+      { href: "/calculator", label: "Footer.calculator" },
     ],
   },
   {
@@ -32,6 +35,7 @@ const COLUMNS = [
     links: [
       { href: "/legal/privacy", label: "Footer.privacy" },
       { href: "/legal/terms", label: "Footer.terms" },
+      { href: "/legal/cookies", label: "Footer.cookies" },
     ],
   },
 ] as const;

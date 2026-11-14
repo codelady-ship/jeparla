@@ -21,11 +21,10 @@ import org.springframework.data.repository.query.Param;
 public interface ProductRepository extends NoDeleteRepository<Product, Long>, ProductSpecificationQueries {
 
     /**
-     * JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. FASHION products
-     * are not public yet ({@link Product#isPublic}, #128).
+     * JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. PRECIOUS and
+     * FASHION products alike ({@link Product#isPublic}, #128).
      */
     String PUBLIC = "p.status = az.jeparla.product.ProductStatus.APPROVED and p.deletedAt is null"
-            + " and p.materialKind = az.jeparla.product.MaterialKind.PRECIOUS"
             + " and s.status = az.jeparla.store.StoreStatus.APPROVED";
 
     // ------------------------------------------------------------------ public (#37)
@@ -70,6 +69,38 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     @Query("select s.id, count(p) from Product p join p.store s where " + PUBLIC + " and " + HAS_LIVE_VARIANT
             + " and p.category.id in :categoryIds group by s.id")
     List<Object[]> countListedByStore(@Param("categoryIds") Collection<Long> categoryIds);
+
+    // ------------------------------------------------------------------ store facts and share preview (#100, #108)
+
+    /** JPQL condition: a listed product of store {@code :storeId} in the given (visible) categories. */
+    String LISTED_IN_STORE = "s.id = :storeId and " + PUBLIC + " and " + HAS_LIVE_VARIANT
+            + " and p.category.id in :categoryIds";
+
+    /** {@code [count, latest updatedAt]} of the store's listed products (one row; the time is null without any). */
+    @Query("select count(p), max(p.updatedAt) from Product p join p.store s where " + LISTED_IN_STORE)
+    List<Object[]> listedStatsOfStore(@Param("storeId") long storeId,
+            @Param("categoryIds") Collection<Long> categoryIds);
+
+    /** Listed products of the store whose physical expertise (assay certificate or lab report) an admin verified. */
+    @Query("select count(p) from Product p join p.store s where " + LISTED_IN_STORE
+            + " and p.expertiseStatus = az.jeparla.verification.CheckStatus.VERIFIED")
+    long countListedWithVerifiedExpertise(@Param("storeId") long storeId,
+            @Param("categoryIds") Collection<Long> categoryIds);
+
+    /** Listed products of the store with at least one live METAL_LINKED variant (price follows the daily metal price). */
+    @Query("select count(p) from Product p join p.store s where " + LISTED_IN_STORE
+            + " and exists (select v.id from ProductVariant v where v.product = p and v.deletedAt is null"
+            + " and v.pricingMode = az.jeparla.product.PricingMode.METAL_LINKED)")
+    long countListedMetalLinked(@Param("storeId") long storeId, @Param("categoryIds") Collection<Long> categoryIds);
+
+    /**
+     * Image keys of the store's listed products, newest published product first and its cover (first image)
+     * first: the first element is the store's share preview image.
+     */
+    @Query("select i.storageKey from ProductImage i join i.product p join p.store s where " + LISTED_IN_STORE
+            + " order by p.publishedAt desc, p.id desc, i.sortOrder, i.id")
+    List<String> listedImageKeysOfStore(@Param("storeId") long storeId,
+            @Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
     // ------------------------------------------------------------------ merchant (#34, #39)
 

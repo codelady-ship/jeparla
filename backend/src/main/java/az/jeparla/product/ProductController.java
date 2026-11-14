@@ -12,6 +12,7 @@ import az.jeparla.product.dto.ProductDto;
 import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductReportRequest;
 import az.jeparla.product.dto.ProductSummaryDto;
+import az.jeparla.share.ReferralService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,11 +22,13 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,14 +107,21 @@ public class ProductController {
                     + "silently not counted.")
     @ApiResponse(responseCode = "204", description = "Counted (or ignored over the limit)")
     @ApiResponse(responseCode = "404", description = "Unknown or not listed")
-    public ResponseEntity<Void> contactClick(@PathVariable long id, HttpServletRequest request) {
+    public ResponseEntity<Void> contactClick(@PathVariable long id,
+            @Parameter(description = "Source the visitor arrived with through a shared store link (#100), e.g. "
+                    + "instagram; the click is also counted for that source")
+            @RequestParam(required = false) String ref,
+            @Parameter(description = "Used when ref is absent") @RequestParam(name = "utm_source", required = false)
+            String utmSource,
+            @RequestHeader(name = HttpHeaders.USER_AGENT, required = false) String userAgent,
+            HttpServletRequest request) {
         try {
             rateLimits.check(RateLimitPolicy.CONTACT_IP, IpAddresses.rateLimitKey(request.getRemoteAddr()));
         } catch (RateLimitExceededException overLimit) {
             catalog.requireListed(id);
             return ResponseEntity.noContent().build();
         }
-        feedback.contactClick(id);
+        feedback.contactClick(id, new ReferralService.Hit(ref, utmSource, userAgent, null, request.getRemoteAddr()));
         return ResponseEntity.noContent().build();
     }
 

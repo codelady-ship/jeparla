@@ -89,6 +89,12 @@ public interface ObjectStorage {
     /** Removes a private object (not a staged one); nothing happens when it does not exist. */
     void deletePrivate(String key);
 
+    /**
+     * Writes bytes the server made itself (an image taken out of a catalog PDF, #129) to {@code key} in the
+     * <b>private</b> bucket. Never a staged or a public key.
+     */
+    void putPrivate(String key, byte[] bytes, String contentType);
+
     /** A presigned upload: the browser sends {@code method} to {@code url} with {@code headers}. */
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {
     }
