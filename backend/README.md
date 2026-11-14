@@ -80,6 +80,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_ACCOUNT_TOKEN_CLEANUP_CRON` | `0 40 * * * *` | Vaxtı keçmiş təsdiq/bərpa tokenlərinin silinməsi və növbədəki vaxtı keçmiş linklərin məktubdan çıxarılması (saatda bir); `-` söndürür |
 | `JEPARLA_INTERNAL_JOB_TOKEN` | boş | `POST /internal/jobs/metal-prices` üçün paylaşılan sirr (ən azı 32 bayt). Boş: endpoint 404. Qısa dəyər tətbiqi başlatmır |
 | `JEPARLA_METAL_PRICES_CRON` | `0 15 10,13,17 * * *` | Gündəlik metal qiyməti job-unun cron-u (`Asia/Baku`); `-` söndürür |
+| `JEPARLA_IMAGE_SEARCH_PROVIDER` | `none` | Şəkillə axtarışın embedding modeli (#163). `none`: header-də "hələ qoşulmayıb", `POST /api/v1/search/image` `503 search.image_not_configured`. Başqa dəyər quraşdırılmış provayderin id-si olmalıdır: `docs/image-search.md` |
 | `JEPARLA_TRUSTED_PROXIES` | `127.0.0.1/32,::1/128` | `X-Forwarded-For`-una inanılan reverse proxy-lər (CIDR, vergüllə). Boş: heç kimə inanılmır. Səhv yazılış tətbiqi başlatmır. Aşağıda: "Reverse proxy" |
 
 ## Verilənlər bazası rolları (#165)

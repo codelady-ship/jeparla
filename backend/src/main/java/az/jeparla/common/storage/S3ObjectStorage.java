@@ -300,6 +300,26 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     }
 
     @Override
+    public Optional<byte[]> readPublic(String key, int maxBytes) {
+        try {
+            HeadObjectResponse head = client.headObject(
+                    HeadObjectRequest.builder().bucket(publicBucket).key(key).build());
+            if (head.contentLength() == null || head.contentLength() > maxBytes) {
+                return Optional.empty();
+            }
+            return Optional.of(client.getObjectAsBytes(
+                    GetObjectRequest.builder().bucket(publicBucket).key(key).build()).asByteArray());
+        } catch (NoSuchKeyException e) {
+            return Optional.empty();
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) {
+                return Optional.empty();
+            }
+            throw e;
+        }
+    }
+
+    @Override
     public void delete(String key) {
         client.deleteObject(DeleteObjectRequest.builder().bucket(publicBucket).key(key).build());
     }

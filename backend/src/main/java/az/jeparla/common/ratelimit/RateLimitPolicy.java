@@ -63,6 +63,13 @@ public enum RateLimitPolicy {
      */
     SEARCH_IP("search-ip", 300, Duration.ofMinutes(1)),
     /**
+     * Searches by photo from one IP address (#163): each one runs the embedding model on the API CPU, so the
+     * limit is far below the text search.
+     */
+    IMAGE_SEARCH_IP("image-search-ip", 30, Duration.ofMinutes(10)),
+    /** Searches by photo of one signed-in account (#163), on top of the IP limit. */
+    IMAGE_SEARCH_ACCOUNT("image-search-account", 60, Duration.ofHours(1)),
+    /**
      * Presigned photo uploads asked for by one seller account (#154): every presign lets the browser
      * write up to 15 MB, so a script cannot fill the storage. The 8-photo limit per product and the
      * daily limit per store apply as well.

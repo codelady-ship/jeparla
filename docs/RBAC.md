@@ -40,6 +40,7 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
 | `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**` | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
 | `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
+| `POST /api/v1/search/image` (şəkillə axtarış) | hamı, qonaq da (rate limit ilə; şəkil saxlanılmır, #163) |
 | `POST /internal/jobs/metal-prices` | paylaşılan sirr ilə (controller yoxlayır, #44) |
 | qalan hər şey | heç kim |
 
@@ -259,6 +260,8 @@ Redis-də deyil (#151).
 | `email-verification-account` | 3 / saat | hər "linki yenidən göndər" | user id: aşanda `429` |
 | `contact-ip` | 60 / saat | hər klik | IP: `POST /products/{id}/contact-click`; limitdən artıq klik xətasız (204) qəbul olunur, amma sayılmır |
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
+| `image-search-ip` | 30 / 10 dəq. | hər şəkillə axtarış | IP: `POST /search/image` (#163); hər sorğu API-nin CPU-sunda model işlədir |
+| `image-search-account` | 60 / saat | hər şəkillə axtarış | user id (daxil olubsa), IP limitinə əlavə |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
 

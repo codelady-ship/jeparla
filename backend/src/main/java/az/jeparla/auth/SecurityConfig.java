@@ -91,6 +91,8 @@ public class SecurityConfig {
             AccessRule.of(HttpMethod.POST, Access.PUBLIC,
                     "/api/v1/products/{id}/reports", "/api/v1/products/{id}/contact-click",
                     "/api/v1/stores/{id}/reports"),
+            // Search by photo (#163): anonymous, rate limited in the controller; the photo is never stored.
+            AccessRule.of(HttpMethod.POST, Access.PUBLIC, "/api/v1/search/image"),
             // Internal jobs (#44) check their own shared secret (InternalJobController).
             AccessRule.of(HttpMethod.POST, Access.PUBLIC, "/internal/jobs/metal-prices"));
 
