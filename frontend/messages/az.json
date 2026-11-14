@@ -419,10 +419,11 @@
     "forgot": {
       "title": "Şifrəni bərpa et",
       "description": "Jeparla hesabının şifrəsini bərpa edin.",
-      "intro": "E-poçtunuzu yazın.",
+      "intro": "Hesabınızın e-poçtunu yazın. Yeni şifrə təyin etmək üçün link göndərəcəyik.",
       "submit": "Davam et",
-      "notice": "Şifrə bərpası hələ işləmir: SMS və e-poçt ilə bərpa backend hazır olanda aktiv olacaq. Heç bir məktub göndərilmədi.",
-      "back": "Girişə qayıt"
+      "notice": "Bu e-poçtla hesab varsa, yeni şifrə üçün link göndərdik. Link 1 saat işləyir. Spam qovluğunu da yoxlayın.",
+      "back": "Girişə qayıt",
+      "phone": "Telefon nömrəsi ilə qeydiyyatdan keçmisiniz? Jeparla dəstəyinə yazın: administrator sizin olduğunuzu yoxlayıb bərpa linkini həmin nömrəyə göndərəcək."
     },
     "fields": {
       "name": "Ad",
@@ -449,12 +450,48 @@
       "server": "Nəsə alınmadı. Yenidən cəhd edin.",
       "loginInvalid": "E-poçt ünvanını (ad@example.az) və ya mobil nömrəni (050 123 45 67) yazın.",
       "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin.",
-      "sessionExpired": "Sessiyanın müddəti bitib. Yenidən daxil olun."
+      "sessionExpired": "Sessiyanın müddəti bitib. Yenidən daxil olun.",
+      "rateLimitedUntil": "Cəhdlər çox oldu. Yenidən cəhd vaxtı: {time}."
     },
     "pending": "Gözləyin",
     "showPassword": "Şifrəni göstər",
     "hidePassword": "Şifrəni gizlət",
-    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. merchant+new@ ilə başlayan ünvan isə təsdiq gözləyən yeni satıcıdır. Məlumat heç yerdə saxlanılmır."
+    "demoNote": "Demo rejimi: istənilən e-poçt və şifrə işləyir; admin@ ilə başlayan ünvan admin, merchant@ ilə başlayan satıcı kimi daxil olur. merchant+new@ ilə başlayan ünvan isə təsdiq gözləyən yeni satıcıdır. Məlumat heç yerdə saxlanılmır.",
+    "reset": {
+      "title": "Yeni şifrə",
+      "description": "Jeparla hesabı üçün yeni şifrə təyin edin.",
+      "intro": "Hesabınız üçün yeni şifrə seçin.",
+      "submit": "Şifrəni saxla",
+      "checking": "Link yoxlanılır",
+      "done": "Şifrəniz dəyişdirildi. Bütün cihazlarda hesabdan çıxış edildi; yeni şifrə ilə daxil olun.",
+      "signIn": "Daxil ol",
+      "invalid": "Bu link etibarsızdır, vaxtı bitib və ya artıq istifadə olunub. Bərpa linki 1 saat və yalnız bir dəfə işləyir.",
+      "requestNew": "Yeni link istə"
+    },
+    "verify": {
+      "title": "E-poçtun təsdiqi",
+      "description": "Jeparla hesabının e-poçt ünvanını təsdiqləyin.",
+      "intro": "E-poçt ünvanınızı təsdiqləyirik.",
+      "checking": "E-poçt təsdiqlənir",
+      "done": "E-poçtunuz təsdiqləndi. Təşəkkür edirik.",
+      "toHome": "Ana səhifəyə keç",
+      "invalid": "Bu link etibarsızdır, vaxtı bitib və ya artıq istifadə olunub. Təsdiq linki 24 saat və yalnız bir dəfə işləyir.",
+      "signInForNew": "Yeni link almaq üçün hesabınıza daxil olun.",
+      "retry": "Yenidən cəhd et"
+    },
+    "resend": {
+      "button": "Linki yenidən göndər",
+      "sent": "Yeni təsdiq linki göndərdik. Gələnlər və spam qovluğunu yoxlayın.",
+      "alreadyVerified": "E-poçtunuz artıq təsdiqlənib.",
+      "noEmail": "Hesabınızda e-poçt ünvanı yoxdur.",
+      "signIn": "Yenidən daxil olun.",
+      "unavailable": "Linkin yenidən göndərilməsi hələ aktiv deyil. Bir az sonra yoxlayın."
+    },
+    "verifyBanner": {
+      "text": "E-poçt ünvanınızı təsdiqləyin: sizə link göndərmişik.",
+      "detail": "Hesabınız indi də tam işləyir. Təsdiqlənmiş ünvana şifrə bərpası linkləri və bildirişlər etibarlı çatır."
+    },
+    "recoveryDemo": "Demo rejimi: heç bir məktub göndərilmir və şifrə dəyişmir."
   },
   "Sell": {
     "title": "Satıcı kimi qoşulun",

@@ -419,10 +419,11 @@
     "forgot": {
       "title": "Reset password",
       "description": "Reset the password of your Jeparla account.",
-      "intro": "Enter your e-mail.",
+      "intro": "Enter the e-mail of your account. We will send a link to set a new password.",
       "submit": "Continue",
-      "notice": "Password reset does not work yet: recovery by SMS and e-mail turns on when the backend is ready. No e-mail was sent.",
-      "back": "Back to sign in"
+      "notice": "If an account with this e-mail exists, we have sent a link to set a new password. It works for 1 hour. Check the spam folder too.",
+      "back": "Back to sign in",
+      "phone": "Signed up with a phone number? Contact Jeparla support: an administrator checks that it is you and sends a reset link to that phone number."
     },
     "fields": {
       "name": "Name",
@@ -449,12 +450,48 @@
       "server": "Something went wrong. Please try again.",
       "loginInvalid": "Enter your e-mail (name@example.az) or mobile number (050 123 45 67).",
       "rateLimited": "Too many attempts in a short time. Try again a little later.",
-      "sessionExpired": "Your session has expired. Sign in again."
+      "sessionExpired": "Your session has expired. Sign in again.",
+      "rateLimitedUntil": "Too many attempts. Please try again after {time}."
     },
     "pending": "Please wait",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored."
+    "demoNote": "Demo mode: any e-mail and password work; addresses starting with admin@ sign in as admin, merchant@ as a seller. merchant+new@ signs in as a new seller still waiting for approval. Nothing is stored.",
+    "reset": {
+      "title": "New password",
+      "description": "Set a new password for your Jeparla account.",
+      "intro": "Choose a new password for your account.",
+      "submit": "Save password",
+      "checking": "Checking the link",
+      "done": "Your password has been changed. You were signed out on every device; sign in with the new password.",
+      "signIn": "Sign in",
+      "invalid": "This link is invalid, expired or already used. A reset link works for 1 hour and only once.",
+      "requestNew": "Request a new link"
+    },
+    "verify": {
+      "title": "Confirm e-mail",
+      "description": "Confirm the e-mail address of your Jeparla account.",
+      "intro": "We are confirming your e-mail address.",
+      "checking": "Confirming your e-mail",
+      "done": "Your e-mail is confirmed. Thank you.",
+      "toHome": "Go to the home page",
+      "invalid": "This link is invalid, expired or already used. A confirmation link works for 24 hours and only once.",
+      "signInForNew": "Sign in to get a new link.",
+      "retry": "Try again"
+    },
+    "resend": {
+      "button": "Send the link again",
+      "sent": "We sent a new confirmation link. Check your inbox and the spam folder.",
+      "alreadyVerified": "Your e-mail is already confirmed.",
+      "noEmail": "Your account has no e-mail address.",
+      "signIn": "Please sign in again.",
+      "unavailable": "Sending the link again is not available yet. Please try again later."
+    },
+    "verifyBanner": {
+      "text": "Please confirm your e-mail address: we sent you a link.",
+      "detail": "Your account already works in full. A confirmed address is where password reset links and notices reliably reach you."
+    },
+    "recoveryDemo": "Demo mode: no e-mail is sent and no password is changed."
   },
   "Sell": {
     "title": "Join as a seller",

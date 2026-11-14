@@ -12,25 +12,42 @@ import {
   forgotSchema,
   loginSchema,
   registerSchema,
+  resetSchema,
   type FieldErrors,
 } from "@/lib/auth/schemas";
 import { homeFor, safeNext } from "@/lib/auth/session";
 import { isMessage } from "@/lib/api/problem";
 
-type Kind = "login" | "register" | "forgot";
+type Kind = "login" | "register" | "forgot" | "reset";
 
 const FIELDS: Record<Kind, readonly ("name" | "login" | "email" | "password" | "confirm")[]> = {
   login: ["login", "password"],
   register: ["name", "email", "password", "confirm"],
   forgot: ["email"],
+  reset: ["password", "confirm"],
 };
-const SCHEMA = { login: loginSchema, register: registerSchema, forgot: forgotSchema };
-const ENDPOINT = { login: "/api/auth/login", register: "/api/auth/register", forgot: null };
+const SCHEMA = {
+  login: loginSchema,
+  register: registerSchema,
+  forgot: forgotSchema,
+  reset: resetSchema,
+};
+const ENDPOINT = {
+  login: "/api/auth/login",
+  register: "/api/auth/register",
+  forgot: null,
+  reset: null,
+};
 const AUTOCOMPLETE = {
   name: "name",
   login: "username",
   email: "email",
-  password: { login: "current-password", register: "new-password", forgot: "off" },
+  password: {
+    login: "current-password",
+    register: "new-password",
+    forgot: "off",
+    reset: "new-password",
+  },
   confirm: "new-password",
 } as const;
 
@@ -43,23 +60,29 @@ export type AuthFormLabels = {
   pending: string;
   showPassword: string;
   hidePassword: string;
-  /** Forgot-password is a placeholder until SMS/e-mail recovery exists. */
+  /** Shown in place of the form once onValid succeeds (forgot-password). */
   sentNotice?: string;
 };
 
 /**
- * Login, register and forgot-password forms. zod runs in the browser for instant
+ * Login, register, forgot-password and new-password forms. zod runs in the browser for instant
  * feedback and again in the route handler. Errors sit under each field, the first
  * invalid field gets focus, and the password is never logged or stored here.
+ *
+ * Forms without their own sign-in route (forgot, reset) pass onValid: it gets the checked
+ * values and answers errors to show, or null when done (then sentNotice, if any, replaces
+ * the form).
  */
 export function AuthForm({
   kind,
   labels,
   next,
+  onValid,
 }: {
   kind: Kind;
   labels: AuthFormLabels;
   next?: string;
+  onValid?: (data: Record<string, string>) => Promise<FieldErrors | null>;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -90,12 +113,16 @@ export function AuthForm({
     }
     setErrors({});
     const endpoint = ENDPOINT[kind];
-    if (!endpoint) {
-      setSent(true);
-      return;
-    }
     setPending(true);
     try {
+      if (!endpoint) {
+        const errs = onValid ? await onValid(data) : null;
+        if (errs) {
+          setErrors(errs);
+          focusFirstError(errs);
+        } else setSent(true);
+        return;
+      }
       const result = await postAuth(endpoint, data);
       if (result.ok) {
         router.replace(safeNext(next) ?? homeFor(result.session.role));
