@@ -1404,7 +1404,8 @@
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
     "empty": "Bugünkü qiymət hələ gəlməyib.",
-    "calculatorLink": "Zərgərliyin metal dəyərini hesablayın"
+    "calculatorLink": "Zərgərliyin metal dəyərini hesablayın",
+    "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək."
   },
   "Hero": {
     "label": "Jeparla: zərgərlik kolleksiyaları",
@@ -1484,5 +1485,9 @@
         "a": "Azərbaycan Mərkəzi Bankının gündəlik qiymətli metal məzənnələrindən. Həftəsonu və bayram günlərində son dərc olunan məzənnə istifadə olunur."
       }
     }
+  },
+  "SampleData": {
+    "label": "Nümunə data",
+    "banner": "Bu saytdakı mağazalar, məhsullar və qiymətlər nümunədir, real deyil."
   }
 }

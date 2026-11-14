@@ -1404,7 +1404,8 @@
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
     "empty": "Today's price has not arrived yet.",
-    "calculatorLink": "Calculate the metal value of a piece"
+    "calculatorLink": "Calculate the metal value of a piece",
+    "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it."
   },
   "Hero": {
     "label": "Jeparla: jewelry collections",
@@ -1484,5 +1485,9 @@
         "a": "From the daily precious metal rates of the Central Bank of Azerbaijan (CBAR). On weekends and holidays the last published rate is used."
       }
     }
+  },
+  "SampleData": {
+    "label": "Sample data",
+    "banner": "The stores, products and prices on this site are samples, not real."
   }
 }

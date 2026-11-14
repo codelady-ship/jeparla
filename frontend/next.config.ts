@@ -6,6 +6,12 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // Server cache of backend reads (src/lib/api/live.ts), in line with the API's own CDN headers:
+  // catalog s-maxage=300, metal prices s-maxage=3600 (backend/README.md). Seconds.
+  cacheLife: {
+    catalog: { stale: 60, revalidate: 300, expire: 86_400 },
+    prices: { stale: 300, revalidate: 1_800, expire: 86_400 },
+  },
   env: {
     // Version of the service worker (/sw.js): a new build is a new worker.
     JEPARLA_BUILD: (process.env.GITHUB_SHA ?? Date.now().toString(36)).slice(0, 12),

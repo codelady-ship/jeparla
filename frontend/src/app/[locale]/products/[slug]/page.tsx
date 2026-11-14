@@ -7,11 +7,12 @@ import { alternates } from "@/i18n/alternates";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
+import { slugParams } from "@/lib/api/static-params";
 
 // Known products are prerendered; new ones render on first request.
 export async function generateStaticParams() {
   const page = await api.listProducts({ size: 96 });
-  return page.content.map((p) => ({ slug: p.slug }));
+  return slugParams(page.content.map((p) => p.slug));
 }
 
 export async function generateMetadata({
