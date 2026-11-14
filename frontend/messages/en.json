@@ -190,6 +190,8 @@
     "sku": "Code",
     "priceUpdated": "Price updated:",
     "metalLinkedNote": "Metal-linked price: it updates automatically with the daily CBAR rate.",
+    "currency": "Currency",
+    "approxNote": "approximate, CBAR rate of {date}. The price is agreed in AZN.",
     "whatsapp": "Message the store on WhatsApp",
     "whatsappMessage": "Hello! I found this on Jeparla and I am interested: {name} (code {sku}). {url}",
     "factsTitle": "Key facts",

@@ -79,10 +79,12 @@ public class MetalPriceJob {
     private final MetalPriceProperties properties;
     private final Clock clock;
     private final MeterRegistry meters;
+    private final ExchangeRateService exchangeRates;
 
     public MetalPriceJob(CbarClient cbar, MetalQuoteService quotes, RepricingService repricing,
             LockingTaskExecutor locks, MetalPriceProperties properties, Clock clock,
-            ObjectProvider<MeterRegistry> meters) {
+            ObjectProvider<MeterRegistry> meters, ExchangeRateService exchangeRates) {
+        this.exchangeRates = exchangeRates;
         this.cbar = cbar;
         this.quotes = quotes;
         this.repricing = repricing;
@@ -139,6 +141,12 @@ public class MetalPriceJob {
                 CbarBulletin bulletin = cbar.fetch(today);
                 bulletinDate = bulletin.date();
                 stored = quotes.store(bulletin, clock.instant());
+                try {
+                    // Display rates (#53) never block the metal quotes.
+                    exchangeRates.store(bulletin, clock.instant());
+                } catch (RuntimeException e) {
+                    log.warn("Metal price job: USD/EUR rates of {} not stored: {}", bulletin.date(), e.toString());
+                }
                 meters.counter("jeparla.metal_prices.fetch", "result", "success").increment();
                 for (StoredQuote quote : stored) {
                     meters.counter("jeparla.metal_prices.quotes", "outcome", quote.outcome().name().toLowerCase())

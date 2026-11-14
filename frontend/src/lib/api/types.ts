@@ -1,6 +1,7 @@
 import type {
   Category,
   CompareItem,
+  ExchangeRate,
   Fineness,
   MetalPrice,
   MetalType,
@@ -47,4 +48,6 @@ export interface JeparlaApi {
   latestMetalPrices(): Promise<MetalPrice[]>;
   /** GET /api/v1/metal-prices/history */
   metalPriceHistory(metal: MetalType, days?: number): Promise<MetalPrice[]>;
+  /** GET /api/v1/exchange-rates/latest */
+  latestExchangeRates(): Promise<ExchangeRate[]>;
 }
