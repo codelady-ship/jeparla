@@ -10,6 +10,7 @@ const pages = [
   "/az/stores/ayzer-zerger",
   "/az/categories/uzukler",
   "/az/search?q=qizil",
+  "/az/help",
 ];
 
 module.exports = {
