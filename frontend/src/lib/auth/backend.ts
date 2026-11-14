@@ -30,6 +30,8 @@ export type AuthResponse = {
     phone: string | null;
     role: Role;
     locale: string;
+    /** False until the address is confirmed, and always false without an e-mail (#131). */
+    emailVerified?: boolean;
   };
 };
 
@@ -37,6 +39,11 @@ export const sessionOf = (user: AuthResponse["user"]): Session => ({
   name: user.name,
   email: user.email ?? user.phone ?? "",
   role: user.role,
+  // A phone-only account has nothing to confirm: no reminder for it.
+  ...(user.email &&
+    typeof user.emailVerified === "boolean" && {
+      emailVerified: user.emailVerified,
+    }),
 });
 
 const cookieBase = () => ({

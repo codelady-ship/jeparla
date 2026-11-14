@@ -90,7 +90,9 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     );
   }
   if (res.status === 204) return null as T;
-  return (await res.json()) as T;
+  // 202 Accepted and similar answers may have no body at all.
+  const text = await res.text();
+  return (text ? JSON.parse(text) : null) as T;
 }
 
 const get = <T>(path: string, query?: Query) => apiFetch<T>(path, { query });
