@@ -299,6 +299,46 @@ class ProductCatalogApiTests {
                 .andExpect(jsonPath("$.variants[0].pricing").isEmpty());
     }
 
+    /** #104: the breakdown's total is the variant price, and its parts are those of the seller's rule. */
+    @Test
+    void everyVariantExplainsItsPrice() throws Exception {
+        JsonNode product = JSON.readTree(mvc.perform(get("/api/v1/products/nisan-uzukleri-gold-585-1"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8));
+        String gramPrice = jdbc.queryForObject("select s.price_per_gram::text from product_variants v"
+                + " join metal_price_snapshots s on s.id = v.metal_snapshot_id where v.id = ?", String.class,
+                product.get("variants").get(0).get("id").longValue());
+        for (JsonNode variant : product.get("variants")) {
+            JsonNode breakdown = variant.get("priceBreakdown");
+            JsonNode rule = variant.get("pricing");
+            assertThat(breakdown.get("total")).isEqualTo(variant.get("price"));
+            assertThat(breakdown.get("metal").get("fineness").intValue())
+                    .isEqualTo(variant.get("fineness").get("value").intValue());
+            assertThat(breakdown.get("metal").get("weightGrams")).isEqualTo(variant.get("weightGrams"));
+            assertThat(breakdown.get("metal").get("gramPrice").get("amount").stringValue()).isEqualTo(gramPrice);
+            assertThat(breakdown.get("metal").get("source").stringValue()).isEqualTo("CBAR");
+            assertThat(breakdown.get("metal").get("quoteDate").stringValue()).matches("\\d{4}-\\d{2}-\\d{2}");
+            assertThat(breakdown.get("labor").get("perGram").get("amount")).isEqualTo(rule.get("laborPerGram"));
+            assertThat(breakdown.get("labor").get("fixed").get("amount")).isEqualTo(rule.get("laborFixed"));
+            assertThat(breakdown.get("stone").get("amount")).isEqualTo(rule.get("stonePrice"));
+            assertThat(breakdown.get("markup").get("percent")).isEqualTo(rule.get("markupPercent"));
+            BigDecimal metal = new BigDecimal(variant.get("weightGrams").stringValue())
+                    .multiply(BigDecimal.valueOf(variant.get("fineness").get("value").intValue()))
+                    .divide(BigDecimal.valueOf(1000)).multiply(new BigDecimal(gramPrice))
+                    .setScale(2, java.math.RoundingMode.HALF_UP);
+            assertThat(new BigDecimal(breakdown.get("metal").get("value").get("amount").stringValue()))
+                    .isEqualByComparingTo(metal);
+        }
+
+        mvc.perform(get("/api/v1/products/sirgalar-gold-585-3"))
+                .andExpect(jsonPath("$.variants[0].priceBreakdown.total").value(org.hamcrest.Matchers.notNullValue()))
+                .andExpect(jsonPath("$.variants[0].priceBreakdown.metal").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.variants[0].priceBreakdown.labor").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.variants[0].priceBreakdown.stone").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.variants[0].priceBreakdown.markup").value(org.hamcrest.Matchers.nullValue()));
+        mvc.perform(get("/api/v1/variants?ids=10"))
+                .andExpect(jsonPath("$[0].variant.priceBreakdown.metal.fineness").value(585));
+    }
+
     @Test
     void unknownProductsAre404() throws Exception {
         mvc.perform(get("/api/v1/products/no-such-product").header(HttpHeaders.ACCEPT_LANGUAGE, "en"))

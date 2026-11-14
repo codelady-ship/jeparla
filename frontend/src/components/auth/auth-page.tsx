@@ -7,13 +7,18 @@ import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import { PASSWORD_MIN } from "@/lib/auth/schemas";
 import type { AuthFormLabels } from "./auth-form";
+import type { ResendLabels } from "./resend-verification";
 
-export type AuthKind = "login" | "register" | "forgot";
+export type AuthKind = "login" | "register" | "forgot" | "reset" | "verify";
 const PATH: Record<AuthKind, string> = {
   login: "/login",
   register: "/register",
   forgot: "/forgot-password",
+  reset: "/reset-password",
+  verify: "/verify-email",
 };
+/** Pages opened from a link with a one-time token in the fragment (#131). */
+const TOKEN_PAGES: readonly AuthKind[] = ["reset", "verify"];
 
 export async function authMetadata(kind: AuthKind): Promise<Metadata> {
   "use cache";
@@ -25,15 +30,20 @@ export async function authMetadata(kind: AuthKind): Promise<Metadata> {
     description: t(`${kind}.description`),
     alternates: alternates(locale, PATH[kind]),
     robots: { index: false, follow: true },
+    // The token never leaves in a Referer (next.config.ts sends the header as well).
+    ...(TOKEN_PAGES.includes(kind) && { referrer: "no-referrer" as const }),
   };
 }
 
-export async function authLabels(kind: AuthKind): Promise<AuthFormLabels> {
+export async function authLabels(kind: Exclude<AuthKind, "verify">): Promise<AuthFormLabels> {
   const [t, messages] = await Promise.all([getTranslations("Auth"), getMessages()]);
   const auth = messages.Auth;
   return {
     fields: auth.fields,
-    hints: kind === "register" ? { password: t("hints.password", { min: PASSWORD_MIN }) } : {},
+    hints:
+      kind === "register" || kind === "reset"
+        ? { password: t("hints.password", { min: PASSWORD_MIN }) }
+        : {},
     errors: {
       ...auth.errors,
       passwordShort: t("errors.passwordShort", { min: PASSWORD_MIN }),
@@ -67,4 +77,22 @@ export async function AuthShell({
       {footer && <div className="flex flex-col gap-2 text-sm">{footer}</div>}
     </div>
   );
+}
+
+/** Texts of the "send the link again" button (verify-email page and the header banner). */
+export async function resendLabels(
+  locale: (typeof routing.locales)[number],
+): Promise<ResendLabels> {
+  const [t, messages] = await Promise.all([
+    getTranslations({ locale, namespace: "Auth" }),
+    getMessages({ locale }),
+  ]);
+  return {
+    ...messages.Auth.resend,
+    pending: t("pending"),
+    // Raw: holds {time}, filled in the browser with the Retry-After clock time.
+    rateLimited: messages.Auth.errors.rateLimitedUntil,
+    network: t("errors.network"),
+    server: t("errors.server"),
+  };
 }

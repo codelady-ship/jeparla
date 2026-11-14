@@ -134,6 +134,11 @@ public class Product extends TimestampedEntity {
     @OrderBy("sortOrder ASC, id ASC")
     private List<ProductStone> stones = new ArrayList<>();
 
+    /** Hallmark and label photos (#106), at most one of each kind; not part of the gallery. */
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("kind ASC")
+    private List<ProductEvidencePhoto> evidencePhotos = new ArrayList<>();
+
     protected Product() {
     }
 
@@ -165,11 +170,11 @@ public class Product extends TimestampedEntity {
     // ------------------------------------------------------------------ lifecycle
 
     /**
-     * Visible in the public catalog. FASHION products stay out of it until the catalog shows them in their
-     * own section with a clear badge (#128 frontend part): the public product type still requires a metal.
+     * Visible in the public catalog. FASHION (bijouterie) products are public too (#128): the public DTOs carry
+     * {@code materialKind}, so the catalog shows them in their own section with a clear badge.
      */
     public boolean isPublic() {
-        return status == ProductStatus.APPROVED && deletedAt == null && materialKind == MaterialKind.PRECIOUS;
+        return status == ProductStatus.APPROVED && deletedAt == null;
     }
 
     public boolean isDeleted() {
@@ -260,6 +265,23 @@ public class Product extends TimestampedEntity {
         images.remove(image);
     }
 
+    /** Adds a hallmark or label photo; remove (and flush) the one of the same kind first. */
+    public void addEvidencePhoto(ProductEvidencePhoto photo) {
+        if (evidencePhoto(photo.getKind()).isPresent()) {
+            throw new IllegalStateException("Product " + getId() + " already has a " + photo.getKind() + " photo");
+        }
+        photo.attachTo(this);
+        evidencePhotos.add(photo);
+    }
+
+    public void removeEvidencePhoto(ProductEvidencePhoto photo) {
+        evidencePhotos.remove(photo);
+    }
+
+    public Optional<ProductEvidencePhoto> evidencePhoto(EvidenceKind kind) {
+        return evidencePhotos.stream().filter(photo -> photo.getKind() == kind).findFirst();
+    }
+
     public void addVariant(ProductVariant variant) {
         requireFitting(variant.getFineness(), variant.getPricingMode());
         variant.attachTo(this);
@@ -298,6 +320,10 @@ public class Product extends TimestampedEntity {
 
     public List<ProductStone> getStones() {
         return Collections.unmodifiableList(stones);
+    }
+
+    public List<ProductEvidencePhoto> getEvidencePhotos() {
+        return Collections.unmodifiableList(evidencePhotos);
     }
 
     // ------------------------------------------------------------------ accessors

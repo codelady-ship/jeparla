@@ -3,11 +3,13 @@ package az.jeparla.merchant;
 import az.jeparla.common.dto.Decimal;
 import az.jeparla.common.dto.LocalizedTextDto;
 import az.jeparla.common.storage.ImageUrls;
+import az.jeparla.merchant.dto.MerchantEvidencePhotoDto;
 import az.jeparla.merchant.dto.MerchantImageDto;
 import az.jeparla.merchant.dto.MerchantProductDto;
 import az.jeparla.merchant.dto.MerchantProductRowDto;
 import az.jeparla.merchant.dto.MerchantVariantDto;
 import az.jeparla.product.Product;
+import az.jeparla.product.ProductEvidencePhoto;
 import az.jeparla.product.ProductImage;
 import az.jeparla.product.dto.StoneDto;
 import java.util.Comparator;
@@ -36,7 +38,14 @@ class MerchantViews {
                 product.getUpdatedAt(),
                 product.getImages().stream().sorted(IMAGE_ORDER).map(this::image).toList(),
                 product.getVariants().stream().map(MerchantVariantDto::of).toList(),
-                product.getStones().stream().map(StoneDto::of).toList());
+                product.getStones().stream().map(StoneDto::of).toList(),
+                product.getEvidencePhotos().stream().map(this::evidence).toList());
+    }
+
+    MerchantEvidencePhotoDto evidence(ProductEvidencePhoto photo) {
+        return new MerchantEvidencePhotoDto(photo.getId(), photo.getKind(), imageUrls.url(photo.getStorageKey()),
+                photo.getWidth(), photo.getHeight(), photo.getContentType(), photo.getSizeBytes(), photo.getStatus(),
+                photo.getCheckNote(), photo.getCheckedAt(), photo.getCreatedAt());
     }
 
     MerchantProductRowDto row(Product product) {

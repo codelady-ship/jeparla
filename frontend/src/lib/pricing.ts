@@ -4,6 +4,10 @@ import type { Decimal, PricingRule } from "@/types/api";
 /** 1 troy ounce in grams (CBAR quotes metals per troy ounce). */
 export const TROY_OUNCE_GRAMS = "31.1034768";
 
+/** CBAR's daily bulletin for a business date (PLAN 5.10): .../currencies/DD.MM.YYYY.xml */
+export const cbarUrl = (isoDate: string) =>
+  `https://www.cbar.az/currencies/${isoDate.slice(0, 10).split("-").reverse().join(".")}.xml`;
+
 /** AZN per troy ounce -> AZN per gram, 4 decimals. */
 export function gramPrice(pricePerOunce: Decimal): Decimal {
   return new Big(pricePerOunce).div(TROY_OUNCE_GRAMS).round(4, Big.roundHalfUp).toFixed(4);
