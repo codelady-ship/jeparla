@@ -73,6 +73,11 @@ public class Product extends TimestampedEntity {
     @Column(name = "material_kind", nullable = false, updatable = false)
     private MaterialKind materialKind = MaterialKind.PRECIOUS;
 
+    /** Who the piece is for (#121): picks the AI model and prompt of an on-model image. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "audience", nullable = false)
+    private Audience audience = Audience.UNISEX;
+
     /** The precious metal; null for a FASHION product (CHECK {@code products_metal_by_kind}). */
     @Enumerated(EnumType.STRING)
     @Column(name = "metal")
@@ -401,6 +406,14 @@ public class Product extends TimestampedEntity {
 
     public MaterialKind getMaterialKind() {
         return materialKind;
+    }
+
+    public Audience getAudience() {
+        return audience;
+    }
+
+    public void setAudience(Audience audience) {
+        this.audience = java.util.Objects.requireNonNull(audience);
     }
 
     public FashionMaterial getMaterial() {

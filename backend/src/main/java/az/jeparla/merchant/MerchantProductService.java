@@ -22,6 +22,7 @@ import az.jeparla.pricing.PriceHistory;
 import az.jeparla.pricing.PriceHistoryRepository;
 import az.jeparla.pricing.PricingEngine;
 import az.jeparla.pricing.QuoteStatus;
+import az.jeparla.product.AudienceRules;
 import az.jeparla.product.Fineness;
 import az.jeparla.product.MaterialKind;
 import az.jeparla.product.PricingMode;
@@ -133,6 +134,8 @@ public class MerchantProductService {
                 : new Product(store, checked.category(), slug, request.name().toText(), request.metal());
         product.setDescription(request.description() == null ? null : request.description().toText());
         product.setIdempotencyKey(idempotencyKey);
+        product.setAudience(request.audience() != null ? request.audience()
+                : AudienceRules.suggest(checked.category()));
         replaceStones(product, request.stonesOrEmpty());
         products.saveAndFlush(product);
         for (int i = 0; i < request.variants().size(); i++) {
@@ -177,6 +180,9 @@ public class MerchantProductService {
         product.setCategory(checked.category());
         product.setName(request.name().toText());
         product.setDescription(request.description() == null ? null : request.description().toText());
+        if (request.audience() != null) {
+            product.setAudience(request.audience());
+        }
         if (product.getMaterialKind() == MaterialKind.PRECIOUS) {
             // The variants move to finenesses of the new metal below; the database checks the pair at commit.
             product.setMetal(request.metal());

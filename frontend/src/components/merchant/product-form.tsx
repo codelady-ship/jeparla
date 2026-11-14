@@ -25,12 +25,20 @@ import {
 } from "@/lib/merchant/schemas";
 import type { DocMeta } from "@/lib/seller/schemas";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
-import type { ProductInput, StoneInput, VariantInput } from "@/types/merchant";
+import {
+  PRODUCT_AUDIENCES,
+  type ProductAudience,
+  type ProductInput,
+  type StoneInput,
+  type VariantInput,
+} from "@/types/merchant";
 import { ImageUpload } from "./image-upload";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
 
 export type Option = { value: string; label: string };
+/** A leaf category with the audience it suggests (#121). */
+export type CategoryOption = Option & { audience?: ProductAudience };
 export type FinenessOption = Option & { metal: MetalType; fineness: number };
 
 const STEP_KEYS = ["1", "2", "3", "4", "5"] as const;
@@ -60,7 +68,7 @@ export function ProductForm({
   draftKey: string;
   initial?: ProductInput;
   productStatus?: ProductStatus;
-  categories: Option[];
+  categories: CategoryOption[];
   finenesses: FinenessOption[];
   sellerApproved: boolean;
   /** Latest pure-metal gram price per metal, for the METAL_LINKED preview. */
@@ -301,8 +309,26 @@ export function ProductForm({
               placeholder={t("choose")}
               options={categories}
               value={p.category}
-              onChange={(e) => set({ category: e.target.value })}
+              onChange={(e) => {
+                const suggested = (slug: string) =>
+                  categories.find((c) => c.value === slug)?.audience ?? "UNISEX";
+                // The suggestion follows the category until the seller picks an audience.
+                const touched = p.audience !== suggested(p.category);
+                set({
+                  category: e.target.value,
+                  ...(touched ? {} : { audience: suggested(e.target.value) }),
+                });
+              }}
               error={err(errors.category)}
+            />
+            <SelectField
+              id="p-audience"
+              label={t("fields.audience")}
+              placeholder={t("choose")}
+              options={PRODUCT_AUDIENCES.map((a) => ({ value: a, label: t(`audience.${a}`) }))}
+              value={p.audience}
+              onChange={(e) => set({ audience: (e.target.value || "UNISEX") as ProductAudience })}
+              hint={t("hints.audience")}
             />
             <div className="flex flex-col gap-2 sm:col-span-2">
               <Label htmlFor="p-description">

@@ -1,5 +1,6 @@
 import type { Category, Money, ProductStatus, StockStatus, Stone } from "@/types/api";
-import type { MerchantProduct, ProductInput } from "@/types/merchant";
+import type { MerchantProduct, ProductAudience, ProductInput } from "@/types/merchant";
+import { suggestAudience } from "./audience";
 import { EMPTY_PRICING } from "./draft";
 
 /**
@@ -42,6 +43,8 @@ export type BackendProduct = {
   images: BackendImage[];
   variants: BackendVariant[];
   stones: Stone[];
+  /** Who the piece is for (#121); older answers may not have it. */
+  audience?: ProductAudience | null;
 };
 
 export type ImageUpload = {
@@ -67,6 +70,7 @@ export function toProductInput(p: BackendProduct, categories: Category[]): Produ
       .map((img) => ({ id: storedImageId(img.id), url: img.url, name: img.url })),
     name: p.name.az,
     category: categories.find((c) => c.id === p.categoryId)?.slug ?? "",
+    audience: p.audience ?? suggestAudience(p.categoryId, categories),
     description: p.description?.az ?? "",
     metal: (p.metal ?? "") as ProductInput["metal"],
     fineness: first?.finenessId ? String(first.finenessId) : "",
@@ -124,6 +128,7 @@ export function toProductRequest(
   return {
     materialKind: existing?.materialKind ?? "PRECIOUS",
     categoryId: categories.find((c) => c.slug === input.category)?.id ?? null,
+    audience: input.audience,
     name: { az: input.name.trim(), en: existing?.name.en ?? null, ru: existing?.name.ru ?? null },
     description: {
       az: blank(input.description),

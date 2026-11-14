@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { compareDecimal } from "@/lib/pricing";
 import { normalizePhone } from "@/lib/seller/schemas";
+import { PRODUCT_AUDIENCES } from "@/types/merchant";
 
 /**
  * Product form and store profile (PLAN 5.7), one schema per form step so the
@@ -39,6 +40,7 @@ export const imagesStep = z.object({
 export const basicsStep = z.object({
   name: z.string().trim().min(3, "productNameShort").max(120, "nameLong"),
   category: z.string().min(1, "required"),
+  audience: z.enum(PRODUCT_AUDIENCES).default("UNISEX"),
   description: z.string().trim().max(2000, "descriptionLong"),
 });
 

@@ -18,6 +18,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param attemptTimeout     a job PROCESSING longer than this is marked FAILED (ai.timeout)
  * @param resultUrlTtl       life of the private preview URL of a result
  * @param zone               zone of the daily quota
+ * @param autoTryOn          queue an on-model job (#121) when a product gets its first original photo; off by
+ *                           default, and without a provider, quota or budget nothing is queued
  */
 @ConfigurationProperties("jeparla.ai")
 public record AiProperties(
@@ -27,7 +29,8 @@ public record AiProperties(
         @DefaultValue("USD") String costCurrency,
         @DefaultValue("5m") Duration attemptTimeout,
         @DefaultValue("10m") Duration resultUrlTtl,
-        @DefaultValue("Asia/Baku") ZoneId zone) {
+        @DefaultValue("Asia/Baku") ZoneId zone,
+        @DefaultValue("false") boolean autoTryOn) {
 
     public AiProperties {
         if (dailyJobsPerStore < 0) {

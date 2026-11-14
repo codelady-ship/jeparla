@@ -31,7 +31,8 @@ class MerchantViews {
 
     MerchantProductDto product(Product product) {
         return new MerchantProductDto(product.getId(), product.getSlug(), product.getStatus(), product.getReviewNote(),
-                product.isHiddenBySeller(), product.getMaterialKind(), product.getCategory().getId(),
+                product.isHiddenBySeller(), product.getMaterialKind(), product.getAudience(),
+                product.getCategory().getId(),
                 LocalizedTextDto.of(product.getName()), LocalizedTextDto.of(product.getDescription()),
                 product.getMetal(), product.getMaterial(), product.getNotPreciousConfirmedAt(),
                 product.getExpertiseStatus(), product.getSubmittedAt(), product.getPublishedAt(),

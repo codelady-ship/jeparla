@@ -19,6 +19,7 @@ import az.jeparla.merchant.Created;
 import az.jeparla.merchant.MerchantImageService;
 import az.jeparla.merchant.MerchantProducts;
 import az.jeparla.product.Audience;
+import az.jeparla.product.AudienceRules;
 import az.jeparla.product.Product;
 import az.jeparla.product.ProductImage;
 import az.jeparla.store.StoreRepository;
@@ -125,7 +126,7 @@ public class AiStudioService {
             // Generating from a generated image drifts away from the real item.
             throw new ApiException(HttpStatus.BAD_REQUEST, "ai.source_ai_generated", "sourceImageId");
         }
-        Long modelId = modelCatalog.checkForJob(request.kind(), request.modelId());
+        Long modelId = modelCatalog.checkForJob(request.kind(), request.modelId(), product.getAudience());
         requireAvailable(storeId);
         Instant now = clock.instant();
         AiJob job = new AiJob(storeId, product.getId(), source.getId(), request.kind(), properties.maxAttempts(),
@@ -138,10 +139,18 @@ public class AiStudioService {
         return new Created<>(view(job), true);
     }
 
-    /** AI models of the library a seller can pick (#130), the default first; {@code audience} null for all. */
+    /**
+     * AI models of the library a seller can pick (#130), the default first; {@code audience} null for all. With
+     * {@code productId} (an own product) only the models that fit its audience (#121): a KIDS piece only on a child.
+     */
     @Transactional(readOnly = true)
-    public List<AiModelDto> models(Audience audience) {
-        return modelCatalog.selectable(audience);
+    public List<AiModelDto> models(Audience audience, Long productId) {
+        if (productId == null) {
+            return modelCatalog.selectable(audience);
+        }
+        Audience product = products.owned(productId).getAudience();
+        return modelCatalog.selectable(audience).stream()
+                .filter(model -> AudienceRules.fits(product, model.audience())).toList();
     }
 
     /** The product's jobs, newest first (at most 50). */

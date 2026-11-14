@@ -75,6 +75,23 @@ Xərc və lisenziya seçiləndə bu sənədə yazılır.
 - Başlanğıc dəsti (~10 model) bir dəfə yaradılır (provayder və xərc sahibin təsdiqi ilə) və `docs/credits.md`-də
   qeyd olunur.
 
+### Model üzərində şəkil (#121)
+
+- Məhsulun `audience` sahəsi var (WOMEN, MEN, KIDS, UNISEX; `V42__product_audience.sql`). Formada "Kimin
+  üçündür" seçilir; göndərilməyəndə yaradılışda kateqoriyadan təklif olunur ("Kişi zərgərliyi" altında MEN,
+  "Uşaq zərgərliyi" altında KIDS, qalanı UNISEX), yenilənmədə saxlanılır.
+- `GET /api/v1/merchant/ai/models?productId=` yalnız məhsulun auditoriyasına uyğun modelləri qaytarır. Uşaq
+  zərgərliyi yalnız uşaq modeldə, uşaq model yalnız uşaq zərgərliyi ilə; UNISEX istənilən yetkin modeldə.
+  Uyğunsuz model `400 ai.model_mismatch`.
+- Poza kateqoriyadan gəlir (üzük: əl, sırğa: qulaq, boyunbağı/zəncir/asqı: boyun, qolbaq: bilək, dəst və broş:
+  yarım portret) və prompt parametrinə düşür. KIDS məhsul üçün ayrıca prompt var
+  (`VIRTUAL_TRY_ON_KIDS.txt`: sadə, yaşa uyğun geyim, makiyaj və "yetkin" üslub yoxdur, yaxın kəsim).
+- Qalereya qaydası: orijinal şəkil varsa birinci həmişə orijinaldır (`400 merchant.image_order_ai_first`);
+  AI şəkillər qalanda son orijinal silinmir (`409 merchant.last_original`).
+- Avtomatik başlatma: `JEPARLA_AI_AUTO_TRY_ON=true` olanda məhsulun ilk orijinal şəkli əlavə edilən kimi
+  `VIRTUAL_TRY_ON` tapşırığı növbəyə düşür (uyğun ilk model ilə). Default `false`. Provayder, limit və ya büdcə
+  imkan vermirsə heç nə növbəyə düşmür və şəkil yükləməsi pozulmur; nəticə yenə satıcının təsdiqini gözləyir.
+
 ### Dürüstlük
 
 - Provayder qoşulmayanda heç bir nümunə AI şəkil göstərilmir.

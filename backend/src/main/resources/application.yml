@@ -143,6 +143,9 @@ jeparla:
     cost-currency: ${JEPARLA_AI_COST_CURRENCY:USD}
     attempt-timeout: 5m
     result-url-ttl: 10m
+    # #121: queue an on-model (VIRTUAL_TRY_ON) job by itself when a product gets its first original photo. Off by
+    # default; it still needs a provider, quota and budget, and the result still waits for the seller's approval.
+    auto-try-on: ${JEPARLA_AI_AUTO_TRY_ON:false}
     worker-delay: 15s
   verification:
     documents:

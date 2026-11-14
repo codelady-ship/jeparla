@@ -27,6 +27,7 @@ export const EMPTY_INPUT: ProductInput = Object.freeze({
   images: [],
   name: "",
   category: "",
+  audience: "UNISEX",
   description: "",
   metal: "",
   fineness: "",

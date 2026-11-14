@@ -13,7 +13,7 @@ describe("AI Studio (#55)", () => {
     expect(NOT_CONFIGURED.configured).toBe(false);
     await expect(api.jobs(1)).resolves.toEqual([]);
     // The model library (#130) is empty until the admin uploads models: no sample models.
-    await expect(api.models("WOMEN")).resolves.toEqual([]);
+    await expect(api.models({ productId: 1, audience: "WOMEN" })).resolves.toEqual([]);
   });
 
   it("validates job requests and actions", () => {
