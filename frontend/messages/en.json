@@ -69,6 +69,7 @@
     "merchantCabinet": "Store dashboard",
     "privacy": "Privacy policy",
     "terms": "Terms of use",
+    "cookies": "Cookie notice",
     "tagline": "Jewelry stores of Azerbaijan in one place.",
     "rights": "© Jeparla. All rights reserved."
   },
@@ -1245,5 +1246,10 @@
     "copy": "Copy link",
     "copied": "Link copied",
     "copyFailed": "Could not copy the link"
+  },
+  "Legal": {
+    "draftTitle": "Draft.",
+    "draftText": "This text has not been approved by the owner and a lawyer yet and is not in force. The marked places will be filled in.",
+    "reviewLabel": "Awaiting review:"
   }
 }

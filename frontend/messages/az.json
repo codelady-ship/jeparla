@@ -69,6 +69,7 @@
     "merchantCabinet": "Mağaza kabineti",
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
+    "cookies": "Cookie qaydası",
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
     "rights": "© Jeparla. Bütün hüquqlar qorunur."
   },
@@ -1245,5 +1246,10 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "Legal": {
+    "draftTitle": "Qaralama.",
+    "draftText": "Bu mətn hələ sahib və hüquqşünas tərəfindən təsdiqlənməyib və qüvvədə deyil. Qeyd olunan yerlər doldurulacaq.",
+    "reviewLabel": "Təsdiq gözlənilir:"
   }
 }
