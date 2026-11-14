@@ -203,6 +203,7 @@
       "size": "Size",
       "price": "Price",
       "pricing": "Pricing",
+      "updated": "Price updated",
       "store": "Store",
       "city": "City"
     },
@@ -370,6 +371,12 @@
     "categoryDescription": "{name}: gold, silver and diamond pieces from jewelry stores in Azerbaijan, with fineness, weight and price.",
     "breadcrumb": "Breadcrumb",
     "subcategories": "Subcategories",
+    "factsTitle": "{name}: facts",
+    "facts": {
+      "products": "Products",
+      "priceFrom": "Lowest price",
+      "priceTo": "Highest price"
+    },
     "faqTitle": "{name}: questions",
     "faq": {
       "fineness": {
@@ -1701,7 +1708,8 @@
     "error": "Metal prices could not be loaded right now. Check again a little later.",
     "empty": "Today's price has not arrived yet.",
     "calculatorLink": "Calculate the metal value of a piece",
-    "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it."
+    "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it.",
+    "allPrices": "All prices and how they are calculated"
   },
   "Hero": {
     "label": "Jeparla: jewelry collections",
@@ -1790,5 +1798,25 @@
     "draftTitle": "Draft.",
     "draftText": "This text has not been approved by the owner and a lawyer yet and is not in force. The marked places will be filled in.",
     "reviewLabel": "Awaiting review:"
+  },
+  "PricesPage": {
+    "title": "Gold and silver price per gram today",
+    "description": "Today's price of 1 gram of gold, silver and platinum by fineness, in Azerbaijani manat, calculated from the daily metal rates of the Central Bank of Azerbaijan (CBAR).",
+    "answer": "On <date>{day}</date>, by the CBAR rate, 1 gram of 585 gold costs {price}.",
+    "tableTitle": "Price of 1 gram by metal and fineness",
+    "caption": "Rate date: <date>{day}</date>. Metal value only, in manat.",
+    "metal": "Metal",
+    "fineness": "Fineness",
+    "perGram": "1 gram",
+    "source": "Source:",
+    "sourceLink": "CBAR daily bank metal rates",
+    "methodTitle": "How the prices are calculated",
+    "method": {
+      "source": "Every business day the Central Bank of Azerbaijan (CBAR) publishes rates for bank metals (gold, silver, platinum, palladium) in manat per troy ounce of pure metal.",
+      "gram": "The ounce price is divided by 31.1034768 (the grams in a troy ounce) to get the price of 1 gram of pure metal.",
+      "fineness": "The pure gram price is multiplied by the fineness: 585 gold is 58.5% gold, so its gram price is 0.585 of the pure price. The result is rounded to 0.01 manat.",
+      "weekend": "On weekends and holidays CBAR publishes no new rate, so the last published rate stays in force; the date above is the date of that rate.",
+      "jewelry": "These are metal values, not jewelry prices. A piece also includes labor, stones and the store's margin, and the store confirms the final price."
+    }
   }
 }

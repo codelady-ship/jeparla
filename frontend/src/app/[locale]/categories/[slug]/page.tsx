@@ -5,6 +5,7 @@ import { hasLocale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Catalog } from "@/components/catalog/catalog";
+import { CategoryFacts } from "@/components/categories/category-facts";
 import { Reveal } from "@/components/motion/reveal";
 import { ProductGridSkeleton } from "@/components/product/product-grid";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -124,6 +125,8 @@ export default async function CategoryPage({
           category={category.slug}
         />
       </Suspense>
+
+      <CategoryFacts category={category} />
 
       <Reveal as="section" aria-labelledby="category-faq" className="mt-16 max-w-3xl">
         <h2 id="category-faq" className="mb-4 text-2xl">

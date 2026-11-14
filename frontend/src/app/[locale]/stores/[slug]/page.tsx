@@ -20,7 +20,7 @@ import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
 import { slugParams } from "@/lib/api/static-params";
 import { formatOpeningHours } from "@/lib/opening-hours";
-import { jewelryStore } from "@/lib/seo/json-ld";
+import { breadcrumbs, jewelryStore } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
 import { cn } from "cn";
 
@@ -74,7 +74,15 @@ export default async function StorePage({
 
   return (
     <div className="container-page py-8 sm:py-12">
-      <JsonLd data={[jewelryStore(store, locale)]} />
+      <JsonLd
+        data={[
+          jewelryStore(store, locale),
+          breadcrumbs([
+            { name: t("title"), path: `/${locale}/stores` },
+            { name: store.name, path: `/${locale}/stores/${store.slug}` },
+          ]),
+        ]}
+      />
       <header className="flex flex-col gap-6 border-b pb-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-5">
           <StoreMonogram name={store.name} size="lg" />

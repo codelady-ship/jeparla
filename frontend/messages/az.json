@@ -203,6 +203,7 @@
       "size": "Ölçü",
       "price": "Qiymət",
       "pricing": "Qiymət növü",
+      "updated": "Qiymət yenilənib",
       "store": "Mağaza",
       "city": "Şəhər"
     },
@@ -370,6 +371,12 @@
     "categoryDescription": "{name}: Azərbaycan zərgərlik mağazalarından qızıl, gümüş və brilyant modellər, əyar, çəki və qiymətlə.",
     "breadcrumb": "Naviqasiya yolu",
     "subcategories": "Alt kateqoriyalar",
+    "factsTitle": "{name}: faktlar",
+    "facts": {
+      "products": "Məhsul sayı",
+      "priceFrom": "Ən aşağı qiymət",
+      "priceTo": "Ən yüksək qiymət"
+    },
     "faqTitle": "{name}: suallar",
     "faq": {
       "fineness": {
@@ -1701,7 +1708,8 @@
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
     "empty": "Bugünkü qiymət hələ gəlməyib.",
     "calculatorLink": "Zərgərliyin metal dəyərini hesablayın",
-    "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək."
+    "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək.",
+    "allPrices": "Bütün qiymətlər və hesablama qaydası"
   },
   "Hero": {
     "label": "Jeparla: zərgərlik kolleksiyaları",
@@ -1790,5 +1798,25 @@
     "draftTitle": "Qaralama.",
     "draftText": "Bu mətn hələ sahib və hüquqşünas tərəfindən təsdiqlənməyib və qüvvədə deyil. Qeyd olunan yerlər doldurulacaq.",
     "reviewLabel": "Təsdiq gözlənilir:"
+  },
+  "PricesPage": {
+    "title": "Bu gün qızıl və gümüşün qram qiyməti",
+    "description": "Azərbaycan Mərkəzi Bankının (AMB) gündəlik metal məzənnələrinə əsasən qızıl, gümüş və platinin əyara görə 1 qram qiyməti, manatla.",
+    "answer": "<date>{day}</date> tarixinə AMB məzənnəsi ilə 585 əyar qızılın 1 qramı {price} təşkil edir.",
+    "tableTitle": "Metal və əyara görə 1 qramın qiyməti",
+    "caption": "Məzənnə tarixi: <date>{day}</date>. Yalnız metalın dəyəri, manatla.",
+    "metal": "Metal",
+    "fineness": "Əyar",
+    "perGram": "1 qram",
+    "source": "Mənbə:",
+    "sourceLink": "AMB-nin gündəlik bank metalları məzənnəsi",
+    "methodTitle": "Qiymətlər necə hesablanır",
+    "method": {
+      "source": "Azərbaycan Mərkəzi Bankı (AMB) hər iş günü bank metallarının (qızıl, gümüş, platin, palladium) məzənnəsini 1 troy unsiya təmiz metal üçün manatla dərc edir.",
+      "gram": "Unsiya qiyməti 31,1034768-ə (bir troy unsiyadakı qramların sayı) bölünür və 1 qram təmiz metalın qiyməti alınır.",
+      "fineness": "Təmiz metalın qram qiyməti əyara vurulur: 585 əyar qızılda 58,5% qızıl var, ona görə onun qram qiyməti təmiz metalın qiymətinin 0,585 hissəsidir. Nəticə qəpiyə qədər yuvarlaqlaşdırılır.",
+      "weekend": "Həftəsonu və bayram günlərində AMB yeni məzənnə dərc etmir, ona görə son dərc olunmuş məzənnə qüvvədə qalır; yuxarıdakı tarix həmin məzənnənin tarixidir.",
+      "jewelry": "Bunlar zərgərlik məmulatının yox, metalın dəyəridir. Məmulatın qiymətinə işçilik, daşlar və mağazanın əlavəsi də daxildir; yekun qiyməti mağaza təsdiqləyir."
+    }
   }
 }

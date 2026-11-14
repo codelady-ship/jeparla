@@ -4,6 +4,8 @@ import { Pagination } from "@/components/catalog/catalog-toolbar";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { CategoryTiles } from "@/components/categories/category-tiles";
 import { ProductGrid } from "@/components/product/product-grid";
+import { JsonLd } from "@/components/seo/json-ld";
+import { itemList } from "@/lib/seo/json-ld";
 import { StoreCard } from "@/components/stores/store-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -95,8 +97,35 @@ async function Tabs({ tab, q, result }: { tab: SearchTab; q: string; result: Sea
     all: 0,
   };
   counts.all = counts.products + counts.stores + counts.categories;
+  const locale = await getLocale();
+  // The results shown in this tab, in page order, as a schema.org ItemList: only what the
+  // panel renders (previews on "all"), so the inline JSON stays small. It is serialized into
+  // the HTML and the RSC payload, so every listed item costs bytes on a mobile first load.
+  // The products tab renders the catalog, which emits its own ItemList.
+  const all = tab === "all";
+  const found =
+    tab === "products"
+      ? []
+      : [
+          ...(all || tab === "stores"
+            ? result.stores
+                .slice(0, all ? PREVIEW.stores : undefined)
+                .map((s) => ({ name: s.name, path: `/stores/${s.slug}` }))
+            : []),
+          ...(all || tab === "categories"
+            ? result.categories
+                .slice(0, all ? PREVIEW.categories : undefined)
+                .map((c) => ({ name: c.name[locale], path: `/categories/${c.slug}` }))
+            : []),
+          ...(all
+            ? result.products.content
+                .slice(0, PREVIEW.products)
+                .map((p) => ({ name: p.name[locale], path: `/products/${p.slug}` }))
+            : []),
+        ].map((it) => ({ ...it, path: `/${locale}${it.path}` }));
   return (
     <nav aria-label={t("tabs")} className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      {found.length > 0 && <JsonLd data={[itemList(`${t("title")}: ${q}`, found)]} />}
       <ul className="flex min-w-max gap-1 border-b">
         {SEARCH_TABS.map((key) => (
           <li key={key}>

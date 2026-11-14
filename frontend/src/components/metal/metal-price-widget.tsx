@@ -42,9 +42,12 @@ async function load(): Promise<{ latest: MetalPrice[]; history: MetalPrice[] } |
 export async function MetalPriceWidget({
   headingLevel = 2,
   className,
+  pricesLink = true,
 }: {
   headingLevel?: 2 | 3;
   className?: string;
+  /** Link to /prices (full table and method); off on that page itself. */
+  pricesLink?: boolean;
 }) {
   const [t, tp, locale, data] = await Promise.all([
     getTranslations("MetalPrices"),
@@ -98,6 +101,14 @@ export async function MetalPriceWidget({
       <p className="-mt-3 text-sm text-muted-foreground">
         {t("source")} <time dateTime={date}>{day(date)}</time>
       </p>
+      {pricesLink && (
+        <Link
+          href="/prices"
+          className="-mt-2 inline-flex self-start link-underline text-sm font-medium pointer-coarse:min-h-11 pointer-coarse:items-center"
+        >
+          {t("allPrices")}
+        </Link>
+      )}
 
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {tiles.map((tile) => (

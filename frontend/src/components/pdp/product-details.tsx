@@ -18,7 +18,8 @@ import { shareLabels } from "@/components/share/share-labels";
 import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
-import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
+import { breadcrumbs, isRealPrice, product as productLd } from "@/lib/seo/json-ld";
+import type { ReactNode } from "react";
 import { whatsappLink } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
@@ -83,13 +84,31 @@ export async function ProductDetails({
   }));
   const first = p.variants[0];
 
-  const facts: [string, string][] = [
+  // The latest price change among the variants (metal-linked ones move every business day).
+  const updatedIso = p.variants
+    .map((v) => v.priceUpdatedAt)
+    .sort()
+    .at(-1);
+  // Quotable facts in the initial HTML; the price is the same "from" price as the JSON-LD offer.
+  const facts: [string, ReactNode][] = [
     [t("facts.metal"), tp(`metal.${p.metal}`)],
     [t("facts.fineness"), first?.fineness.label ?? String(p.fineness)],
     [t("facts.weight"), formatGrams(p.weightGrams, locale)],
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
-    [t("facts.price"), formatPrice(p.priceFrom.amount, locale)],
+    ...(isRealPrice(p.priceFrom)
+      ? [[t("facts.price"), formatPrice(p.priceFrom.amount, locale)] as [string, string]]
+      : []),
     [t("facts.pricing"), t(`pricing.${p.pricingMode}`)],
+    ...(updatedIso
+      ? [
+          [
+            t("facts.updated"),
+            <time key="updated" dateTime={updatedIso}>
+              {format.dateTime(new Date(updatedIso), "priceUpdated")}
+            </time>,
+          ] as [string, ReactNode],
+        ]
+      : []),
     [t("facts.store"), p.store.name],
     [t("facts.city"), p.store.city],
   ];
