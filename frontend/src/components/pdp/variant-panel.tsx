@@ -5,12 +5,13 @@ import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { compare, favorites } from "@/lib/saved-list";
+import { toggleFavorite } from "@/lib/saved-prices";
 import { useDisplayCurrency } from "@/lib/use-display-currency";
 import { useSavedIds } from "@/lib/use-saved";
 import type { ContactQuestion } from "@/lib/whatsapp";
 import { cn } from "cn";
 import { StoreOpenStatus, type StoreStatusLabels } from "./store-open-status";
-import type { DisplayCurrency } from "@/types/api";
+import type { DisplayCurrency, Money } from "@/types/api";
 
 /** Everything about a variant the client needs, already formatted on the server. */
 export type VariantView = {
@@ -44,11 +45,14 @@ type Labels = {
 
 export function VariantPanel({
   productId,
+  priceFrom,
   openingHours,
   variants,
   labels,
 }: {
   productId: number;
+  /** The product "from" price, remembered when it is added to favourites (#112). */
+  priceFrom: Money;
   /** schema.org openingHours of the store; null when the store is unknown. */
   openingHours: string | null;
   variants: VariantView[];
@@ -188,7 +192,7 @@ export function VariantPanel({
           variant="outline"
           className="pointer-coarse:h-11"
           aria-pressed={isFavorite}
-          onClick={() => favorites.toggle(productId)}
+          onClick={() => toggleFavorite(productId, priceFrom)}
         >
           <Heart
             aria-hidden

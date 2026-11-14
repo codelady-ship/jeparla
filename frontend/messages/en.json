@@ -630,7 +630,18 @@
     "removeItem": "Remove {name} from compare",
     "noStones": "No stones",
     "stock": "Stock",
-    "gramUnit": "g"
+    "gramUnit": "g",
+    "priceChanges": {
+      "title": "Price changes since you added them",
+      "item": "When added {before}, now {now}",
+      "up": "{difference} more",
+      "down": "{difference} less",
+      "reason": {
+        "METAL_LINKED": "Reason: the Central Bank metal rate changed",
+        "FIXED": "Reason: the store changed the price"
+      },
+      "note": "Compared with the price saved in this browser."
+    }
   },
   "Auth": {
     "login": {
