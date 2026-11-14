@@ -1112,7 +1112,8 @@
       "codeRequired": "Səbəb növünü seçin.",
       "rateLimited": "Çox sorğu göndərildi. Bir az sonra yenidən cəhd edin.",
       "ownsStore": "Bu istifadəçinin mağazası var: əvvəlcə mağazanı başqasına keçirin və ya bloklayın.",
-      "resetNotAllowed": "Bu hesab üçün link verilmir: e-poçtu təsdiqlənib, admindir və ya bloklanıb."
+      "resetNotAllowed": "Bu hesab üçün link verilmir: e-poçtu təsdiqlənib, admindir və ya bloklanıb.",
+      "fourEyes": "Bu sorğunu siz açmısınız. Mağazanı dayandırmaq üçün qərarı başqa admin verməlidir (dörd göz qaydası)."
     },
     "metal": {
       "GOLD": "Qızıl",
@@ -1346,6 +1347,37 @@
       "PASSWORD_RESET_REQUESTED": "Şifrə bərpası istənildi",
       "PASSWORD_RESET": "Şifrə dəyişdirildi",
       "EMAIL_VERIFIED": "E-poçt təsdiqləndi"
+    },
+    "suspensions": {
+      "title": "Dayandırma sorğuları",
+      "intro": "Sənəd həqiqilik səbəbi ilə rədd edildikdə mağazanın dayandırılması üçün sorğu açılır. Mağaza yalnız ikinci admin təsdiq etdikdən sonra dayandırılır və satıcıya bildiriş gedir.",
+      "sampleOnly": "Nümunə data rejimində dayandırma sorğuları yoxdur. Bu bölmə yalnız real API ilə işləyir.",
+      "empty": "Bu statusda sorğu yoxdur.",
+      "status": {
+        "PENDING": "Gözləyir",
+        "CONFIRMED": "Dayandırılıb",
+        "DISMISSED": "Rədd edilib"
+      },
+      "requested": "Açılıb",
+      "decided": "Qərar",
+      "byAdmin": "{date}, admin #{admin}",
+      "deletedAccount": "silinmiş hesab",
+      "document": "Sənəd",
+      "openDocument": "Sənədi aç",
+      "internalNote": "Daxili qeyd",
+      "decisionNote": "Qərar qeydi",
+      "confirm": "Dayandırmanı təsdiqlə",
+      "dismiss": "Sorğunu rədd et",
+      "confirmNamed": "{name} mağazasının dayandırılmasını təsdiqlə",
+      "dismissNamed": "{name} mağazası üçün sorğunu rədd et",
+      "confirmTitle": "{name} dayandırılsın?",
+      "confirmText": "Mağaza bloklanır, bütün məhsulları kataloqdan çıxır və satıcıya hüquqi qaralama mətni ilə bildiriş gedir. Qərar audit log-a yazılır.",
+      "dismissTitle": "{name} üçün sorğu rədd edilsin?",
+      "dismissText": "Mağaza işləməyə davam edir, satıcıya bildiriş getmir. Qərar audit log-a yazılır.",
+      "noteLabel": "Daxili qeyd (istəyə görə)",
+      "noteHint": "Yalnız audit log-da qalır, satıcı görmür. Ən çox 1000 simvol.",
+      "doneConfirm": "{name} dayandırıldı.",
+      "doneDismiss": "{name} üçün sorğu rədd edildi."
     }
   },
   "MetalPrices": {
