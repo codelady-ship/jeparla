@@ -346,7 +346,28 @@
     "loading": "Axtarılır",
     "empty": "Heç nə tapılmadı. Başqa söz yoxlayın.",
     "error": "Axtarış alınmadı. Yenidən yoxlayın.",
-    "results": "{count} nəticə"
+    "results": "{count} nəticə",
+    "photo": {
+      "open": "Şəkillə axtar",
+      "back": "Mətnlə axtarışa qayıt",
+      "title": "Şəkillə axtarış",
+      "hint": "Bəyəndiyiniz zərgərliyin şəklini yükləyin: bütün mağazalarda oxşar modelləri tapaq. Şəkil saxlanılmır.",
+      "pick": "Şəkil seçin",
+      "camera": "Kamera",
+      "drop": "və ya şəkli bura sürüşdürün",
+      "searching": "Oxşar modellər axtarılır",
+      "results": "Oxşar modellər",
+      "empty": "Oxşar model tapılmadı. Başqa bucaqdan çəkilmiş şəkil yoxlayın.",
+      "notConfigured": "Şəkillə axtarış hələ qoşulmayıb. Hələlik mətnlə axtarın.",
+      "aiBadge": "AI ilə yaradılıb",
+      "errors": {
+        "size": "Şəkil çox böyükdür və ya boşdur.",
+        "type": "Şəkil oxunmadı: JPEG, PNG və ya WebP seçin.",
+        "unreadable": "Şəkil oxunmadı. Başqa şəkil yoxlayın.",
+        "rateLimited": "Çox sayda axtarış edildi. Bir az sonra yenidən yoxlayın.",
+        "generic": "Axtarış alınmadı. Yenidən yoxlayın."
+      }
+    }
   },
   "SearchPage": {
     "title": "Axtarış",

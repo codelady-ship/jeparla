@@ -2,6 +2,8 @@ import type {
   Category,
   CompareItem,
   Fineness,
+  ImageSearchResult,
+  ImageSearchStatus,
   MetalPrice,
   MetalType,
   Page,
@@ -43,6 +45,10 @@ export interface JeparlaApi {
   search(q: string, type?: SearchType, page?: number): Promise<SearchResult>;
   /** GET /api/v1/search/suggest */
   suggest(q: string): Promise<Suggestions>;
+  /** GET /api/v1/search/image/status (#163) */
+  imageSearchStatus(): Promise<ImageSearchStatus>;
+  /** POST /api/v1/search/image (#163): the photo is never stored. */
+  searchByImage(image: Blob): Promise<ImageSearchResult>;
   /** GET /api/v1/metal-prices/latest */
   latestMetalPrices(): Promise<MetalPrice[]>;
   /** GET /api/v1/metal-prices/history */

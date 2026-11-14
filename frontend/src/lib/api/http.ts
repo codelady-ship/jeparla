@@ -1,3 +1,4 @@
+import { IMAGE_SEARCH_ERRORS, type ProductSummary } from "@/types/api";
 import type { JeparlaApi } from "./types";
 
 /**
@@ -51,6 +52,24 @@ export const httpApi: JeparlaApi = {
   listStoreProducts: (slug, f = {}) => get(`/stores/${enc(slug)}/products`, f),
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),
+  imageSearchStatus: () => get("/search/image/status"),
+  searchByImage: async (image) => {
+    const body = new FormData();
+    body.append("image", image, "photo.jpg");
+    const res = await fetch(`${BASE}/api/v1/search/image`, {
+      method: "POST",
+      body,
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (res.ok) return { ok: true, products: (await res.json()) as ProductSummary[] };
+    if (res.status === 429) return { ok: false, error: "rate_limited" };
+    const code = ((await res.json().catch(() => ({}))) as { code?: string }).code;
+    return {
+      ok: false,
+      error: IMAGE_SEARCH_ERRORS.find((e) => e === code) ?? "search.image_unreadable",
+    };
+  },
   latestMetalPrices: () => get("/metal-prices/latest"),
   metalPriceHistory: (metal, days = 30) => get("/metal-prices/history", { metal, days }),
 };
