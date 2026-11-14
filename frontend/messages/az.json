@@ -189,6 +189,28 @@
     "metalLinkedNote": "Qiymət metala bağlıdır: AMB-nin gündəlik məzənnəsi ilə avtomatik yenilənir.",
     "whatsapp": "WhatsApp ilə mağazaya yaz",
     "whatsappMessage": "Salam! Jeparla-da bu məhsulla maraqlanıram: {name} (kod {sku}). {url}",
+    "contact": {
+      "legend": "Nə soruşmaq istəyirsiniz?",
+      "questions": {
+        "GENERAL": "Ümumi sual",
+        "AVAILABILITY": "Mövcuddur?",
+        "SIZE": "Bu ölçü var?",
+        "VISIT": "Mağazada baxmaq istəyirəm",
+        "PRICE": "Son qiyməti dəqiqləşdirmək"
+      },
+      "messages": {
+        "AVAILABILITY": "Salam! Bu məhsul hazırda mövcuddur? {product}",
+        "SIZE": "Salam! Bu məhsul bu ölçüdə var? {product}",
+        "VISIT": "Salam! Bu məhsula mağazada baxmaq istəyirəm. Nə vaxt gələ bilərəm? {product}",
+        "PRICE": "Salam! Bu məhsulun son qiymətini dəqiqləşdirmək istəyirəm. {product}"
+      },
+      "product": "{name}, {variant}, kod {sku}. {url}",
+      "open": "Mağaza indi açıqdır",
+      "closedToday": "Mağaza indi bağlıdır. Açılır: bu gün, {time}",
+      "closedTomorrow": "Mağaza indi bağlıdır. Açılır: sabah, {time}",
+      "closedOn": "Mağaza indi bağlıdır. Açılır: {day}, {time}",
+      "closedHint": "Mesajı indi də yaza bilərsiniz."
+    },
     "factsTitle": "Əsas məlumatlar",
     "facts": {
       "metal": "Metal",

@@ -18,7 +18,7 @@ import { SITE_URL } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 import { breadcrumbs, product as productLd } from "@/lib/seo/json-ld";
-import { whatsappLink } from "@/lib/whatsapp";
+import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
 import { ReportDialog } from "./report-dialog";
@@ -57,25 +57,38 @@ export async function ProductDetails({
     .sort((a, b) => Number(b.categoryId === p.categoryId) - Number(a.categoryId === p.categoryId))
     .slice(0, 4);
 
-  const variants: VariantView[] = p.variants.map((v) => ({
-    id: v.id,
-    label: [
+  const variants: VariantView[] = p.variants.map((v) => {
+    const label = [
       v.fineness.label,
       formatGrams(v.weightGrams, locale),
       v.size && t("size", { size: v.size }),
     ]
       .filter(Boolean)
-      .join(" ·"),
-    price: formatPrice(v.price.amount, locale),
-    sku: v.sku,
-    stock: tp(`stock.${v.stockStatus}`),
-    inStock: v.stockStatus !== "OUT_OF_STOCK",
-    updatedIso: v.priceUpdatedAt,
-    updated: format.dateTime(new Date(v.priceUpdatedAt), "priceUpdated"),
-    whatsappHref: store
-      ? whatsappLink(store.whatsapp, t("whatsappMessage", { name, sku: v.sku, url }))
-      : "#",
-  }));
+      .join(" ·");
+    // The size question only makes sense for a variant that has a size.
+    const questions = CONTACT_QUESTIONS.filter((q) => q !== "SIZE" || Boolean(v.size));
+    const message = (q: ContactQuestion) =>
+      q === "GENERAL"
+        ? t("whatsappMessage", { name, sku: v.sku, url })
+        : t(`contact.messages.${q}`, {
+            product: t("contact.product", { name, variant: label, sku: v.sku, url }),
+          });
+    return {
+      id: v.id,
+      label,
+      price: formatPrice(v.price.amount, locale),
+      sku: v.sku,
+      stock: tp(`stock.${v.stockStatus}`),
+      inStock: v.stockStatus !== "OUT_OF_STOCK",
+      updatedIso: v.priceUpdatedAt,
+      updated: format.dateTime(new Date(v.priceUpdatedAt), "priceUpdated"),
+      whatsapp: questions.map((q) => ({
+        question: q,
+        label: t(`contact.questions.${q}`),
+        href: store ? whatsappLink(store.whatsapp, message(q)) : "#",
+      })),
+    };
+  });
   const first = p.variants[0];
 
   const facts: [string, string][] = [
@@ -163,12 +176,21 @@ export async function ProductDetails({
 
           <VariantPanel
             productId={p.id}
+            openingHours={store?.openingHours ?? null}
             variants={variants}
             labels={{
               choose: t("chooseVariant"),
               sku: t("sku"),
               priceUpdated: t("priceUpdated"),
               whatsapp: t("whatsapp"),
+              questionLegend: t("contact.legend"),
+              status: {
+                open: t("contact.open"),
+                closedToday: t.raw("contact.closedToday") as string,
+                closedTomorrow: t.raw("contact.closedTomorrow") as string,
+                closedOn: t.raw("contact.closedOn") as string,
+                closedHint: t("contact.closedHint"),
+              },
               metalLinkedNote: p.pricingMode === "METAL_LINKED" ? t("metalLinkedNote") : null,
               actions: {
                 favoriteAdd: tp("favoriteAdd"),

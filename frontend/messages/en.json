@@ -189,6 +189,28 @@
     "metalLinkedNote": "Metal-linked price: it updates automatically with the daily CBAR rate.",
     "whatsapp": "Message the store on WhatsApp",
     "whatsappMessage": "Hello! I found this on Jeparla and I am interested: {name} (code {sku}). {url}",
+    "contact": {
+      "legend": "What would you like to ask?",
+      "questions": {
+        "GENERAL": "General question",
+        "AVAILABILITY": "Is it available?",
+        "SIZE": "Is this size available?",
+        "VISIT": "I want to see it in store",
+        "PRICE": "Confirm the final price"
+      },
+      "messages": {
+        "AVAILABILITY": "Hello! Is this item available now? {product}",
+        "SIZE": "Hello! Do you have this item in this size? {product}",
+        "VISIT": "Hello! I would like to see this item in your store. When can I come? {product}",
+        "PRICE": "Hello! I would like to confirm the final price of this item. {product}"
+      },
+      "product": "{name}, {variant}, code {sku}. {url}",
+      "open": "The store is open now",
+      "closedToday": "The store is closed now. Opens today at {time}",
+      "closedTomorrow": "The store is closed now. Opens tomorrow at {time}",
+      "closedOn": "The store is closed now. Opens {day} at {time}",
+      "closedHint": "You can still send your message now."
+    },
     "factsTitle": "Key facts",
     "facts": {
       "metal": "Metal",
