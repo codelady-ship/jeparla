@@ -85,7 +85,8 @@ public class SecurityConfig {
             AccessRule.of(HttpMethod.GET, Access.PUBLIC,
                     "/api/v1/products", "/api/v1/products/**", "/api/v1/variants",
                     "/api/v1/stores", "/api/v1/stores/**", "/api/v1/categories", "/api/v1/categories/**",
-                    "/api/v1/finenesses", "/api/v1/search", "/api/v1/search/**", "/api/v1/metal-prices/**"),
+                    "/api/v1/finenesses", "/api/v1/search", "/api/v1/search/**", "/api/v1/metal-prices/**",
+                    "/api/v1/exchange-rates/**"),
             // Guests may report a product or a store and are counted when they open WhatsApp (#37, #40);
             // all are rate limited in the controller.
             AccessRule.of(HttpMethod.POST, Access.PUBLIC,
