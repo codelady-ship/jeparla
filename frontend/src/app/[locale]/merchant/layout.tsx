@@ -32,6 +32,7 @@ export default async function MerchantLayout({ children }: { children: ReactNode
           labels={{
             dashboard: t("nav.dashboard"),
             products: t("nav.products"),
+            import: t("nav.import"),
             profile: t("nav.profile"),
             documents: t("nav.documents"),
             notifications: t("nav.notifications"),
