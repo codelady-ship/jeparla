@@ -69,6 +69,11 @@ public enum RateLimitPolicy {
      */
     IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1)),
     /**
+     * Catalog PDF uploads by one seller account (#129): reading a PDF of up to 20 MB and 30 pages costs memory and
+     * CPU on the server, so a seller gets a few per hour, enough to try again after splitting a catalog.
+     */
+    CATALOG_PDF_ACCOUNT("catalog-pdf-account", 5, Duration.ofHours(1)),
+    /**
      * Presigned verification document uploads asked for by one seller account (#40): each lets the browser write
      * up to 10 MB into the private bucket. The open and daily limits per store apply as well.
      */
