@@ -15,6 +15,7 @@ import az.jeparla.product.MaterialKind;
 import az.jeparla.product.ProductContactClickRepository;
 import az.jeparla.product.ProductRepository;
 import az.jeparla.product.ProductStatus;
+import az.jeparla.store.GeoPoint;
 import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreRepository;
@@ -121,9 +122,31 @@ public class MerchantStoreService {
         store.setCity(request.city().strip());
         store.setAddress(request.address().strip());
         applyProfile(store, request.phone(), request.social(), request.description(), request.openingHours());
+        GeoPoint location = location(request);
+        if (location != null) {
+            store.setGeo(location.latitude(), location.longitude());
+        }
         stores.flush();
         audit.record("STORE_UPDATED", AuditTargetType.STORE, store.getId(), store.getName(), null, null);
         return MerchantStoreDto.of(store);
+    }
+
+    /**
+     * The location the seller gave (#116): a map link first, else both coordinates; null keeps the saved one.
+     * A link without coordinates (a short link) is 400 {@code merchant.map_link}.
+     */
+    private static GeoPoint location(StoreProfileRequest request) {
+        if (request.mapLink() != null && !request.mapLink().isBlank()) {
+            return GeoPoint.fromMapLink(request.mapLink())
+                    .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "merchant.map_link", "mapLink"));
+        }
+        if (request.latitude() == null && request.longitude() == null) {
+            return null;
+        }
+        if (request.latitude() == null || request.longitude() == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.coordinates", "latitude");
+        }
+        return new GeoPoint(request.latitude(), request.longitude());
     }
 
     /** Product counts per status and WhatsApp clicks of the last 30 days. */

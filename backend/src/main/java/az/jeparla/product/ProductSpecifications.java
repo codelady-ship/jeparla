@@ -25,15 +25,11 @@ public final class ProductSpecifications {
     private ProductSpecifications() {
     }
 
-    /**
-     * APPROVED, not deleted, PRECIOUS, of an APPROVED store: the only products the public sees (FASHION ones
-     * wait for their own catalog section, #128).
-     */
+    /** APPROVED, not deleted, of an APPROVED store: the only products the public sees (PRECIOUS and FASHION). */
     public static Specification<Product> isPublic() {
         return (root, query, cb) -> cb.and(
                 cb.equal(root.get("status"), ProductStatus.APPROVED),
                 cb.isNull(root.get("deletedAt")),
-                cb.equal(root.get("materialKind"), MaterialKind.PRECIOUS),
                 cb.equal(root.get("store").get("status"), StoreStatus.APPROVED));
     }
 
@@ -47,6 +43,11 @@ public final class ProductSpecifications {
 
     public static Specification<Product> inCity(String city) {
         return (root, query, cb) -> cb.equal(root.get("store").get("city"), city);
+    }
+
+    /** The "bijouterie and handmade" section ({@code kind=FASHION}) or precious jewelry only (#128). */
+    public static Specification<Product> ofMaterialKind(MaterialKind kind) {
+        return (root, query, cb) -> cb.equal(root.get("materialKind"), kind);
     }
 
     public static Specification<Product> ofMetal(Metal metal) {
@@ -94,7 +95,10 @@ public final class ProductSpecifications {
      * ({@code verification.documents} of the product card, i.e. the store documents) passed.
      */
     public static Specification<Product> documentsVerified() {
-        return (root, query, cb) -> cb.equal(root.get("store").get("documentsStatus"), CheckStatus.VERIFIED);
+        // A FASHION product has no documents to check, even in a MIXED store whose documents passed (#128).
+        return (root, query, cb) -> cb.and(
+                cb.equal(root.get("materialKind"), MaterialKind.PRECIOUS),
+                cb.equal(root.get("store").get("documentsStatus"), CheckStatus.VERIFIED));
     }
 
     /** "In stock" filter as in the frontend: something can be bought or ordered (not OUT_OF_STOCK). */

@@ -20,6 +20,7 @@ import {
   type AdminAction,
 } from "@/lib/admin/decisions";
 import { errorKey } from "@/lib/admin/errors";
+import { isMessage } from "@/lib/api/problem";
 import { sendJson } from "@/lib/merchant/client";
 
 const ICONS: Record<AdminAction, typeof Check> = {
@@ -47,10 +48,16 @@ export function DecisionButtons<S extends string>({
   actions,
   onDone,
   reasonLabel,
+  codes,
+  reasonAlways = false,
 }: {
   endpoint: string;
   /** Who reads the reason; the default label says the seller does. */
   reasonLabel?: string;
+  /** A required pick list next to the reason (e.g. why a document is refused). */
+  codes?: { label: string; options: readonly { value: string; label: string }[] };
+  /** Every action of this list needs a reason (complaints: kept in the audit log). */
+  reasonAlways?: boolean;
   name: string;
   actions: readonly AdminAction[];
   onDone: (result: { status: S; note: string | null }, action: AdminAction) => void;
@@ -58,22 +65,37 @@ export function DecisionButtons<S extends string>({
   const t = useTranslations("Admin");
   const [action, setAction] = useState<AdminAction | null>(null);
   const [reason, setReason] = useState("");
+  const [code, setCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const reasonId = useId();
   const errorId = useId();
+  const codeId = useId();
 
   if (actions.length === 0) return null;
 
   function open(a: AdminAction) {
     setAction(a);
     setReason("");
+    setCode("");
     setErrors({});
   }
 
   async function confirm() {
     if (!action) return;
-    const parsed = decisionSchema.safeParse({ action, reason });
+    if (reasonAlways && reason.trim().length < REASON_MIN) {
+      setErrors({ reason: "reasonRequired" });
+      return;
+    }
+    if (codes && NEEDS_REASON.has(action) && !code) {
+      setErrors({ code: "codeRequired" });
+      return;
+    }
+    const parsed = decisionSchema.safeParse({
+      action,
+      reason,
+      code: codes && NEEDS_REASON.has(action) ? code : undefined,
+    });
     if (!parsed.success) {
       setErrors({ reason: parsed.error.issues[0]?.message ?? "reasonRequired" });
       return;
@@ -94,7 +116,7 @@ export function DecisionButtons<S extends string>({
     onDone(result.data, done);
   }
 
-  const needsReason = action !== null && NEEDS_REASON.has(action);
+  const needsReason = action !== null && (reasonAlways || NEEDS_REASON.has(action));
   const formError = errors.form;
 
   return (
@@ -131,6 +153,32 @@ export function DecisionButtons<S extends string>({
                 void confirm();
               }}
             >
+              {needsReason && codes && (
+                <div className="flex flex-col gap-1">
+                  <label htmlFor={codeId} className="text-sm font-medium">
+                    {codes.label}
+                  </label>
+                  <select
+                    id={codeId}
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    aria-invalid={errors.code ? true : undefined}
+                    className="h-11 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive"
+                  >
+                    <option value="">{t("rejectReason.pick")}</option>
+                    {codes.options.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.code && (
+                    <p className="text-xs text-destructive">
+                      {t(`errors.${errorKey(errors.code)}`)}
+                    </p>
+                  )}
+                </div>
+              )}
               {needsReason && (
                 <div className="flex flex-col gap-1">
                   <label htmlFor={reasonId} className="text-sm font-medium">
@@ -159,7 +207,7 @@ export function DecisionButtons<S extends string>({
               )}
               {formError && (
                 <p role="alert" className="text-sm text-destructive">
-                  {t(`errors.${errorKey(formError)}`)}
+                  {isMessage(formError) ? formError : t(`errors.${errorKey(formError)}`)}
                 </p>
               )}
               <DialogFooter>

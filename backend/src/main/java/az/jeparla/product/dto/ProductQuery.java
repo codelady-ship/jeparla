@@ -1,5 +1,6 @@
 package az.jeparla.product.dto;
 
+import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Metal;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.DecimalMin;
@@ -27,6 +28,10 @@ public record ProductQuery(
 
         @Parameter(description = "Store slugs") @Size(max = MAX_VALUES) List<@Size(max = 160) String> store,
 
+        @Parameter(description = "PRECIOUS (gold, silver, platinum, diamonds) or FASHION (bijouterie and handmade, #128)")
+        MaterialKind kind,
+
+        @Parameter(description = "A metal; FASHION products have none, so they never match")
         Metal metal,
 
         @Parameter(description = "Fineness values in parts per thousand, e.g. 585")
@@ -73,13 +78,13 @@ public record ProductQuery(
 
     /** No filters, first page. */
     public static ProductQuery none() {
-        return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null);
     }
 
     /** The same query restricted to one store ({@code /stores/{slug}/products}). */
     public ProductQuery inStore(String storeSlug) {
-        return new ProductQuery(q, category, List.of(storeSlug), metal, fineness, minWeight, maxWeight, minPrice,
+        return new ProductQuery(q, category, List.of(storeSlug), kind, metal, fineness, minWeight, maxWeight, minPrice,
                 maxPrice, verified, inStock, city, shape, minCarat, maxCarat, color, clarity, sort, page, size);
     }
 

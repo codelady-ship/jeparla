@@ -3,6 +3,8 @@ package az.jeparla.merchant;
 import az.jeparla.common.persistence.LongIdEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
@@ -23,6 +25,11 @@ class ImageUploadSlot extends LongIdEntity {
 
     @Column(name = "store_id", nullable = false, updatable = false)
     private Long storeId;
+
+    /** Gallery photo or evidence photo kind (V21); the attach checks it. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kind", nullable = false, updatable = false)
+    private ImageUploadKind kind = ImageUploadKind.GALLERY;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -45,6 +52,16 @@ class ImageUploadSlot extends LongIdEntity {
         this.storeId = storeId;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
+    }
+
+    ImageUploadSlot(String storageKey, long productId, long storeId, ImageUploadKind kind, Instant createdAt,
+            Instant expiresAt) {
+        this(storageKey, productId, storeId, createdAt, expiresAt);
+        this.kind = kind;
+    }
+
+    ImageUploadKind getKind() {
+        return kind;
     }
 
     String getStorageKey() {
