@@ -15,6 +15,7 @@ import { StoreProducts } from "@/components/stores/store-products";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
+import { Link } from "@/i18n/navigation";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
@@ -56,9 +57,10 @@ export default async function StorePage({
   const { slug } = await params;
   const store = await api.getStore(slug);
   if (!store) notFound();
-  const [t, tp, locale, share] = await Promise.all([
+  const [t, tp, tv, locale, share] = await Promise.all([
     getTranslations("Stores"),
     getTranslations("Product"),
+    getTranslations("Verified"),
     getLocale(),
     shareLabels(),
   ]);
@@ -85,6 +87,15 @@ export default async function StorePage({
               {isVerified(store.verification) && <Badge variant="gold">{tp("verified")}</Badge>}
               {checks.length > 0 && !isVerified(store.verification) && (
                 <span className="text-muted-foreground">{t("sellerVerified")}</span>
+              )}
+              {checks.length > 0 && (
+                <Link
+                  href="/verified"
+                  prefetch={false}
+                  className="link-underline text-muted-foreground"
+                >
+                  {tv("title")}
+                </Link>
               )}
               <span className="text-muted-foreground">
                 {t("productCount", { count: store.productCount })}

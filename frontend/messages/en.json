@@ -70,7 +70,8 @@
     "privacy": "Privacy policy",
     "terms": "Terms of use",
     "tagline": "Jewelry stores of Azerbaijan in one place.",
-    "rights": "© Jeparla. All rights reserved."
+    "rights": "© Jeparla. All rights reserved.",
+    "howWeVerify": "How we verify"
   },
   "Errors": {
     "notFoundTitle": "Page not found",
@@ -253,7 +254,8 @@
       "details": "Details (optional)",
       "submit": "Send",
       "unavailable": "Sending reports will be available soon. Nothing is sent yet."
-    }
+    },
+    "howWeVerify": "How we verify"
   },
   "Stores": {
     "title": "Stores",
@@ -1245,5 +1247,70 @@
     "copy": "Copy link",
     "copied": "Link copied",
     "copyFailed": "Could not copy the link"
+  },
+  "Verified": {
+    "title": "How we verify",
+    "description": "What the Jeparla Verified badge means and what it does not: seller, document and physical expertise checks, the complaint process and the seller code of conduct.",
+    "lead": "\"Jeparla Verified\" is not one check but three. Each is shown separately on product and store pages. Here we say plainly what each check covers and what it does not.",
+    "badgeRule": "The badge appears only when both the seller check and the document check have passed.",
+    "checksTitle": "Three checks",
+    "what": "What is checked",
+    "who": "Who checks",
+    "not": "What is not checked",
+    "checks": {
+      "seller": {
+        "title": "Seller",
+        "what": "That the store is real: name, address, contact number and tax ID (VÖEN) or sole trader registration.",
+        "who": "The Jeparla team, by hand.",
+        "not": "It does not check service quality or individual sales."
+      },
+      "documents": {
+        "title": "Documents",
+        "what": "Documents the seller uploads: registration certificate, VÖEN certificate or hallmark stamp document. Documents are stored privately and never shown publicly.",
+        "who": "The Jeparla team, by hand; every decision is logged.",
+        "not": "It does not confirm the fineness and weight of each product separately."
+      },
+      "expertise": {
+        "title": "Physical expertise",
+        "what": "An expert looks at the product itself: fineness, weight and stones.",
+        "who": "An independent expert or laboratory. Expertise was done only where the product shows \"Verified\".",
+        "not": "We do not claim a product marked \"Not performed\" was physically checked."
+      }
+    },
+    "limitsTitle": "What verification does not mean",
+    "limits": "No check is a full guarantee. Before buying, check the hallmark, the weight and the receipt in the store. The sale and payment are between the store and the buyer.",
+    "complaintTitle": "What happens after a complaint",
+    "complaint": {
+      "1": "On the product page you choose a reason under \"Report\" and add a note. No account needed.",
+      "2": "The complaint goes to the admin queue; the team checks the product, the store and the documents again.",
+      "3": "If needed, the product is hidden or returned to the seller for correction. For serious or repeated violations the store can be suspended."
+    },
+    "responseTime": "We do not give a response time yet: we will only publish one we can actually keep.",
+    "codeTitle": "Seller code of conduct",
+    "codeIntro": "This is what we expect from stores selling on Jeparla. Violations are checked through complaints.",
+    "code": {
+      "1": "Fineness and weight are stated correctly and match the product's hallmark.",
+      "2": "No unhallmarked precious metal items are sold.",
+      "3": "If the product and terms have not changed, the buyer is not quoted a higher price than shown on Jeparla.",
+      "4": "Stones are described honestly: natural, lab-grown or imitation; certificate numbers are given correctly.",
+      "5": "Photos show the actual product; AI-generated images are labelled.",
+      "6": "No fake reviews, fake discounts or invented numbers.",
+      "7": "The buyer's contact details are used only to answer them and for the sale."
+    },
+    "faqTitle": "Questions",
+    "faq": {
+      "meaning": {
+        "q": "What does the Jeparla Verified badge mean?",
+        "a": "It shows that the store passed the seller check and the document check. Physical expertise is a separate status shown on each product."
+      },
+      "guarantee": {
+        "q": "Is the badge a guarantee?",
+        "a": "No. Checks lower the risk but are not a full guarantee. Before buying, check the hallmark and weight and ask for a receipt."
+      },
+      "report": {
+        "q": "What should I do if a product looks suspicious?",
+        "a": "Press \"Report\" on the product page. The team checks the product and the store again."
+      }
+    }
   }
 }
