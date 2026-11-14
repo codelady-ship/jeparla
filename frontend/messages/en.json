@@ -71,7 +71,8 @@
     "privacy": "Privacy policy",
     "terms": "Terms of use",
     "tagline": "Jewelry stores of Azerbaijan in one place.",
-    "rights": "© Jeparla. All rights reserved."
+    "rights": "© Jeparla. All rights reserved.",
+    "calculator": "Gold calculator"
   },
   "Errors": {
     "notFoundTitle": "Page not found",
@@ -1251,7 +1252,8 @@
     "perGram": "1 gram",
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
-    "empty": "Today's price has not arrived yet."
+    "empty": "Today's price has not arrived yet.",
+    "calculatorLink": "Calculate the metal value of a piece"
   },
   "Hero": {
     "label": "Jeparla: jewelry collections",
@@ -1285,5 +1287,51 @@
     "copy": "Copy link",
     "copied": "Link copied",
     "copyFailed": "Could not copy the link"
+  },
+  "Calculator": {
+    "title": "Gold and silver calculator",
+    "description": "Today's metal value of gold and silver by weight and fineness, in manat, at the daily rate of the Central Bank of Azerbaijan.",
+    "intro": "Enter the weight and fineness of a piece to see what its metal is worth today at the rate of the Central Bank of Azerbaijan (CBAR).",
+    "formLabel": "Metal value calculation",
+    "weight": "Weight (grams)",
+    "weightHint": "For example 4.2 or 4,2; at most 3 decimals.",
+    "metal": "Metal",
+    "fineness": "Fineness",
+    "submit": "Calculate",
+    "resultLabel": "Metal value",
+    "prompt": "Enter the weight to see the metal value.",
+    "resultSummary": "{weight}, {metal} {fineness}",
+    "gramPrice": "{metal} {fineness}, 1 gram: {price}",
+    "purePrice": "CBAR price ({metal}, pure metal): {gram} per gram, {ounce} per troy ounce",
+    "weekendNote": "On weekends and holidays the last rate CBAR published is used.",
+    "notShopPrice": "This is the value of the metal only, not a shop price: workmanship, stones and the store's margin are extra.",
+    "products": "See {metal} {fineness} jewelry in the catalog",
+    "errors": {
+      "empty": "Enter the weight.",
+      "format": "Enter the weight as a number, for example 4.2.",
+      "notPositive": "The weight must be greater than zero.",
+      "tooPrecise": "Use at most 3 decimals (down to a milligram).",
+      "tooLarge": "The weight cannot be more than 10,000 grams."
+    },
+    "unavailable": "Metal prices could not be loaded right now, so no value is shown. Check again a little later.",
+    "noPrices": "Today's CBAR price has not arrived yet, so no value is shown.",
+    "loading": "Loading metal prices",
+    "howTitle": "How the value is calculated",
+    "howText": "Metal value = weight in grams × fineness ÷ 1000 × CBAR price of 1 gram of pure metal. CBAR publishes metal rates in manat per troy ounce (31.1034768 g); we convert them to grams and round the result to the nearest qəpik.",
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "price": {
+        "q": "Why is a shop price higher than the metal value?",
+        "a": "A shop price also includes workmanship, stones, the store's margin and other costs. The calculator shows only the value of the metal in the piece."
+      },
+      "fineness": {
+        "q": "What does fineness 585 mean?",
+        "a": "Fineness is the share of pure metal in parts per thousand: 585 gold is 58.5% pure gold, 925 silver is 92.5% pure silver."
+      },
+      "source": {
+        "q": "Where do the prices come from?",
+        "a": "From the daily precious metal rates of the Central Bank of Azerbaijan (CBAR). On weekends and holidays the last published rate is used."
+      }
+    }
   }
 }

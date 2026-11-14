@@ -18,6 +18,7 @@ const COLUMNS = [
       { href: "/products", label: "Nav.catalog" },
       { href: "/stores", label: "Nav.stores" },
       { href: "/prices", label: "Footer.metalPrices" },
+      { href: "/calculator", label: "Footer.calculator" },
     ],
   },
   {
