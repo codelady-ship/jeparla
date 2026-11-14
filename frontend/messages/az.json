@@ -1245,5 +1245,24 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "Guides": {
+    "title": "Bələdçilər",
+    "metaTitle": "Zərgərlik bələdçiləri: qızıl, brilyant, əyar, gümüş",
+    "description": "Qızılın əyarı, qiymətin hesablanması, brilyantın 4C-si, əyar damğasının yoxlanması və gümüşə qulluq haqqında mənbəli bələdçilər.",
+    "intro": "Zərgərlik alarkən ən çox verilən suallara qısa və mənbəli cavablar. Hər bələdçi qısa cavabla başlayır və istifadə olunan mənbələrlə bitir.",
+    "navLabel": "Bələdçilər",
+    "breadcrumb": "Naviqasiya yolu",
+    "readGuide": "Bələdçini oxu",
+    "author": "Müəllif",
+    "authorName": "Jeparla redaksiyası",
+    "published": "Dərc olunub",
+    "updated": "Yenilənib",
+    "shortAnswer": "Qısa cavab",
+    "toc": "Bu səhifədə",
+    "sources": "Mənbələr",
+    "sourcesNote": "Bələdçi yazılarkən hər mənbə açılıb yoxlanılıb. Burada qiymət göstərilmir: metal qiymətləri hər gün dəyişir.",
+    "more": "Digər bələdçilər",
+    "external": "başqa saytda yeni pəncərədə açılır"
   }
 }
