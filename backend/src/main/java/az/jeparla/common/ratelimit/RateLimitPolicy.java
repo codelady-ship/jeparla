@@ -57,6 +57,18 @@ public enum RateLimitPolicy {
      */
     CONTACT_IP("contact-ip", 60, Duration.ofHours(1)),
     /**
+     * Shared-link visits counted from one IP address over all stores (#100). Visits over the limit are not
+     * counted (no error), so a script cannot inflate a store's referral statistics.
+     */
+    REFERRAL_IP("referral-ip", 30, Duration.ofHours(1)),
+    /**
+     * One counted visit per IP address, store and source in the window (#100): reloading the page or opening the
+     * link again is the same visit. The limit stays 1; only the window is meant to be configured.
+     */
+    REFERRAL_VISIT("referral-visit", 1, Duration.ofMinutes(30)),
+    /** New share links asked for by one seller account (#100): every one breaks the printed QR codes. */
+    SHARE_REGENERATE_ACCOUNT("share-regenerate-account", 5, Duration.ofDays(1)),
+    /**
      * Searches and suggestions from one IP address (#38, PLAN 5.13): generous for people typing in
      * the header box (also behind a shared mobile carrier address), but a script cannot run ranked
      * queries without limit. CDN hits never reach the API, so they are not counted.
