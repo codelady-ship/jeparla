@@ -74,7 +74,8 @@
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
     "rights": "© Jeparla. Bütün hüquqlar qorunur.",
     "calculator": "Qızıl kalkulyatoru",
-    "cookies": "Cookie qaydası"
+    "cookies": "Cookie qaydası",
+    "howWeVerify": "Necə yoxlayırıq"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -282,7 +283,8 @@
       "details": "Ətraflı (istəyə bağlı)",
       "submit": "Göndər",
       "unavailable": "Şikayət göndərmək tezliklə aktiv olacaq. Hələlik heç nə göndərilmir."
-    }
+    },
+    "howWeVerify": "Necə yoxlayırıq"
   },
   "Stores": {
     "title": "Mağazalar",
@@ -1930,6 +1932,71 @@
       "fineness": "Təmiz metalın qram qiyməti əyara vurulur: 585 əyar qızılda 58,5% qızıl var, ona görə onun qram qiyməti təmiz metalın qiymətinin 0,585 hissəsidir. Nəticə qəpiyə qədər yuvarlaqlaşdırılır.",
       "weekend": "Həftəsonu və bayram günlərində AMB yeni məzənnə dərc etmir, ona görə son dərc olunmuş məzənnə qüvvədə qalır; yuxarıdakı tarix həmin məzənnənin tarixidir.",
       "jewelry": "Bunlar zərgərlik məmulatının yox, metalın dəyəridir. Məmulatın qiymətinə işçilik, daşlar və mağazanın əlavəsi də daxildir; yekun qiyməti mağaza təsdiqləyir."
+    }
+  },
+  "Verified": {
+    "title": "Necə yoxlayırıq",
+    "description": "Jeparla Verified nişanı nə deməkdir və nə demək deyil: satıcı, sənəd və fiziki ekspertiza yoxlamaları, şikayət prosesi və satıcının davranış kodeksi.",
+    "lead": "\"Jeparla Verified\" bir yox, üç ayrı yoxlamadır. Hər biri məhsul və mağaza səhifəsində ayrıca göstərilir. Burada hər yoxlamanın nəyi əhatə etdiyini və nəyi etmədiyini açıq yazırıq.",
+    "badgeRule": "Nişan yalnız satıcı və sənəd yoxlamalarının ikisi də keçəndə görünür.",
+    "checksTitle": "Üç yoxlama",
+    "what": "Nə yoxlanılır",
+    "who": "Kim yoxlayır",
+    "not": "Nə yoxlanılmır",
+    "checks": {
+      "seller": {
+        "title": "Satıcı",
+        "what": "Mağazanın real olması: adı, ünvanı, əlaqə nömrəsi və VÖEN və ya fərdi sahibkar qeydiyyatı.",
+        "who": "Jeparla komandası, əl ilə.",
+        "not": "Mağazanın xidmət keyfiyyətini və ayrı-ayrı satışları yoxlamır."
+      },
+      "documents": {
+        "title": "Sənədlər",
+        "what": "Satıcının yüklədiyi sənədlər: qeydiyyat şəhadətnaməsi, VÖEN arayışı və ya əyar möhürü sənədi. Sənədlər şəxsi saxlanılır və ictimai göstərilmir.",
+        "who": "Jeparla komandası, əl ilə; hər qərar qeydə alınır.",
+        "not": "Hər məhsulun əyarını və çəkisini ayrıca təsdiq etmir."
+      },
+      "expertise": {
+        "title": "Fiziki ekspertiza",
+        "what": "Məhsulun özünə mütəxəssisin baxması: əyar, çəki və daşlar.",
+        "who": "Müstəqil mütəxəssis və ya laboratoriya. Ekspertiza yalnız məhsulda \"Yoxlanılıb\" kimi göstərildikdə aparılıb.",
+        "not": "\"Aparılmayıb\" yazılan məhsulun fiziki yoxlandığını demirik."
+      }
+    },
+    "limitsTitle": "Yoxlama nə demək deyil",
+    "limits": "Heç bir yoxlama tam zəmanət deyil. Almadan əvvəl məhsulun damğasını, çəkisini və çekini mağazada yoxlayın. Satış və ödəniş mağaza ilə alıcı arasındadır.",
+    "complaintTitle": "Şikayət olanda nə baş verir",
+    "complaint": {
+      "1": "Məhsul səhifəsində \"Şikayət et\" ilə səbəbi seçib qeyd yazırsınız. Hesab tələb olunmur.",
+      "2": "Şikayət admin növbəsinə düşür; komanda məhsulu, mağazanı və sənədləri yenidən yoxlayır.",
+      "3": "Lazım olsa məhsul gizlədilir və ya satıcıya düzəlişə qaytarılır. Ciddi və ya təkrarlanan pozuntuda mağaza dayandırıla bilər."
+    },
+    "responseTime": "Cavab müddəti üçün hələlik rəqəm vermirik: yalnız həqiqətən tətbiq edə bildiyimiz müddəti yazacağıq.",
+    "codeTitle": "Satıcının davranış kodeksi",
+    "codeIntro": "Jeparla-da satan mağazalardan bunu gözləyirik. Pozuntu şikayətlə yoxlanılır.",
+    "code": {
+      "1": "Əyar və çəki düzgün yazılır və məhsulun damğası ilə uyğun gəlir.",
+      "2": "Damğasız qiymətli metal məhsul satılmır.",
+      "3": "Məhsul və şərtlər dəyişməyibsə, alıcıya Jeparla-da göstəriləndən yüksək qiymət deyilmir.",
+      "4": "Daşlar dürüst təsvir olunur: təbii, laboratoriyada yetişdirilmiş və ya imitasiya; sertifikat varsa nömrəsi düzgün yazılır.",
+      "5": "Şəkillər satılan məhsulun özünü göstərir; AI ilə yaradılmış şəkil işarələnir.",
+      "6": "Saxta rəy, saxta endirim və uydurma rəqəm yoxdur.",
+      "7": "Alıcının əlaqə məlumatı yalnız onun sualına cavab və satış üçün istifadə olunur."
+    },
+    "faqTitle": "Suallar",
+    "faq": {
+      "meaning": {
+        "q": "Jeparla Verified nişanı nə deməkdir?",
+        "a": "Mağazanın satıcı yoxlamasından və sənəd yoxlamasından keçdiyini göstərir. Fiziki ekspertiza ayrıca statusdur və hər məhsulda ayrıca göstərilir."
+      },
+      "guarantee": {
+        "q": "Nişan zəmanətdir?",
+        "a": "Xeyr. Yoxlama riski azaldır, amma tam zəmanət deyil. Almadan əvvəl damğanı və çəkini yoxlayın və çek istəyin."
+      },
+      "report": {
+        "q": "Şübhəli məhsul görsəm nə edim?",
+        "a": "Məhsul səhifəsində \"Şikayət et\" düyməsini basın. Komanda məhsulu və mağazanı yenidən yoxlayır."
+      }
     }
   }
 }

@@ -336,7 +336,16 @@ export async function ProductDetails({
           <h2 id="verification" className="mb-1 text-xl">
             {t("verificationTitle")}
           </h2>
-          <p className="mb-3 text-sm text-muted-foreground">{t("verificationText")}</p>
+          <p className="mb-3 text-sm text-muted-foreground">
+            {t("verificationText")}{" "}
+            <Link
+              href="/verified"
+              prefetch={false}
+              className="link-underline font-medium text-foreground"
+            >
+              {t("howWeVerify")}
+            </Link>
+          </p>
           <ul className="flex flex-col gap-2">
             {(["seller", "documents", "expertise"] as const).map((k) => {
               const status = p.verification[k];
