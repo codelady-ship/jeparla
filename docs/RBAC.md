@@ -113,6 +113,10 @@ gizli məlumat açmır; issue #34-ün "ikinci istifadəçi" testi 403 gözləyir
 - `/api/v1/admin/documents/**` (`ADMIN`): növbə, detal, `POST /{id}/view` (5 dəqiqəlik presigned GET,
   `DOCUMENT_VIEWED` auditi), `POST /{id}/decision` (`APPROVE`, `REJECT`, `REQUEST_CHANGES`; imtinada səbəb
   kateqoriyası məcburidir). Yalnız təsdiqlənmiş sənəd yoxlamanı `VERIFIED` edir.
+- Dörd göz (#138, `docs/legal/sellers-liability.md` 3.1): `AUTHENTICITY` (saxtalıq şübhəsi) səbəbli rədd yalnız
+  dayandırma sorğusu açır; mağazanı yalnız **başqa** admin `/api/v1/admin/store-suspensions/{id}/decision` ilə
+  dayandırır (`CONFIRM`) və ya sorğunu bağlayır (`DISMISS`). Bir nəfər mağazanı bu yolla dayandıra bilməz
+  (`409 verification.four_eyes`; `store_suspension_requests_four_eyes` CHECK-i bazada da yoxlayır).
 - Maraq toqquşması: admin öz mağazasının sənədinə, statusuna və məhsuluna qərar vermir (403).
 - `/api/v1/admin/stores`, `/admin/products`, `/admin/audit` (`ADMIN`): mağaza statusu (`REJECTED`/`BLOCKED`
   üçün ən az 10 simvol səbəb), satıcı yoxlaması, məhsul qərarı (`APPROVE`; `RETURN`/`DEACTIVATE` səbəblə).
@@ -274,7 +278,7 @@ Redis-də deyil (#151).
 | `referral-ip` | 30 / saat | botdan olmayan, mənbəli hər baxış | IP: `POST /stores/{slug}/visits` (#100), bütün mağazalar üzrə; artığı 204 alır, sayılmır |
 | `referral-visit` | 1 / 30 dəq. | eyni baxış | IP + mağaza + mənbə: yeniləmə və linki təkrar açmaq bir baxışdır |
 | `share-regenerate-account` | 5 / gün | hər yeni link | user id: `POST /merchant/store/share/regenerate` (#100); 429 |
-| `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`) çağıranda bütün ziyarətçilər serverin IP-si ilə sayılır: #41-də limit buna görə seçilməlidir |
+| `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`, giriş) gələn sorğu `JEPARLA_FRONTEND_TOKEN` ilə ziyarətçinin IP-sini `X-Jeparla-Client-Ip`-də göndərir və o IP ilə sayılır (#41); token yoxdursa bütün ziyarətçilər frontend serverinin IP-si ilə sayılır |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
 

@@ -20,6 +20,11 @@ export const ADMIN_ERRORS = [
   "sameRole",
   "lastAdmin",
   "largeChange",
+  "codeRequired",
+  "rateLimited",
+  "ownsStore",
+  "resetNotAllowed",
+  "fourEyes",
 ] as const;
 
 export type AdminError = (typeof ADMIN_ERRORS)[number];

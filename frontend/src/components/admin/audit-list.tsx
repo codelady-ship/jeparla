@@ -31,7 +31,12 @@ export function AuditList({
   );
 
   const when = (r: AuditEntry) => `${shortDate(r.at)} ${time(r.at)}`;
-  const action = (r: AuditEntry) => t(`auditAction.${r.action}`);
+  // Demo rows carry a message key, API rows an action code such as STORE_APPROVED.
+  const action = (r: AuditEntry) => {
+    const demo = `auditAction.${r.action}` as "auditAction.approve";
+    const code = `auditCode.${r.action}` as "auditCode.STORE_APPROVED";
+    return t.has(demo) ? t(demo) : t.has(code) ? t(code) : r.action;
+  };
 
   return (
     <div className="flex flex-col gap-4">

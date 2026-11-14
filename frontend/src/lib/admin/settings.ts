@@ -12,7 +12,6 @@ import { REASON_MAX, REASON_MIN } from "./decisions";
 
 const METALS = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"] as const;
 export const ROLES = ["USER", "MERCHANT", "ADMIN"] as const;
-export const SYNONYM_LOCALES = ["az", "en", "ru"] as const;
 
 const reason = z.string().trim().min(REASON_MIN, "reasonRequired").max(REASON_MAX, "reasonTooLong");
 
@@ -35,23 +34,18 @@ export const finenessSchema = z.object({
   label: text(20),
 });
 
-/** One word or short phrase per synonym; the form sends them comma separated. */
-export const synonymSchema = z.object({
-  locale: z.enum(SYNONYM_LOCALES),
-  term: text(40),
-  synonyms: z
-    .array(z.string().trim().min(1).max(40, "tooLong"))
-    .min(1, "required")
-    .max(10, "tooMany"),
-});
-
-export const splitSynonyms = (raw: string) =>
-  raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+/** One pair: search treats the two words as the same query, both ways. */
+export const synonymSchema = z
+  .object({ term: text(60), synonym: text(60) })
+  .refine((v) => v.term.toLowerCase() !== v.synonym.toLowerCase(), {
+    path: ["synonym"],
+    message: "invalid",
+  });
 
 export const roleSchema = z.object({ role: z.enum(ROLES), reason });
+
+/** Block or unblock an account; the reason goes to the audit log. */
+export const userStatusSchema = z.object({ status: z.enum(["ACTIVE", "BLOCKED"]), reason });
 
 /** AZN per troy ounce, at most 2 decimals; NUMERIC on the backend, never a float. */
 const DECIMAL = /^\d{1,7}(\.\d{1,2})?$/;

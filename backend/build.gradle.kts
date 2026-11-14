@@ -60,6 +60,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // Store share link QR code, rendered as SVG on the server so the frontend ships no QR library (#100).
     implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
+    // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
