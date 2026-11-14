@@ -39,7 +39,7 @@ export async function AiStudioPage({ id }: { id: string }) {
         <h1 className="text-3xl">{t("title")}</h1>
         <p className="text-muted-foreground">{t("intro")}</p>
       </div>
-      {!status.configured && (
+      {!status.configured && !status.studioLook && (
         <div
           role="status"
           className="flex gap-3 rounded-lg border border-gold/50 bg-muted p-4 text-sm"
@@ -58,6 +58,7 @@ export async function AiStudioPage({ id }: { id: string }) {
         <li>{t("rules.original")}</li>
         <li>{t("rules.approval")}</li>
         <li>{t("rules.badge")}</li>
+        <li>{t("rules.studioLook")}</li>
       </ul>
       <MerchantIntl>
         <AiStudio

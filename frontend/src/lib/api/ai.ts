@@ -24,6 +24,7 @@ export const NOT_CONFIGURED: AiStatus = {
   dailyLimit: 10,
   usedToday: 0,
   maxAttempts: 3,
+  studioLook: false,
 };
 
 export function aiStudioApi(session: Session): AiStudioApi {

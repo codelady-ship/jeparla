@@ -9,7 +9,14 @@ import { Button } from "@/components/ui/button";
 import { sendJson } from "@/lib/merchant/client";
 import { aiErrorCode, isRunning, quotaLeft } from "@/lib/merchant/ai";
 import { notices } from "@/lib/notice";
-import { AI_JOB_KINDS, type AiJob, type AiJobKind, type AiModel, type AiStatus } from "@/types/ai";
+import {
+  AI_JOB_KINDS,
+  kindAvailable,
+  type AiJob,
+  type AiJobKind,
+  type AiModel,
+  type AiStatus,
+} from "@/types/ai";
 
 export type AiSourceImage = { id: string; url: string };
 
@@ -50,13 +57,16 @@ export function AiStudio({
 }) {
   const t = useTranslations("Merchant.ai");
   const [source, setSource] = useState(images[0]?.id ?? "");
-  const [kind, setKind] = useState<AiJobKind>(kinds[0] ?? "AI_PHOTOSHOOT");
+  const [kind, setKind] = useState<AiJobKind>(
+    kinds.find((k) => kindAvailable(status, k)) ?? kinds[0] ?? "AI_PHOTOSHOOT",
+  );
   const [modelId, setModelId] = useState<number | null>(models[0]?.id ?? null);
   const [jobs, setJobs] = useState(initialJobs);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const left = quotaLeft(status.dailyLimit, status.usedToday);
-  const disabled = !status.configured || left === 0 || images.length === 0;
+  const anyAvailable = kinds.some((k) => kindAvailable(status, k));
+  const disabled = !kindAvailable(status, kind) || left === 0 || images.length === 0;
 
   function message(code: string | undefined) {
     const known = aiErrorCode(code);
@@ -111,7 +121,7 @@ export function AiStudio({
         className="flex flex-col gap-6"
         aria-describedby="ai-rules"
       >
-        <fieldset className="flex flex-col gap-3" disabled={!status.configured}>
+        <fieldset className="flex flex-col gap-3" disabled={!anyAvailable}>
           <legend className="mb-2 font-semibold">{t("sourceLegend")}</legend>
           {images.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("noImages")}</p>
@@ -150,7 +160,7 @@ export function AiStudio({
           )}
         </fieldset>
 
-        <fieldset className="flex flex-col gap-3" disabled={!status.configured}>
+        <fieldset className="flex flex-col gap-3" disabled={!anyAvailable}>
           <legend className="mb-2 font-semibold">{t("kindLegend")}</legend>
           <div className="grid gap-3 sm:grid-cols-2">
             {kinds.map((k) => (
@@ -163,6 +173,7 @@ export function AiStudio({
                   name="kind"
                   value={k}
                   checked={kind === k}
+                  disabled={!kindAvailable(status, k)}
                   onChange={() => setKind(k)}
                   className="mt-1 accent-gold"
                 />
@@ -276,9 +287,11 @@ export function AiStudio({
                               className="object-cover"
                               unoptimized
                             />
-                            <span className="absolute top-1 left-1 rounded-sm bg-primary px-1.5 py-0.5 text-xs font-medium text-primary-foreground">
-                              {t("aiBadge")}
-                            </span>
+                            {asset.aiGenerated && (
+                              <span className="absolute top-1 left-1 rounded-sm bg-primary px-1.5 py-0.5 text-xs font-medium text-primary-foreground">
+                                {t("aiBadge")}
+                              </span>
+                            )}
                           </span>
                           <Button
                             type="button"

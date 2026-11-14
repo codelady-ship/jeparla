@@ -725,7 +725,20 @@
         "tooMany": "Ən çox {max} şəkil əlavə etmək olar.",
         "failed": "{name}: şəkli oxumaq alınmadı.",
         "processing": "Şəkillər hazırlanır",
-        "added": "{count, plural, one {# şəkil əlavə olundu} other {# şəkil əlavə olundu}}"
+        "added": "{count, plural, one {# şəkil əlavə olundu} other {# şəkil əlavə olundu}}",
+        "guide": {
+          "title": "Telefonla yaxşı şəkil: 5 addım",
+          "light": "Gün işığında, pəncərə yanında çəkin; flaş və sarı lampa işığı rəngi dəyişir.",
+          "background": "Sadə, açıq və bir rəngli fon seçin (ağ kağız, krem parça).",
+          "angle": "Əşyanı tam görünən bucaqdan çəkin; üzük və sırğa üçün bir şəkil də yandan.",
+          "focus": "Ekranda əşyaya toxunub fokuslayın, telefonu tərpətməyin.",
+          "scale": "Əşya kadrın böyük hissəsini tutsun; zoom yerinə yaxınlaşın."
+        },
+        "quality": {
+          "small": "{name}: şəkil kiçikdir (qısa tərəfi 800 pikseldən az), məhsul səhifəsində bulanıq görünə bilər.",
+          "dark": "{name}: şəkil qaranlıqdır. Daha işıqlı yerdə çəkməyi yoxlayın.",
+          "blurry": "{name}: şəkil bulanıq görünür. Fokuslayıb yenidən çəkməyi yoxlayın."
+        }
       },
       "variants": {
         "title": "Variant {n}",
@@ -882,7 +895,8 @@
       "rules": {
         "original": "Orijinal şəkil dəyişmir və həmişə birinci qalır.",
         "approval": "Siz təsdiqləməyincə heç bir nəticə dərc olunmur.",
-        "badge": "Təsdiqlənmiş hər AI şəkildə \"AI ilə yaradılıb\" nişanı görünür."
+        "badge": "Təsdiqlənmiş hər AI şəkildə \"AI ilə yaradılıb\" nişanı görünür.",
+        "studioLook": "Studiya görünüşü əşyanı yenidən çəkmir, yalnız fonu təmizləyir: belə şəkil \"AI ilə yaradılıb\" nişanı olmadan dərc olunur. Orijinal şəkil də qalır."
       },
       "sourceLegend": "Orijinal şəkil",
       "sourceAlt": "Orijinal şəkil {n}",
@@ -896,6 +910,10 @@
         "VIRTUAL_TRY_ON": {
           "title": "Model üzərində",
           "text": "Əşya AI modelin üzərində (real şəxs deyil), taxıldığı hissəyə fokusla."
+        },
+        "STUDIO_LOOK": {
+          "title": "Studiya görünüşü",
+          "text": "Öz şəkliniz: fon silinir, krem fonda mərkəzə qoyulur, yumşaq kölgə, 4:5. Əşya dəyişmir, AI ilə yaradılmır."
         }
       },
       "create": "Yarat",

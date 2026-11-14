@@ -3,7 +3,8 @@
  * backend az.jeparla.ai.dto. No provider ships with the site: until the owner
  * connects one, `configured` is false and job requests answer 503.
  */
-export type AiJobKind = "AI_PHOTOSHOOT" | "VIRTUAL_TRY_ON";
+/** STUDIO_LOOK (#119): the seller's photo cleaned up (background, crop, shadow), not generated. */
+export type AiJobKind = "AI_PHOTOSHOOT" | "VIRTUAL_TRY_ON" | "STUDIO_LOOK";
 
 export type AiJobStatus =
   "QUEUED" | "PROCESSING" | "REVIEW_REQUIRED" | "APPROVED" | "FAILED" | "CANCELLED";
@@ -14,6 +15,8 @@ export type AiStatus = {
   dailyLimit: number;
   usedToday: number;
   maxAttempts: number;
+  /** STUDIO_LOOK has its own non-generative processor (#119), on or off separately. */
+  studioLook: boolean;
 };
 
 export type AiAsset = {
@@ -23,6 +26,8 @@ export type AiAsset = {
   width: number;
   height: number;
   productImageId: number | null;
+  /** False for a STUDIO_LOOK clean-up: published without the AI label (#119). */
+  aiGenerated: boolean;
 };
 
 export type AiJob = {
@@ -40,7 +45,15 @@ export type AiJob = {
   assets: AiAsset[];
 };
 
-export const AI_JOB_KINDS: readonly AiJobKind[] = ["AI_PHOTOSHOOT", "VIRTUAL_TRY_ON"];
+export const AI_JOB_KINDS = [
+  "STUDIO_LOOK",
+  "AI_PHOTOSHOOT",
+  "VIRTUAL_TRY_ON",
+] as const satisfies readonly AiJobKind[];
+
+/** Whether a kind can take jobs: STUDIO_LOOK runs on its own processor. */
+export const kindAvailable = (status: AiStatus, kind: AiJobKind) =>
+  kind === "STUDIO_LOOK" ? status.studioLook : status.configured;
 
 /** Error codes the API may return or store on a job; each has a message in Merchant.ai.errors. */
 export const AI_ERROR_CODES = [
