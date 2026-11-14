@@ -58,6 +58,8 @@ dependencies {
     implementation("software.amazon.awssdk:url-connection-client")
     // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    // Error tracking (#56): Sentry Free. Off unless SENTRY_DSN is set (env only); no personal data is sent.
+    implementation("io.sentry:sentry-spring-boot-4-starter:8.60.0")
     // Store share link QR code, rendered as SVG on the server so the frontend ships no QR library (#100).
     implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
     // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.

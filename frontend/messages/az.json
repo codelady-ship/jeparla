@@ -73,7 +73,8 @@
     "terms": "İstifadə şərtləri",
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
     "rights": "© Jeparla. Bütün hüquqlar qorunur.",
-    "calculator": "Qızıl kalkulyatoru"
+    "calculator": "Qızıl kalkulyatoru",
+    "cookies": "Cookie qaydası"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -1784,5 +1785,10 @@
   "SampleData": {
     "label": "Nümunə data",
     "banner": "Bu saytdakı mağazalar, məhsullar və qiymətlər nümunədir, real deyil."
+  },
+  "Legal": {
+    "draftTitle": "Qaralama.",
+    "draftText": "Bu mətn hələ sahib və hüquqşünas tərəfindən təsdiqlənməyib və qüvvədə deyil. Qeyd olunan yerlər doldurulacaq.",
+    "reviewLabel": "Təsdiq gözlənilir:"
   }
 }

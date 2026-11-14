@@ -34,6 +34,7 @@ const COLUMNS = [
     links: [
       { href: "/legal/privacy", label: "Footer.privacy" },
       { href: "/legal/terms", label: "Footer.terms" },
+      { href: "/legal/cookies", label: "Footer.cookies" },
     ],
   },
 ] as const;

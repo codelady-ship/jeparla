@@ -73,7 +73,8 @@
     "terms": "Terms of use",
     "tagline": "Jewelry stores of Azerbaijan in one place.",
     "rights": "© Jeparla. All rights reserved.",
-    "calculator": "Gold calculator"
+    "calculator": "Gold calculator",
+    "cookies": "Cookie notice"
   },
   "Errors": {
     "notFoundTitle": "Page not found",
@@ -1784,5 +1785,10 @@
   "SampleData": {
     "label": "Sample data",
     "banner": "The stores, products and prices on this site are samples, not real."
+  },
+  "Legal": {
+    "draftTitle": "Draft.",
+    "draftText": "This text has not been approved by the owner and a lawyer yet and is not in force. The marked places will be filled in.",
+    "reviewLabel": "Awaiting review:"
   }
 }

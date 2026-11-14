@@ -194,6 +194,20 @@ jeparla:
     # Defaults are in RateLimitPolicy; override one with e.g.
     # policies.login-ip.limit: 20 and policies.login-ip.window: 5m
 
+# Error tracking (#56). Without SENTRY_DSN (local, tests, CI) the SDK stays off. send-default-pii: false keeps
+# IPs, cookies, headers and user ids out of events; request bodies are never attached (seller documents,
+# passwords). Only unhandled errors are sent: no performance tracing, no logs.
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: ${SENTRY_ENVIRONMENT:production}
+  release: ${SENTRY_RELEASE:}
+  send-default-pii: false
+  max-request-body-size: none
+  traces-sample-rate: 0.0
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info
+
 management:
   endpoints:
     web:

@@ -167,6 +167,9 @@ services:
       JEPARLA_S3_SECRET_KEY: ${JEPARLA_S3_SECRET_KEY}
       JEPARLA_S3_PUBLIC_BUCKET: ${JEPARLA_S3_PUBLIC_BUCKET:-jeparla-public}
       JEPARLA_S3_PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
+      # Optional error tracking (#56); empty keeps Sentry off.
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-local}
     ports:
       - "127.0.0.1:8080:8080"
     healthcheck:
