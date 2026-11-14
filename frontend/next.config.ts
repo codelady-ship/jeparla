@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     // Root layout is app/[locale], so unmatched URLs need a standalone 404 page.
     globalNotFound: true,
   },
-  partialPrefetching: true,
+  partialPrefetching: false,
   async rewrites() {
     return {
       beforeFiles: [],
