@@ -103,6 +103,25 @@ shadcn/ui (`base-nova`, Base UI): Button (`gold` variantı əlavə), Badge (`gol
 Card, Dialog, Sheet. Dialog və Sheet-in bağla düyməsinin adı `closeLabel` prop-u ilə ötürülür
 (tərcümə üçün). İkonlar yalnız `lucide-react`, dekorativ ikonlarda `aria-hidden`.
 
+## Məhsul şəkli standartı (#119)
+
+Kataloq bir premium mağaza kimi görünməlidir: bütün məhsul şəkilləri eyni fonda, eyni kəsimdə və eyni işıqda.
+
+- **Fon:** krem `--background` (`#F7F3EA`) və ya çox açıq neytral; kartın fonu ilə eyni rəng,
+  şəkil kartla birləşir. Qara, yaşıl, jurnal və naxışlı fon yoxdur.
+- **Kəsim:** 4:5 portret. Əşya mərkəzdə, kadrın təxminən 70%-i; zəncir və qolbaq kənara toxunmur.
+- **İşıq:** yumşaq, səpələnmiş, ağ balansı neytral (fon krem görünür, boz və ya sarı yox). Əşyanın altında
+  yumşaq kontakt kölgəsi, əks və rekvizit yoxdur, mətn və su nişanı yoxdur.
+- **Format:** WebP (AVIF olarsa daha yaxşı), ən uzun tərəf 2000 px-dən çox deyil; LCP şəkli `priority`.
+- **Dürüstlük:** "Studiya görünüşü" (AI Studio `STUDIO_LOOK`) yalnız fonu silir, mərkəzləyir və kölgə əlavə
+  edir; əşyanın forması, rəngi və daşları dəyişmir, ona görə nişansız dərc olunur. Generativ dəyişiklik
+  (AI fotosessiya, model üzərində) həmişə "AI ilə yaradılıb" nişanı ilə. Orijinal şəkil həmişə qalır.
+- **Satıcı bələdçisi:** məhsul formasının şəkil addımında "Telefonla yaxşı şəkil: 5 addım" (işıq, fon, bucaq,
+  fokus, miqyas) və hər şəkil üçün xəbərdarlıq: qısa tərəf 800 px-dən az, çox qaranlıq, bulanıq
+  (`lib/merchant/photo-quality.ts`). Xəbərdarlıq bloklamır, satıcı qərar verir.
+- Demo fotoların fonunun lokal silinməsi (`@imgly/background-removal-node`) və 390/1440 px-də 12 kartlıq dizayn
+  review ayrıca işdir: hər demo şəkil gözlə yoxlanılır.
+
 ## Hərəkət kitabxanası
 
 Ana səhifə hero-su Remotion-da qurulmuş səhnədir (`video/`): 1-ci akt qısa video (pələnglər gəlib dayanır,

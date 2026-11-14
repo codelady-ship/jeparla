@@ -31,10 +31,16 @@ public class AiAsset extends CreatedEntity {
     @Column(name = "product_image_id")
     private Long productImageId;
 
+    /** Made by a generative provider (#119, V44): the product photo it becomes carries the AI label. */
+    @Column(name = "ai_generated", nullable = false, updatable = false)
+    private boolean aiGenerated = true;
+
     protected AiAsset() {
     }
 
-    AiAsset(long jobId, String storageKey, String contentType, int width, int height, long sizeBytes) {
+    AiAsset(long jobId, String storageKey, String contentType, int width, int height, long sizeBytes,
+            boolean aiGenerated) {
+        this.aiGenerated = aiGenerated;
         this.jobId = jobId;
         this.storageKey = storageKey;
         this.contentType = contentType;
@@ -66,6 +72,10 @@ public class AiAsset extends CreatedEntity {
 
     long getSizeBytes() {
         return sizeBytes;
+    }
+
+    boolean isAiGenerated() {
+        return aiGenerated;
     }
 
     Long getProductImageId() {

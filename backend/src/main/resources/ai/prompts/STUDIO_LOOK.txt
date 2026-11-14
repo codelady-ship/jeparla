@@ -1,0 +1,8 @@
+Clean-up of the seller's own photo of the jewelry item to the catalog standard. Do not generate, redraw or
+retouch the item: its shape, metal colour, stones, engraving, scratches and proportions stay exactly as
+photographed. Only the surroundings change.
+1. Remove the background around the item precisely, keeping thin chains, prongs and gaps.
+2. Place the item on a plain warm cream background (#F7F3EA), centred, filling about 70% of the frame.
+3. Add a soft, neutral contact shadow below the item; no reflections, props, text, logos or watermarks.
+4. Correct white balance only so that the background is neutral cream; do not change the item's colours.
+5. Crop to 4:5 portrait.
