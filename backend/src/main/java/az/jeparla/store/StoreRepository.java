@@ -18,6 +18,12 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("select s from Store s where s.slug = :slug and s.status = az.jeparla.store.StoreStatus.APPROVED")
     Optional<Store> findPublicBySlug(@Param("slug") String slug);
 
+    /** Shareable catalog link {@code /s/<code>} (#100): only APPROVED stores. */
+    @Query("select s from Store s where s.shareCode = :code and s.status = az.jeparla.store.StoreStatus.APPROVED")
+    Optional<Store> findPublicByShareCode(@Param("code") String code);
+
+    boolean existsByShareCode(String shareCode);
+
     /** Public store list. */
     @Query("select s from Store s where s.status = az.jeparla.store.StoreStatus.APPROVED")
     Page<Store> findPublic(Pageable pageable);

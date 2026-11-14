@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
@@ -301,14 +302,18 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .contains("Причина: Срок действия документа истёк.")
                 .contains("VÖEN çıxarışı 2024-cü ildəndir")
                 .contains("voen.pdf")
-                // Where to write (#138): no support address configured in tests, so the help page.
-                .endsWith("Поддержка: страница помощи на сайте, /help")
+                // Where to write (#138): no support address configured in tests, so the help page in the
+                // seller's language (#167).
+                .endsWith("Поддержка: страница помощи на сайте, /ru/help")
                 // No review deadline is promised while there is no appeal flow.
                 .doesNotContain("14 дней");
         assertThat(notification.get("link")).isEqualTo("/merchant/documents");
         Map<String, Object> email = jdbc.queryForMap(
-                "SELECT to_address, language, subject, status FROM email_outbox WHERE notification_id = ?",
+                "SELECT to_address, language, subject, body, status FROM email_outbox WHERE notification_id = ?",
                 notification.get("id"));
+        // The email is read outside the site: the help page as an absolute URL (#167).
+        assertThat((String) email.get("body"))
+                .contains("Поддержка: страница помощи на сайте, http://localhost:3000/ru/help\n\n");
         assertThat((String) email.get("to_address")).endsWith("@jeparla.test");
         assertThat(email.get("language")).isEqualTo("ru");
         assertThat(email.get("subject")).isEqualTo("Документ не принят");
@@ -470,7 +475,7 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.status").value("REJECTED"));
         assertThat(jdbc.queryForObject("SELECT body FROM notifications WHERE user_id = ? AND kind = 'STORE_REJECTED'",
                 String.class, seller.userId())).contains("VÖEN reyestrdə tapılmadı")
-                .endsWith("Dəstək: saytdakı kömək səhifəsi, /help");
+                .endsWith("Dəstək: saytdakı kömək səhifəsi, /az/help");
         mvc.perform(json(post("/api/v1/admin/stores/" + seller.storeId() + "/seller-check"),
                         "{\"decision\": \"VERIFIED\"}").with(admin(adminId)))
                 .andExpect(status().isOk())
@@ -481,5 +486,50 @@ class DocumentApiTests extends MerchantApiTestBase {
                         .param("targetId", String.valueOf(seller.storeId())).with(admin(adminId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].action").value(Matchers.hasItem("STORE_REJECTED")));
+    }
+
+    @Test
+    void aSuspectedForgerySuspendsTheStoreOnlyAfterASecondAdmin() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, true);
+        jdbc.update("UPDATE users SET preferred_locale = 'en' WHERE id = ?", seller.userId());
+        long first = newAdmin();
+        long second = newAdmin();
+        String id = uploadDocument(seller, taxIdUpload(PDF.length));
+        decide(first, id, "{\"decision\": \"REJECT\", \"reason\": \"AUTHENTICITY\"}");
+
+        // One person cannot suspend a store: the rejection only opens a request.
+        assertThat(jdbc.queryForObject("SELECT status FROM stores WHERE id = ?", String.class, seller.storeId()))
+                .isEqualTo("APPROVED");
+        MvcResult queue = mvc.perform(get("/api/v1/admin/store-suspensions").with(admin(second)))
+                .andExpect(status().isOk()).andReturn();
+        List<Integer> ids = JsonPath.read(body(queue), "$.content[?(@.storeId == " + seller.storeId() + ")].id");
+        assertThat(ids).hasSize(1);
+        int requestId = ids.get(0);
+        String decision = "/api/v1/admin/store-suspensions/" + requestId + "/decision";
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\"}").with(admin(first)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("verification.four_eyes"));
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\"}").with(seller.token()))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\", \"note\": \"Möhür uyğun gəlmir\"}")
+                        .with(admin(second)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
+                .andExpect(jsonPath("$.decidedBy").value(second));
+        assertThat(jdbc.queryForObject("SELECT status FROM stores WHERE id = ?", String.class, seller.storeId()))
+                .isEqualTo("BLOCKED");
+        mvc.perform(json(post(decision), "{\"decision\": \"DISMISS\"}").with(admin(second)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("verification.suspension_decided"));
+
+        Map<String, Object> notice = jdbc.queryForMap("SELECT title, body FROM notifications WHERE user_id = ?"
+                + " AND kind = 'STORE_SUSPENDED'", seller.userId());
+        assertThat(notice.get("title")).isEqualTo("Store under additional review");
+        assertThat((String) notice.get("body")).startsWith("We could not verify some of the documents")
+                .doesNotContain("Möhür").doesNotContainIgnoringCase("forged").doesNotContainIgnoringCase("police");
+        // The database refuses a decision by the requester, whatever the application does.
+        assertThatThrownBy(() -> jdbc.update("UPDATE store_suspension_requests SET decided_by = requested_by"
+                + " WHERE id = ?", requestId)).isInstanceOf(DataIntegrityViolationException.class);
     }
 }

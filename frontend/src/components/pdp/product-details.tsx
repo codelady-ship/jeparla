@@ -6,6 +6,7 @@ import {
   MapPin,
   Store as StoreIcon,
 } from "lucide-react";
+import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
@@ -38,7 +39,7 @@ export async function ProductDetails({
   product: Product;
   store: Store | null;
 }) {
-  const [t, tp, tc, format, locale, categories, similar, share] = await Promise.all([
+  const [t, tp, tc, format, locale, categories, similar, share, rates] = await Promise.all([
     getTranslations("Pdp"),
     getTranslations("Product"),
     getTranslations("Common"),
@@ -47,7 +48,10 @@ export async function ProductDetails({
     api.listCategories(),
     api.listProducts({ category: undefined, size: 96 }),
     shareLabels(),
+    // USD/EUR is an extra (#53): without rates the page shows AZN only.
+    api.latestExchangeRates().catch(() => []),
   ]);
+  const rateDate = rates[0]?.date;
   const name = p.name[locale];
   const category = categories.find((c) => c.id === p.categoryId);
   const parent = category?.parentId ? categories.find((c) => c.id === category.parentId) : null;
@@ -75,6 +79,7 @@ export async function ProductDetails({
     whatsappHref: store
       ? whatsappLink(store.whatsapp, t("whatsappMessage", { name, sku: v.sku, url }))
       : "#",
+    approx: approxPrices(v.price.amount, rates, locale),
   }));
   const first = p.variants[0];
 
@@ -170,6 +175,19 @@ export async function ProductDetails({
               priceUpdated: t("priceUpdated"),
               whatsapp: t("whatsapp"),
               metalLinkedNote: p.pricingMode === "METAL_LINKED" ? t("metalLinkedNote") : null,
+              currency: rateDate
+                ? {
+                    label: t("currency"),
+                    note: t("approxNote", {
+                      date: format.dateTime(new Date(`${rateDate}T00:00:00Z`), {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      }),
+                    }),
+                  }
+                : null,
               actions: {
                 favoriteAdd: tp("favoriteAdd"),
                 favoriteRemove: tp("favoriteRemove"),

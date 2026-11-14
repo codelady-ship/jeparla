@@ -5,6 +5,7 @@ import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
   FINENESSES,
+  EXCHANGE_RATES,
   LATEST_METAL_PRICES,
   METAL_PRICE_HISTORY,
   PRODUCTS,
@@ -109,7 +110,7 @@ function listProducts(f: ProductFilters = {}): Page<ProductSummary> {
   return paginate(sorted.map(toSummary), f.page, f.size);
 }
 
-/** In-memory implementation of the API, used while NEXT_PUBLIC_USE_MOCK is not "false". */
+/** In-memory implementation of the API, used only when NEXT_PUBLIC_USE_MOCK is "true". */
 export const mockApi: JeparlaApi = {
   async listProducts(filters) {
     return listProducts(filters);
@@ -194,5 +195,8 @@ export const mockApi: JeparlaApi = {
   },
   async metalPriceHistory(metal, days = 30) {
     return METAL_PRICE_HISTORY.filter((p) => p.metal === metal).slice(-days);
+  },
+  async latestExchangeRates() {
+    return EXCHANGE_RATES;
   },
 };

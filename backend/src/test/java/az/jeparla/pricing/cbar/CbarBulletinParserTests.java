@@ -63,6 +63,33 @@ class CbarBulletinParserTests {
     }
 
     @Test
+    void readsTheDisplayCurrenciesOfTheRealBulletin() {
+        CbarBulletin bulletin = CbarBulletinParser.parse(fixture("cbar-2026-11-06.xml"), LocalDate.of(2026, 11, 6));
+        assertThat(bulletin.currencyRates()).containsOnlyKeys("USD", "EUR");
+        assertThat(bulletin.currencyRates().get("USD")).isEqualByComparingTo("1.7");
+        assertThat(bulletin.currencyRates().get("EUR")).isEqualByComparingTo("1.9037");
+    }
+
+    @Test
+    void dividesACurrencyRateByItsNominal() {
+        String xml = bulletin("09.11.2026", metals(valute("XAU", "1 t.u.", "6877.435")))
+                .replace("<Nominal>1</Nominal><Name>1 ABŞ dolları</Name><Value>1.7</Value>",
+                        "<Nominal>100</Nominal><Name>x</Name><Value>170.5</Value>");
+        assertThat(parse(xml, MONDAY).currencyRates().get("USD")).isEqualByComparingTo("1.705");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"<Nominal>1</Nominal><Value>abc</Value>", "<Nominal>0</Nominal><Value>1.7</Value>",
+            "<Nominal>1</Nominal>", "<Nominal>1 t.u.</Nominal><Value>1.7</Value>"})
+    void aBrokenCurrencyEntryNeverRefusesTheMetals(String body) {
+        String xml = bulletin("09.11.2026", metals(valute("XAU", "1 t.u.", "6877.435")))
+                .replace("<Nominal>1</Nominal><Name>1 ABŞ dolları</Name><Value>1.7</Value>", body);
+        CbarBulletin bulletin = parse(xml, MONDAY);
+        assertThat(bulletin.ouncePrices()).hasSize(4);
+        assertThat(bulletin.currencyRates()).doesNotContainKey("USD");
+    }
+
+    @Test
     void readsAnotherRealBulletin() {
         CbarBulletin bulletin = CbarBulletinParser.parse(fixture("cbar-2026-11-05.xml"), LocalDate.of(2026, 11, 5));
         assertThat(bulletin.date()).isEqualTo(LocalDate.of(2026, 11, 5));

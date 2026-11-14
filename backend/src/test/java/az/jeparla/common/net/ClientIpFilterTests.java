@@ -1,6 +1,7 @@
 package az.jeparla.common.net;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -139,5 +140,46 @@ class ClientIpFilterTests {
         assertThat(seen.getHeaders("X-Forwarded-Host").hasMoreElements()).isFalse();
         assertThat(Collections.list(seen.getHeaderNames())).containsExactly("Accept-Language");
         assertThat(seen.getHeader("Accept-Language")).isEqualTo("az");
+    }
+
+    private static final String FRONTEND_TOKEN = "frontend-token-for-tests-0123456789abcdef";
+
+    private HttpServletRequest relayed(String token, String visitor) throws Exception {
+        ClientIpFilter withRelay = new ClientIpFilter(TrustedProxies.parse("127.0.0.1/32"), FRONTEND_TOKEN);
+        MockHttpServletRequest request = from("203.0.113.10");
+        if (token != null) {
+            request.addHeader(ClientIpFilter.FRONTEND_TOKEN, token);
+        }
+        request.addHeader(ClientIpFilter.FRONTEND_CLIENT_IP, visitor);
+        MockFilterChain chain = new MockFilterChain();
+        withRelay.doFilter(request, new MockHttpServletResponse(), chain);
+        return (HttpServletRequest) chain.getRequest();
+    }
+
+    @Test
+    void theFrontendServerNamesItsVisitorOnlyWithTheSharedToken() throws Exception {
+        HttpServletRequest seen = relayed(FRONTEND_TOKEN, "198.51.100.20");
+        assertThat(seen.getRemoteAddr()).isEqualTo("198.51.100.20");
+        assertThat(seen.getHeader(ClientIpFilter.FRONTEND_TOKEN)).isNull();
+        assertThat(seen.getHeader(ClientIpFilter.FRONTEND_CLIENT_IP)).isNull();
+
+        assertThat(relayed(null, "198.51.100.20").getRemoteAddr()).isEqualTo("203.0.113.10");
+        assertThat(relayed("wrong-token-wrong-token-wrong-token-xx", "198.51.100.20").getRemoteAddr())
+                .isEqualTo("203.0.113.10");
+        assertThat(relayed(FRONTEND_TOKEN, "face.cafe").getRemoteAddr()).isEqualTo("203.0.113.10");
+    }
+
+    @Test
+    void withoutAConfiguredTokenTheRelayHeaderIsIgnored() throws Exception {
+        MockHttpServletRequest request = from("203.0.113.10");
+        request.addHeader(ClientIpFilter.FRONTEND_TOKEN, "");
+        request.addHeader(ClientIpFilter.FRONTEND_CLIENT_IP, "198.51.100.20");
+        assertThat(filtered(request).getRemoteAddr()).isEqualTo("203.0.113.10");
+    }
+
+    @Test
+    void aShortFrontendTokenStopsTheStartup() {
+        assertThatIllegalArgumentException().isThrownBy(() -> new ClientIpProperties("", "short"));
+        assertThat(new ClientIpProperties("", " ").frontendToken()).isNull();
     }
 }

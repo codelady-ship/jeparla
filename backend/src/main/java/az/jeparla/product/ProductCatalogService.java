@@ -142,6 +142,11 @@ public class ProductCatalogService {
         return toCounts(products.countListedByStore(visible));
     }
 
+    /** Ids of the visible categories (active, with active ancestors): listed products are in one of them. */
+    public Set<Long> visibleCategoryIds() {
+        return categoryTree().visibleIds();
+    }
+
     // ------------------------------------------------------------------ categories and finenesses
 
     /** {@code GET /categories}: visible categories by sort order, counts include subcategories. */

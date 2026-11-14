@@ -5,6 +5,7 @@ import az.jeparla.common.dto.LocalizedTextDto;
 import az.jeparla.common.dto.MoneyDto;
 import az.jeparla.common.storage.ImageUrls;
 import az.jeparla.product.dto.CompareItemDto;
+import az.jeparla.product.dto.EvidencePhotoDto;
 import az.jeparla.product.dto.ProductDto;
 import az.jeparla.product.dto.ProductImageDto;
 import az.jeparla.product.dto.ProductSummaryDto;
@@ -63,7 +64,18 @@ public class CatalogMapper {
 
     public ProductDto detail(Product product) {
         return ProductDto.of(summary(product), LocalizedTextDto.of(product.getDescription()),
-                product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus());
+                product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus(),
+                evidencePhotos(product));
+    }
+
+    /** Hallmark and label photos of a listed product (#106); rejected ones are not shown. */
+    private List<EvidencePhotoDto> evidencePhotos(Product product) {
+        return product.getEvidencePhotos().stream()
+                .filter(photo -> photo.getStatus() != CheckStatus.REJECTED)
+                .sorted(Comparator.comparing(ProductEvidencePhoto::getKind))
+                .map(photo -> new EvidencePhotoDto(photo.getKind(), imageUrls.url(photo.getStorageKey()),
+                        photo.getWidth(), photo.getHeight(), photo.getStatus() == CheckStatus.VERIFIED))
+                .toList();
     }
 
     public CompareItemDto compareItem(ProductVariant variant) {
