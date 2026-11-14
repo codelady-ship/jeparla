@@ -160,6 +160,18 @@ export type MetalPrice = {
   fetchedAt: IsoDate;
 };
 
+/** Currencies a price can be shown in besides AZN (#53); display only. */
+export type DisplayCurrency = "USD" | "EUR";
+
+/** CBAR rate of a display currency: AZN per one unit (#53). */
+export type ExchangeRate = {
+  currency: DisplayCurrency;
+  /** CBAR bulletin date. */
+  date: IsoDate;
+  aznPerUnit: Decimal;
+  fetchedAt: IsoDate;
+};
+
 /** Spring Data style page. `page` is zero-based. */
 export type Page<T> = {
   content: T[];

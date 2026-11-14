@@ -52,5 +52,6 @@ export const httpApi: JeparlaApi = {
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),
   latestMetalPrices: () => get("/metal-prices/latest"),
+  latestExchangeRates: () => get("/exchange-rates/latest"),
   metalPriceHistory: (metal, days = 30) => get("/metal-prices/history", { metal, days }),
 };

@@ -5,6 +5,7 @@ import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
   FINENESSES,
+  EXCHANGE_RATES,
   LATEST_METAL_PRICES,
   METAL_PRICE_HISTORY,
   PRODUCTS,
@@ -193,5 +194,8 @@ export const mockApi: JeparlaApi = {
   },
   async metalPriceHistory(metal, days = 30) {
     return METAL_PRICE_HISTORY.filter((p) => p.metal === metal).slice(-days);
+  },
+  async latestExchangeRates() {
+    return EXCHANGE_RATES;
   },
 };

@@ -187,6 +187,8 @@
     "sku": "Kod",
     "priceUpdated": "Qiymət yenilənib:",
     "metalLinkedNote": "Qiymət metala bağlıdır: AMB-nin gündəlik məzənnəsi ilə avtomatik yenilənir.",
+    "currency": "Valyuta",
+    "approxNote": "təxmini, AMB məzənnəsi {date}. Qiymət manatla razılaşdırılır.",
     "whatsapp": "WhatsApp ilə mağazaya yaz",
     "whatsappMessage": "Salam! Jeparla-da bu məhsulla maraqlanıram: {name} (kod {sku}). {url}",
     "factsTitle": "Əsas məlumatlar",
