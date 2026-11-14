@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { defaultLocale } from "./src/i18n/routing";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -14,6 +15,22 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
   },
   partialPrefetching: true,
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      // A first segment with a dot (/foo.php, /x.y/z) skips the locale proxy and is
+      // never a language, so it would hit [locale] and get Next.js's English 404.
+      // Real files and app routes (sitemap.xml, robots.txt, sw.js) are matched before
+      // afterFiles, so only unknown paths move under the default language (#186).
+      afterFiles: [
+        {
+          source: "/:first([^/]*\\.[^/]*)/:rest*",
+          destination: `/${defaultLocale}/:first/:rest*`,
+        },
+      ],
+      fallback: [],
+    };
+  },
   turbopack: {
     rules: {
       "*.css": {
