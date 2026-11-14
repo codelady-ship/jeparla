@@ -7,6 +7,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { ViewTransition } from "react";
 import { IntlProvider } from "@/components/i18n/intl-provider";
 import { NoticeRegion } from "@/components/feedback/notice-region";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { CompareTray } from "@/components/saved/compare-tray";
@@ -95,6 +96,8 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
     <html
       lang={locale}
       className={`${cormorant.variable} h-full antialiased`}
+      // Smooth scrolling is for in-page anchors only; route changes jump (Next 16 opt-in).
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
@@ -111,6 +114,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
             <SiteFooter />
             <CompareTray label={tc("compare")} />
             <NoticeRegion closeLabel={tc("close")} />
+            <ScrollReveal />
             <InstallPrompt
               labels={{
                 title: {

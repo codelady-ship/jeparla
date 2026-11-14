@@ -118,6 +118,30 @@
   }
 }
 
+/* Deferred card images fade in once loaded instead of popping in (<ScrollReveal>, #172).
+   An animation, not a transition, so the image's own hover transitions are untouched. */
+@keyframes img-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  img[data-fade]:not([data-loaded]) {
+    opacity: 0;
+  }
+  img[data-fade][data-loaded] {
+    animation: img-fade-in var(--duration-base) var(--ease-standard);
+  }
+}
+
+/* In-page anchors (#start, #how) glide; Next.js turns this off for route changes
+   because <html> has data-scroll-behavior="smooth". No JS scroll hijacking. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Slow image zoom on hover: put on the <img> wrapper inside a `group` element
    that has overflow hidden. */
 /*
