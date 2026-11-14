@@ -8,10 +8,11 @@ import java.util.List;
 /**
  * An AI Studio job and its results.
  *
+ * @param modelId   AI model of the library (#130), else null
  * @param errorCode stable code of the last failure (localized in the UI), else null
  * @param canRetry  FAILED with attempts left and a failure a retry can help with
  */
-public record AiJobDto(long id, long productId, Long sourceImageId, AiJobKind kind, AiJobStatus status,
-        int attempts, int maxAttempts, String errorCode, boolean canRetry, Instant createdAt, Instant updatedAt,
-        List<AiAssetDto> assets) {
+public record AiJobDto(long id, long productId, Long sourceImageId, AiJobKind kind, Long modelId,
+        AiJobStatus status, int attempts, int maxAttempts, String errorCode, boolean canRetry, Instant createdAt,
+        Instant updatedAt, List<AiAssetDto> assets) {
 }

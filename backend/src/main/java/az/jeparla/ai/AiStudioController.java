@@ -3,12 +3,14 @@ package az.jeparla.ai;
 import az.jeparla.ai.dto.AiApproveRequest;
 import az.jeparla.ai.dto.AiJobDto;
 import az.jeparla.ai.dto.AiJobRequest;
+import az.jeparla.ai.dto.AiModelDto;
 import az.jeparla.ai.dto.AiStatusDto;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
 import az.jeparla.merchant.Created;
 import az.jeparla.merchant.IdempotencyKeys;
+import az.jeparla.product.Audience;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -49,6 +51,12 @@ public class AiStudioController {
     @Operation(summary = "Whether a provider is configured, and the store's quota today")
     public AiStatusDto status() {
         return studio.status();
+    }
+
+    @GetMapping("/models")
+    @Operation(summary = "AI models a seller can pick for VIRTUAL_TRY_ON (#130), the default of each audience first")
+    public List<AiModelDto> models(@RequestParam(required = false) Audience audience) {
+        return studio.models(audience);
     }
 
     @GetMapping("/jobs")

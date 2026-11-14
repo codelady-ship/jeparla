@@ -45,6 +45,9 @@ public class AiJob extends LongIdEntity {
     @Column(name = "error_code")
     private String errorCode;
 
+    @Column(name = "model_id", updatable = false)
+    private Long modelId;
+
     @Column(name = "idempotency_key", updatable = false)
     private UUID idempotencyKey;
 
@@ -141,6 +144,18 @@ public class AiJob extends LongIdEntity {
         require(AiJobStatus.QUEUED, AiJobStatus.REVIEW_REQUIRED, AiJobStatus.FAILED);
         status = AiJobStatus.CANCELLED;
         updatedAt = now;
+    }
+
+    /** The AI model of a VIRTUAL_TRY_ON job (#130), set once before the job is saved. */
+    public void useModel(Long modelId) {
+        if (getId() != null) {
+            throw new IllegalStateException("The model is chosen when the job is created");
+        }
+        this.modelId = modelId;
+    }
+
+    public Long getModelId() {
+        return modelId;
     }
 
     public long getStoreId() {

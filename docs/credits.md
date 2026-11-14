@@ -52,3 +52,13 @@ məhsul təsviri "nümunə məhsul, real deyil" deyir. Real mağaza şəkilləri
 | `bracelet-gold-2.jpg` | Diego Castañeda | https://unsplash.com/photos/Jno26Xf1-WI |
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
+
+## AI model kitabxanası (#130)
+
+Model üzərində şəkillər üçün AI modellər (real şəxs deyil). Hər model admin paneldə yüklənir və burada
+qeyd olunur: ad, auditoriya, dəri tonu, üslub, yaradıldığı alət və tarix (API-dəki `origin` sahəsi ilə eyni).
+Modellər pullu generasiya ilə yaradıldığı üçün xərc sahibin təsdiqi ilə.
+
+| Model | Auditoriya | Dəri tonu | Üslub | Mənşə (alət, tarix) |
+| --- | --- | --- | --- | --- |
+| (hələ model yoxdur) | | | | |
