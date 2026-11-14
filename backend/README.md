@@ -59,7 +59,7 @@ Sirlər yalnız mühitdən gəlir, repoda heç bir açar yoxdur.
 | `JEPARLA_DB_URL` | `jdbc:postgresql://localhost:5432/jeparla` | PostgreSQL JDBC URL |
 | `JEPARLA_DB_MIGRATION_USER` / `JEPARLA_DB_MIGRATION_PASSWORD` | `jeparla_owner` / boş | Miqrasiya rolu: sxemin sahibi, yalnız Flyway qoşulur (`spring.flyway.user`). Superuser olmamalıdır. Aşağıda: "Verilənlər bazası rolları" |
 | `JEPARLA_DB_USER` / `JEPARLA_DB_PASSWORD` | `jeparla_app` / boş | API-nin iş rolu: superuser deyil, heç nəyin sahibi deyil, sübut cədvəllərində yalnız `SELECT`, `INSERT` (V16). Miqrasiya rolu ilə eyni olsa, superuser və ya sahib olsa API başlamır |
-| `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsinin yolu (`/help`) yazılır. Səhv dəyər tətbiqi başlatmır |
+| `JEPARLA_SUPPORT_EMAIL` / `JEPARLA_SUPPORT_URL` | boş | "Dəstəyə yazın" deyən bildirişlərin (saytda və e-poçtda) sonunda göstərilən dəstək ünvanı (#138); URL mütləq `http(s)` olmalıdır. Hər ikisi boşdursa saytdakı kömək səhifəsi yazılır: saytda alıcının dilində yol (`/az/help`), e-poçtda tam URL (`JEPARLA_PUBLIC_SITE_URL` + `/az/help`, #167). Prod-da biri məcburi təyin olunur. Səhv dəyər tətbiqi başlatmır |
 | `JEPARLA_JWT_SECRET` | yoxdur (məcburi) | Access token-lərin HS256 açarı, ən azı 32 bayt (`openssl rand -hex 32`). Yoxdursa və ya qısadırsa tətbiq başlamır |
 | `JEPARLA_COOKIE_SECURE` | `true` | Refresh cookie-nin `Secure` bayrağı |
 | `JEPARLA_REDIS_HOST` / `JEPARLA_REDIS_PORT` / `JEPARLA_REDIS_PASSWORD` | `localhost` / `6379` / boş | Rate limit sayğacları (yalnız onlar; `maxmemory-policy noeviction`, #134). Redis yoxdursa API işləyir, sayğaclar yaddaşa keçir. Axtarış keşi API-nin yaddaşındadır (`jeparla.search.cache`, 60 san., #151) |
@@ -350,7 +350,8 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 - **Bildirişlər:** qərar (sənəd, məhsul, mağaza, satıcı yoxlaması) satıcıya onun dilində (`users.preferred_locale`)
   nəzakətli bildiriş yaradır: səbəb, nə etməli və dəstək. Məhsulun adı satıcının dilindədir (tərcüməsi yoxdursa
   Azərbaycanca). "Dəstəyə yazın" deyən bildirişlər `Dəstək: <JEPARLA_SUPPORT_EMAIL>, <JEPARLA_SUPPORT_URL>` sətri
-  ilə bitir, ikisi də yoxdursa kömək səhifəsinin yolu (`/help`) ilə. Apellyasiya yolu hazır olana qədər
+  ilə bitir, ikisi də yoxdursa satıcının dilində kömək səhifəsi ilə: saytda `/az/help`, e-poçtda tam URL
+  (`https://jeparla.az/az/help`, #167). Apellyasiya yolu hazır olana qədər
   "14 gün ərzində yenidən baxılma" vəd edilmir. Mətn hadisə anında yazılır (`notifications`).
   E-poçtu olan istifadəçi üçün eyni tranzaksiyada `email_outbox` sətri yaranır; `EmailOutboxJob`
   (kilid `email-outbox`) onu `EmailSender` ilə göndərir: `JEPARLA_SMTP_HOST` varsa `SmtpEmailSender`, yoxdursa

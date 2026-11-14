@@ -64,13 +64,16 @@
     "legal": "Hüquqi",
     "aboutUs": "Haqqımızda",
     "contact": "Əlaqə",
+    "help": "Kömək və dəstək",
     "metalPrices": "Metal qiymətləri",
+    "sizeGuide": "Ölçü bələdçisi",
     "openStore": "Mağaza aç",
     "merchantCabinet": "Mağaza kabineti",
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
     "tagline": "Azərbaycanın zərgərlik mağazaları bir yerdə.",
-    "rights": "© Jeparla. Bütün hüquqlar qorunur."
+    "rights": "© Jeparla. Bütün hüquqlar qorunur.",
+    "calculator": "Qızıl kalkulyatoru"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -309,6 +312,45 @@
       }
     }
   },
+  "Help": {
+    "title": "Kömək və dəstək",
+    "description": "Mağaza ilə necə əlaqə saxlamaq, kataloqu necə əlavə etmək, sənədləri necə yükləmək, yoxlamanın nə demək olduğu və problemi necə bildirmək.",
+    "intro": "Alıcılar və satıcılar üçün qısa cavablar.",
+    "faq": {
+      "contact": {
+        "q": "Mağaza ilə necə əlaqə saxlayım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsini basın: mesajda məhsulun adı, kodu və linki artıq olur. Qiymət, ödəniş və çatdırılma birbaşa mağaza ilə razılaşdırılır. Jeparla özü məhsul satmır və ödəniş qəbul etmir."
+      },
+      "sell": {
+        "q": "Mağazamın kataloqunu necə əlavə edim?",
+        "a": "\"Mağaza aç\" bölməsindən müraciət edin: hesab, mağaza məlumatları, sənədlər və istəyə görə ilk məhsul. Mağaza yoxlanıldıqdan sonra məhsulları kabinetdən əlavə edirsiniz; hər məhsul kataloqda görünməzdən əvvəl moderasiyadan keçir."
+      },
+      "documents": {
+        "q": "Sənədləri necə yükləyim?",
+        "a": "Qeydiyyatın \"Sənədlər\" addımında və ya sonra kabinetdən PDF, JPG və ya PNG kimi yükləyin. Sənədlər qapalı yaddaşda saxlanılır və yalnız yoxlama komandası onlara baxır. Qızıl, gümüş və brilyant satıcıları üçün sənəd yoxlaması aparılır; bijuteriya satıcılarından sertifikat tələb olunmur."
+      },
+      "verified": {
+        "q": "Yoxlama nə deməkdir?",
+        "a": "Satıcı və sənəd yoxlaması ayrı-ayrılıqda aparılır və hər biri mağaza və məhsul səhifəsində ayrıca göstərilir. Aparılmayan yoxlama \"aparılmayıb\" kimi yazılır. Yoxlama bizə təqdim olunan sənədləri təsdiqləyir, konkret məhsula zəmanət deyil: almadan əvvəl məhsulu mağaza ilə dəqiqləşdirin."
+      },
+      "report": {
+        "q": "Problemi necə bildirim?",
+        "a": "Məhsulun məlumatı səhvdirsə və ya məhsul şübhəli görünürsə, məhsul səhifəsindəki \"Şikayət et\" düyməsindən istifadə edin. Digər suallar üçün aşağıdakı \"Dəstək\" bölməsinə baxın."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "sell": "Mağaza aç",
+      "merchant": "Mağaza kabineti"
+    },
+    "support": {
+      "title": "Dəstək",
+      "text": "Sualınız və ya probleminiz varsa, bizə yazın:",
+      "email": "E-poçt",
+      "url": "Dəstək səhifəsi",
+      "none": "Dəstəyin birbaşa ünvanı hələ dərc olunmayıb; dərc olunanda bu səhifədə göstəriləcək. Satıcılar geri qaytarılan məhsulun və ya mağazanın məlumatlarını kabinetdə düzəldib yenidən yoxlamaya göndərə bilər."
+    }
+  },
   "Categories": {
     "title": "Kateqoriyalar",
     "description": "Zərgərlik kateqoriyaları: üzük, sırğa, boyunbağı, qolbaq və digərləri.",
@@ -331,6 +373,156 @@
         "q": "Bəyəndiyim modeli necə alım?",
         "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
       }
+    }
+  },
+  "SizeGuide": {
+    "title": "Ölçü bələdçisi: üzük, bilərzik və zəncir",
+    "metaTitle": "Üzük ölçüsü cədvəli, bilərzik və zəncir uzunluqları",
+    "description": "Üzük ölçüsünü evdə necə bilmək olar: daxili diametr və çevrə (mm), ISO 8653 qarşılığı, ölçü köməkçisi, bilərzik və zəncir uzunluqları.",
+    "breadcrumb": "Səhifə yolu",
+    "updated": "Yeniləndi:",
+    "answer": "Azərbaycanda üzük ölçüsü üzüyün daxili diametridir, millimetrlə: 17 ölçülü üzüyün içi 17 mm-dir. Ölçülər adətən 0,5 addımla gedir. Barmağınızın çevrəsini ölçüb aşağıdakı köməkçiyə yazın, ən yaxın ölçünü göstərəcək.",
+    "toc": "Bu səhifədə",
+    "honest": {
+      "title": "Evdə ölçmə təxminidir",
+      "text": "Evdə alınan ölçü 0,5–1 ölçü qədər yanıla bilər. Sifarişdən əvvəl ölçünü mağaza ilə dəqiqləşdirin: çox mağaza üzüyü yerində ölçür, bəziləri ölçünü dəyişə bilir.",
+      "noPrintable": "Çap üçün ölçü lenti vermirik: printer və PDF proqramları səhifəni tez-tez kiçildir və ya böyüdür, çap olunmuş xətkeş bir neçə millimetr yanıla bilər. Bu, iki qonşu ölçü arasındakı fərqdən (diametrdə 0,5 mm) çoxdur."
+    },
+    "rings": {
+      "title": "Üzük ölçüləri cədvəli",
+      "intro": "Ölçü nömrəsi daxili diametrə bərabərdir. Çevrə diametrin π-yə hasilidir, bir onluq rəqəmə yuvarlaqlaşdırılıb.",
+      "caption": "Üzük ölçüləri: Azərbaycan ölçüsü, daxili diametr, daxili çevrə və ISO 8653 ölçüsü",
+      "colSize": "Ölçü (AZ, MDB)",
+      "colDiameter": "Daxili diametr, mm",
+      "colCircumference": "Daxili çevrə, mm",
+      "colIso": "ISO 8653 ölçüsü",
+      "sourceTitle": "Mənbə və hesablama",
+      "sourceAz": "Azərbaycan və MDB ölçüsü: daxili diametr millimetrlə, 0,5 addımla. Bu, mağazalarda qəbul olunmuş qaydadır; istinad edə biləcəyimiz qüvvədə olan standart mətnini tapmadıq.",
+      "sourceIso": "ISO 8653:2016 «Jewellery — Ring-sizes — Definition, measurement and designation» üzük ölçüsünü daxili çevrə ilə (mm) ifadə edir; Avropanın çox ölkəsində bu sistem işlənir. Cədvəldə ISO ölçüsü çevrənin tam millimetrə yuvarlaqlaşdırılmış qiymətidir.",
+      "sourceUs": "ABŞ ölçülərini göstərmirik: bu çevirmə üçün qüvvədə olan dərc olunmuş standart tapmadıq, uydurma qarşılıq vermək istəmirik.",
+      "rounding": "Bütün rəqəmlər dəqiq onluq hesabla alınır, yarım hal yuxarı yuvarlaqlaşdırılır."
+    },
+    "helper": {
+      "title": "Ölçü köməkçisi",
+      "intro": "Ölçdüyünüz rəqəmi yazın. Barmağın çevrəsini sap və ya kağız zolaqla, diametri isə mövcud üzükdən ölçmək olar.",
+      "modeLegend": "Nəyi ölçmüsünüz?",
+      "circumference": "Barmağın çevrəsi",
+      "diameter": "Üzüyün daxili diametri",
+      "inputCircumference": "Çevrə, mm",
+      "inputDiameter": "Daxili diametr, mm",
+      "hint": "Məsələn 53,5. Nöqtə və ya vergül, ən çox iki onluq rəqəm.",
+      "empty": "Rəqəmi yazanda ən yaxın ölçü burada görünəcək.",
+      "invalid": "Millimetrlə rəqəm yazın, məsələn 53,5.",
+      "outOfRange": "Bu ölçü cədvəldən kənardadır (15–24). Ölçmə növünü düzgün seçdiyinizi yoxlayın və ya mağazadan soruşun.",
+      "result": "Ən yaxın ölçü: {size}",
+      "details": "Daxili diametr {diameter} mm, daxili çevrə {circumference} mm, ISO 8653 ölçüsü {iso}.",
+      "tie": "İki ölçünün tam ortasında olsanız, köməkçi böyük ölçünü seçir.",
+      "confirm": "Bu təxmini nəticədir. Sifarişdən əvvəl mağaza ilə dəqiqləşdirin."
+    },
+    "measure": {
+      "title": "Üzük ölçüsünü evdə necə bilmək olar",
+      "ringTitle": "Mövcud üzüklə",
+      "ringSteps": {
+        "s1": "Həmin barmağa rahat olan, nazik və dairəvi bir üzük seçin.",
+        "s2": "Üzüyü millimetr bölgülü xətkeşin üstünə qoyun.",
+        "s3": "Ən geniş yerdən içəri kənardan içəri kənara qədər ölçün, metalın qalınlığını saymayın.",
+        "s4": "Alınan rəqəm millimetrlə ölçünüzdür. Köməkçidə «Üzüyün daxili diametri» seçin."
+      },
+      "stringTitle": "Sap və ya kağız zolaqla",
+      "stringSteps": {
+        "s1": "Uzanmayan sap və ya 5 mm enində kağız zolaq götürün.",
+        "s2": "Onu barmağın dibinə sıx, amma sıxmadan dolayın.",
+        "s3": "Ucların görüşdüyü yeri qələmlə işarələyin.",
+        "s4": "Zolağı açın və işarəyə qədər uzunluğu xətkeşlə millimetrlə ölçün: bu, çevrədir.",
+        "s5": "Rəqəmi köməkçiyə yazın və üzüyün oynaqdan keçəcəyini yoxlayın."
+      },
+      "tipsTitle": "Daha dəqiq nəticə üçün",
+      "tips": {
+        "t1": "Günün sonunda, isti otaqda ölçün: soyuqda barmaqlar incəlir, istidə qalınlaşır.",
+        "t2": "İki-üç dəfə ölçün və nəticələri müqayisə edin.",
+        "t3": "Oynaq barmağın dibindən enlidirsə, üzük oynaqdan keçməlidir: hər iki yeri ölçün.",
+        "t4": "Enli üzük (təxminən 6 mm və artıq) daha sıx oturur; yarım ölçü böyük lazım olub-olmadığını mağazadan soruşun."
+      },
+      "diagram": {
+        "title": "Üzüyün daxili diametri və daxili çevrəsi",
+        "desc": "Üzüyün içindən keçən düz xətt daxili diametrdir; içəri kənar boyunca dairə daxili çevrədir.",
+        "diameter": "diametr",
+        "circumference": "çevrə"
+      }
+    },
+    "bracelets": {
+      "title": "Bilərzik uzunluğu",
+      "intro": "Biləyi sümüyün üstündən sap və ya zolaqla ölçün. Zəncir bilərziyin rahat oturması üçün adətən biləyin çevrəsinə 1–2 sm əlavə edilir.",
+      "caption": "Bilərzik uzunluqları və adətən kimə uyğun gəldiyi",
+      "colLength": "Uzunluq",
+      "colUse": "Adətən",
+      "rows": {
+        "r1": {
+          "length": "15–16 sm",
+          "use": "İncə bilək, biləyə yaxın oturur"
+        },
+        "r2": {
+          "length": "17–18 sm",
+          "use": "Qadın bilərziklərində tez-tez rast gəlinən uzunluq"
+        },
+        "r3": {
+          "length": "19–20 sm",
+          "use": "Sərbəst qadın bilərziyi və ya kiçik kişi bilərziyi"
+        },
+        "r4": {
+          "length": "21–22 sm",
+          "use": "Kişi bilərziklərində tez-tez rast gəlinən uzunluq"
+        }
+      },
+      "bangle": "Bərk bilərzik (qolbaq) açılmırsa, əlin ən enli yerindən keçməlidir: baş barmağı kiçik barmağa toxundurub əlin ən enli yerini ölçün və qolbağın daxili ölçüsünü mağazadan soruşun.",
+      "note": "Bu uzunluqlar standart deyil, ümumi bələdçidir; mağazalar və modellər fərqlənir."
+    },
+    "chains": {
+      "title": "Zəncir uzunluğu",
+      "intro": "Zəncirin uzunluğu qıfılla birlikdə, düz uzadılmış halda ölçülür. Boyunda harada duracağı boyun ölçüsündən və asqıdan asılıdır.",
+      "caption": "Zəncir uzunluqları və boyunda adətən harada durduğu",
+      "colLength": "Uzunluq",
+      "colUse": "Adətən harada durur",
+      "rows": {
+        "r1": {
+          "length": "40 sm",
+          "use": "Boynun dibinə yaxın"
+        },
+        "r2": {
+          "length": "45 sm",
+          "use": "Körpücük sümüyü səviyyəsində; asqı üçün tez-tez seçilir"
+        },
+        "r3": {
+          "length": "50 sm",
+          "use": "Körpücük sümüyündən bir az aşağı"
+        },
+        "r4": {
+          "length": "55 sm",
+          "use": "Yaxanın səviyyəsində; kişi zəncirlərində tez-tez rast gəlinir"
+        },
+        "r5": {
+          "length": "60 sm",
+          "use": "Yaxadan aşağı, paltarın üstündən"
+        },
+        "r6": {
+          "length": "70 sm və artıq",
+          "use": "Uzun zəncir, paltarın üstündən; ikiqat taxmaq olar"
+        }
+      },
+      "note": "Ən sadə yol: evdə olan zənciri düz uzadıb ölçün və onu nə qədər bəyəndiyinizə görə qısa və ya uzun seçin."
+    },
+    "sources": {
+      "title": "Mənbələr",
+      "iso": "ISO 8653:2016, Jewellery — Ring-sizes — Definition, measurement and designation (Beynəlxalq Standartlaşdırma Təşkilatı).",
+      "trade": "Azərbaycan və MDB ölçü nömrəsi (daxili diametr, mm): mağazalarda qəbul olunmuş qayda.",
+      "lengths": "Bilərzik və zəncir uzunluqları: ümumi bələdçi, standart deyil."
+    },
+    "howTo": {
+      "name": "Üzük ölçüsünü evdə necə bilmək olar",
+      "description": "Mövcud üzüyün daxili diametrini və ya barmağın çevrəsini millimetrlə ölçüb üzük ölçüsünü tapmaq.",
+      "supplyStrip": "Uzanmayan sap və ya kağız zolaq",
+      "toolRuler": "Millimetr bölgülü xətkeş",
+      "toolPen": "Qələm"
     }
   },
   "Search": {
@@ -1212,6 +1404,7 @@
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
     "empty": "Bugünkü qiymət hələ gəlməyib.",
+    "calculatorLink": "Zərgərliyin metal dəyərini hesablayın",
     "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək."
   },
   "Hero": {
@@ -1246,6 +1439,52 @@
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
     "copyFailed": "Linki kopyalamaq alınmadı"
+  },
+  "Calculator": {
+    "title": "Qızıl və gümüş kalkulyatoru",
+    "description": "Çəki və əyara görə qızıl və gümüşün bu günkü metal dəyəri manatla, Azərbaycan Mərkəzi Bankının gündəlik məzənnəsi ilə.",
+    "intro": "Zərgərliyin çəkisini və əyarını daxil edin: metalın bu gün Azərbaycan Mərkəzi Bankının (AMB) məzənnəsi ilə nə qədər dəyərində olduğunu görəcəksiniz.",
+    "formLabel": "Metal dəyərinin hesablanması",
+    "weight": "Çəki (qram)",
+    "weightHint": "Məsələn 4,2 və ya 4.2; vergüldən sonra ən çox 3 rəqəm.",
+    "metal": "Metal",
+    "fineness": "Əyar",
+    "submit": "Hesabla",
+    "resultLabel": "Metal dəyəri",
+    "prompt": "Metal dəyərini görmək üçün çəkini daxil edin.",
+    "resultSummary": "{weight}, {metal} {fineness}",
+    "gramPrice": "{metal} {fineness}, 1 qram: {price}",
+    "purePrice": "AMB qiyməti ({metal}, təmiz metal): qramı {gram}, troy unsiyası {ounce}",
+    "weekendNote": "Həftəsonu və bayram günlərində AMB-nin son dərc etdiyi məzənnə istifadə olunur.",
+    "notShopPrice": "Bu, yalnız metalın dəyəridir, mağaza qiyməti deyil: işçilik, daşlar və mağazanın əlavəsi buraya daxil deyil.",
+    "products": "Kataloqda {metal} {fineness} zərgərliklərə baxın",
+    "errors": {
+      "empty": "Çəkini daxil edin.",
+      "format": "Çəkini rəqəmlə yazın, məsələn 4,2.",
+      "notPositive": "Çəki sıfırdan böyük olmalıdır.",
+      "tooPrecise": "Vergüldən sonra ən çox 3 rəqəm yazın (milliqrama qədər).",
+      "tooLarge": "Çəki 10 000 qramdan çox ola bilməz."
+    },
+    "unavailable": "Metal qiymətlərini indi yükləmək mümkün olmadı, ona görə dəyər göstərilmir. Bir az sonra yenidən yoxlayın.",
+    "noPrices": "Bu günün AMB qiyməti hələ gəlməyib, ona görə dəyər göstərilmir.",
+    "loading": "Metal qiymətləri yüklənir",
+    "howTitle": "Dəyər necə hesablanır",
+    "howText": "Metal dəyəri = çəki (qram) × əyar ÷ 1000 × 1 qram təmiz metalın AMB qiyməti. AMB metal məzənnələrini troy unsiyası (31,1034768 q) üçün manatla dərc edir; biz onu qrama çeviririk və nəticəni qəpiyə qədər yuvarlaqlaşdırırıq.",
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "price": {
+        "q": "Mağaza qiyməti niyə metal dəyərindən yüksəkdir?",
+        "a": "Mağaza qiymətinə işçilik, daşlar, mağazanın əlavəsi və digər xərclər də daxildir. Kalkulyator yalnız zərgərlikdəki metalın dəyərini göstərir."
+      },
+      "fineness": {
+        "q": "585 əyar nə deməkdir?",
+        "a": "Əyar təmiz metalın mində payıdır: 585 əyarlı qızılın 58,5%-i, 925 əyarlı gümüşün isə 92,5%-i təmiz metaldır."
+      },
+      "source": {
+        "q": "Qiymətlər haradan gəlir?",
+        "a": "Azərbaycan Mərkəzi Bankının gündəlik qiymətli metal məzənnələrindən. Həftəsonu və bayram günlərində son dərc olunan məzənnə istifadə olunur."
+      }
+    }
   },
   "SampleData": {
     "label": "Nümunə data",
