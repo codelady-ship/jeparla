@@ -40,4 +40,21 @@ public interface ImageGenerationProvider {
      * @throws ImageGenerationException on any failure; the job becomes FAILED with its code
      */
     GenerationResult generate(GenerationRequest request);
+
+    /**
+     * Whether the result is generated or generatively edited (#119). True for every generation service; false
+     * only for a pure clean-up processor of STUDIO_LOOK (background removal, crop, shadow) that never changes the
+     * item. A non-generative result is published without the "AI ilə yaradılıb" label.
+     */
+    default boolean generative() {
+        return true;
+    }
+
+    /**
+     * True for a processor that runs on the API's own CPU with no per-call price (#119): the monthly cost limit
+     * does not apply to it; the daily quota per store still does.
+     */
+    default boolean local() {
+        return false;
+    }
 }

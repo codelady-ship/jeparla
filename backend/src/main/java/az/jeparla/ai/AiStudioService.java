@@ -99,7 +99,7 @@ public class AiStudioService {
         int used = stores.findByOwnerId(CurrentUser.id()).map(store -> usage.attempts(store.getId(), today()))
                 .orElse(0);
         return new AiStatusDto(provider.configured(), provider.id(), properties.dailyJobsPerStore(), used,
-                properties.maxAttempts());
+                properties.maxAttempts(), providers.studio().configured());
     }
 
     /**
@@ -127,7 +127,7 @@ public class AiStudioService {
             throw new ApiException(HttpStatus.BAD_REQUEST, "ai.source_ai_generated", "sourceImageId");
         }
         Long modelId = modelCatalog.checkForJob(request.kind(), request.modelId(), product.getAudience());
-        requireAvailable(storeId);
+        requireAvailable(storeId, request.kind());
         Instant now = clock.instant();
         AiJob job = new AiJob(storeId, product.getId(), source.getId(), request.kind(), properties.maxAttempts(),
                 idempotencyKey, CurrentUser.id(), now);
@@ -194,7 +194,7 @@ public class AiStudioService {
                 + "." + extension(chosen.getContentType());
         int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
         ProductImage image = new ProductImage(publicKey, chosen.getWidth(), chosen.getHeight(),
-                chosen.getContentType(), chosen.getSizeBytes(), true, sortOrder);
+                chosen.getContentType(), chosen.getSizeBytes(), chosen.isAiGenerated(), sortOrder);
         image.setAlt(LocalizedText.of(product.getName().az(), null, null));
         product.addImage(image);
         products.afterChange(product, true, now);
@@ -248,7 +248,7 @@ public class AiStudioService {
         if (!job.canRetry()) {
             throw new ApiException(HttpStatus.CONFLICT, "ai.no_attempts_left");
         }
-        requireAvailable(job.getStoreId());
+        requireAvailable(job.getStoreId(), job.getKind());
         job.retry(clock.instant());
         return view(job);
     }
@@ -268,9 +268,13 @@ public class AiStudioService {
         deleteAfterCommit(forgetFiles(assets.findByJobIdOrderByIdAsc(job.getId())));
     }
 
-    /** Provider on, quota left, budget left; counts one attempt of the store today. */
-    private void requireAvailable(long storeId) {
-        if (!providers.active().configured()) {
+    /**
+     * Provider of the kind on, quota left, budget left (not for a local processor, #119); counts one attempt of
+     * the store today.
+     */
+    private void requireAvailable(long storeId, AiJobKind kind) {
+        ImageGenerationProvider provider = providers.forKind(kind.name());
+        if (!provider.configured()) {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, ImageGenerationException.NOT_CONFIGURED);
         }
         LocalDate today = today();
@@ -279,7 +283,8 @@ public class AiStudioService {
             throw new RateLimitExceededException(
                     Math.max(1, Duration.between(clock.instant(), midnight.toInstant()).toSeconds()));
         }
-        if (usage.monthCost(YearMonth.from(today)).compareTo(properties.monthlyCostLimit()) >= 0) {
+        if (!provider.local()
+                && usage.monthCost(YearMonth.from(today)).compareTo(properties.monthlyCostLimit()) >= 0) {
             log.warn("AI Studio monthly cost limit reached");
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, ImageGenerationCodes.COST_LIMIT);
         }
@@ -304,7 +309,7 @@ public class AiStudioService {
                         properties.resultUrlTtl()).url();
             }
             dtos.add(new AiAssetDto(asset.getId(), preview, asset.getWidth(), asset.getHeight(),
-                    asset.getProductImageId()));
+                    asset.getProductImageId(), asset.isAiGenerated()));
         }
         return new AiJobDto(job.getId(), job.getProductId(), job.getSourceImageId(), job.getKind(), job.getModelId(),
                 job.getStatus(),

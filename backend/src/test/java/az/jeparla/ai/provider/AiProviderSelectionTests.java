@@ -64,6 +64,55 @@ class AiProviderSelectionTests {
     }
 
     @Test
+    void studioLookHasItsOwnProcessorOffByDefault() {
+        ImageGenerationProvider generator = stub("higgsfield", true);
+        ImageGenerationProviders off = new ImageGenerationProviders(List.of(generator), "higgsfield");
+        assertThat(off.studio().configured()).isFalse();
+        assertThat(off.forKind("STUDIO_LOOK")).isInstanceOf(DisabledImageGenerationProvider.class);
+        assertThat(off.forKind("AI_PHOTOSHOOT")).isSameAs(generator);
+        assertThat(off.anyConfigured()).isTrue();
+
+        ImageGenerationProvider cleanup = new ImageGenerationProvider() {
+            @Override
+            public String id() {
+                return "background-removal";
+            }
+
+            @Override
+            public boolean configured() {
+                return true;
+            }
+
+            @Override
+            public BigDecimal estimatedCost(GenerationRequest request) {
+                return BigDecimal.ZERO;
+            }
+
+            @Override
+            public GenerationResult generate(GenerationRequest request) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean generative() {
+                return false;
+            }
+
+            @Override
+            public boolean local() {
+                return true;
+            }
+        };
+        ImageGenerationProviders on = new ImageGenerationProviders(List.of(cleanup), "none", "background-removal");
+        assertThat(on.forKind("STUDIO_LOOK")).isSameAs(cleanup);
+        assertThat(on.forKind("VIRTUAL_TRY_ON").configured()).isFalse();
+        assertThat(on.anyConfigured()).isTrue();
+        // A generation service is generative unless it says otherwise: its results always carry the AI label.
+        assertThat(generator.generative()).isTrue();
+        assertThat(generator.local()).isFalse();
+    }
+
+    @Test
     void anUnknownIdStopsTheStartup() {
         assertThatThrownBy(() -> new ImageGenerationProviders(List.of(), "higgsfeld"))
                 .isInstanceOf(IllegalStateException.class).hasMessageContaining("higgsfeld");

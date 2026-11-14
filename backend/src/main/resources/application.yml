@@ -131,6 +131,9 @@ jeparla:
     # requests answer 503. Another value must be the id of an installed provider bean, or the API does not start.
     # Provider keys are read by the provider from its own env variables, never from this file.
     image-provider: ${JEPARLA_AI_IMAGE_PROVIDER:none}
+    # #119: processor of STUDIO_LOOK jobs (background removal, cream background, shadow, 4:5). "none": the studio
+    # look option is shown as not configured. It must not generate; a local one has the daily quota only.
+    studio-processor: ${JEPARLA_AI_STUDIO_PROCESSOR:none}
     # Jobs and retries per store and day (Asia/Baku); per seller account also the rate-limit policy ai-job-account.
     daily-jobs-per-store: ${JEPARLA_AI_DAILY_JOBS_PER_STORE:10}
     max-attempts: 3

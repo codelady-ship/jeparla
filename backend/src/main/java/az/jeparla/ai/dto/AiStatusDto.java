@@ -8,6 +8,8 @@ package az.jeparla.ai.dto;
  * @param dailyLimit  jobs and retries per store and day
  * @param usedToday   used by this store today (Asia/Baku)
  * @param maxAttempts attempts per job
+ * @param studioLook  whether STUDIO_LOOK jobs (#119) can run: they have their own, non-generative processor
  */
-public record AiStatusDto(boolean configured, String provider, int dailyLimit, int usedToday, int maxAttempts) {
+public record AiStatusDto(boolean configured, String provider, int dailyLimit, int usedToday, int maxAttempts,
+        boolean studioLook) {
 }

@@ -92,6 +92,20 @@ Xərc və lisenziya seçiləndə bu sənədə yazılır.
   `VIRTUAL_TRY_ON` tapşırığı növbəyə düşür (uyğun ilk model ilə). Default `false`. Provayder, limit və ya büdcə
   imkan vermirsə heç nə növbəyə düşmür və şəkil yükləməsi pozulmur; nəticə yenə satıcının təsdiqini gözləyir.
 
+### Studiya görünüşü (#119)
+
+- AI Studio-da üçüncü növ: `STUDIO_LOOK`. Satıcının öz şəkli kataloq standartına gətirilir (`docs/DESIGN.md`
+  "Məhsul şəkli standartı"): fon silinir, krem fonda mərkəzə qoyulur, yumşaq kölgə, 4:5. Təlimat
+  `ai/prompts/STUDIO_LOOK.txt`-dədir.
+- Ayrıca prosessor: `JEPARLA_AI_STUDIO_PROCESSOR` (default `none`, "qoşulmayıb"). Eyni
+  `ImageGenerationProvider` interfeysi, amma `generative()` `false` qaytarır (əşyanı dəyişmir) və adətən
+  `local()` `true`-dur (API-nin CPU-sunda, məs. ONNX fon silmə modeli): aylıq xərc limiti ona tətbiq olunmur,
+  mağaza üzrə gündəlik kvota tətbiq olunur (növbə ilə, Oracle ARM VM-i yükləməmək üçün).
+- Hər nəticə faylı `ai_assets.ai_generated` (V44) ilə saxlanılır: generativ olmayan nəticə təsdiqdən sonra
+  `aiGenerated=false` məhsul şəkli olur, nişansız. Generativ provayder seçilibsə nişan həmişə qalır.
+- Orijinal şəkil dəyişmir; nəticə əlavə şəkil kimi gəlir, satıcı istəsə onu birinci edir (#121 qaydası: birinci
+  şəkil AI ilə yaradılmış ola bilməz, təmizlənmiş foto isə orijinal sayılır).
+
 ### Dürüstlük
 
 - Provayder qoşulmayanda heç bir nümunə AI şəkil göstərilmir.

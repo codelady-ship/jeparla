@@ -81,7 +81,7 @@ public class AiJobWorker {
 
     @Scheduled(fixedDelayString = "${jeparla.ai.worker-delay:15s}", initialDelayString = "${jeparla.ai.worker-delay:15s}")
     void scheduled() {
-        if (!providers.active().configured()) {
+        if (!providers.anyConfigured()) {
             return;
         }
         try {
@@ -126,7 +126,12 @@ public class AiJobWorker {
             job.fail(ImageGenerationCodes.SOURCE_GONE, now);
             return new Claimed(job.getId(), 0, job.getStoreId(), job.getProductId(), BigDecimal.ZERO, null);
         }
-        ImageGenerationProvider provider = providers.active();
+        ImageGenerationProvider provider = providers.forKind(job.getKind().name());
+        if (!provider.configured()) {
+            // Turned off after the job was queued: it waits as FAILED (retryable) instead of running nowhere.
+            job.fail(ImageGenerationException.NOT_CONFIGURED, now);
+            return new Claimed(job.getId(), 0, job.getStoreId(), job.getProductId(), BigDecimal.ZERO, null);
+        }
         Map<String, String> params = parameters.of(job);
         GenerationRequest request = new GenerationRequest(job.getId(), job.getKind().name(),
                 imageUrls.url(source.getStorageKey()), prompts.prompt(job.getKind(), params),
@@ -136,7 +141,7 @@ public class AiJobWorker {
         usage.lockCost();
         LocalDate today = LocalDate.ofInstant(now, properties.zone());
         BigDecimal spent = usage.monthCost(YearMonth.from(today));
-        if (spent.add(estimate).compareTo(properties.monthlyCostLimit()) > 0) {
+        if (!provider.local() && spent.add(estimate).compareTo(properties.monthlyCostLimit()) > 0) {
             log.warn("AI Studio monthly cost limit reached: job {} not started", job.getId());
             job.fail(ImageGenerationCodes.COST_LIMIT, now);
             return new Claimed(job.getId(), 0, job.getStoreId(), job.getProductId(), BigDecimal.ZERO, null);
@@ -151,7 +156,7 @@ public class AiJobWorker {
     private void process(Claimed claimed) {
         GenerationResult result;
         try {
-            result = providers.active().generate(claimed.request());
+            result = providers.forKind(claimed.request().kind()).generate(claimed.request());
         } catch (ImageGenerationException e) {
             log.info("AI job {} failed at the provider: {}", claimed.jobId(), e.code());
             finishFailed(claimed, ImageGenerationCodes.known(e.code()));
@@ -210,7 +215,8 @@ public class AiJobWorker {
         String key = "ai/" + claimed.storeId() + "/" + claimed.productId() + "/" + UUID.randomUUID() + "."
                 + AiStudioService.extension(info.contentType());
         storage.putPrivate(key, bytes, info.contentType());
-        return new AiAsset(claimed.jobId(), key, info.contentType(), info.width(), info.height(), bytes.length);
+        return new AiAsset(claimed.jobId(), key, info.contentType(), info.width(), info.height(), bytes.length,
+                providers.forKind(claimed.request().kind()).generative());
     }
 
     private void finishFailed(Claimed claimed, String code) {
