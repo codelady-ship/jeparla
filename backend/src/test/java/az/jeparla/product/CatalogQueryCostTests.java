@@ -85,7 +85,8 @@ class CatalogQueryCostTests {
 
     @Test
     void otherEndpointsHaveAFixedCost() throws Exception {
-        assertThat(statements("/api/v1/products/nisan-uzukleri-gold-585-1")).isLessThanOrEqualTo(7);
+        // + the quotes the variants were priced from (#104) and the evidence photos (#106), one statement each
+        assertThat(statements("/api/v1/products/nisan-uzukleri-gold-585-1")).isLessThanOrEqualTo(9);
         assertThat(statements("/api/v1/categories")).isLessThanOrEqualTo(2);
         assertThat(statements("/api/v1/finenesses")).isOne();
         assertThat(statements("/api/v1/stores")).isLessThanOrEqualTo(3);

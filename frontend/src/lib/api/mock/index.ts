@@ -109,7 +109,7 @@ function listProducts(f: ProductFilters = {}): Page<ProductSummary> {
   return paginate(sorted.map(toSummary), f.page, f.size);
 }
 
-/** In-memory implementation of the API, used while NEXT_PUBLIC_USE_MOCK is not "false". */
+/** In-memory implementation of the API, used only when NEXT_PUBLIC_USE_MOCK is "true". */
 export const mockApi: JeparlaApi = {
   async listProducts(filters) {
     return listProducts(filters);

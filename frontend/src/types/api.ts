@@ -156,7 +156,8 @@ export type MetalPrice = {
   pricePerOunce: Decimal;
   pricePerGram: Decimal;
   currency: "AZN";
-  source: "CBAR";
+  /** CBAR: the daily bulletin; ADMIN: a manual correction by a Jeparla admin (#150). */
+  source: "CBAR" | "ADMIN";
   fetchedAt: IsoDate;
 };
 

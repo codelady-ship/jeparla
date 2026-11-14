@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Schema(name = "Product", requiredProperties = {"id", "slug", "name", "categoryId", "store", "metal", "priceFrom",
         "defaultVariantId", "pricingMode", "fineness", "weightGrams", "images", "hasStones", "verification",
-        "stockStatus", "publishedAt", "description", "variants", "stones", "status"})
+        "stockStatus", "publishedAt", "description", "variants", "stones", "status", "evidencePhotos"})
 public record ProductDto(
         long id,
         String slug,
@@ -38,14 +38,16 @@ public record ProductDto(
         LocalizedTextDto description,
         List<VariantDto> variants,
         List<StoneDto> stones,
-        @Schema(description = "Always APPROVED in the public API") ProductStatus status) {
+        @Schema(description = "Always APPROVED in the public API") ProductStatus status,
+        @Schema(description = "Hallmark and label photos (#106), HALLMARK first; empty when the seller added none")
+        List<EvidencePhotoDto> evidencePhotos) {
 
     public static ProductDto of(ProductSummaryDto summary, LocalizedTextDto description, List<VariantDto> variants,
-            List<StoneDto> stones, ProductStatus status) {
+            List<StoneDto> stones, ProductStatus status, List<EvidencePhotoDto> evidencePhotos) {
         return new ProductDto(summary.id(), summary.slug(), summary.name(), summary.categoryId(), summary.store(),
                 summary.metal(), summary.priceFrom(), summary.defaultVariantId(), summary.pricingMode(),
                 summary.fineness(), summary.weightGrams(), summary.images(), summary.hasStones(),
                 summary.verification(), summary.stockStatus(), summary.publishedAt(), description, variants, stones,
-                status);
+                status, evidencePhotos);
     }
 }

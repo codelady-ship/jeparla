@@ -20,7 +20,9 @@ public class ClientIpConfig {
     FilterRegistrationBean<ClientIpFilter> clientIpFilter(ClientIpProperties properties) {
         TrustedProxies proxies = properties.proxies();
         log.info("Client IP: X-Forwarded-For is trusted only from {}", proxies.isEmpty() ? "nobody" : proxies);
-        FilterRegistrationBean<ClientIpFilter> registration = new FilterRegistrationBean<>(new ClientIpFilter(proxies));
+        log.info("Client IP: frontend relay header is {}", properties.frontendToken() == null ? "off" : "on");
+        FilterRegistrationBean<ClientIpFilter> registration =
+                new FilterRegistrationBean<>(new ClientIpFilter(proxies, properties.frontendToken()));
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
         return registration;
     }

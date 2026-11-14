@@ -11,7 +11,7 @@ import type { QuoteStatus, ReportStatus, StoreStatus } from "@/types/admin";
 
 export type StoreAction = "approve" | "reject" | "block" | "unblock";
 export type ProductAction = "approve" | "return" | "deactivate";
-export type CheckAction = "verify" | "return";
+export type CheckAction = "verify" | "return" | "reject";
 export type ReportAction = "resolve" | "dismiss";
 export type QuoteAction = "accept" | "discard";
 export type AdminAction = StoreAction | ProductAction | CheckAction | ReportAction | QuoteAction;
@@ -43,7 +43,7 @@ const PRODUCT_RESULT: Record<ProductAction, ProductStatus> = {
 };
 
 export const CHECK_ACTIONS: Record<CheckStatus, readonly CheckAction[]> = {
-  PENDING: ["verify", "return"],
+  PENDING: ["verify", "return", "reject"],
   NONE: [],
   VERIFIED: [],
   REJECTED: [],
@@ -51,6 +51,7 @@ export const CHECK_ACTIONS: Record<CheckStatus, readonly CheckAction[]> = {
 const CHECK_RESULT: Record<CheckAction, CheckStatus> = {
   verify: "VERIFIED",
   return: "REJECTED",
+  reject: "REJECTED",
 };
 
 export const REPORT_ACTIONS: Record<ReportStatus, readonly ReportAction[]> = {
@@ -84,6 +85,16 @@ export const NEEDS_REASON: ReadonlySet<AdminAction> = new Set<AdminAction>([
   "discard",
 ]);
 
+/** Why a verification document is refused (backend RejectReason). */
+export const DOCUMENT_REASONS = [
+  "UNREADABLE",
+  "EXPIRED",
+  "MISMATCH",
+  "WRONG_TYPE",
+  "HALLMARK_MISSING",
+  "AUTHENTICITY",
+] as const;
+
 export const REASON_MIN = 10;
 export const REASON_MAX = 500;
 
@@ -91,6 +102,8 @@ export const decisionSchema = z
   .object({
     action: z.string(),
     reason: z.string().trim().max(REASON_MAX, "reasonTooLong").optional().default(""),
+    /** Why a document was refused, from DOCUMENT_REASONS (the API needs one). */
+    code: z.string().optional(),
   })
   .superRefine((v, ctx) => {
     if (NEEDS_REASON.has(v.action as AdminAction) && v.reason.length < REASON_MIN)
