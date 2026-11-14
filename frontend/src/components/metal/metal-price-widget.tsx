@@ -7,6 +7,7 @@ import { formatDecimal, formatPrice } from "@/lib/money";
 import { alloyGramPrice, compareDecimal, percentChange } from "@/lib/pricing";
 import type { MetalPrice, MetalType } from "@/types/api";
 import { cn } from "cn";
+import { ChangingValue } from "./changing-value";
 import { PriceChart } from "./price-chart";
 
 /** Gram prices people buy by (PLAN 5.10): gold 585/750/999, silver 925. */
@@ -104,7 +105,13 @@ export async function MetalPriceWidget({
             <dt className="text-sm text-muted-foreground">
               {t("tile", { metal: tp(`metal.${tile.metal}`), fineness: tile.fineness })}
             </dt>
-            <dd className="text-xl font-semibold tabular-nums sm:text-2xl">{money(tile.price)}</dd>
+            <dd className="text-xl font-semibold tabular-nums sm:text-2xl">
+              {/* Quiet transition only when the rate changed since this browser last saw it. */}
+              <ChangingValue
+                storageKey={`metal.${locale}.${tile.metal}-${tile.fineness}`}
+                text={money(tile.price)}
+              />
+            </dd>
           </div>
         ))}
       </dl>
