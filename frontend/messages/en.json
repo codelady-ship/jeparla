@@ -2033,5 +2033,24 @@
         "a": "Press \"Report\" on the product page. The team checks the product and the store again."
       }
     }
+  },
+  "Guides": {
+    "title": "Guides",
+    "metaTitle": "Jewelry guides: gold, diamonds, hallmarks, silver",
+    "description": "Sourced guides on gold fineness, how the gold price is calculated, the 4C of a diamond, checking a hallmark and caring for silver.",
+    "intro": "Short, sourced answers to the questions people ask most when buying jewelry. Every guide starts with a short answer and ends with the sources it uses.",
+    "navLabel": "Guides",
+    "breadcrumb": "Breadcrumb",
+    "readGuide": "Read the guide",
+    "author": "Author",
+    "authorName": "Jeparla editorial team",
+    "published": "Published",
+    "updated": "Updated",
+    "shortAnswer": "Short answer",
+    "toc": "On this page",
+    "sources": "Sources",
+    "sourcesNote": "Every source was opened and checked when the guide was written. No prices are quoted here: metal prices change every day.",
+    "more": "Other guides",
+    "external": "opens another site in a new tab"
   }
 }
