@@ -2,6 +2,7 @@ import { AboutJeparla } from "@/components/home/about-jeparla";
 import { CinematicHero } from "@/components/home/hero/cinematic-hero";
 import {
   BecomeSeller,
+  BudgetPicks,
   FeaturedStores,
   HomeCategories,
   MetalPrices,
@@ -27,6 +28,7 @@ export default function Home() {
     <>
       <CinematicHero />
       <HomeCategories />
+      <BudgetPicks />
       <NewArrivals />
       <MetalPrices />
       <VerifiedExplainer />

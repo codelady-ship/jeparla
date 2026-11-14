@@ -2,7 +2,15 @@
 
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState, ViewTransition, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  ViewTransition,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
@@ -24,9 +32,20 @@ const fill = (tpl: string, n: number, total: number) =>
 
 const svg = (url: string) => url.endsWith(".svg");
 
+/** The first photo uses the same sizes in both layouts, so the browser fetches it once. */
+const FIRST_SIZES = "(min-width: 1024px) 50vw, 100vw";
+
+const roundButton =
+  "touch-target inline-flex size-10 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
+
 /**
- * Product images: cross-fade between shots, swipe on touch, thumbnails, zoom dialog.
- * The first image shares its view-transition name with the product card (morph).
+ * Product photos (#173).
+ * - Phones and tablets: full-width swipe carousel with a "1 / 5" counter and dots.
+ * - Desktop: a large grid (first photo full width, the rest in two columns); a
+ *   magnifier follows the mouse (2x, transform only) and a click opens the full view.
+ * - Full view: one photo at a time, arrows and the keyboard to move, pinch-zoom on
+ *   touch, Escape closes and focus returns. Large files load only when it opens.
+ * The first photo shares its view-transition name with the product card (morph).
  */
 export function Gallery({
   productId,
@@ -49,6 +68,10 @@ export function Gallery({
     setIndex(i);
   };
   const go = (i: number) => show((i + total) % total);
+  const open = (i: number) => {
+    show(i);
+    setZoom(true);
+  };
 
   useEffect(() => {
     const load = () => setRest(true);
@@ -66,14 +89,34 @@ export function Gallery({
     startX.current = null;
     if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
   }
+  function onKeyDown(e: KeyboardEvent) {
+    if (total < 2) return;
+    if (e.key === "ArrowRight") go(index + 1);
+    if (e.key === "ArrowLeft") go(index - 1);
+  }
 
   if (total === 0) return null;
   const current = images[index];
+  const position = fill(labels.position, index + 1, total);
+
+  const aiBadge = (img: GalleryImage) =>
+    img.aiGenerated && (
+      <Badge variant="secondary" className="absolute top-3 left-3 z-10">
+        {labels.ai}
+      </Badge>
+    );
+
+  const morph = (node: ReactNode) => (
+    <ViewTransition name={`product-${productId}`} share="morph" default="none">
+      {node}
+    </ViewTransition>
+  );
 
   return (
-    <div className="flex flex-col gap-3">
+    <div>
+      {/* Phones and tablets: swipe carousel. */}
       <div
-        className="relative aspect-[4/5] touch-pan-y overflow-hidden rounded-lg bg-muted select-none"
+        className="relative aspect-[4/5] touch-pan-y overflow-hidden rounded-lg bg-muted select-none lg:hidden"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         aria-roledescription="carousel"
@@ -84,7 +127,7 @@ export function Gallery({
               src={img.url}
               alt={img.alt}
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes={i === 0 ? FIRST_SIZES : "100vw"}
               preload={i === 0}
               fetchPriority={i === 0 ? "high" : undefined}
               unoptimized={svg(img.url)}
@@ -100,26 +143,16 @@ export function Gallery({
                 i === index ? "opacity-100" : "opacity-0",
               )}
             >
-              {i === 0 ? (
-                <ViewTransition name={`product-${productId}`} share="morph" default="none">
-                  {image}
-                </ViewTransition>
-              ) : (
-                image
-              )}
+              {i === 0 ? morph(image) : image}
             </div>
           );
         })}
-        {current.aiGenerated && (
-          <Badge variant="secondary" className="absolute top-3 left-3">
-            {labels.ai}
-          </Badge>
-        )}
+        {aiBadge(current)}
         <button
           type="button"
           onClick={() => setZoom(true)}
           aria-label={labels.zoom}
-          className="touch-target absolute right-3 bottom-3 inline-flex size-10 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className={cn(roundButton, "absolute right-3 bottom-3")}
         >
           <Expand aria-hidden className="size-4" />
         </button>
@@ -129,7 +162,10 @@ export function Gallery({
               type="button"
               onClick={() => go(index - 1)}
               aria-label={labels.prev}
-              className="touch-target absolute top-1/2 left-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
+              className={cn(
+                roundButton,
+                "absolute top-1/2 left-3 hidden -translate-y-1/2 sm:inline-flex",
+              )}
             >
               <ChevronLeft aria-hidden className="size-5" />
             </button>
@@ -137,52 +173,89 @@ export function Gallery({
               type="button"
               onClick={() => go(index + 1)}
               aria-label={labels.next}
-              className="touch-target absolute top-1/2 right-3 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 shadow-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:inline-flex"
+              className={cn(
+                roundButton,
+                "absolute top-1/2 right-3 hidden -translate-y-1/2 sm:inline-flex",
+              )}
             >
               <ChevronRight aria-hidden className="size-5" />
             </button>
+            {/* Visible counter and dots; the live region below speaks the position. */}
+            <span
+              aria-hidden
+              className="absolute bottom-3 left-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium tabular-nums shadow-sm"
+            >
+              {index + 1} / {total}
+            </span>
+            <span aria-hidden className="absolute inset-x-0 bottom-5 flex justify-center gap-1.5">
+              {images.map((img, i) => (
+                <span
+                  key={img.url + i}
+                  className={cn(
+                    "size-1.5 rounded-full bg-background shadow-sm transition-opacity duration-(--duration-base) motion-reduce:transition-none",
+                    i === index ? "opacity-100" : "opacity-50",
+                  )}
+                />
+              ))}
+            </span>
           </>
         )}
         <p className="sr-only" aria-live="polite">
-          {fill(labels.position, index + 1, total)}
+          {position}
         </p>
       </div>
 
-      {total > 1 && (
-        <ul className="flex gap-2">
-          {images.map((img, i) => (
-            <li key={img.url + i}>
+      {/* Desktop: large grid with a magnifier; a click opens the full view. */}
+      <ul className="hidden grid-cols-2 gap-3 lg:grid">
+        {images.map((img, i) => {
+          const image = (
+            <Image
+              src={img.url}
+              alt={img.alt}
+              fill
+              sizes={i === 0 ? FIRST_SIZES : "25vw"}
+              fetchPriority={i === 0 ? "high" : undefined}
+              unoptimized={svg(img.url)}
+              className="gallery-lens object-cover"
+            />
+          );
+          return (
+            <li key={img.url + i} className={cn(i === 0 && "col-span-2")}>
               <button
                 type="button"
-                onClick={() => show(i)}
-                aria-current={i === index}
-                aria-label={fill(labels.position, i + 1, total)}
-                className={cn(
-                  "relative block size-16 overflow-hidden rounded-md border-2 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                  i === index ? "border-primary" : "border-transparent",
-                )}
+                onClick={() => open(i)}
+                onPointerMove={(e) => {
+                  if (e.pointerType !== "mouse") return;
+                  const r = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty(
+                    "--lens-x",
+                    `${((e.clientX - r.left) / r.width) * 100}%`,
+                  );
+                  e.currentTarget.style.setProperty(
+                    "--lens-y",
+                    `${((e.clientY - r.top) / r.height) * 100}%`,
+                  );
+                }}
+                aria-label={`${labels.zoom}: ${fill(labels.position, i + 1, total)}`}
+                className="group/lens relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-lg bg-muted outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
-                <Image
-                  src={img.url}
-                  alt=""
-                  fill
-                  sizes="64px"
-                  unoptimized={svg(img.url)}
-                  className="object-cover"
-                />
+                {i === 0 ? morph(image) : image}
+                {aiBadge(img)}
               </button>
             </li>
-          ))}
-        </ul>
-      )}
+          );
+        })}
+      </ul>
 
       <Dialog open={zoom} onOpenChange={setZoom}>
         <DialogContent
           closeLabel={labels.close}
           className="max-w-[min(92vw,56rem)] p-2 sm:max-w-[min(92vw,56rem)]"
+          onKeyDown={onKeyDown}
         >
           <DialogTitle className="sr-only">{current.alt}</DialogTitle>
-          <div className="relative aspect-[4/5] max-h-[85vh] w-full overflow-auto">
+          {/* Pinch-zoom stays with the browser on touch screens. */}
+          <div className="relative aspect-[4/5] max-h-[85vh] w-full touch-pinch-zoom overflow-auto">
             <Image
               src={current.url}
               alt={current.alt}
@@ -191,7 +264,31 @@ export function Gallery({
               unoptimized={svg(current.url)}
               className="object-contain"
             />
+            {aiBadge(current)}
           </div>
+          {total > 1 && (
+            <div className="flex items-center justify-between gap-2 px-1 pb-1">
+              <button
+                type="button"
+                onClick={() => go(index - 1)}
+                aria-label={labels.prev}
+                className={roundButton}
+              >
+                <ChevronLeft aria-hidden className="size-5" />
+              </button>
+              <p className="text-sm tabular-nums" aria-live="polite">
+                {position}
+              </p>
+              <button
+                type="button"
+                onClick={() => go(index + 1)}
+                aria-label={labels.next}
+                className={roundButton}
+              >
+                <ChevronRight aria-hidden className="size-5" />
+              </button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

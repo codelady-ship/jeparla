@@ -217,18 +217,20 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     }
 
     @Override
+    public void putPrivate(String key, byte[] bytes, String contentType) {
+        if (key.startsWith(STAGING_PREFIX)) {
+            throw new IllegalArgumentException("Not a private object key: " + key);
+        }
+        client.putObject(PutObjectRequest.builder().bucket(privateBucket).key(key).contentType(contentType)
+                .contentLength((long) bytes.length).build(), RequestBody.fromBytes(bytes));
+    }
+
+    @Override
     public void deletePrivate(String key) {
         if (key.startsWith(STAGING_PREFIX)) {
             throw new IllegalArgumentException("Not a private object key: " + key);
         }
         client.deleteObject(DeleteObjectRequest.builder().bucket(privateBucket).key(key).build());
-    }
-
-    @Override
-    public void putPrivate(String key, byte[] bytes, String contentType) {
-        requirePrivateKey(key);
-        client.putObject(PutObjectRequest.builder().bucket(privateBucket).key(key).contentType(contentType)
-                .contentLength((long) bytes.length).build(), RequestBody.fromBytes(bytes));
     }
 
     /** A server-side copy between the two buckets of one account; content type and length are kept. */

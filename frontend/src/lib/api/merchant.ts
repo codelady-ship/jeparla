@@ -8,8 +8,11 @@ import type {
   ProductInput,
 } from "@/types/merchant";
 import { suggestAudience } from "@/lib/merchant/audience";
+import { userFetch } from "@/lib/auth/backend";
 import { EMPTY_PRICING } from "@/lib/merchant/draft";
-import { USING_MOCK } from "./index";
+import { toMerchantProduct, type BackendProduct } from "@/lib/merchant/backend";
+import { ApiError } from "./http";
+import { api as publicApi, USING_MOCK } from "./index";
 import { CATEGORIES, PRODUCTS, STORES } from "./mock/fixtures";
 
 /**
@@ -162,7 +165,7 @@ function mockMerchantApi(session: Session): MerchantApi {
       const counts = Object.fromEntries(
         STATUSES.map((s) => [s, rows.filter((r) => r.status === s).length]),
       ) as MerchantDashboard["counts"];
-      const views = rows.reduce((sum, r) => sum + r.views, 0);
+      const views = rows.reduce((sum, r) => sum + (r.views ?? 0), 0);
       return { views, whatsappClicks: Math.round(views * 0.06), counts };
     },
     async products() {
@@ -175,11 +178,29 @@ function mockMerchantApi(session: Session): MerchantApi {
   };
 }
 
+/**
+ * The backend finds the store from the access token; the proxy refreshed the token before
+ * this render (server components never rotate it themselves).
+ */
 function httpMerchantApi(): MerchantApi {
-  // Wired up with the backend auth (Day 5, issue #41): the JWT travels in the
-  // request and the backend picks the store. Until then the cabinet runs on the mock.
-  const fail = () => Promise.reject(new Error("Merchant API is not connected yet"));
-  return { store: fail, dashboard: fail, products: fail, product: fail };
+  return {
+    store: () => userFetch<MerchantStore>("/merchant/store"),
+    dashboard: () => userFetch<MerchantDashboard>("/merchant/dashboard"),
+    products: () => userFetch<MerchantProductRow[]>("/merchant/products"),
+    async product(id) {
+      try {
+        const [p, categories] = await Promise.all([
+          userFetch<BackendProduct>(`/merchant/products/${id}`),
+          publicApi.listCategories(),
+        ]);
+        return toMerchantProduct(p, categories);
+      } catch (e) {
+        // Someone else's product is 403, a deleted one 404: both are "not found" here.
+        if (e instanceof ApiError && (e.status === 404 || e.status === 403)) return null;
+        throw e;
+      }
+    },
+  };
 }
 
 export function merchantApi(session: Session): MerchantApi {

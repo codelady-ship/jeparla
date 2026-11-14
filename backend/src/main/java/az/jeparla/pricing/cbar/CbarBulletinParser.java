@@ -4,12 +4,16 @@ import az.jeparla.product.Metal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -44,6 +48,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public final class CbarBulletinParser {
 
     /** CBAR codes of the bank metals (ISO 4217). */
+    /** Currencies a buyer can see prices in, besides AZN (#53). */
+    static final Set<String> DISPLAY_CURRENCIES = Set.of("USD", "EUR");
+
     static final Map<String, Metal> METAL_CODES = Map.of(
             "XAU", Metal.GOLD, "XAG", Metal.SILVER, "XPT", Metal.PLATINUM, "XPD", Metal.PALLADIUM);
 
@@ -82,11 +89,13 @@ public final class CbarBulletinParser {
         }
 
         Map<Metal, BigDecimal> prices = new EnumMap<>(Metal.class);
+        Map<String, BigDecimal> rates = new HashMap<>();
         NodeList valutes = root.getElementsByTagName("Valute");
         for (int i = 0; i < valutes.getLength(); i++) {
             Element valute = (Element) valutes.item(i);
             Metal metal = METAL_CODES.get(valute.getAttribute("Code").trim());
             if (metal == null) {
+                currencyRate(valute).ifPresent(rate -> rates.putIfAbsent(valute.getAttribute("Code").trim(), rate));
                 continue;
             }
             String code = valute.getAttribute("Code").trim();
@@ -104,7 +113,29 @@ public final class CbarBulletinParser {
                 throw invalid(code.getKey() + " (" + code.getValue() + ") is missing");
             }
         }
-        return new CbarBulletin(date, prices);
+        return new CbarBulletin(date, prices, rates);
+    }
+
+    /**
+     * AZN per one unit of a display currency (USD, EUR; #53), or empty. Lenient, unlike the metals: a missing or
+     * odd currency entry never refuses the bulletin, the display just keeps the last good rate. The nominal is a
+     * plain positive integer ("1", "100") and the value is divided by it, exactly ({@code BigDecimal}, 6 places).
+     */
+    static Optional<BigDecimal> currencyRate(Element valute) {
+        if (!DISPLAY_CURRENCIES.contains(valute.getAttribute("Code").trim())) {
+            return Optional.empty();
+        }
+        try {
+            String code = valute.getAttribute("Code").trim();
+            String nominal = normalizeSpace(childText(valute, "Nominal", code));
+            if (!nominal.matches("[1-9]\\d{0,5}")) {
+                return Optional.empty();
+            }
+            BigDecimal value = value(childText(valute, "Value", code), code);
+            return Optional.of(value.divide(new BigDecimal(nominal), 6, RoundingMode.HALF_UP));
+        } catch (CbarFeedException e) {
+            return Optional.empty();
+        }
     }
 
     private static Document read(byte[] xml) {

@@ -1,5 +1,6 @@
+import { USING_MOCK } from "@/lib/api";
 import { aiStudioApi } from "@/lib/api/ai";
-import { AUTH_AVAILABLE, readJson, unavailable } from "@/lib/auth/server";
+import { readJson, unavailable } from "@/lib/auth/server";
 import { aiJobAction } from "@/lib/merchant/ai";
 import { merchantOr401 } from "@/lib/merchant/server";
 
@@ -8,7 +9,7 @@ import { merchantOr401 } from "@/lib/merchant/server";
  * and the others. Without a provider no job exists, so every action is 503 or 404.
  */
 export async function POST(request: Request, ctx: RouteContext<"/api/merchant/ai/jobs/[id]">) {
-  if (!AUTH_AVAILABLE) return unavailable();
+  if (!USING_MOCK) return unavailable();
   const session = await merchantOr401();
   if (session instanceof Response) return session;
   const id = Number((await ctx.params).id);

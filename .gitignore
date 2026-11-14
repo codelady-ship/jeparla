@@ -61,3 +61,5 @@ docs/research/screens/
 # Remotion hero video (video/)
 video/node_modules/
 video/out/
+# Social Reels: the owner's own footage and page screenshots stay local
+video/public/social/

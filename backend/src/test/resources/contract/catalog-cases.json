@@ -28,6 +28,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -79,6 +81,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "104.86",
@@ -130,6 +134,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1440.00",
@@ -181,6 +187,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "388.82",
@@ -243,6 +251,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1929.48",
@@ -294,6 +304,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "50.00",
@@ -345,6 +357,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1433.21",
@@ -407,6 +421,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "1075.52",
@@ -458,6 +474,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "440.00",
@@ -509,6 +527,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "148.30",
@@ -560,6 +580,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1133.95",
@@ -611,6 +633,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1250.00",
@@ -662,6 +686,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1896.48",
@@ -724,6 +750,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "94.84",
@@ -775,6 +803,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2200.00",
@@ -826,6 +856,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "469.06",
@@ -888,6 +920,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2101.12",
@@ -939,6 +973,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "190.00",
@@ -990,6 +1026,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "842.60",
@@ -1041,6 +1079,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2338.01",
@@ -1092,6 +1132,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2160.00",
@@ -1143,6 +1185,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "138.28",
@@ -1205,6 +1249,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "287.33",
@@ -1256,6 +1302,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "610.00",
@@ -1321,6 +1369,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "148.30",
@@ -1372,6 +1422,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "160.00",
@@ -1423,6 +1475,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "170.00",
@@ -1474,6 +1528,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "180.00",
@@ -1525,6 +1581,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "190.00",
@@ -1576,6 +1634,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "265.89",
@@ -1638,6 +1698,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "287.33",
@@ -1689,6 +1751,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "388.82",
@@ -1751,6 +1815,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "431.53",
@@ -1813,6 +1879,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "440.00",
@@ -1878,6 +1946,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "3170.00",
@@ -1929,6 +1999,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2761.69",
@@ -1991,6 +2063,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2746.55",
@@ -2042,6 +2116,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2724.86",
@@ -2093,6 +2169,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2660.00",
@@ -2144,6 +2222,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2338.01",
@@ -2195,6 +2275,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2200.00",
@@ -2246,6 +2328,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2160.00",
@@ -2297,6 +2381,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2101.12",
@@ -2348,6 +2434,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2081.31",
@@ -2399,6 +2487,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2056.94",
@@ -2461,6 +2551,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1929.48",
@@ -2526,6 +2618,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -2577,6 +2671,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1920.00",
@@ -2628,6 +2724,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "431.53",
@@ -2690,6 +2788,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "287.33",
@@ -2741,6 +2841,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "50.00",
@@ -2792,6 +2894,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "570.00",
@@ -2843,6 +2947,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "265.89",
@@ -2905,6 +3011,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1133.95",
@@ -2956,6 +3064,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "64.77",
@@ -3007,6 +3117,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "450.00",
@@ -3058,6 +3170,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "469.06",
@@ -3120,6 +3234,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1127.56",
@@ -3196,6 +3312,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "980.00",
@@ -3247,6 +3365,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "180.00",
@@ -3298,6 +3418,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "998.52",
@@ -3349,6 +3471,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "665.96",
@@ -3400,6 +3524,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "108.21",
@@ -3462,6 +3588,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "265.89",
@@ -3524,6 +3652,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1920.00",
@@ -3575,6 +3705,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "3170.00",
@@ -3626,6 +3758,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -3677,6 +3811,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "84.82",
@@ -3728,6 +3864,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1127.56",
@@ -3790,6 +3928,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2761.69",
@@ -3866,6 +4006,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1175.17",
@@ -3917,6 +4059,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "64.77",
@@ -3968,6 +4112,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2660.00",
@@ -4019,6 +4165,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2081.31",
@@ -4070,6 +4218,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "782.95",
@@ -4121,6 +4271,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "160.00",
@@ -4172,6 +4324,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1127.56",
@@ -4234,6 +4388,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -4285,6 +4441,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1920.00",
@@ -4336,6 +4494,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "108.21",
@@ -4398,6 +4558,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "998.52",
@@ -4449,6 +4611,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "980.00",
@@ -4527,6 +4691,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -4578,6 +4744,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "104.86",
@@ -4629,6 +4797,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1133.95",
@@ -4680,6 +4850,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1250.00",
@@ -4731,6 +4903,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2160.00",
@@ -4782,6 +4956,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "138.28",
@@ -4844,6 +5020,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1004.36",
@@ -4895,6 +5073,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1665.49",
@@ -4946,6 +5126,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1629.57",
@@ -4997,6 +5179,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "170.00",
@@ -5048,6 +5232,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2660.00",
@@ -5099,6 +5285,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2081.31",
@@ -5177,6 +5365,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -5228,6 +5418,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1433.21",
@@ -5290,6 +5482,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1896.48",
@@ -5352,6 +5546,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1004.36",
@@ -5403,6 +5599,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1665.49",
@@ -5454,6 +5652,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2056.94",
@@ -5516,6 +5716,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "905.24",
@@ -5578,6 +5780,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -5643,6 +5847,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "388.82",
@@ -5705,6 +5911,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "440.00",
@@ -5756,6 +5964,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "500.00",
@@ -5807,6 +6017,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "610.00",
@@ -5858,6 +6070,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "665.96",
@@ -5909,6 +6123,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "782.95",
@@ -5960,6 +6176,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "800.00",
@@ -6011,6 +6229,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "842.60",
@@ -6062,6 +6282,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "905.24",
@@ -6124,6 +6346,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "980.00",
@@ -6175,6 +6399,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1004.36",
@@ -6226,6 +6452,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1127.56",
@@ -6288,6 +6516,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1250.00",
@@ -6339,6 +6569,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1433.21",
@@ -6415,6 +6647,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -6466,6 +6700,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "104.86",
@@ -6517,6 +6753,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1929.48",
@@ -6568,6 +6806,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1433.21",
@@ -6630,6 +6870,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "1075.52",
@@ -6681,6 +6923,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1896.48",
@@ -6743,6 +6987,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "94.84",
@@ -6794,6 +7040,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2101.12",
@@ -6845,6 +7093,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "842.60",
@@ -6896,6 +7146,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2338.01",
@@ -6947,6 +7199,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "287.33",
@@ -6998,6 +7252,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2761.69",
@@ -7060,6 +7316,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "84.82",
@@ -7111,6 +7369,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "665.96",
@@ -7162,6 +7422,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1004.36",
@@ -7213,6 +7475,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1665.49",
@@ -7264,6 +7528,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2746.55",
@@ -7315,6 +7581,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2056.94",
@@ -7377,6 +7645,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "74.79",
@@ -7428,6 +7698,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1629.57",
@@ -7479,6 +7751,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "905.24",
@@ -7541,6 +7815,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2724.86",
@@ -7592,6 +7868,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1175.17",
@@ -7643,6 +7921,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "64.77",
@@ -7694,6 +7974,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "782.95",
@@ -7745,6 +8027,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -7796,6 +8080,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "998.52",
@@ -7861,6 +8147,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1133.95",
@@ -7912,6 +8200,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2101.12",
@@ -7963,6 +8253,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1629.57",
@@ -8014,6 +8306,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2724.86",
@@ -8079,6 +8373,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2160.00",
@@ -8130,6 +8426,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "3170.00",
@@ -8181,6 +8479,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2660.00",
@@ -8232,6 +8532,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1920.00",
@@ -8297,6 +8599,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "1075.52",
@@ -8348,6 +8652,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "265.89",
@@ -8410,6 +8716,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "500.00",
@@ -8475,6 +8783,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -8526,6 +8836,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "50.00",
@@ -8577,6 +8889,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1133.95",
@@ -8628,6 +8942,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "469.06",
@@ -8690,6 +9006,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2160.00",
@@ -8741,6 +9059,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "84.82",
@@ -8792,6 +9112,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1004.36",
@@ -8843,6 +9165,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "800.00",
@@ -8894,6 +9218,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1629.57",
@@ -8945,6 +9271,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "118.23",
@@ -8996,6 +9324,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2660.00",
@@ -9047,6 +9377,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -9111,6 +9443,8 @@
               "expertise": "NONE"
             }
           },
+          "materialKind": "PRECIOUS",
+          "material": null,
           "metal": "GOLD",
           "priceFrom": {
             "amount": "1440.00",
@@ -9162,6 +9496,8 @@
               "expertise": "NONE"
             }
           },
+          "materialKind": "PRECIOUS",
+          "material": null,
           "metal": "GOLD",
           "priceFrom": {
             "amount": "508.75",
@@ -9213,6 +9549,8 @@
               "expertise": "NONE"
             }
           },
+          "materialKind": "PRECIOUS",
+          "material": null,
           "metal": "SILVER",
           "priceFrom": {
             "amount": "104.86",
@@ -9273,6 +9611,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "104.86",
@@ -9354,6 +9694,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "508.75",
@@ -9454,6 +9796,8 @@
             "expertise": "NONE"
           }
         },
+        "materialKind": "PRECIOUS",
+        "material": null,
         "metal": "GOLD",
         "priceFrom": {
           "amount": "508.75",
@@ -9560,6 +9904,8 @@
             "expertise": "NONE"
           }
         },
+        "materialKind": "PRECIOUS",
+        "material": null,
         "metal": "GOLD",
         "priceFrom": {
           "amount": "1440.00",
@@ -9646,6 +9992,8 @@
             "expertise": "NONE"
           }
         },
+        "materialKind": "PRECIOUS",
+        "material": null,
         "metal": "GOLD",
         "priceFrom": {
           "amount": "388.82",
@@ -9750,6 +10098,8 @@
             "expertise": "NONE"
           }
         },
+        "materialKind": "PRECIOUS",
+        "material": null,
         "metal": "SILVER",
         "priceFrom": {
           "amount": "104.86",
@@ -10240,6 +10590,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "64.77",
@@ -10291,6 +10643,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "74.79",
@@ -10342,6 +10696,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "84.82",
@@ -10393,6 +10749,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "94.84",
@@ -10444,6 +10802,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "SILVER",
             "priceFrom": {
               "amount": "104.86",
@@ -10495,6 +10855,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "832.24",
@@ -10546,6 +10908,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "PLATINUM",
             "priceFrom": {
               "amount": "1075.52",
@@ -10597,6 +10961,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1129.88",
@@ -10648,6 +11014,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "1665.49",
@@ -10699,6 +11067,8 @@
                 "expertise": "NONE"
               }
             },
+            "materialKind": "PRECIOUS",
+            "material": null,
             "metal": "GOLD",
             "priceFrom": {
               "amount": "2338.01",
@@ -10766,6 +11136,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "508.75",
@@ -10817,6 +11189,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1433.21",
@@ -10879,6 +11253,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1896.48",
@@ -10941,6 +11317,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "842.60",
@@ -10992,6 +11370,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2761.69",
@@ -11054,6 +11434,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1004.36",
@@ -11105,6 +11487,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2056.94",
@@ -11167,6 +11551,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "905.24",
@@ -11229,6 +11615,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1175.17",
@@ -11280,6 +11668,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1127.56",
@@ -11375,6 +11765,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1440.00",
@@ -11426,6 +11818,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "148.30",
@@ -11477,6 +11871,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1896.48",
@@ -11539,6 +11935,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2338.01",
@@ -11590,6 +11988,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "287.33",
@@ -11641,6 +12041,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "180.00",
@@ -11692,6 +12094,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "450.00",
@@ -11743,6 +12147,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "431.53",
@@ -11805,6 +12211,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "905.24",
@@ -11867,6 +12275,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "64.77",
@@ -11918,6 +12328,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "782.95",
@@ -11969,6 +12381,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "980.00",
@@ -12051,6 +12465,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "508.75",
@@ -12102,6 +12518,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1133.95",
@@ -12153,6 +12571,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2160.00",
@@ -12204,6 +12624,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1004.36",
@@ -12255,6 +12677,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1629.57",
@@ -12306,6 +12730,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2660.00",
@@ -12521,6 +12947,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "508.75",
@@ -12572,6 +13000,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "104.86",
@@ -12623,6 +13053,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1440.00",
@@ -12674,6 +13106,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "388.82",
@@ -12736,6 +13170,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1929.48",
@@ -12787,6 +13223,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "50.00",
@@ -12838,6 +13276,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1433.21",
@@ -12900,6 +13340,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "PLATINUM",
               "priceFrom": {
                 "amount": "1075.52",
@@ -12951,6 +13393,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "440.00",
@@ -13002,6 +13446,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "148.30",
@@ -13053,6 +13499,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1133.95",
@@ -13104,6 +13552,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1250.00",
@@ -13155,6 +13605,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "1896.48",
@@ -13217,6 +13669,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "94.84",
@@ -13268,6 +13722,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2200.00",
@@ -13319,6 +13775,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "469.06",
@@ -13381,6 +13839,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2101.12",
@@ -13432,6 +13892,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "190.00",
@@ -13483,6 +13945,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "842.60",
@@ -13534,6 +13998,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2338.01",
@@ -13585,6 +14051,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "2160.00",
@@ -13636,6 +14104,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "SILVER",
               "priceFrom": {
                 "amount": "138.28",
@@ -13698,6 +14168,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "287.33",
@@ -13749,6 +14221,8 @@
                   "expertise": "NONE"
                 }
               },
+              "materialKind": "PRECIOUS",
+              "material": null,
               "metal": "GOLD",
               "priceFrom": {
                 "amount": "610.00",

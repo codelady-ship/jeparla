@@ -218,7 +218,7 @@ class MerchantProductApiTests extends MerchantApiTestBase {
     }
 
     @Test
-    void approvedBijouterieStaysOutOfThePublicCatalogForNow() throws Exception {
+    void approvedBijouterieIsPublicInItsOwnSectionAndNeverInMetalFilters() throws Exception {
         Seller mixed = seller(SellerKind.MIXED, true);
         long categoryId = category();
         long fashionId = createProduct(mixed, beadsProduct(categoryId, "Muncuqlu bilərzik"));
@@ -229,8 +229,35 @@ class MerchantProductApiTests extends MerchantApiTestBase {
                 preciousId);
         String fashionSlug = jdbc.queryForObject("SELECT slug FROM products WHERE id = ?", String.class, fashionId);
         String preciousSlug = jdbc.queryForObject("SELECT slug FROM products WHERE id = ?", String.class, preciousId);
-        mvc.perform(get("/api/v1/products/" + preciousSlug)).andExpect(status().isOk());
-        mvc.perform(get("/api/v1/products/" + fashionSlug)).andExpect(status().isNotFound());
+        // The store's documents passed: its precious product shows it, the bijouterie product does not (#128).
+        jdbc.update("UPDATE stores SET documents_status = 'VERIFIED' WHERE id = ?", mixed.storeId());
+        mvc.perform(get("/api/v1/products/" + preciousSlug)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.materialKind").value("PRECIOUS"))
+                .andExpect(jsonPath("$.metal").value("GOLD"))
+                .andExpect(jsonPath("$.verification.documents").value("VERIFIED"));
+        mvc.perform(get("/api/v1/products/" + fashionSlug)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.materialKind").value("FASHION"))
+                .andExpect(jsonPath("$.material").value("BEADS"))
+                .andExpect(jsonPath("$.metal").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.fineness").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.pricingMode").value("FIXED"))
+                .andExpect(jsonPath("$.variants[0].fineness").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.variants[0].pricing").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.verification.seller").value("VERIFIED"))
+                .andExpect(jsonPath("$.verification.documents").value("NONE"))
+                .andExpect(jsonPath("$.verification.expertise").value("NONE"));
+        String store = "/api/v1/stores/" + jdbc.queryForObject("SELECT slug FROM stores WHERE id = ?", String.class,
+                mixed.storeId()) + "/products";
+        mvc.perform(get(store).param("kind", "FASHION")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].slug").value(Matchers.contains(fashionSlug)));
+        mvc.perform(get(store).param("kind", "PRECIOUS")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].slug").value(Matchers.contains(preciousSlug)));
+        // Gold, silver, fineness and documents filters never return a bijouterie product.
+        mvc.perform(get(store).param("metal", "GOLD")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].slug").value(Matchers.contains(preciousSlug)));
+        mvc.perform(get(store).param("verified", "true")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].slug").value(Matchers.contains(preciousSlug)));
+        mvc.perform(get(store).param("kind", "BOGUS")).andExpect(status().isBadRequest());
     }
 
     @Test

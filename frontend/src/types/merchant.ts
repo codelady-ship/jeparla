@@ -29,11 +29,16 @@ export type MerchantStore = {
   /** schema.org openingHours, e.g. "Mo-Fr 10:00-19:00; Sa 11:00-17:00". */
   openingHours: string;
   sellerStatus: SellerStatus;
+  /** Backend only (absent in the sample data): the application and the documents check. */
+  status?: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";
+  statusNote?: string | null;
+  documentsStatus?: CheckStatus;
+  sellerKind?: "PRECIOUS" | "FASHION" | "MIXED";
 };
 
 export type MerchantDashboard = {
-  /** Last 30 days. */
-  views: number;
+  /** Last 30 days; null while views are not counted (never an invented number). */
+  views: number | null;
   whatsappClicks: number;
   counts: Record<ProductStatus, number>;
 };
@@ -46,10 +51,12 @@ export type MerchantProductRow = {
   imageUrl: string | null;
   categoryId: number;
   status: ProductStatus;
-  priceFrom: Decimal;
+  priceFrom: Decimal | null;
   variantCount: number;
-  views: number;
+  views: number | null;
   updatedAt: IsoDate;
+  /** Backend only: bijouterie (FASHION) needs no documents. */
+  materialKind?: "PRECIOUS" | "FASHION";
   /** Admin note when the product came back (RETURNED). */
   reviewNote: string | null;
 };

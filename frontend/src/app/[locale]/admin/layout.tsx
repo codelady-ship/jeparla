@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             stores: t("stores.title"),
             products: t("products.title"),
             checks: t("checks.title"),
+            suspensions: t("suspensions.title"),
             reports: t("reports.title"),
             prices: t("prices.title"),
             catalog: t("catalog.title"),
