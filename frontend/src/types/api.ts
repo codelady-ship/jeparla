@@ -19,6 +19,26 @@ export type LocalizedText = { az: string; en: string; ru: string };
 
 export type MetalType = "GOLD" | "SILVER" | "PLATINUM" | "PALLADIUM";
 export type PricingMode = "FIXED" | "METAL_LINKED";
+/**
+ * PRECIOUS: gold, silver, platinum, diamonds (metal, fineness, weight, certificates). FASHION: bijouterie
+ * and handmade (#128): no metal and no fineness, a material instead, FIXED prices, no certificates.
+ */
+export type MaterialKind = "PRECIOUS" | "FASHION";
+export type FashionMaterial =
+  | "BEADS"
+  | "STAINLESS_STEEL"
+  | "COPPER"
+  | "BRASS"
+  | "SILVER_PLATED"
+  | "GOLD_PLATED"
+  | "LEATHER"
+  | "TEXTILE"
+  | "WOOD"
+  | "GLASS"
+  | "CERAMIC"
+  | "RESIN"
+  | "NATURAL_STONE"
+  | "OTHER";
 export type StockStatus = "IN_STOCK" | "MADE_TO_ORDER" | "OUT_OF_STOCK";
 export type ProductStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "RETURNED" | "INACTIVE";
 
@@ -120,6 +140,14 @@ export type ProductSummary = {
   name: LocalizedText;
   categoryId: number;
   store: Pick<StoreSummary, "id" | "slug" | "name" | "city" | "verification">;
+  /** FASHION products (#128) are shown in their own section with a badge, never with a metal price block. */
+  materialKind: MaterialKind;
+  /** FASHION only. */
+  material: FashionMaterial | null;
+  /**
+   * The demo catalog is precious only; the API sends null for FASHION. The FASHION UI (#128) widens this
+   * to `MetalType | null` together with fineness and weightGrams.
+   */
   metal: MetalType;
   /** Lowest variant price. */
   priceFrom: Money;
@@ -198,6 +226,8 @@ export type ProductFilters = {
   verified?: boolean;
   inStock?: boolean;
   city?: string;
+  /** "Bijouterie and handmade" section (FASHION) or precious only (#128). */
+  kind?: MaterialKind;
   /** Diamond filters (PLAN 5.4); match products with at least one such stone. */
   shape?: string[];
   minCarat?: Decimal;

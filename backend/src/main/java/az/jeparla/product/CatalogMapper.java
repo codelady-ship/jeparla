@@ -47,11 +47,13 @@ public class CatalogMapper {
                 LocalizedTextDto.of(product.getName()),
                 product.getCategory().getId(),
                 StoreRefDto.of(store),
+                product.getMaterialKind(),
+                product.getMaterial(),
                 product.getMetal(),
                 MoneyDto.of(cheapest.getPrice(), cheapest.getCurrency()),
                 cheapest.getId(),
                 cheapest.getPricingMode(),
-                cheapest.getFineness().getValue(),
+                cheapest.getFineness() == null ? null : cheapest.getFineness().getValue(),
                 Decimal.of(cheapest.getWeightGrams()),
                 images(product),
                 !product.getStones().isEmpty(),
@@ -81,9 +83,16 @@ public class CatalogMapper {
         return new CompareItemDto(summary(product), VariantDto.of(variant), stones(product));
     }
 
-    /** Seller and documents checks of the store, expertise of this product (PLAN 5.9). */
+    /**
+     * Seller and documents checks of the store, expertise of this product (PLAN 5.9). A FASHION product shows
+     * only the seller check (#128): its documents are NONE even in a MIXED store whose documents passed, so it
+     * never borrows the trust of the store's precious products.
+     */
     public static VerificationDto verification(Product product) {
         Store store = product.getStore();
+        if (product.getMaterialKind() == MaterialKind.FASHION) {
+            return new VerificationDto(store.getSellerStatus(), CheckStatus.NONE, CheckStatus.NONE);
+        }
         return new VerificationDto(store.getSellerStatus(), store.getDocumentsStatus(), product.getExpertiseStatus());
     }
 

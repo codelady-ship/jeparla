@@ -44,7 +44,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("""
             select p.store.id, count(p) from Product p
             where p.status = az.jeparla.product.ProductStatus.APPROVED and p.deletedAt is null
-              and p.materialKind = az.jeparla.product.MaterialKind.PRECIOUS
               and p.store.status = az.jeparla.store.StoreStatus.APPROVED
             group by p.store.id
             """)

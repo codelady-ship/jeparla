@@ -21,11 +21,10 @@ import org.springframework.data.repository.query.Param;
 public interface ProductRepository extends NoDeleteRepository<Product, Long>, ProductSpecificationQueries {
 
     /**
-     * JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. FASHION products
-     * are not public yet ({@link Product#isPublic}, #128).
+     * JPQL condition of the public catalog; {@code p} is the product, {@code s} its store. PRECIOUS and
+     * FASHION products alike ({@link Product#isPublic}, #128).
      */
     String PUBLIC = "p.status = az.jeparla.product.ProductStatus.APPROVED and p.deletedAt is null"
-            + " and p.materialKind = az.jeparla.product.MaterialKind.PRECIOUS"
             + " and s.status = az.jeparla.store.StoreStatus.APPROVED";
 
     // ------------------------------------------------------------------ public (#37)

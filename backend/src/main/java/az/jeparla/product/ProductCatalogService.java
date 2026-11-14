@@ -8,6 +8,7 @@ import static az.jeparla.product.ProductSpecifications.inCity;
 import static az.jeparla.product.ProductSpecifications.inStores;
 import static az.jeparla.product.ProductSpecifications.isPublic;
 import static az.jeparla.product.ProductSpecifications.matchingWords;
+import static az.jeparla.product.ProductSpecifications.ofMaterialKind;
 import static az.jeparla.product.ProductSpecifications.ofMetal;
 import static az.jeparla.product.ProductSpecifications.withDiamond;
 import static az.jeparla.product.ProductSpecifications.withFineness;
@@ -201,6 +202,9 @@ public class ProductCatalogService {
         Specification<Product> spec = isPublic().and(hasLiveVariant()).and(inCategories(categoryIds));
         if (notEmpty(query.store())) {
             spec = spec.and(inStores(query.store()));
+        }
+        if (query.kind() != null) {
+            spec = spec.and(ofMaterialKind(query.kind()));
         }
         if (query.metal() != null) {
             spec = spec.and(ofMetal(query.metal()));

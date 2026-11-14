@@ -35,7 +35,8 @@ class CatalogOpenApiTests {
                 "Money", "SearchResult", "Suggestions", "StoreSuggestion", "CategorySuggestion", "ProductSuggestion");
 
         JsonNode list = doc.get("paths").get("/api/v1/products").get("get");
-        assertThat(list.get("parameters").findValuesAsString("name")).contains("q", "category", "store", "metal",
+        assertThat(list.get("parameters").findValuesAsString("name")).contains("q", "category", "store", "kind",
+                "metal",
                 "fineness", "minWeight", "maxWeight", "minPrice", "maxPrice", "verified", "inStock", "city", "shape",
                 "minCarat", "maxCarat", "color", "clarity", "sort", "page", "size");
         JsonNode search = doc.get("paths").get("/api/v1/search").get("get");
