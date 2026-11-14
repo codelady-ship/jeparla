@@ -1,4 +1,4 @@
-import { IMAGE_SEARCH_ERRORS, type ProductSummary } from "@/types/api";
+import { IMAGE_SEARCH_ERRORS, type ImageSearchResult, type ProductSummary } from "@/types/api";
 import type { JeparlaApi } from "./types";
 
 /**
@@ -125,6 +125,32 @@ async function getOrNull<T>(path: string): Promise<T | null> {
 
 const enc = encodeURIComponent;
 
+/**
+ * POST /api/v1/search/image (#163). `headers` are added to the request: the live API passes
+ * the visitor headers (lib/api/live visitorHeaders), so the backend limit counts each visitor
+ * and not the frontend server as one client (#222).
+ */
+export async function postImageSearch(
+  image: Blob,
+  headers: Record<string, string> = {},
+): Promise<ImageSearchResult> {
+  const body = new FormData();
+  body.append("image", image, "photo.jpg");
+  const res = await fetch(`${API_BASE}/api/v1/search/image`, {
+    method: "POST",
+    body,
+    headers: { Accept: "application/json", ...headers },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (res.ok) return { ok: true, products: (await res.json()) as ProductSummary[] };
+  if (res.status === 429) return { ok: false, error: "rate_limited" };
+  const code = ((await res.json().catch(() => ({}))) as { code?: string }).code;
+  return {
+    ok: false,
+    error: IMAGE_SEARCH_ERRORS.find((e) => e === code) ?? "search.image_unreadable",
+  };
+}
+
 /** Uncached REST implementation of the public catalog API. */
 export const httpApi: JeparlaApi = {
   listProducts: (f = {}) => get("/products", f),
@@ -140,23 +166,7 @@ export const httpApi: JeparlaApi = {
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),
   imageSearchStatus: () => get("/search/image/status"),
-  searchByImage: async (image) => {
-    const body = new FormData();
-    body.append("image", image, "photo.jpg");
-    const res = await fetch(`${API_BASE}/api/v1/search/image`, {
-      method: "POST",
-      body,
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (res.ok) return { ok: true, products: (await res.json()) as ProductSummary[] };
-    if (res.status === 429) return { ok: false, error: "rate_limited" };
-    const code = ((await res.json().catch(() => ({}))) as { code?: string }).code;
-    return {
-      ok: false,
-      error: IMAGE_SEARCH_ERRORS.find((e) => e === code) ?? "search.image_unreadable",
-    };
-  },
+  searchByImage: (image) => postImageSearch(image),
   latestMetalPrices: () => get("/metal-prices/latest"),
   latestExchangeRates: () => get("/exchange-rates/latest"),
   metalPriceHistory: (metal, days = 30) => get("/metal-prices/history", { metal, days }),
