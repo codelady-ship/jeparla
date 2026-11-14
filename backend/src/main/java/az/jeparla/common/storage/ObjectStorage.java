@@ -86,14 +86,21 @@ public interface ObjectStorage {
      */
     PresignedDownload presignPrivateDownload(String key, String contentType, String fileName, Duration ttl);
 
-    /** Removes a private object (not a staged one); nothing happens when it does not exist. */
-    void deletePrivate(String key);
-
     /**
-     * Writes bytes the server made itself (an image taken out of a catalog PDF, #129) to {@code key} in the
-     * <b>private</b> bucket. Never a staged or a public key.
+     * Stores a file the API produced itself (an AI Studio result, #55, or an image taken out of a catalog PDF,
+     * #129) in the <b>private</b> bucket under {@code key}. Never a staged or a public key.
+     * It is never public until {@link #publishPrivate} copies it after the seller's approval.
      */
     void putPrivate(String key, byte[] bytes, String contentType);
+
+    /**
+     * Copies the private object {@code privateKey} to the public bucket under {@code publicKey} (an approved AI
+     * Studio result becomes a product photo, #55). The private object stays; the caller deletes it.
+     */
+    void publishPrivate(String privateKey, String publicKey);
+
+    /** Removes a private object (not a staged one); nothing happens when it does not exist. */
+    void deletePrivate(String key);
 
     /** A presigned upload: the browser sends {@code method} to {@code url} with {@code headers}. */
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {

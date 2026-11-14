@@ -1048,7 +1048,9 @@
       "adminNote": "Admin qeydi",
       "bulkReview": "Göstərilən qaralamaları yoxlamaya göndər ({count})",
       "bulkSent": "{total} məhsuldan {done} yoxlamaya göndərildi.",
-      "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin."
+      "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin.",
+      "aiStudio": "AI Studio",
+      "aiStudioNamed": "{name}: AI Studio"
     },
     "form": {
       "newTitle": "Yeni məhsul",
@@ -1391,6 +1393,76 @@
         "pdfType": "PDF faylı seçin.",
         "pdfSize": "PDF ən çox 20 MB ola bilər.",
         "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+      }
+    },
+    "ai": {
+      "title": "AI Studio",
+      "intro": "Məhsulun orijinal şəklindən studiya üslubunda və ya model üzərində şəkil yaradın. Nəticəni siz yoxlayırsınız.",
+      "back": "{name}: redaktəyə qayıt",
+      "notConfigured": {
+        "title": "AI Studio hələ qoşulmayıb",
+        "text": "Şəkil yaradan xidmət qoşulanda burada yeni şəkillər yarada biləcəksiniz. İndi heç bir şəkil yaradılmır, orijinal şəkillər olduğu kimi qalır."
+      },
+      "rules": {
+        "original": "Orijinal şəkil dəyişmir və həmişə birinci qalır.",
+        "approval": "Siz təsdiqləməyincə heç bir nəticə dərc olunmur.",
+        "badge": "Təsdiqlənmiş hər AI şəkildə \"AI ilə yaradılıb\" nişanı görünür."
+      },
+      "sourceLegend": "Orijinal şəkil",
+      "sourceAlt": "Orijinal şəkil {n}",
+      "noImages": "Əvvəl məhsula ən azı bir orijinal şəkil əlavə edin.",
+      "kindLegend": "Nə yaradılsın",
+      "kinds": {
+        "AI_PHOTOSHOOT": {
+          "title": "Studiya şəkli",
+          "text": "Krem fon, yumşaq qızılı işıq, 4:5 kəsim. Əşyanın forması və rəngi dəyişmir."
+        },
+        "VIRTUAL_TRY_ON": {
+          "title": "Model üzərində",
+          "text": "Əşya AI modelin üzərində (real şəxs deyil), taxıldığı hissəyə fokusla."
+        }
+      },
+      "create": "Yarat",
+      "quota": "Bu gün qalıb: {left} / {limit}",
+      "queued": "Tapşırıq növbəyə düşdü.",
+      "jobsTitle": "Tapşırıqlar",
+      "noJobs": "Hələ tapşırıq yoxdur.",
+      "resultAlt": "Nəticə {n}",
+      "aiBadge": "AI ilə yaradılıb",
+      "approve": "Təsdiqlə və əlavə et",
+      "reject": "Rədd et",
+      "retry": "Yenidən cəhd et ({attempts}/{max})",
+      "delete": "Sil",
+      "done": {
+        "approve": "Şəkil məhsula əlavə olundu və yoxlamaya göndərildi.",
+        "reject": "Nəticə rədd edildi və silindi.",
+        "retry": "Tapşırıq yenidən növbəyə düşdü.",
+        "delete": "Tapşırıq silindi."
+      },
+      "status": {
+        "QUEUED": "Növbədə",
+        "PROCESSING": "Hazırlanır",
+        "REVIEW_REQUIRED": "Yoxlamanızı gözləyir",
+        "APPROVED": "Təsdiqləndi",
+        "FAILED": "Alınmadı",
+        "CANCELLED": "Ləğv edildi"
+      },
+      "errors": {
+        "generic": "Alınmadı. Bir az sonra yenidən cəhd edin.",
+        "ai": {
+          "not_configured": "AI Studio hələ qoşulmayıb.",
+          "cost_limit": "AI Studio bu ay üçün limitə çatıb. Sonra yenidən cəhd edin.",
+          "provider_error": "Xidmət şəkli hazırlaya bilmədi. Yenidən cəhd edə bilərsiniz.",
+          "provider_refused": "Xidmət bu şəkli emal etməkdən imtina etdi. Başqa orijinal şəkil seçin.",
+          "timeout": "Xidmət vaxtında cavab vermədi. Yenidən cəhd edə bilərsiniz.",
+          "bad_result": "Nəticə istifadəyə yararlı deyil. Yenidən cəhd edə bilərsiniz.",
+          "source_gone": "Orijinal şəkil silinib. Yeni tapşırıq yaradın.",
+          "job_state": "Bu tapşırıq indiki vəziyyətində bunu edə bilməz.",
+          "no_attempts_left": "Bu tapşırıq üçün cəhdlər bitib.",
+          "source_image": "Bu məhsulun orijinal şəklini seçin.",
+          "source_ai_generated": "AI şəklindən yeni şəkil yaratmaq olmaz. Orijinal şəkli seçin.",
+          "quota": "Bugünkü limit dolub. Sabah yenidən cəhd edin."
+        }
       }
     }
   },

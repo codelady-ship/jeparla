@@ -8,15 +8,15 @@ import org.springframework.http.HttpStatus;
  * The optional {@code Idempotency-Key} request header of the create endpoints: a UUID the client makes once
  * per form submit and repeats on a retry, so a double submit creates one store or product.
  */
-final class IdempotencyKeys {
+public final class IdempotencyKeys {
 
-    static final String HEADER = "Idempotency-Key";
+    public static final String HEADER = "Idempotency-Key";
 
     private IdempotencyKeys() {
     }
 
     /** The key, null when the header is absent, 400 {@code merchant.idempotency_key} when it is not a UUID. */
-    static UUID parse(String header) {
+    public static UUID parse(String header) {
         if (header == null || header.isBlank()) {
             return null;
         }

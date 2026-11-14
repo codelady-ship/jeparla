@@ -129,6 +129,21 @@ jeparla:
       # Deletes staged uploads that were never attached (ShedLock). "-" turns the schedule off.
       cleanup-cron: ${JEPARLA_UPLOAD_CLEANUP_CRON:0 7/30 * * * *}
       cleanup-lock-at-most-for: 15m
+  ai:
+    # AI Studio (#55, docs/ai-providers.md). "none": no provider, AI Studio shows "not configured" and job
+    # requests answer 503. Another value must be the id of an installed provider bean, or the API does not start.
+    # Provider keys are read by the provider from its own env variables, never from this file.
+    image-provider: ${JEPARLA_AI_IMAGE_PROVIDER:none}
+    # Jobs and retries per store and day (Asia/Baku); per seller account also the rate-limit policy ai-job-account.
+    daily-jobs-per-store: ${JEPARLA_AI_DAILY_JOBS_PER_STORE:10}
+    max-attempts: 3
+    # Hard limit of the provider cost of all stores per calendar month, in cost-currency. 0 (the default) starts
+    # nothing even with a provider: the owner sets the budget explicitly. Set a spending cap at the provider too.
+    monthly-cost-limit: ${JEPARLA_AI_MONTHLY_COST_LIMIT:0}
+    cost-currency: ${JEPARLA_AI_COST_CURRENCY:USD}
+    attempt-timeout: 5m
+    result-url-ttl: 10m
+    worker-delay: 15s
   verification:
     documents:
       # Verification documents of precious sellers (#40): private bucket only. Per seller account the

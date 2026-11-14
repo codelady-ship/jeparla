@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Pencil, Play, Search, Send } from "lucide-react";
+import { Pause, Pencil, Play, Search, Send, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -124,6 +124,14 @@ export function ProductTable({
         >
           <Pencil aria-hidden />
           {t("edit")}
+        </Link>
+        <Link
+          href={`/merchant/products/${row.id}/ai-studio`}
+          aria-label={t("aiStudioNamed", { name })}
+          className={buttonVariants({ variant: "ghost", size: "lg" })}
+        >
+          <Sparkles aria-hidden />
+          {t("aiStudio")}
         </Link>
         {next && (
           <Button

@@ -140,6 +140,15 @@ public class FakeObjectStorage implements ObjectStorage {
         privateObjects.put(key, new Stored(bytes.clone(), contentType, etag(bytes)));
     }
 
+    @Override
+    public void publishPrivate(String privateKey, String publicKey) {
+        Stored stored = privateObjects.get(privateKey);
+        if (stored == null) {
+            throw new IllegalStateException("No private object " + privateKey);
+        }
+        published.put(publicKey, stored);
+    }
+
     /** Whether {@code key} is a checked document in the private bucket (never served publicly). */
     public boolean isPrivate(String key) {
         return privateObjects.containsKey(key);

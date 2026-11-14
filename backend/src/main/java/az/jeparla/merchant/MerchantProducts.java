@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * does to its status. Call inside the {@code @Transactional} service method.
  */
 @Component
-class MerchantProducts {
+public class MerchantProducts {
 
     private final ProductAccess access;
     private final ProductRepository products;
@@ -31,7 +31,7 @@ class MerchantProducts {
     }
 
     /** The seller's product, not deleted: 403 another seller's, 404 missing or deleted. */
-    Product owned(long productId) {
+    public Product owned(long productId) {
         Product product = access.requireOwner(productId);
         if (product.isDeleted()) {
             throw ApiException.notFound();
@@ -40,7 +40,7 @@ class MerchantProducts {
     }
 
     /** {@link #owned} for a change: the product of a BLOCKED store is read-only. */
-    Product ownedWritable(long productId) {
+    public Product ownedWritable(long productId) {
         Product product = owned(productId);
         MerchantStores.requireWritable(product.getStore());
         return product;
@@ -50,7 +50,7 @@ class MerchantProducts {
      * After a change: when what is sold changed, an APPROVED product is reviewed again (or becomes a draft
      * when its seller can no longer submit) and a hidden or deactivated product becomes a draft.
      */
-    void afterChange(Product product, boolean content, Instant now) {
+    public void afterChange(Product product, boolean content, Instant now) {
         if (!content) {
             return;
         }
@@ -69,11 +69,11 @@ class MerchantProducts {
      * Locks the product's store row ({@code SELECT ... FOR UPDATE}) until the end of the transaction, so
      * concurrent requests of one store that count something (e.g. open photo uploads) take turns.
      */
-    void lockStore(Product product) {
+    public void lockStore(Product product) {
         entityManager.find(Store.class, product.getStore().getId(), LockModeType.PESSIMISTIC_WRITE);
     }
 
-    void flush() {
+    public void flush() {
         products.flush();
     }
 

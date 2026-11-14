@@ -233,6 +233,24 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
         client.deleteObject(DeleteObjectRequest.builder().bucket(privateBucket).key(key).build());
     }
 
+    /** A server-side copy between the two buckets of one account; content type and length are kept. */
+    @Override
+    public void publishPrivate(String privateKey, String publicKey) {
+        requirePrivateKey(privateKey);
+        client.copyObject(CopyObjectRequest.builder()
+                .sourceBucket(privateBucket)
+                .sourceKey(privateKey)
+                .destinationBucket(publicBucket)
+                .destinationKey(publicKey)
+                .build());
+    }
+
+    private static void requirePrivateKey(String key) {
+        if (key.startsWith(STAGING_PREFIX)) {
+            throw new IllegalArgumentException("Not a private object key: " + key);
+        }
+    }
+
     /** A file name safe in a quoted header value: printable ASCII without quotes and backslashes. */
     static String asciiFileName(String fileName) {
         StringBuilder safe = new StringBuilder();

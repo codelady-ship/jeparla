@@ -90,5 +90,10 @@ public class StorageConfig {
         public void putPrivate(String key, byte[] bytes, String contentType) {
             throw unavailable();
         }
+
+        @Override
+        public void publishPrivate(String privateKey, String publicKey) {
+            throw unavailable();
+        }
     }
 }

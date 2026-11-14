@@ -94,7 +94,12 @@ public enum RateLimitPolicy {
      * Presigned verification document uploads asked for by one seller account (#40): each lets the browser write
      * up to 10 MB into the private bucket. The open and daily limits per store apply as well.
      */
-    DOCUMENT_UPLOAD_ACCOUNT("document-upload-account", 20, Duration.ofHours(1));
+    DOCUMENT_UPLOAD_ACCOUNT("document-upload-account", 20, Duration.ofHours(1)),
+    /**
+     * AI Studio job requests and retries of one seller account (#55, PLAN 5.13): each may cost money at the
+     * provider. The daily quota per store and the monthly cost limit apply as well.
+     */
+    AI_JOB_ACCOUNT("ai-job-account", 30, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

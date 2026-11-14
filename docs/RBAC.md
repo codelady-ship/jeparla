@@ -294,6 +294,7 @@ Redis-də deyil (#151).
 | `search-ip` | 300 / dəq. | hər axtarış və təklif sorğusu | IP: `GET /search`, `GET /search/suggest` (#38); CDN-dən verilən cavab API-yə çatmır, sayılmır. Frontend serverdən (SSR, `/api/suggest`, giriş) gələn sorğu `JEPARLA_FRONTEND_TOKEN` ilə ziyarətçinin IP-sini `X-Jeparla-Client-Ip`-də göndərir və o IP ilə sayılır (#41); token yoxdursa bütün ziyarətçilər frontend serverinin IP-si ilə sayılır |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
+| `ai-job-account` | 30 / saat | hər AI Studio tapşırığı və təkrar cəhd | user id: `POST /merchant/ai/jobs`, `POST /merchant/ai/jobs/{id}/retry` (#55). Bundan əlavə mağaza üzrə gündə `JEPARLA_AI_DAILY_JOBS_PER_STORE` tapşırıq (429, `Retry-After` Bakı vaxtı ilə gecə yarısına qədər) və bütün mağazalar üçün aylıq sərt xərc limiti (503 `ai.cost_limit`) |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
 `jeparla.rate-limit.policies.<id>.limit|window` ilə dəyişir. IPv6 müştəri /64 şəbəkəsi ilə sayılır
