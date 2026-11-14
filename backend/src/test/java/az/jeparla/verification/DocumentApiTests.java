@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
@@ -481,5 +482,50 @@ class DocumentApiTests extends MerchantApiTestBase {
                         .param("targetId", String.valueOf(seller.storeId())).with(admin(adminId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].action").value(Matchers.hasItem("STORE_REJECTED")));
+    }
+
+    @Test
+    void aSuspectedForgerySuspendsTheStoreOnlyAfterASecondAdmin() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, true);
+        jdbc.update("UPDATE users SET preferred_locale = 'en' WHERE id = ?", seller.userId());
+        long first = newAdmin();
+        long second = newAdmin();
+        String id = uploadDocument(seller, taxIdUpload(PDF.length));
+        decide(first, id, "{\"decision\": \"REJECT\", \"reason\": \"AUTHENTICITY\"}");
+
+        // One person cannot suspend a store: the rejection only opens a request.
+        assertThat(jdbc.queryForObject("SELECT status FROM stores WHERE id = ?", String.class, seller.storeId()))
+                .isEqualTo("APPROVED");
+        MvcResult queue = mvc.perform(get("/api/v1/admin/store-suspensions").with(admin(second)))
+                .andExpect(status().isOk()).andReturn();
+        List<Integer> ids = JsonPath.read(body(queue), "$.content[?(@.storeId == " + seller.storeId() + ")].id");
+        assertThat(ids).hasSize(1);
+        int requestId = ids.get(0);
+        String decision = "/api/v1/admin/store-suspensions/" + requestId + "/decision";
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\"}").with(admin(first)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("verification.four_eyes"));
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\"}").with(seller.token()))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(json(post(decision), "{\"decision\": \"CONFIRM\", \"note\": \"Möhür uyğun gəlmir\"}")
+                        .with(admin(second)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
+                .andExpect(jsonPath("$.decidedBy").value(second));
+        assertThat(jdbc.queryForObject("SELECT status FROM stores WHERE id = ?", String.class, seller.storeId()))
+                .isEqualTo("BLOCKED");
+        mvc.perform(json(post(decision), "{\"decision\": \"DISMISS\"}").with(admin(second)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("verification.suspension_decided"));
+
+        Map<String, Object> notice = jdbc.queryForMap("SELECT title, body FROM notifications WHERE user_id = ?"
+                + " AND kind = 'STORE_SUSPENDED'", seller.userId());
+        assertThat(notice.get("title")).isEqualTo("Store under additional review");
+        assertThat((String) notice.get("body")).startsWith("We could not verify some of the documents")
+                .doesNotContain("Möhür").doesNotContainIgnoringCase("forged").doesNotContainIgnoringCase("police");
+        // The database refuses a decision by the requester, whatever the application does.
+        assertThatThrownBy(() -> jdbc.update("UPDATE store_suspension_requests SET decided_by = requested_by"
+                + " WHERE id = ?", requestId)).isInstanceOf(DataIntegrityViolationException.class);
     }
 }
