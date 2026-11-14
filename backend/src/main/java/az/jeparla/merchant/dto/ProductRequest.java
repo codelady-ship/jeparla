@@ -1,5 +1,6 @@
 package az.jeparla.merchant.dto;
 
+import az.jeparla.product.Audience;
 import az.jeparla.product.FashionMaterial;
 import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Metal;
@@ -19,6 +20,8 @@ import java.util.List;
  * @param metal                required for PRECIOUS, absent for FASHION
  * @param material             required for FASHION, absent for PRECIOUS
  * @param notPreciousConfirmed FASHION only: the seller confirms "this is not a precious metal" (must be true)
+ * @param audience             who the piece is for (#121), picks the AI model of an on-model image; optional: on
+ *                             create suggested from the category (MEN / KIDS roots, otherwise UNISEX), on update kept
  */
 public record ProductRequest(
         @NotNull MaterialKind materialKind,
@@ -29,7 +32,8 @@ public record ProductRequest(
         FashionMaterial material,
         Boolean notPreciousConfirmed,
         @NotEmpty @Size(max = MAX_VARIANTS) List<@NotNull @Valid VariantRequest> variants,
-        @Size(max = MAX_STONES) List<@NotNull @Valid StoneRequest> stones) {
+        @Size(max = MAX_STONES) List<@NotNull @Valid StoneRequest> stones,
+        Audience audience) {
 
     /** Same limits as frontend/src/lib/merchant/schemas.ts. */
     public static final int MAX_VARIANTS = 10;

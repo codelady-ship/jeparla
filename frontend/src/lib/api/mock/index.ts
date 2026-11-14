@@ -1,3 +1,4 @@
+import { haversineKm, parseNear, type LatLng } from "@/lib/geo/near";
 import { compareDecimal } from "@/lib/pricing";
 import { matchesQuery } from "@/lib/search/normalize";
 import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
@@ -5,11 +6,19 @@ import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
   FINENESSES,
+  EXCHANGE_RATES,
   LATEST_METAL_PRICES,
   METAL_PRICE_HISTORY,
   PRODUCTS,
   STORES,
 } from "./fixtures";
+
+/** Demo only: sample stores have no own location, so "near me" uses the city centre. */
+const MOCK_CITY_CENTRES: Record<string, LatLng> = {
+  Bakı: { lat: 40.4093, lng: 49.8671 },
+  Gəncə: { lat: 40.6828, lng: 46.3606 },
+  Sumqayıt: { lat: 40.5897, lng: 49.6686 },
+};
 
 const DEFAULT_SIZE = 24;
 const MAX_SIZE = 96;
@@ -60,6 +69,7 @@ function filterProducts(f: ProductFilters): Product[] {
     if (p.status !== "APPROVED") return false;
     if (cats && !cats.has(p.categoryId)) return false;
     if (f.store?.length && !f.store.includes(p.store.slug)) return false;
+    if (f.kind && p.materialKind !== f.kind) return false;
     if (f.metal && p.metal !== f.metal) return false;
     if (f.fineness?.length && !f.fineness.includes(p.fineness)) return false;
     if (f.minWeight && compareDecimal(p.weightGrams, f.minWeight) < 0) return false;
@@ -108,7 +118,7 @@ function listProducts(f: ProductFilters = {}): Page<ProductSummary> {
   return paginate(sorted.map(toSummary), f.page, f.size);
 }
 
-/** In-memory implementation of the API, used while NEXT_PUBLIC_USE_MOCK is not "false". */
+/** In-memory implementation of the API, used only when NEXT_PUBLIC_USE_MOCK is "true". */
 export const mockApi: JeparlaApi = {
   async listProducts(filters) {
     return listProducts(filters);
@@ -139,7 +149,7 @@ export const mockApi: JeparlaApi = {
     return FINENESSES;
   },
   async listStores(params = {}) {
-    return STORES.filter(
+    const found = STORES.filter(
       (s) =>
         (!params.city || s.city === params.city) &&
         (!params.q || matchesQuery(`${s.name} ${s.city}`, params.q)),
@@ -155,6 +165,15 @@ export const mockApi: JeparlaApi = {
         ...summary
       }) => summary,
     );
+    const near = parseNear(params.near);
+    if (!near) return found;
+    // Same contract as the backend: located stores first, nearest first, with distanceKm.
+    const located = found
+      .filter((s) => MOCK_CITY_CENTRES[s.city])
+      .map((s) => ({ ...s, km: haversineKm(near, MOCK_CITY_CENTRES[s.city]) }))
+      .sort((a, b) => a.km - b.km)
+      .map(({ km, ...s }) => ({ ...s, distanceKm: km.toFixed(1) }));
+    return [...located, ...found.filter((s) => !MOCK_CITY_CENTRES[s.city])];
   },
   async getStore(slug) {
     return STORES.find((s) => s.slug === slug) ?? null;
@@ -201,5 +220,8 @@ export const mockApi: JeparlaApi = {
   },
   async metalPriceHistory(metal, days = 30) {
     return METAL_PRICE_HISTORY.filter((p) => p.metal === metal).slice(-days);
+  },
+  async latestExchangeRates() {
+    return EXCHANGE_RATES;
   },
 };

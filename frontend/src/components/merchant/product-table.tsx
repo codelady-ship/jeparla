@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Pencil, Play, Search } from "lucide-react";
+import { Pause, Pencil, Play, Search, Send, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@/i18n/navigation";
 import { StatusBadge } from "./status-badge";
 import type { Locale } from "@/i18n/routing";
+import type { BulkStatusResult } from "@/lib/merchant/bulk";
 import { sendJson } from "@/lib/merchant/client";
 import {
   filterRows,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/merchant/filter";
 import { formatDecimal, formatPrice } from "@/lib/money";
 import { notices } from "@/lib/notice";
+import type { ProductStatus } from "@/types/api";
 import type { MerchantProductRow } from "@/types/merchant";
 
 /**
@@ -41,7 +43,11 @@ export function ProductTable({
   const [q, setQ] = useState(initialQuery);
   const [status, setStatus] = useState<StatusFilter>(initialStatus);
   const [busy, setBusy] = useState<number | null>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkErrors, setBulkErrors] = useState<string[]>([]);
   const shown = filterRows(rows, q, status);
+  /** Drafts in the current view; the API takes 100 per call. */
+  const drafts = shown.filter((r) => r.status === "DRAFT").slice(0, 100);
 
   function sync(nextQ: string, nextStatus: StatusFilter) {
     const sp = new URLSearchParams();
@@ -68,8 +74,39 @@ export function ProductTable({
     notices.show(t(`toggled.${next}`, { name }));
   }
 
+  /** Sends the drafts in view to review (#109); each one succeeds or fails on its own. */
+  async function sendDrafts() {
+    if (drafts.length === 0) return;
+    setBulkBusy(true);
+    setBulkErrors([]);
+    const result = await sendJson<BulkStatusResult[]>(
+      "POST",
+      "/api/merchant/products/bulk-status",
+      {
+        ids: drafts.map((r) => r.id),
+        status: "IN_REVIEW",
+      },
+    );
+    setBulkBusy(false);
+    if (!result.ok) {
+      notices.show(t("bulkFailed"));
+      return;
+    }
+    const done = new Map(
+      result.data.filter((r) => r.ok && r.status).map((r) => [r.id, r.status as ProductStatus]),
+    );
+    setRows((all) => all.map((r) => ({ ...r, status: done.get(r.id) ?? r.status })));
+    const names = new Map(rows.map((r) => [r.id, r.name[locale]]));
+    setBulkErrors(
+      result.data
+        .filter((r) => !r.ok)
+        .map((r) => `${names.get(r.id) ?? r.id}: ${r.message ?? t("bulkFailed")}`),
+    );
+    notices.show(t("bulkSent", { done: done.size, total: result.data.length }));
+  }
+
   const price = (row: MerchantProductRow) =>
-    t("fromPrice", { price: formatPrice(row.priceFrom, locale) });
+    row.priceFrom === null ? "—" : t("fromPrice", { price: formatPrice(row.priceFrom, locale) });
   const updated = (iso: string) => {
     const [y, m, d] = iso.slice(0, 10).split("-");
     return `${d}.${m}.${y}`;
@@ -87,6 +124,14 @@ export function ProductTable({
         >
           <Pencil aria-hidden />
           {t("edit")}
+        </Link>
+        <Link
+          href={`/merchant/products/${row.id}/ai-studio`}
+          aria-label={t("aiStudioNamed", { name })}
+          className={buttonVariants({ variant: "ghost", size: "lg" })}
+        >
+          <Sparkles aria-hidden />
+          {t("aiStudio")}
         </Link>
         {next && (
           <Button
@@ -148,9 +193,33 @@ export function ProductTable({
         </label>
       </div>
 
-      <p className="text-sm text-muted-foreground" aria-live="polite">
-        {t("count", { count: shown.length })}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground" aria-live="polite">
+          {t("count", { count: shown.length })}
+        </p>
+        {drafts.length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            disabled={bulkBusy}
+            onClick={() => void sendDrafts()}
+          >
+            <Send aria-hidden />
+            {t("bulkReview", { count: drafts.length })}
+          </Button>
+        )}
+      </div>
+      {bulkErrors.length > 0 && (
+        <ul
+          role="alert"
+          className="flex flex-col gap-1 rounded-md border border-destructive/40 p-3 text-sm text-destructive"
+        >
+          {bulkErrors.map((m, i) => (
+            <li key={i}>{m}</li>
+          ))}
+        </ul>
+      )}
 
       {shown.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-12 text-center">
@@ -241,10 +310,10 @@ export function ProductTable({
                       <StatusBadge status={row.status} label={ts(row.status)} />
                     </td>
                     <td className="p-3 text-right whitespace-nowrap tabular-nums">
-                      {formatPrice(row.priceFrom, locale)}
+                      {row.priceFrom === null ? "—" : formatPrice(row.priceFrom, locale)}
                     </td>
                     <td className="p-3 text-right tabular-nums">
-                      {formatDecimal(String(row.views), locale)}
+                      {row.views === null ? "—" : formatDecimal(String(row.views), locale)}
                     </td>
                     <td className="p-3 whitespace-nowrap tabular-nums">{updated(row.updatedAt)}</td>
                     <td className="p-3">{actions(row)}</td>

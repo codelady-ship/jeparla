@@ -57,6 +57,18 @@ public enum RateLimitPolicy {
      */
     CONTACT_IP("contact-ip", 60, Duration.ofHours(1)),
     /**
+     * Shared-link visits counted from one IP address over all stores (#100). Visits over the limit are not
+     * counted (no error), so a script cannot inflate a store's referral statistics.
+     */
+    REFERRAL_IP("referral-ip", 30, Duration.ofHours(1)),
+    /**
+     * One counted visit per IP address, store and source in the window (#100): reloading the page or opening the
+     * link again is the same visit. The limit stays 1; only the window is meant to be configured.
+     */
+    REFERRAL_VISIT("referral-visit", 1, Duration.ofMinutes(30)),
+    /** New share links asked for by one seller account (#100): every one breaks the printed QR codes. */
+    SHARE_REGENERATE_ACCOUNT("share-regenerate-account", 5, Duration.ofDays(1)),
+    /**
      * Searches and suggestions from one IP address (#38, PLAN 5.13): generous for people typing in
      * the header box (also behind a shared mobile carrier address), but a script cannot run ranked
      * queries without limit. CDN hits never reach the API, so they are not counted.
@@ -76,10 +88,25 @@ public enum RateLimitPolicy {
      */
     IMAGE_UPLOAD_ACCOUNT("image-upload-account", 60, Duration.ofHours(1)),
     /**
+     * Catalog PDF uploads by one seller account (#129): reading a PDF of up to 20 MB and 30 pages costs memory and
+     * CPU on the server, so a seller gets a few per hour, enough to try again after splitting a catalog.
+     */
+    CATALOG_PDF_ACCOUNT("catalog-pdf-account", 5, Duration.ofHours(1)),
+    /**
+     * Product spreadsheet imports by one seller account (#109): each creates up to 200 DRAFT products, so a day
+     * allows a few thousand, more than any seller moving a catalog needs, and a script cannot fill the database.
+     */
+    PRODUCT_IMPORT_ACCOUNT("product-import-account", 20, Duration.ofDays(1)),
+    /**
      * Presigned verification document uploads asked for by one seller account (#40): each lets the browser write
      * up to 10 MB into the private bucket. The open and daily limits per store apply as well.
      */
-    DOCUMENT_UPLOAD_ACCOUNT("document-upload-account", 20, Duration.ofHours(1));
+    DOCUMENT_UPLOAD_ACCOUNT("document-upload-account", 20, Duration.ofHours(1)),
+    /**
+     * AI Studio job requests and retries of one seller account (#55, PLAN 5.13): each may cost money at the
+     * provider. The daily quota per store and the monthly cost limit apply as well.
+     */
+    AI_JOB_ACCOUNT("ai-job-account", 30, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

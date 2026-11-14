@@ -25,11 +25,20 @@ import {
 } from "@/lib/merchant/schemas";
 import type { DocMeta } from "@/lib/seller/schemas";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
-import type { ProductInput, StoneInput, VariantInput } from "@/types/merchant";
+import {
+  PRODUCT_AUDIENCES,
+  type ProductAudience,
+  type ProductInput,
+  type StoneInput,
+  type VariantInput,
+} from "@/types/merchant";
 import { ImageUpload } from "./image-upload";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
+import { isMessage } from "@/lib/api/problem";
 
 export type Option = { value: string; label: string };
+/** A leaf category with the audience it suggests (#121). */
+export type CategoryOption = Option & { audience?: ProductAudience };
 export type FinenessOption = Option & { metal: MetalType; fineness: number };
 
 const STEP_KEYS = ["1", "2", "3", "4", "5"] as const;
@@ -53,16 +62,22 @@ export function ProductForm({
   finenesses,
   sellerApproved,
   quotes,
+  requireDocs = true,
 }: {
   /** "new" or the product id. */
   draftKey: string;
   initial?: ProductInput;
   productStatus?: ProductStatus;
-  categories: Option[];
+  categories: CategoryOption[];
   finenesses: FinenessOption[];
   sellerApproved: boolean;
   /** Latest pure-metal gram price per metal, for the METAL_LINKED preview. */
   quotes: Partial<Record<MetalType, GramQuote>>;
+  /**
+   * Sample data only: the form asks for expertise documents before review. With the backend
+   * they are separate private uploads checked by an admin (#40), not part of this form.
+   */
+  requireDocs?: boolean;
 }) {
   const t = useTranslations("Merchant.form");
   const locale = useLocale();
@@ -146,6 +161,8 @@ export function ProductForm({
 
   const err = (key: string | undefined) => {
     if (!key) return undefined;
+    // The backend's own sentence (already in the page language) is shown as it is.
+    if (isMessage(key)) return key;
     const k = `errors.${key}`;
     if (tm.has(k as "errors.check")) return tm(k as "errors.check");
     if (ts.has(k as "errors.phoneInvalid")) return ts(k as "errors.phoneInvalid");
@@ -187,7 +204,7 @@ export function ProductForm({
         return fail(errs);
       }
     }
-    if (intent === "REVIEW" && p.docs.length === 0 && productStatus !== "APPROVED")
+    if (requireDocs && intent === "REVIEW" && p.docs.length === 0 && productStatus !== "APPROVED")
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result =
@@ -292,8 +309,26 @@ export function ProductForm({
               placeholder={t("choose")}
               options={categories}
               value={p.category}
-              onChange={(e) => set({ category: e.target.value })}
+              onChange={(e) => {
+                const suggested = (slug: string) =>
+                  categories.find((c) => c.value === slug)?.audience ?? "UNISEX";
+                // The suggestion follows the category until the seller picks an audience.
+                const touched = p.audience !== suggested(p.category);
+                set({
+                  category: e.target.value,
+                  ...(touched ? {} : { audience: suggested(e.target.value) }),
+                });
+              }}
               error={err(errors.category)}
+            />
+            <SelectField
+              id="p-audience"
+              label={t("fields.audience")}
+              placeholder={t("choose")}
+              options={PRODUCT_AUDIENCES.map((a) => ({ value: a, label: t(`audience.${a}`) }))}
+              value={p.audience}
+              onChange={(e) => set({ audience: (e.target.value || "UNISEX") as ProductAudience })}
+              hint={t("hints.audience")}
             />
             <div className="flex flex-col gap-2 sm:col-span-2">
               <Label htmlFor="p-description">
@@ -585,13 +620,14 @@ export function ProductForm({
         {current === 5 && (
           <div className="flex flex-col gap-5">
             <p className="text-sm">{t("docs.what")}</p>
+            {!requireDocs && <p className="text-sm text-muted-foreground">{t("docs.separate")}</p>}
             <DocUpload docs={p.docs as DocMeta[]} onChange={(docs) => set({ docs })} />
             <div className="flex flex-col gap-2 rounded-lg bg-muted p-4 text-sm">
               <h3 className="font-sans font-semibold">{t("review.title")}</h3>
               {sellerApproved ? (
                 <>
                   <p>{t("review.ready")}</p>
-                  {p.docs.length === 0 && productStatus !== "APPROVED" && (
+                  {requireDocs && p.docs.length === 0 && productStatus !== "APPROVED" && (
                     <p className="text-muted-foreground">{t("review.docsNeeded")}</p>
                   )}
                   {productStatus === "APPROVED" && (

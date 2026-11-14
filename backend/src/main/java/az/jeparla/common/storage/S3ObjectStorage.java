@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
 import software.amazon.awssdk.core.checksums.ResponseChecksumValidation;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
@@ -216,11 +217,38 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     }
 
     @Override
+    public void putPrivate(String key, byte[] bytes, String contentType) {
+        if (key.startsWith(STAGING_PREFIX)) {
+            throw new IllegalArgumentException("Not a private object key: " + key);
+        }
+        client.putObject(PutObjectRequest.builder().bucket(privateBucket).key(key).contentType(contentType)
+                .contentLength((long) bytes.length).build(), RequestBody.fromBytes(bytes));
+    }
+
+    @Override
     public void deletePrivate(String key) {
         if (key.startsWith(STAGING_PREFIX)) {
             throw new IllegalArgumentException("Not a private object key: " + key);
         }
         client.deleteObject(DeleteObjectRequest.builder().bucket(privateBucket).key(key).build());
+    }
+
+    /** A server-side copy between the two buckets of one account; content type and length are kept. */
+    @Override
+    public void publishPrivate(String privateKey, String publicKey) {
+        requirePrivateKey(privateKey);
+        client.copyObject(CopyObjectRequest.builder()
+                .sourceBucket(privateBucket)
+                .sourceKey(privateKey)
+                .destinationBucket(publicBucket)
+                .destinationKey(publicKey)
+                .build());
+    }
+
+    private static void requirePrivateKey(String key) {
+        if (key.startsWith(STAGING_PREFIX)) {
+            throw new IllegalArgumentException("Not a private object key: " + key);
+        }
     }
 
     /** A file name safe in a quoted header value: printable ASCII without quotes and backslashes. */

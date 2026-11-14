@@ -1,6 +1,7 @@
 import type {
   Category,
   CompareItem,
+  ExchangeRate,
   Fineness,
   ImageSearchResult,
   ImageSearchStatus,
@@ -35,8 +36,11 @@ export interface JeparlaApi {
   listCategories(): Promise<Category[]>;
   /** GET /api/v1/finenesses */
   listFinenesses(): Promise<Fineness[]>;
-  /** GET /api/v1/stores */
-  listStores(params?: { q?: string; city?: string }): Promise<StoreSummary[]>;
+  /**
+   * GET /api/v1/stores. With `near` ("lat,lng"), stores with a location come first,
+   * nearest first, with `distanceKm`; the rest follow in the usual order.
+   */
+  listStores(params?: { q?: string; city?: string; near?: string }): Promise<StoreSummary[]>;
   /** GET /api/v1/stores/{slug} */
   getStore(slug: string): Promise<Store | null>;
   /** GET /api/v1/stores/{slug}/products */
@@ -53,4 +57,6 @@ export interface JeparlaApi {
   latestMetalPrices(): Promise<MetalPrice[]>;
   /** GET /api/v1/metal-prices/history */
   metalPriceHistory(metal: MetalType, days?: number): Promise<MetalPrice[]>;
+  /** GET /api/v1/exchange-rates/latest */
+  latestExchangeRates(): Promise<ExchangeRate[]>;
 }

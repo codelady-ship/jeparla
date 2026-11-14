@@ -13,13 +13,19 @@ import az.jeparla.common.storage.ObjectStorage;
 import az.jeparla.common.storage.ObjectStorage.PresignedUpload;
 import az.jeparla.common.storage.ObjectStorage.StoredObject;
 import az.jeparla.common.storage.StagedUploadChangedException;
+import az.jeparla.merchant.dto.EvidenceAttachRequest;
 import az.jeparla.merchant.dto.ImageAttachRequest;
 import az.jeparla.merchant.dto.ImageOrderRequest;
 import az.jeparla.merchant.dto.ImageUploadDto;
 import az.jeparla.merchant.dto.ImageUploadRequest;
+import az.jeparla.merchant.dto.MerchantEvidencePhotoDto;
 import az.jeparla.merchant.dto.MerchantImageDto;
 import az.jeparla.merchant.dto.MerchantProductDto;
+import az.jeparla.product.EvidenceKind;
+import az.jeparla.product.FirstOriginalPhotoAttached;
+import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Product;
+import az.jeparla.product.ProductEvidencePhoto;
 import az.jeparla.product.ProductImage;
 import az.jeparla.product.ProductStatus;
 import java.time.Clock;
@@ -34,6 +40,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -64,6 +71,9 @@ public class MerchantImageService {
     /** Same limits as frontend/src/lib/merchant/images.ts and schemas.ts. */
     public static final long MAX_BYTES = 15L * 1024 * 1024;
     public static final int MAX_IMAGES = 8;
+    /** Open uploads per product and evidence kind; the product keeps one photo of each kind (#106). */
+    public static final int MAX_OPEN_EVIDENCE_UPLOADS = 3;
+    private static final String FILE_NAME = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png|webp)";
     /** Longest side accepted; larger photos are refused rather than resized here. */
     public static final int MAX_SIDE = 12_000;
     static final Duration UPLOAD_TTL = Duration.ofMinutes(10);
@@ -82,10 +92,12 @@ public class MerchantImageService {
     private final AuditService audit;
     private final MerchantImageProperties properties;
     private final Clock clock;
+    private final ApplicationEventPublisher events;
 
     public MerchantImageService(MerchantProducts productService, ImageUploadSlotRepository slots,
             ObjectStorage storage, MerchantViews views, AuditService audit, MerchantImageProperties properties,
-            Clock clock) {
+            Clock clock, ApplicationEventPublisher events) {
+        this.events = events;
         this.productService = productService;
         this.slots = slots;
         this.storage = storage;
@@ -103,20 +115,51 @@ public class MerchantImageService {
     @Transactional
     public ImageUploadDto upload(long productId, ImageUploadRequest request) {
         Product product = productService.ownedWritable(productId);
-        String type = request.contentType().strip().toLowerCase(Locale.ROOT);
-        String extension = EXTENSIONS.get(type);
+        String extension = extension(request);
+        // Requests of one store count one after another: two at once cannot both take the last place.
+        productService.lockStore(product);
+        Instant now = clock.instant();
+        if (product.getImages().size() + slots.countOpen(product.getId(), ImageUploadKind.GALLERY, now) >= MAX_IMAGES) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
+        }
+        return presign(product, ImageUploadKind.GALLERY, prefix(product), extension, request, now);
+    }
+
+    /**
+     * A presigned upload for the hallmark or label photo of the product (#106): the same type, size and daily
+     * checks as a gallery photo, 409 {@code merchant.evidence_upload_limit} with
+     * {@value #MAX_OPEN_EVIDENCE_UPLOADS} open uploads of that kind, 409 {@code merchant.hallmark_precious_only}
+     * for a hallmark of a FASHION product.
+     */
+    @Transactional
+    public ImageUploadDto uploadEvidence(long productId, EvidenceKind kind, ImageUploadRequest request) {
+        Product product = productService.ownedWritable(productId);
+        requireEvidenceAllowed(product, kind);
+        String extension = extension(request);
+        productService.lockStore(product);
+        Instant now = clock.instant();
+        ImageUploadKind uploadKind = ImageUploadKind.of(kind);
+        if (slots.countOpen(product.getId(), uploadKind, now) >= MAX_OPEN_EVIDENCE_UPLOADS) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.evidence_upload_limit");
+        }
+        return presign(product, uploadKind, evidencePrefix(product), extension, request, now);
+    }
+
+    private static String extension(ImageUploadRequest request) {
+        String extension = EXTENSIONS.get(request.contentType().strip().toLowerCase(Locale.ROOT));
         if (extension == null) {
             throw invalid("merchant.image_type", "contentType");
         }
         if (request.sizeBytes() > MAX_BYTES) {
             throw invalid("merchant.image_size", "sizeBytes");
         }
-        // Requests of one store count one after another: two at once cannot both take the last place.
-        productService.lockStore(product);
-        Instant now = clock.instant();
-        if (product.getImages().size() + slots.countOpen(product.getId(), now) >= MAX_IMAGES) {
-            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
-        }
+        return extension;
+    }
+
+    /** The daily limit of the store, then a slot and a presigned PUT under {@code prefix}. Store row locked. */
+    private ImageUploadDto presign(Product product, ImageUploadKind kind, String prefix, String extension,
+            ImageUploadRequest request, Instant now) {
+        String type = request.contentType().strip().toLowerCase(Locale.ROOT);
         long storeId = product.getStore().getId();
         Instant dayAgo = now.minus(DAILY_WINDOW);
         if (slots.countByStoreIdAndCreatedAtAfter(storeId, dayAgo) >= properties.dailyUploadsPerStore()) {
@@ -126,9 +169,9 @@ public class MerchantImageService {
             throw new RateLimitExceededException(
                     Math.max(1, Duration.between(now, oldest.plus(DAILY_WINDOW)).toSeconds() + 1));
         }
-        String key = prefix(product) + UUID.randomUUID() + "." + extension;
+        String key = prefix + UUID.randomUUID() + "." + extension;
         Instant expiresAt = now.plus(UPLOAD_TTL);
-        slots.save(new ImageUploadSlot(key, product.getId(), storeId, now, expiresAt));
+        slots.save(new ImageUploadSlot(key, product.getId(), storeId, kind, now, expiresAt));
         PresignedUpload upload = storage.presignStagedUpload(key, type, request.sizeBytes(), UPLOAD_TTL);
         return new ImageUploadDto(key, upload.url(), upload.method(), upload.headers(), upload.expiresAt(), MAX_BYTES);
     }
@@ -155,8 +198,107 @@ public class MerchantImageService {
             throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
         }
         Instant now = clock.instant();
+        Checked checked = checkStaged(product, key, ImageUploadKind.GALLERY, now);
+        int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
+        ProductImage image = new ProductImage(key, checked.width(), checked.height(), checked.contentType(),
+                checked.stored().sizeBytes(), request.isAiGenerated(), sortOrder);
+        String altAz = blankToNull(request.altAz());
+        if (altAz != null || blankToNull(request.altEn()) != null || blankToNull(request.altRu()) != null) {
+            image.setAlt(LocalizedText.of(altAz != null ? altAz : product.getName().az(), blankToNull(request.altEn()),
+                    blankToNull(request.altRu())));
+        }
+        product.addImage(image);
+        checked.slot().attached(now);
+        productService.afterChange(product, true, now);
+        productService.flush();
+        if (!image.isAiGenerated() && originals(product) == 1) {
+            events.publishEvent(new FirstOriginalPhotoAttached(product.getId(), image.getId()));
+        }
+        audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
+                "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
+        publish(key, checked.stored());
+        return new Created<>(views.image(image), true);
+    }
+
+    /**
+     * Sets the hallmark or label photo of the product (#106) from an upload of {@link #uploadEvidence}, with the
+     * same checks as a gallery photo. A photo of that kind the product had is replaced (its file is deleted after
+     * the commit); the new one waits for an admin check (PENDING). Setting the same key again returns the photo it
+     * already is. A new photo on an APPROVED product sends it back to review, so it is public only once approved.
+     */
+    @Transactional
+    public Created<MerchantEvidencePhotoDto> attachEvidence(long productId, EvidenceKind kind,
+            EvidenceAttachRequest request) {
+        Product product = productService.ownedWritable(productId);
+        requireEvidenceAllowed(product, kind);
+        productService.lockStore(product);
+        String key = request.key().strip();
+        Optional<ProductEvidencePhoto> current = product.evidencePhoto(kind);
+        if (current.isPresent() && current.get().getStorageKey().equals(key)) {
+            return new Created<>(views.evidence(current.get()), false);
+        }
+        if (!evidenceKeyPattern(product).matcher(key).matches()) {
+            throw invalid("merchant.image_key", "key");
+        }
+        Instant now = clock.instant();
+        Checked checked = checkStaged(product, key, ImageUploadKind.of(kind), now);
+        Long replaced = null;
+        if (current.isPresent()) {
+            replaced = current.get().getId();
+            product.removeEvidencePhoto(current.get());
+            discardAfterCommit(current.get().getStorageKey());
+            // The unique (product, kind) index: the old row goes before the new one is inserted.
+            productService.flush();
+        }
+        ProductEvidencePhoto photo = new ProductEvidencePhoto(kind, key, checked.width(), checked.height(),
+                checked.contentType(), checked.stored().sizeBytes());
+        product.addEvidencePhoto(photo);
+        checked.slot().attached(now);
+        productService.afterChange(product, true, now);
+        productService.flush();
+        audit.record("EVIDENCE_PHOTO_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
+                "{\"photoId\":" + photo.getId() + ",\"kind\":\"" + kind + "\""
+                        + (replaced == null ? "" : ",\"replacedPhotoId\":" + replaced) + "}");
+        publish(key, checked.stored());
+        return new Created<>(views.evidence(photo), true);
+    }
+
+    /** Removes the hallmark or label photo and, after the commit, its file: 404 when the product has none. */
+    @Transactional
+    public void removeEvidence(long productId, EvidenceKind kind) {
+        Product product = productService.ownedWritable(productId);
+        ProductEvidencePhoto photo = product.evidencePhoto(kind).orElseThrow(ApiException::notFound);
+        String key = photo.getStorageKey();
+        long photoId = photo.getId();
+        product.removeEvidencePhoto(photo);
+        productService.flush();
+        audit.record("EVIDENCE_PHOTO_REMOVED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
+                "{\"photoId\":" + photoId + ",\"kind\":\"" + kind + "\"}");
+        discardAfterCommit(key);
+    }
+
+    /**
+     * A hallmark is the assay stamp of a precious metal: a FASHION product (#128) has none to show, so only its
+     * label may be added.
+     */
+    private static void requireEvidenceAllowed(Product product, EvidenceKind kind) {
+        if (kind == EvidenceKind.HALLMARK && product.getMaterialKind() == MaterialKind.FASHION) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.hallmark_precious_only");
+        }
+    }
+
+    /** What the check of a staged upload found. */
+    private record Checked(ImageUploadSlot slot, StoredObject stored, String contentType, int width, int height) {
+    }
+
+    /**
+     * Checks the staged object behind {@code key}: an open upload of {@code kind} for this product, not too old,
+     * present, within the size limit, and a JPEG, PNG or WebP of the type its key names (magic numbers) within
+     * the dimension limit. A file that fails is deleted.
+     */
+    private Checked checkStaged(Product product, String key, ImageUploadKind kind, Instant now) {
         ImageUploadSlot slot = slots.findByStorageKey(key)
-                .filter(s -> s.getProductId() == product.getId() && s.isOpen()
+                .filter(s -> s.getProductId() == product.getId() && s.getKind() == kind && s.isOpen()
                         && now.isBefore(s.getExpiresAt().plus(ATTACH_GRACE)))
                 .orElseThrow(() -> invalid("merchant.image_missing", "key"));
         StoredObject stored = storage.headStaged(key).orElseThrow(() -> invalid("merchant.image_missing", "key"));
@@ -180,20 +322,11 @@ public class MerchantImageService {
             discardStaged(key);
             throw invalid("merchant.image_dimensions", "key");
         }
-        int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
-        ProductImage image = new ProductImage(key, info.get().width(), info.get().height(), expected,
-                stored.sizeBytes(), request.isAiGenerated(), sortOrder);
-        String altAz = blankToNull(request.altAz());
-        if (altAz != null || blankToNull(request.altEn()) != null || blankToNull(request.altRu()) != null) {
-            image.setAlt(LocalizedText.of(altAz != null ? altAz : product.getName().az(), blankToNull(request.altEn()),
-                    blankToNull(request.altRu())));
-        }
-        product.addImage(image);
-        slot.attached(now);
-        productService.afterChange(product, true, now);
-        productService.flush();
-        audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
-                "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
+        return new Checked(slot, stored, expected, info.get().width(), info.get().height());
+    }
+
+    /** Copies the checked object to the public bucket; call after the rows are written and flushed. */
+    private void publish(String key, StoredObject stored) {
         // Registered before the copy (#158): a copy that succeeded on the server but failed in the client (a
         // timeout) rolls the attach back and still removes the public file.
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -210,7 +343,18 @@ public class MerchantImageService {
         } catch (StagedUploadChangedException e) {
             throw changedAfterCheck(key);
         }
-        return new Created<>(views.image(image), true);
+    }
+
+    private void discardAfterCommit(String key) {
+        if (key.startsWith("demo/")) {
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                discard(key);
+            }
+        });
     }
 
     /** The staged file was PUT again or removed after its check: it is deleted and never published (#158). */
@@ -220,7 +364,10 @@ public class MerchantImageService {
         return invalid("merchant.image_missing", "key");
     }
 
-    /** Removes a photo and, after the commit, its file. A listed product keeps at least one photo. */
+    /**
+     * Removes a photo and, after the commit, its file. A listed product keeps at least one photo, and AI images
+     * never stay alone (#121): the last original photo goes only after them (409 {@code merchant.last_original}).
+     */
     @Transactional
     public void remove(long productId, long imageId) {
         Product product = productService.ownedWritable(productId);
@@ -229,6 +376,9 @@ public class MerchantImageService {
         boolean listed = product.getStatus() == ProductStatus.APPROVED || product.getStatus() == ProductStatus.IN_REVIEW;
         if (listed && product.getImages().size() == 1) {
             throw new ApiException(HttpStatus.CONFLICT, "merchant.last_image");
+        }
+        if (!image.isAiGenerated() && originals(product) == 1 && product.getImages().size() > 1) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.last_original");
         }
         String key = image.getStorageKey();
         product.removeImage(image);
@@ -245,7 +395,10 @@ public class MerchantImageService {
         }
     }
 
-    /** New photo order: every image id exactly once, the cover first. */
+    /**
+     * New photo order: every image id exactly once, the cover first. The cover is an original photo whenever the
+     * product has one (#121): an AI image first is 400 {@code merchant.image_order_ai_first}.
+     */
     @Transactional
     public MerchantProductDto reorder(long productId, ImageOrderRequest request) {
         Product product = productService.ownedWritable(productId);
@@ -254,11 +407,20 @@ public class MerchantImageService {
         if (ids.size() != current.size() || !new HashSet<>(ids).equals(new HashSet<>(current))) {
             throw invalid("merchant.image_order", "imageIds");
         }
+        boolean aiFirst = product.getImages().stream()
+                .anyMatch(image -> image.getId().equals(ids.get(0)) && image.isAiGenerated());
+        if (aiFirst && originals(product) > 0) {
+            throw invalid("merchant.image_order_ai_first", "imageIds");
+        }
         for (ProductImage image : product.getImages()) {
             image.setSortOrder(ids.indexOf(image.getId()));
         }
         productService.flush();
         return views.product(product);
+    }
+
+    private static long originals(Product product) {
+        return product.getImages().stream().filter(image -> !image.isAiGenerated()).count();
     }
 
     /** Keys are generated by {@link #upload}: {@code products/<store>/<product>/<uuid>.<ext>}. */
@@ -267,8 +429,16 @@ public class MerchantImageService {
     }
 
     private static Pattern keyPattern(Product product) {
-        return Pattern.compile(Pattern.quote(prefix(product))
-                + "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png|webp)");
+        return Pattern.compile(Pattern.quote(prefix(product)) + FILE_NAME);
+    }
+
+    /** Evidence photos (#106): {@code products/<store>/<product>/evidence/<uuid>.<ext>}. */
+    private static String evidencePrefix(Product product) {
+        return prefix(product) + "evidence/";
+    }
+
+    private static Pattern evidenceKeyPattern(Product product) {
+        return Pattern.compile(Pattern.quote(evidencePrefix(product)) + FILE_NAME);
     }
 
     /** Best effort: a public file left behind is only storage, never shown (no row points at it). */

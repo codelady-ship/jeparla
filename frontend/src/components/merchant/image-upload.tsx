@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, ImagePlus, Loader2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, ImagePlus, Loader2, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useId, useState, type DragEvent } from "react";
 import { downscale, IMAGE_MAX_BYTES, IMAGE_TYPES, move } from "@/lib/merchant/images";
+import { checkPhoto } from "@/lib/merchant/photo-quality";
 import { MAX_IMAGES } from "@/lib/merchant/schemas";
 import type { ProductImageInput } from "@/types/merchant";
 import { cn } from "cn";
@@ -30,6 +31,7 @@ export function ImageUpload({
   const [over, setOver] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problems, setProblems] = useState<string[]>([]);
+  const [hints, setHints] = useState<string[]>([]);
   const [status, setStatus] = useState("");
   const max = IMAGE_MAX_BYTES / 1024 / 1024;
 
@@ -37,6 +39,7 @@ export function ImageUpload({
     if (!files?.length) return;
     const next = [...images];
     const errs: string[] = [];
+    const warn: string[] = [];
     setBusy(true);
     let added = 0;
     for (const f of Array.from(files)) {
@@ -55,6 +58,8 @@ export function ImageUpload({
             name: f.name.slice(0, 200),
           });
           added++;
+          // Quality hints (#119) only warn: the seller may keep the photo.
+          for (const w of await checkPhoto(f)) warn.push(t(`quality.${w}`, { name: f.name }));
         } catch {
           errs.push(t("failed", { name: f.name }));
         }
@@ -62,6 +67,7 @@ export function ImageUpload({
     }
     setBusy(false);
     setProblems(errs);
+    setHints(warn);
     setStatus(added ? t("added", { count: added }) : "");
     onChange(next);
   }
@@ -74,6 +80,17 @@ export function ImageUpload({
 
   return (
     <div className="flex flex-col gap-3">
+      <details className="rounded-lg border px-4 py-3 text-sm">
+        <summary className="flex cursor-pointer items-center gap-2 font-medium">
+          <Camera aria-hidden className="size-4 text-gold-text" />
+          {t("guide.title")}
+        </summary>
+        <ol className="mt-3 flex list-decimal flex-col gap-1.5 pl-5 text-muted-foreground">
+          {(["light", "background", "angle", "focus", "scale"] as const).map((step) => (
+            <li key={step}>{t(`guide.${step}`)}</li>
+          ))}
+        </ol>
+      </details>
       <label
         htmlFor={id}
         onDragOver={(e) => {
@@ -114,6 +131,16 @@ export function ImageUpload({
 
       <div aria-live="polite" className="flex flex-col gap-1 text-sm">
         {status && <p className="sr-only">{status}</p>}
+        {hints.length > 0 && (
+          <ul className="flex flex-col gap-1 text-muted-foreground">
+            {hints.map((h) => (
+              <li key={h} className="flex items-start gap-2">
+                <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
+                {h}
+              </li>
+            ))}
+          </ul>
+        )}
         {problems.length > 0 && (
           <ul className="flex flex-col gap-1 text-destructive">
             {problems.map((p) => (
