@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { CLARITIES, COLORS, METALS, SHAPES } from "@/lib/catalog/filters";
+import { CLARITIES, COLORS, KINDS, METALS, SHAPES } from "@/lib/catalog/filters";
 import type { Category, Fineness, ProductFilters, StoreSummary } from "@/types/api";
 import { StoreOptions } from "./store-options";
 
@@ -174,6 +174,24 @@ export function FilterFields({
           selected={f.store ?? []}
           searchLabel={t("storeSearch")}
         />
+      </Group>
+
+      <Group legend={t("kind")}>
+        <Check id={`${id}-kind-all`} name="kind" value="" checked={!f.kind} type="radio">
+          {t("any")}
+        </Check>
+        {KINDS.map((k) => (
+          <Check
+            key={k}
+            id={`${id}-kind-${k}`}
+            name="kind"
+            value={k}
+            checked={f.kind === k}
+            type="radio"
+          >
+            {t(`kinds.${k}`)}
+          </Check>
+        ))}
       </Group>
 
       <Group legend={t("metal")}>

@@ -127,8 +127,10 @@ export type PricingRule = {
 export type Variant = {
   id: number;
   sku: string;
-  fineness: Fineness;
-  weightGrams: Decimal;
+  /** Null for FASHION (#128). */
+  fineness: Fineness | null;
+  /** A FASHION variant may have no weight. */
+  weightGrams: Decimal | null;
   size: string | null;
   price: Money;
   pricingMode: PricingMode;
@@ -148,18 +150,17 @@ export type ProductSummary = {
   materialKind: MaterialKind;
   /** FASHION only. */
   material: FashionMaterial | null;
-  /**
-   * The demo catalog is precious only; the API sends null for FASHION. The FASHION UI (#128) widens this
-   * to `MetalType | null` together with fineness and weightGrams.
-   */
-  metal: MetalType;
+  /** Null for FASHION (#128). */
+  metal: MetalType | null;
   /** Lowest variant price. */
   priceFrom: Money;
   /** The variant priceFrom comes from; the compare button on a card adds this one. */
   defaultVariantId: number;
   pricingMode: PricingMode;
-  fineness: number;
-  weightGrams: Decimal;
+  /** Null for FASHION (#128). */
+  fineness: number | null;
+  /** A FASHION product may have no weight. */
+  weightGrams: Decimal | null;
   images: ProductImage[];
   hasStones: boolean;
   verification: Verification;

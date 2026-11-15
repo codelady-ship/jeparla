@@ -46,6 +46,13 @@ describe("parseFilters", () => {
     ).toEqual({});
   });
 
+  it("reads the material kind (#128) and drops unknown kinds", () => {
+    expect(parseFilters({ kind: "FASHION" }).kind).toBe("FASHION");
+    expect(parseFilters({ kind: "PRECIOUS" }).kind).toBe("PRECIOUS");
+    expect(parseFilters({ kind: "gold" }).kind).toBeUndefined();
+    expect(activeFilters({ kind: "FASHION" })).toHaveLength(1);
+  });
+
   it("keeps decimals as strings (no float)", () => {
     const f = parseFilters({ minCarat: "0.25" });
     expect(f.minCarat).toBe("0.25");

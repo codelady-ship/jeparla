@@ -74,18 +74,22 @@ export function CompareView() {
     },
     {
       label: td("facts.metal"),
-      raw: items.map((x) => x.product.metal),
-      values: items.map((x) => tp(`metal.${x.product.metal}`)),
+      raw: items.map((x) => x.product.metal ?? ""),
+      values: items.map((x) =>
+        x.product.metal
+          ? tp(`metal.${x.product.metal}`)
+          : tp(`material.${x.product.material ?? "OTHER"}`),
+      ),
     },
     {
       label: td("facts.fineness"),
-      raw: items.map((x) => String(x.variant.fineness.value)),
-      values: items.map((x) => x.variant.fineness.label),
+      raw: items.map((x) => String(x.variant.fineness?.value ?? "")),
+      values: items.map((x) => x.variant.fineness?.label ?? td("na")),
     },
     {
       label: td("facts.weight"),
-      raw: items.map((x) => x.variant.weightGrams),
-      values: items.map((x) => weight(x.variant.weightGrams)),
+      raw: items.map((x) => x.variant.weightGrams ?? ""),
+      values: items.map((x) => (x.variant.weightGrams ? weight(x.variant.weightGrams) : td("na"))),
     },
     {
       label: td("facts.size"),
