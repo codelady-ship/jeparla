@@ -11,6 +11,7 @@ import az.jeparla.merchant.dto.MerchantDashboardDto;
 import az.jeparla.merchant.dto.MerchantStoreDto;
 import az.jeparla.merchant.dto.StoreProfileRequest;
 import az.jeparla.merchant.dto.StoreRequest;
+import az.jeparla.product.ContactQuestion;
 import az.jeparla.product.MaterialKind;
 import az.jeparla.product.ProductContactClickRepository;
 import az.jeparla.product.ProductRepository;
@@ -161,7 +162,14 @@ public class MerchantStoreService {
             counts.put((ProductStatus) row[0], (Long) row[1]);
         }
         LocalDate from = LocalDate.now(clock.withZone(BAKU)).minusDays(DASHBOARD_DAYS - 1L);
-        return new MerchantDashboardDto(null, clicks.sumByStoreSince(store.getId(), from), counts);
+        Map<ContactQuestion, Long> byQuestion = new EnumMap<>(ContactQuestion.class);
+        for (ContactQuestion question : ContactQuestion.values()) {
+            byQuestion.put(question, 0L);
+        }
+        for (Object[] row : clicks.sumByQuestionForStoreSince(store.getId(), from)) {
+            byQuestion.put(ContactQuestion.valueOf((String) row[0]), ((Number) row[1]).longValue());
+        }
+        return new MerchantDashboardDto(null, clicks.sumByStoreSince(store.getId(), from), byQuestion, counts);
     }
 
     private static void applyProfile(Store store, String phone, String social, String description,

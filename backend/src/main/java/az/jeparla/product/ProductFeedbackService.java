@@ -51,8 +51,23 @@ public class ProductFeedbackService {
      */
     @Transactional
     public void contactClick(long productId, ReferralService.Hit referral) {
+        contactClick(productId, null, referral);
+    }
+
+    /**
+     * Same as {@link #contactClick(long, ReferralService.Hit)}, and when the buyer picked a ready question
+     * (#111) the click is also counted for that question. Nothing about the buyer is stored.
+     *
+     * @param question the picked question, or null when the client did not say
+     */
+    @Transactional
+    public void contactClick(long productId, ContactQuestion question, ReferralService.Hit referral) {
         Product product = catalog.requireListed(productId);
-        clicks.increment(productId, LocalDate.now(clock.withZone(BAKU)));
+        LocalDate today = LocalDate.now(clock.withZone(BAKU));
+        clicks.increment(productId, today);
+        if (question != null) {
+            clicks.incrementQuestion(productId, today, question.name());
+        }
         if (referral != null) {
             referrals.whatsappClick(product.getStore().getId(), referral);
         }

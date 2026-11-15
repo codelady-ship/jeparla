@@ -18,6 +18,7 @@ import { routing } from "@/i18n/routing";
 import { USING_MOCK } from "@/lib/api";
 import { formatDecimal } from "@/lib/money";
 import { merchantContext } from "@/lib/merchant/server";
+import { CONTACT_QUESTIONS } from "@/lib/whatsapp";
 import type { ProductStatus } from "@/types/api";
 
 export const generateMetadata = () => merchantMetadata("dashboard");
@@ -28,9 +29,10 @@ async function Dashboard() {
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return null;
   const { api } = await merchantContext();
-  const [t, ts, store, stats, rows] = await Promise.all([
+  const [t, ts, tq, store, stats, rows] = await Promise.all([
     getTranslations("Merchant.dashboard"),
     getTranslations("Merchant.status"),
+    getTranslations("Pdp.contact.questions"),
     api.store(),
     api.dashboard(),
     api.products(),
@@ -90,6 +92,27 @@ async function Dashboard() {
               </div>
             ))}
           </section>
+
+          {stats.whatsappClicksByQuestion && stats.whatsappClicks > 0 && (
+            <section aria-labelledby="by-question" className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <h2 id="by-question" className="text-xl">
+                  {t("byQuestion")}
+                </h2>
+                <p className="text-sm text-muted-foreground">{t("byQuestionNote")}</p>
+              </div>
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                {CONTACT_QUESTIONS.map((q) => (
+                  <li key={q} className="flex flex-col gap-2 rounded-lg border bg-card p-4">
+                    <span className="text-sm text-muted-foreground">{tq(q)}</span>
+                    <span className="text-2xl font-semibold tabular-nums">
+                      {num(stats.whatsappClicksByQuestion?.[q] ?? 0)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section aria-labelledby="by-status" className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2">

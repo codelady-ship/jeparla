@@ -4,6 +4,7 @@ import { GitCompareArrows, Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { sendContactClick } from "@/lib/contact-click";
 import { compare, favorites } from "@/lib/saved-list";
 import { toggleFavorite } from "@/lib/saved-prices";
 import { useDisplayCurrency } from "@/lib/use-display-currency";
@@ -177,6 +178,9 @@ export function VariantPanel({
         target="_blank"
         rel="noopener noreferrer"
         data-keep-clear=""
+        onClick={() => {
+          if (contact) sendContactClick({ productId, question: contact.question });
+        }}
         className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-12 w-full text-base")}
       >
         <MessageCircle aria-hidden />
