@@ -690,7 +690,7 @@
     "retry": "Try again",
     "browse": "Browse the catalog",
     "clearAll": "Clear all",
-    "deviceNote": "The list is kept in this browser. It moves to your account when you sign in.",
+    "deviceNote": "The list is kept in this browser. When you are signed in it is also kept in your account and shows on your other devices.",
     "favoritesEmptyTitle": "No favorites yet",
     "favoritesEmptyText": "Tap the heart on a product card and it will show up here.",
     "favoritesCount": "{count, plural, one {# product} other {# products}}",
@@ -715,7 +715,7 @@
         "METAL_LINKED": "Reason: the Central Bank metal rate changed",
         "FIXED": "Reason: the store changed the price"
       },
-      "note": "Compared with the price saved in this browser."
+      "note": "The comparison is with the price when you added the product to favourites."
     }
   },
   "Auth": {

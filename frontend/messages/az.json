@@ -690,7 +690,7 @@
     "retry": "Yenidən yoxla",
     "browse": "Kataloqa bax",
     "clearAll": "Hamısını təmizlə",
-    "deviceNote": "Siyahı bu brauzerdə saxlanılır. Hesaba daxil olanda hesabınıza köçürüləcək.",
+    "deviceNote": "Siyahı bu brauzerdə saxlanılır. Hesaba daxil olduqda hesabınızda da saxlanılır və digər cihazlarda görünür.",
     "favoritesEmptyTitle": "Hələ seçilmiş məhsul yoxdur",
     "favoritesEmptyText": "Məhsul kartındakı ürək işarəsinə basın, burada görünəcək.",
     "favoritesCount": "{count} məhsul",
@@ -715,7 +715,7 @@
         "METAL_LINKED": "Səbəb: AMB-nin metal qiyməti dəyişib",
         "FIXED": "Səbəb: mağaza qiyməti dəyişib"
       },
-      "note": "Müqayisə bu brauzerdə saxlanılan qiymətlədir."
+      "note": "Müqayisə məhsulu seçilmişlərə əlavə etdiyiniz andakı qiymətlədir."
     }
   },
   "Auth": {

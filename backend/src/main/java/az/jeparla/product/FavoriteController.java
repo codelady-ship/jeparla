@@ -66,6 +66,6 @@ public class FavoriteController {
             description = "Up to 100 ids; unknown, hidden and already saved ones are skipped, so it can be repeated. "
                     + "Returns the merged list.")
     public List<FavoriteDto> importAll(@Valid @RequestBody FavoriteImportRequest request) {
-        return favorites.importAll(request.productIds());
+        return favorites.importAll(request.productIds(), request.prices() == null ? List.of() : request.prices());
     }
 }
