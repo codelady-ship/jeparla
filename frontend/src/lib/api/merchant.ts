@@ -7,6 +7,9 @@ import type {
   MerchantStore,
   ProductInput,
 } from "@/types/merchant";
+import type { ReferralDays, ReferralStats, ShareLink } from "@/types/share";
+import { SITE_URL } from "@/i18n/alternates";
+import { DEMO_SHARE_CODE } from "@/lib/share-link";
 import { suggestAudience } from "@/lib/merchant/audience";
 import { userFetch } from "@/lib/auth/backend";
 import { EMPTY_PRICING } from "@/lib/merchant/draft";
@@ -25,6 +28,34 @@ export interface MerchantApi {
   dashboard(): Promise<MerchantDashboard>;
   products(): Promise<MerchantProductRow[]>;
   product(id: number): Promise<MerchantProduct | null>;
+  /** GET /api/v1/merchant/store/share (#100) */
+  share(): Promise<ShareLink>;
+  /** GET /api/v1/merchant/referrals?days= (#100): own store only, checked by the backend. */
+  referrals(days: ReferralDays): Promise<ReferralStats>;
+}
+
+/** Baku calendar day (yyyy-MM-dd) of a moment. */
+const bakuDay = (d: Date) => new Date(d.getTime() + 4 * 3_600_000).toISOString().slice(0, 10);
+
+/**
+ * Sample statistics are all zero: the demo has no visitors, and the cabinet must not show a
+ * number nobody counted. The days still run from the window start, as the backend sends them.
+ */
+export function emptyReferralStats(days: ReferralDays, now = new Date()): ReferralStats {
+  const daily = Array.from({ length: days }, (_, i) => ({
+    day: bakuDay(new Date(now.getTime() - (days - 1 - i) * 86_400_000)),
+    visits: 0,
+    whatsappClicks: 0,
+  }));
+  return {
+    days,
+    from: daily[0].day,
+    to: daily[daily.length - 1].day,
+    visits: 0,
+    whatsappClicks: 0,
+    sources: [],
+    daily,
+  };
 }
 
 const STATUSES: ProductStatus[] = ["DRAFT", "IN_REVIEW", "APPROVED", "RETURNED", "INACTIVE"];
@@ -171,6 +202,13 @@ function mockMerchantApi(session: Session): MerchantApi {
     async products() {
       return items.map(toRow);
     },
+    async share() {
+      const url = `${SITE_URL}/s/${DEMO_SHARE_CODE}`;
+      return { code: DEMO_SHARE_CODE, url, qrUrl: `${url}?ref=qr`, active: !fresh };
+    },
+    async referrals(days) {
+      return emptyReferralStats(days);
+    },
     async product(id) {
       const hit = items.find((i) => i.product.id === id);
       return hit ? { id, status: hit.status, input: toInput(hit.product) } : null;
@@ -187,6 +225,8 @@ function httpMerchantApi(): MerchantApi {
     store: () => userFetch<MerchantStore>("/merchant/store"),
     dashboard: () => userFetch<MerchantDashboard>("/merchant/dashboard"),
     products: () => userFetch<MerchantProductRow[]>("/merchant/products"),
+    share: () => userFetch<ShareLink>("/merchant/store/share"),
+    referrals: (days) => userFetch<ReferralStats>("/merchant/referrals", { query: { days } }),
     async product(id) {
       try {
         const [p, categories] = await Promise.all([

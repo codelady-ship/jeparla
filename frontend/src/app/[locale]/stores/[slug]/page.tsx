@@ -11,7 +11,9 @@ import { StoreMonogram } from "@/components/stores/store-card";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ShareButton } from "@/components/share/share-button";
 import { shareLabels } from "@/components/share/share-labels";
+import { StoreFacts } from "@/components/stores/store-facts";
 import { StoreProducts } from "@/components/stores/store-products";
+import { StoreVisit } from "@/components/stores/store-visit";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
@@ -39,15 +41,24 @@ export async function generateMetadata({
   // Resolved before the streamed body: an unknown store answers a real 404, not a soft 200.
   if (!store) notFound();
   if (!hasLocale(routing.locales, locale)) return {};
+  const t = await getTranslations({ locale, namespace: "Stores.og" });
+  // The share image (#100) is drawn from the store preview: name, city, verified, count, photo.
+  const image = {
+    url: `/api/og/store/${encodeURIComponent(store.slug)}?locale=${locale}`,
+    width: 1200,
+    height: 630,
+    alt: store.name,
+  };
   return {
     title: `${store.name}, ${store.city}`,
     description: store.description[locale],
     alternates: alternates(locale, `/stores/${store.slug}`),
-    openGraph: openGraph(
-      locale,
-      `/stores/${store.slug}`,
-      store.logoUrl ? { images: [{ url: store.logoUrl, alt: store.name }] } : {},
-    ),
+    openGraph: openGraph(locale, `/stores/${store.slug}`, {
+      title: store.name,
+      description: t("description", { city: store.city, count: store.productCount }),
+      images: [image],
+    }),
+    twitter: { card: "summary_large_image", images: [image.url] },
     // Demo data is invented and must not be indexed as real stores or products.
     ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
@@ -60,12 +71,14 @@ export default async function StorePage({
   const { slug } = await params;
   const store = await api.getStore(slug);
   if (!store) notFound();
-  const [t, tp, tv, locale, share] = await Promise.all([
+  const [t, tp, tv, locale, share, facts] = await Promise.all([
     getTranslations("Stores"),
     getTranslations("Product"),
     getTranslations("Verified"),
     getLocale(),
     shareLabels(),
+    // The facts are extra: the store page still works when they cannot be loaded.
+    api.getStoreFacts(slug).catch(() => null),
   ]);
   const mapHref = store.geo
     ? `https://www.google.com/maps/search/?api=1&query=${store.geo.lat},${store.geo.lng}`
@@ -76,6 +89,7 @@ export default async function StorePage({
 
   return (
     <div className="container-page py-8 sm:py-12">
+      <StoreVisit slug={store.slug} />
       <JsonLd
         data={[
           jewelryStore(store, locale),
@@ -181,6 +195,12 @@ export default async function StorePage({
           </a>
         </section>
       </header>
+
+      {facts && (
+        <div className="mt-8">
+          <StoreFacts facts={facts} />
+        </div>
+      )}
 
       <section aria-labelledby="store-products" className="mt-10">
         <h2 id="store-products" className="mb-6 text-2xl">

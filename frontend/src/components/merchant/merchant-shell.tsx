@@ -17,6 +17,7 @@ type PageKey =
   | "documents"
   | "notifications"
   | "import"
+  | "share"
   | "aiStudio";
 
 /** Cabinet pages are private: noindex, and robots.txt already disallows /merchant. */
@@ -38,11 +39,13 @@ export async function merchantMetadata(page: PageKey): Promise<Metadata> {
               ? t("documents.title")
               : page === "import"
                 ? t("import.title")
-                : page === "notifications"
-                  ? t("notifications.title")
-                  : page === "products"
-                    ? t("products.title")
-                    : t("dashboard.title");
+                : page === "share"
+                  ? t("share.title")
+                  : page === "notifications"
+                    ? t("notifications.title")
+                    : page === "products"
+                      ? t("products.title")
+                      : t("dashboard.title");
   return { title: `${title} · ${t("title")}`, robots: { index: false, follow: false } };
 }
 

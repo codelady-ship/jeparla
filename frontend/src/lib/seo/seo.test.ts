@@ -24,7 +24,7 @@ describe("robots", () => {
   it("explicitly allows AI answer engines and search bots", () => {
     const named = rules.flatMap((x) => (Array.isArray(x.userAgent) ? x.userAgent : [x.userAgent]));
     for (const bot of [...AI_BOTS, "Googlebot", "Bingbot"]) expect(named).toContain(bot);
-    for (const rule of rules) expect(rule.allow).toBe("/");
+    for (const rule of rules) expect(rule.allow).toEqual(["/", "/api/og/"]);
   });
 
   it("keeps private areas closed for everyone and points to the sitemap", () => {
