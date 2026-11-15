@@ -10,6 +10,7 @@ import {
   EXCHANGE_RATES,
   LATEST_METAL_PRICES,
   METAL_PRICE_HISTORY,
+  PRICE_DATE,
   PRODUCTS,
   STORES,
 } from "./fixtures";
@@ -30,7 +31,11 @@ export function fullMonths(from: Date, to: Date): number {
  * demo never shows a number that does not follow from its own data. Sample products have
  * no hallmark photos: 0 of them.
  */
-export function mockStoreFacts(slug: string, now = new Date()): StoreFacts | null {
+export function mockStoreFacts(
+  slug: string,
+  // The sample data has its own "today" (the demo price date), so pages can be prerendered.
+  now = new Date(`${PRICE_DATE}T12:00:00+04:00`),
+): StoreFacts | null {
   const store = STORES.find((s) => s.slug === slug);
   if (!store) return null;
   const own = PRODUCTS.filter((p) => p.store.id === store.id);
