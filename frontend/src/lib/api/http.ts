@@ -162,6 +162,8 @@ export const httpApi: JeparlaApi = {
   listFinenesses: () => get("/finenesses"),
   listStores: (params = {}) => get("/stores", params),
   getStore: (slug) => getOrNull(`/stores/${enc(slug)}`),
+  getStoreFacts: (slug) => getOrNull(`/stores/${enc(slug)}/facts`),
+  getStorePreview: (slug) => getOrNull(`/stores/${enc(slug)}/preview`),
   listStoreProducts: (slug, f = {}) => get(`/stores/${enc(slug)}/products`, f),
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),

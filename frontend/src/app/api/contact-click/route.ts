@@ -14,12 +14,17 @@ import { parseContactClick } from "@/lib/contact-click";
 export async function POST(request: Request) {
   await connection();
   const click = parseContactClick(await request.text().catch(() => ""));
+  const userAgent = request.headers.get("user-agent");
   if (click && !USING_MOCK) {
     try {
       await apiFetch(`/products/${click.productId}/contact-click`, {
         method: "POST",
-        query: { question: click.question },
-        headers: await visitorHeaders(),
+        query: { question: click.question, ref: click.ref ?? undefined },
+        headers: {
+          ...(await visitorHeaders()),
+          // The backend leaves bots out of the shared-link statistics by their user agent (#100).
+          ...(userAgent && { "User-Agent": userAgent }),
+        },
         timeoutMs: 3_000,
       });
     } catch {

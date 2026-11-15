@@ -16,8 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param catalogUpdatedAt latest change of a product listed now; null without listed products
  * @param verifiedExpertise listed products whose assay certificate or lab report an admin verified
  * @param metalLinkedPrice listed products whose price follows the daily CBAR metal price
- * @param hallmarkPhoto    listed products with a photo of the assay hallmark: always null, photos are not tagged
- *                         as hallmark photos yet
+ * @param hallmarkPhoto    listed products with a hallmark photo a buyer can see (#106: any status but REJECTED)
  * @param documents        which store documents an admin verified; null for a store that sells only fashion
  *                         jewellery (it has no documents check)
  */
@@ -30,7 +29,7 @@ public record StoreFactsDto(
         @Schema(nullable = true, format = "date-time") String catalogUpdatedAt,
         ShareOfProducts verifiedExpertise,
         ShareOfProducts metalLinkedPrice,
-        @Schema(nullable = true) ShareOfProducts hallmarkPhoto,
+        ShareOfProducts hallmarkPhoto,
         @Schema(nullable = true) Documents documents) {
 
     /**

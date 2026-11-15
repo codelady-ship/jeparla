@@ -33,6 +33,7 @@ export default async function MerchantLayout({ children }: { children: ReactNode
             dashboard: t("nav.dashboard"),
             products: t("nav.products"),
             import: t("nav.import"),
+            share: t("nav.share"),
             profile: t("nav.profile"),
             documents: t("nav.documents"),
             notifications: t("nav.notifications"),

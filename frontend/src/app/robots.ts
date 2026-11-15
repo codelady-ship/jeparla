@@ -21,11 +21,18 @@ export const AI_BOTS = [
 
 export const PRIVATE_PATHS = ["/api/", "/*/merchant", "/*/admin", "/*/design"];
 
+/** Store share images (#100) live under /api but are public: link previews must load them. */
+export const PUBLIC_PATHS = ["/", "/api/og/"];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: PRIVATE_PATHS },
-      { userAgent: [...AI_BOTS, "Googlebot", "Bingbot"], allow: "/", disallow: PRIVATE_PATHS },
+      { userAgent: "*", allow: PUBLIC_PATHS, disallow: PRIVATE_PATHS },
+      {
+        userAgent: [...AI_BOTS, "Googlebot", "Bingbot"],
+        allow: PUBLIC_PATHS,
+        disallow: PRIVATE_PATHS,
+      },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,

@@ -1,7 +1,13 @@
 import { CONTACT_QUESTIONS, type ContactQuestion } from "@/lib/whatsapp";
 
-/** What the product page reports when the buyer opens WhatsApp (#111): no personal data. */
-export type ContactClick = { productId: number; question: ContactQuestion };
+/**
+ * What the product page reports when the buyer opens WhatsApp (#111): no personal data.
+ * `ref` is the shared store link source of this visit (#100), when there is one.
+ */
+export type ContactClick = { productId: number; question: ContactQuestion; ref?: string | null };
+
+/** Longest source the backend looks at (ReferralSource.MAX_LENGTH). */
+const MAX_REF = 64;
 
 /** Reads the beacon body; anything unexpected gives null and is not forwarded. */
 export function parseContactClick(text: string): ContactClick | null {
@@ -12,12 +18,16 @@ export function parseContactClick(text: string): ContactClick | null {
     return null;
   }
   if (typeof data !== "object" || data === null) return null;
-  const { productId, question } = data as Record<string, unknown>;
+  const { productId, question, ref } = data as Record<string, unknown>;
   if (typeof productId !== "number" || !Number.isSafeInteger(productId) || productId <= 0) {
     return null;
   }
   const known = CONTACT_QUESTIONS.find((q) => q === question);
-  return known ? { productId, question: known } : null;
+  if (!known) return null;
+  const source = typeof ref === "string" ? ref.trim() : "";
+  return source && source.length <= MAX_REF
+    ? { productId, question: known, ref: source }
+    : { productId, question: known };
 }
 
 /**

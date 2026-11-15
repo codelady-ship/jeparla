@@ -17,6 +17,7 @@ import type {
   StoreSummary,
   Suggestions,
 } from "@/types/api";
+import type { StoreFacts, StorePreview } from "@/types/share";
 
 /**
  * Everything pages read goes through this interface. Method names follow the
@@ -43,6 +44,10 @@ export interface JeparlaApi {
   listStores(params?: { q?: string; city?: string; near?: string }): Promise<StoreSummary[]>;
   /** GET /api/v1/stores/{slug} */
   getStore(slug: string): Promise<Store | null>;
+  /** GET /api/v1/stores/{slug}/facts (#108): measured trust facts; null when the store is not public. */
+  getStoreFacts(slug: string): Promise<StoreFacts | null>;
+  /** GET /api/v1/stores/{slug}/preview (#100): what a link preview shows. */
+  getStorePreview(slug: string): Promise<StorePreview | null>;
   /** GET /api/v1/stores/{slug}/products */
   listStoreProducts(slug: string, filters?: ProductFilters): Promise<Page<ProductSummary>>;
   /** GET /api/v1/search */
