@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { postAuth } from "@/lib/auth/actions";
 import { fieldErrors, PASSWORD_MIN, type FieldErrors } from "@/lib/auth/schemas";
 import { CITIES } from "@/lib/seller/cities";
@@ -327,6 +327,38 @@ export function SellerWizard({
               error={err(errors.taxId)}
               hint={t("hints.taxId")}
             />
+            <div className="flex flex-col gap-1 sm:col-span-2">
+              <label htmlFor="s-code" className="flex items-start gap-3 text-sm">
+                <input
+                  id="s-code"
+                  type="checkbox"
+                  checked={s.codeAccepted}
+                  onChange={(e) => setStore({ codeAccepted: e.target.checked })}
+                  aria-invalid={errors.codeAccepted ? true : undefined}
+                  aria-describedby={errors.codeAccepted ? "s-code-error" : undefined}
+                  className="mt-0.5 size-5 shrink-0 accent-primary"
+                />
+                <span>
+                  {t.rich("fields.codeAccepted", {
+                    link: (chunks) => (
+                      <Link
+                        href="/verified#code"
+                        target="_blank"
+                        rel="noopener"
+                        className="link-underline font-medium"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
+                </span>
+              </label>
+              {errors.codeAccepted && (
+                <p id="s-code-error" className="text-sm text-destructive">
+                  {err(errors.codeAccepted)}
+                </p>
+              )}
+            </div>
           </div>
         )}
 

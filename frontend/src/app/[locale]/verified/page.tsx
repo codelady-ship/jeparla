@@ -123,6 +123,7 @@ export default async function VerifiedPage() {
             </li>
           ))}
         </ol>
+        <p className="mt-4 text-sm text-muted-foreground">{t("codeAcceptance")}</p>
       </section>
 
       <section aria-labelledby="verified-faq" className="max-w-3xl">

@@ -1,6 +1,7 @@
 package az.jeparla.store.dto;
 
 import az.jeparla.common.dto.LocalizedTextDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import az.jeparla.verification.dto.VerificationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,7 +25,10 @@ public record StoreDto(
         String phone,
         @Schema(description = "schema.org openingHours", example = "Mo-Sa 10:00-20:00") String openingHours,
         @Schema(nullable = true) GeoDto geo,
-        @Schema(format = "date-time") String createdAt) {
+        @Schema(format = "date-time") String createdAt,
+        @Schema(description = "Day (Asia/Baku) the store last accepted the seller code of conduct (#107); left "
+                + "out when there is no valid acceptance", format = "date", nullable = true)
+        @JsonInclude(JsonInclude.Include.NON_NULL) String codeAcceptedOn) {
 
     /** Coordinates as decimal strings. */
     @Schema(name = "Geo", requiredProperties = {"lat", "lng"})
