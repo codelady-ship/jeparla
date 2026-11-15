@@ -10,7 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import az.jeparla.product.Metal;
 import az.jeparla.store.SellerKind;
 import az.jeparla.support.AuthIntegrationTest;
+import java.io.ByteArrayOutputStream;
 import java.util.UUID;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -95,6 +98,50 @@ class ProductImportApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.code").value("merchant.import_too_many_rows"));
         mvc.perform(csv("category,name_az,price\n1,x,1\n").with(buyer(newBuyer())))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void anExcelWorkbookIsImportedLikeACsvFile() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        long categoryId = category();
+        short gold = goldValue(fineness(Metal.GOLD));
+        byte[] template = mvc.perform(get(IMPORT + "/template.xlsx").param("lang", "az").with(seller.token()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+        assertThat(XlsxTable.parse(template, 10).get(0).fields()).contains("Kateqoriya", "Ad (az)");
+
+        byte[] book;
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = wb.createSheet("Products");
+            String[] header = {"Kateqoriya", "Ad (az)", "Metal", "Əyar", "Çəki (q)", "Qiymət (AZN)"};
+            org.apache.poi.ss.usermodel.Row head = sheet.createRow(0);
+            for (int i = 0; i < header.length; i++) {
+                head.createCell(i).setCellValue(header[i]);
+            }
+            org.apache.poi.ss.usermodel.Row row = sheet.createRow(1);
+            row.createCell(0).setCellValue(categoryId);
+            row.createCell(1).setCellValue("Qızıl üzük");
+            row.createCell(2).setCellValue("qızıl");
+            row.createCell(3).setCellValue(gold);
+            row.createCell(4).setCellValue(4.2);
+            row.createCell(5).setCellValue(1250.5);
+            wb.write(out);
+            book = out.toByteArray();
+        }
+        mvc.perform(post(IMPORT).contentType(MerchantBulkController.XLSX).content(book)
+                        .header("Idempotency-Key", UUID.randomUUID().toString()).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.created.length()").value(1))
+                .andExpect(jsonPath("$.errors.length()").value(0));
+        assertThat(jdbc.queryForObject("SELECT weight_grams::text FROM product_variants v JOIN products p"
+                + " ON p.id = v.product_id WHERE p.store_id = ?", String.class, seller.storeId())).isEqualTo("4.200");
+        assertThat(jdbc.queryForObject("SELECT price::text FROM product_variants v JOIN products p"
+                + " ON p.id = v.product_id WHERE p.store_id = ?", String.class, seller.storeId())).isEqualTo("1250.50");
+
+        mvc.perform(post(IMPORT).contentType(MerchantBulkController.XLSX).content(new byte[] {1, 2, 3})
+                        .with(seller.token()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("merchant.import_xlsx_unreadable"));
     }
 
     @Test

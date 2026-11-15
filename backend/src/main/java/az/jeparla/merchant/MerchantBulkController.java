@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Merchant: bulk", description = "Spreadsheet import and bulk status of the own products (MERCHANT)")
 public class MerchantBulkController {
 
+    /** Media type of an Excel .xlsx workbook. */
+    static final String XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
     private final MerchantBulkService bulk;
     private final RateLimitService rateLimits;
 
@@ -66,6 +69,33 @@ public class MerchantBulkController {
             @RequestHeader(name = IdempotencyKeys.HEADER, required = false) String idempotencyKey) {
         rateLimits.check(RateLimitPolicy.PRODUCT_IMPORT_ACCOUNT, "user:" + CurrentUser.id());
         return bulk.importCsv(csv, IdempotencyKeys.parse(idempotencyKey), notPreciousConfirmed);
+    }
+
+    @GetMapping(value = "/import/template.xlsx", produces = XLSX)
+    @Operation(summary = "The empty Excel template: column labels in az, en or ru (#109)")
+    public ResponseEntity<byte[]> xlsxTemplate(@RequestParam(defaultValue = "az") String lang) {
+        Language language;
+        try {
+            language = Language.fromCode(lang);
+        } catch (IllegalArgumentException e) {
+            language = Language.AZ;
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(XLSX))
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename("jeparla-products-" + language.code() + ".xlsx").build().toString())
+                .body(bulk.xlsxTemplate(language));
+    }
+
+    @PostMapping(value = "/import", consumes = XLSX)
+    @Operation(summary = "Import DRAFT products from an Excel .xlsx file (first sheet, at most 200 rows, #109)",
+            description = "Same columns, checks and answer as the CSV import. Numbers are read as Excel shows them "
+                    + "and parsed to decimals; formulas are not evaluated (their saved value is used).")
+    public ImportResultDto importXlsx(@RequestBody byte[] xlsx,
+            @RequestParam(defaultValue = "false") boolean notPreciousConfirmed,
+            @RequestHeader(name = IdempotencyKeys.HEADER, required = false) String idempotencyKey) {
+        rateLimits.check(RateLimitPolicy.PRODUCT_IMPORT_ACCOUNT, "user:" + CurrentUser.id());
+        return bulk.importXlsx(xlsx, IdempotencyKeys.parse(idempotencyKey), notPreciousConfirmed);
     }
 
     @PostMapping("/bulk-status")
