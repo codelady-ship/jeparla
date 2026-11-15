@@ -342,7 +342,54 @@
     "nearActive": "Stores are sorted by distance from you. Stores without a saved address are at the end of the list.",
     "nearDenied": "Location access was not allowed. Choose a city or search for a store by name.",
     "nearUnavailable": "Your location could not be found. Choose a city or search for a store by name.",
-    "distance": "{km} km"
+    "distance": "{km} km",
+    "facts": {
+      "title": "Facts",
+      "intro": "Counted automatically from Jeparla's database. There are no ratings or reviews yet, so none are shown.",
+      "how": "{fact}: how it is counted",
+      "empty": "The store has no active products yet: there is nothing to count shares from.",
+      "sinceValue": "{date} ({months, plural, =0 {less than a month} one {# month} other {# months}})",
+      "productsValue": "{count, plural, =0 {No active products} one {# product} other {# products}}",
+      "shareValue": "{percent}% ({count} of {total})",
+      "taxIdVerified": "Tax ID checked",
+      "taxIdNot": "Tax ID not checked",
+      "licenseVerified": "licence checked",
+      "licenseNot": "licence not checked",
+      "since": {
+        "label": "On Jeparla since",
+        "how": "The date an admin first approved the store, and the full months since then (Baku time)."
+      },
+      "products": {
+        "label": "Active products",
+        "how": "Products visible in the catalog now: approved, not deleted, with at least one live variant."
+      },
+      "updated": {
+        "label": "Catalog updated",
+        "how": "The last time one of the active products was changed. The daily metal price update does not change this date."
+      },
+      "metalLinked": {
+        "label": "Price linked to metal",
+        "how": "Share of active products whose price follows the daily CBAR metal rate. The percentage is rounded down."
+      },
+      "hallmark": {
+        "label": "With a hallmark photo",
+        "how": "Share of active products for which the seller added a close-up photo of the assay hallmark. Photos an admin rejected do not count. A hallmark photo is not a laboratory assay."
+      },
+      "expertise": {
+        "label": "Expertise checked",
+        "how": "Share of active products whose assay certificate or laboratory report an admin checked and approved."
+      },
+      "documents": {
+        "label": "Documents",
+        "how": "Shows \"checked\" when an admin checked and approved the tax ID certificate and the trade licence (or registry extract)."
+      }
+    },
+    "og": {
+      "description": "Jewellery store in {city}, {count, plural, =0 {no products on Jeparla yet} one {# product on Jeparla} other {# products on Jeparla}}. Browse the catalog and write on WhatsApp.",
+      "products": "{count, plural, =0 {no products} one {# product} other {# products}}",
+      "verified": "Seller checked",
+      "cta": "Browse the catalog and write on WhatsApp"
+    }
   },
   "About": {
     "title": "What is Jeparla?",
@@ -995,7 +1042,8 @@
       "documents": "Documents",
       "notifications": "Notifications",
       "unread": "{count} unread",
-      "import": "Bulk add"
+      "import": "Bulk add",
+      "share": "Share"
     },
     "demoNote": "Demo mode: statistics are sample data and changes are not saved on the server. Drafts stay in this browser.",
     "status": {
@@ -1522,6 +1570,51 @@
         "CASUAL": "Casual",
         "EVENING": "Evening",
         "MINIMAL": "Minimal"
+      }
+    },
+    "share": {
+      "title": "Share your catalog",
+      "intro": "Share your store's Jeparla catalog with one link in your Instagram bio, on TikTok, in a WhatsApp status or a Tap.az listing. Whoever opens it sees only your products and writes to you on WhatsApp.",
+      "linkLabel": "Short link",
+      "qrTitle": "QR code for the shop window, packaging and business cards",
+      "qrAlt": "QR code to the {store} catalog",
+      "qrUnavailable": "The QR code appears once the real backend is connected.",
+      "downloadPng": "Download PNG",
+      "print": "Print",
+      "inactive": "The store is still being checked: the link opens once the store is approved.",
+      "regenerate": "New link",
+      "regenerateTitle": "Create a new link?",
+      "regenerateText": "The old link and printed QR codes stop working at once. Do this only if the link ended up somewhere you do not want it.",
+      "regenerateConfirm": "Yes, new link",
+      "cancel": "Cancel",
+      "regenerated": "Your new link is ready",
+      "failed": "That did not work. Please try again a little later.",
+      "sourcesTitle": "Add the source",
+      "sourcesText": "Add the source at the end of the link in each place, so the statistics show where visitors came from:",
+      "statsTitle": "Visitors from your link",
+      "statsSince": "{from} – {to}",
+      "window": "Period",
+      "days": "{days} days",
+      "visits": "Visits",
+      "whatsappClicks": "WhatsApp clicks",
+      "bySource": "By source",
+      "byDay": "By day",
+      "source": "Source",
+      "day": "Day",
+      "empty": "No visits or WhatsApp clicks from your link in this period.",
+      "privacy": "Only counts are kept: no IP address, device or personal data. Bots, link previews and repeat opens within 30 minutes are not counted.",
+      "demoData": "Sample data",
+      "sources": {
+        "INSTAGRAM": "Instagram",
+        "TIKTOK": "TikTok",
+        "WHATSAPP": "WhatsApp",
+        "TAPAZ": "Tap.az",
+        "FACEBOOK": "Facebook",
+        "TELEGRAM": "Telegram",
+        "YOUTUBE": "YouTube",
+        "QR": "QR code",
+        "LINK": "Link without a source",
+        "OTHER": "Other"
       }
     }
   },

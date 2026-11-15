@@ -211,6 +211,7 @@ export async function ProductDetails({
 
           <VariantPanel
             productId={p.id}
+            storeSlug={p.store.slug}
             priceFrom={p.priceFrom}
             openingHours={store?.openingHours ?? null}
             variants={variants}

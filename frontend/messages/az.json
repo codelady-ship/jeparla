@@ -342,7 +342,54 @@
     "nearActive": "Mağazalar sizə yaxınlığa görə sıralanıb. Ünvanı qeyd olunmayan mağazalar siyahının sonundadır.",
     "nearDenied": "Məkan icazəsi verilmədi. Şəhəri seçin və ya mağazanı adla axtarın.",
     "nearUnavailable": "Məkanı təyin etmək alınmadı. Şəhəri seçin və ya mağazanı adla axtarın.",
-    "distance": "{km} km"
+    "distance": "{km} km",
+    "facts": {
+      "title": "Faktlar",
+      "intro": "Jeparla-nın məlumat bazasından avtomatik hesablanır. Reytinq və rəy hələ yoxdur, ona görə göstərilmir.",
+      "how": "{fact}: necə hesablanır",
+      "empty": "Mağazanın hələ aktiv məhsulu yoxdur: payları hesablamaq üçün məlumat yoxdur.",
+      "sinceValue": "{date} ({months, plural, =0 {bir aydan az} one {# ay} other {# ay}})",
+      "productsValue": "{count, plural, =0 {Aktiv məhsul yoxdur} other {# məhsul}}",
+      "shareValue": "{percent}% ({count} / {total})",
+      "taxIdVerified": "VÖEN yoxlanılıb",
+      "taxIdNot": "VÖEN yoxlanılmayıb",
+      "licenseVerified": "lisenziya yoxlanılıb",
+      "licenseNot": "lisenziya yoxlanılmayıb",
+      "since": {
+        "label": "Jeparla-da",
+        "how": "Adminin mağazanı ilk dəfə təsdiq etdiyi tarix və o vaxtdan keçən tam aylar (Bakı vaxtı)."
+      },
+      "products": {
+        "label": "Aktiv məhsullar",
+        "how": "Hazırda kataloqda görünən məhsulların sayı: təsdiqlənmiş, silinməmiş və ən azı bir aktiv variantı olan."
+      },
+      "updated": {
+        "label": "Kataloq yenilənib",
+        "how": "Aktiv məhsullardan birinin son dəfə dəyişdirildiyi tarix. Gündəlik metal qiyməti yeniləməsi bu tarixi dəyişmir."
+      },
+      "metalLinked": {
+        "label": "Qiyməti metala bağlı",
+        "how": "Qiyməti AMB-nin gündəlik metal məzənnəsi ilə avtomatik yenilənən aktiv məhsulların payı. Faiz aşağı yuvarlaqlaşdırılır."
+      },
+      "hallmark": {
+        "label": "Damğa şəkli olan",
+        "how": "Satıcının əyar damğasının yaxın planda şəklini əlavə etdiyi aktiv məhsulların payı. Adminin rədd etdiyi şəkil sayılmır. Damğa şəkli laboratoriya ekspertizası deyil."
+      },
+      "expertise": {
+        "label": "Ekspertizası yoxlanılıb",
+        "how": "Əyar sertifikatını və ya laboratoriya hesabatını adminin yoxlayıb təsdiqlədiyi aktiv məhsulların payı."
+      },
+      "documents": {
+        "label": "Sənədlər",
+        "how": "Admin VÖEN şəhadətnaməsini və ticarət lisenziyasını (və ya reyestr çıxarışını) yoxlayıb təsdiqləyibsə \"yoxlanılıb\" yazılır."
+      }
+    },
+    "og": {
+      "description": "{city} şəhərində zərgərlik mağazası, Jeparla-da {count, plural, =0 {hələ məhsul yoxdur} other {# məhsul}}. Kataloqa baxın və WhatsApp ilə yazın.",
+      "products": "{count, plural, =0 {məhsul yoxdur} other {# məhsul}}",
+      "verified": "Satıcı yoxlanılıb",
+      "cta": "Kataloqa baxın və WhatsApp ilə yazın"
+    }
   },
   "About": {
     "title": "Jeparla nədir?",
@@ -995,7 +1042,8 @@
       "documents": "Sənədlər",
       "notifications": "Bildirişlər",
       "unread": "{count} oxunmamış",
-      "import": "Toplu əlavə"
+      "import": "Toplu əlavə",
+      "share": "Paylaş"
     },
     "demoNote": "Demo rejimi: statistika nümunədir və dəyişikliklər serverdə saxlanılmır. Qaralamalar bu brauzerdə qalır.",
     "status": {
@@ -1522,6 +1570,51 @@
         "CASUAL": "Gündəlik",
         "EVENING": "Axşam",
         "MINIMAL": "Minimalist"
+      }
+    },
+    "share": {
+      "title": "Kataloqu paylaş",
+      "intro": "Mağazanızın Jeparla kataloqunu bir linklə Instagram bio-da, TikTok-da, WhatsApp statusunda və ya Tap.az elanında paylaşın. Linki açan yalnız sizin məhsullarınızı görür və sizə WhatsApp ilə yazır.",
+      "linkLabel": "Qısa link",
+      "qrTitle": "QR kod: vitrin, qablaşdırma və vizit kartı üçün",
+      "qrAlt": "{store} kataloquna aparan QR kod",
+      "qrUnavailable": "QR kod real backend qoşulanda görünəcək.",
+      "downloadPng": "PNG yüklə",
+      "print": "Çap et",
+      "inactive": "Mağaza hələ yoxlamadadır: link mağaza təsdiqlənəndən sonra açılacaq.",
+      "regenerate": "Yeni link yarat",
+      "regenerateTitle": "Yeni link yaradılsın?",
+      "regenerateText": "Köhnə link və çap olunmuş QR kodlar dərhal işləməyəcək. Bunu yalnız link istəmədiyiniz yerə düşəndə edin.",
+      "regenerateConfirm": "Bəli, yeni link",
+      "cancel": "Ləğv et",
+      "regenerated": "Yeni link hazırdır",
+      "failed": "Alınmadı. Bir az sonra yenidən cəhd edin.",
+      "sourcesTitle": "Mənbəni əlavə edin",
+      "sourcesText": "Hər yerdə linkin sonuna mənbəni yazın ki, statistikada ziyarətçilərin haradan gəldiyi görünsün:",
+      "statsTitle": "Linkdən gələnlər",
+      "statsSince": "{from} – {to} arası",
+      "window": "Dövr",
+      "days": "{days} gün",
+      "visits": "Baxışlar",
+      "whatsappClicks": "WhatsApp klikləri",
+      "bySource": "Mənbəyə görə",
+      "byDay": "Günlərə görə",
+      "source": "Mənbə",
+      "day": "Gün",
+      "empty": "Bu dövrdə linkdən baxış və ya WhatsApp kliki olmayıb.",
+      "privacy": "Yalnız say saxlanılır: IP ünvanı, cihaz və şəxsi məlumat yox. Botlar, link önizləmələri və 30 dəqiqə ərzində təkrar açılışlar sayılmır.",
+      "demoData": "Nümunə data",
+      "sources": {
+        "INSTAGRAM": "Instagram",
+        "TIKTOK": "TikTok",
+        "WHATSAPP": "WhatsApp",
+        "TAPAZ": "Tap.az",
+        "FACEBOOK": "Facebook",
+        "TELEGRAM": "Telegram",
+        "YOUTUBE": "YouTube",
+        "QR": "QR kod",
+        "LINK": "Mənbəsiz link",
+        "OTHER": "Digər"
       }
     }
   },

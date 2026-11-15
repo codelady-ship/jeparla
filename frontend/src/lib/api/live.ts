@@ -61,6 +61,8 @@ export const liveApi: JeparlaApi = {
   listFinenesses: () => cached("/finenesses", undefined, "catalog"),
   listStores: (params = {}) => cached("/stores", params, "catalog"),
   getStore: (slug) => cachedOrNull(`/stores/${enc(slug)}`),
+  getStoreFacts: (slug) => cachedOrNull(`/stores/${enc(slug)}/facts`),
+  getStorePreview: (slug) => cachedOrNull(`/stores/${enc(slug)}/preview`),
   listStoreProducts: (slug, f = {}) => cached(`/stores/${enc(slug)}/products`, f, "catalog"),
   search: async (q, type = "all", page = 0) =>
     apiFetch("/search", { query: { q, type, page }, headers: await visitorHeaders() }),

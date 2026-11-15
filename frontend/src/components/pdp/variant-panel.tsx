@@ -4,6 +4,7 @@ import { GitCompareArrows, Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { reportContactClick } from "@/lib/referral";
 import { compare, favorites } from "@/lib/saved-list";
 import { toggleFavorite } from "@/lib/saved-prices";
 import { useDisplayCurrency } from "@/lib/use-display-currency";
@@ -45,12 +46,15 @@ type Labels = {
 
 export function VariantPanel({
   productId,
+  storeSlug,
   priceFrom,
   openingHours,
   variants,
   labels,
 }: {
   productId: number;
+  /** Store of the product: a WhatsApp click counts for the shared-link source of that store (#100). */
+  storeSlug: string;
   /** The product "from" price, remembered when it is added to favourites (#112). */
   priceFrom: Money;
   /** schema.org openingHours of the store; null when the store is unknown. */
@@ -174,6 +178,7 @@ export function VariantPanel({
 
       <a
         href={contact?.href ?? "#"}
+        onClick={() => reportContactClick(productId, storeSlug)}
         target="_blank"
         rel="noopener noreferrer"
         data-keep-clear=""

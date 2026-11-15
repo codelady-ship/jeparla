@@ -2,6 +2,7 @@ import { haversineKm, parseNear, type LatLng } from "@/lib/geo/near";
 import { compareDecimal } from "@/lib/pricing";
 import { matchesQuery } from "@/lib/search/normalize";
 import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
+import type { StoreFacts, StorePreview } from "@/types/share";
 import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
@@ -12,6 +13,66 @@ import {
   PRODUCTS,
   STORES,
 } from "./fixtures";
+
+const share = (count: number, total: number) => ({
+  count,
+  percent: total === 0 ? null : Math.floor((count * 100) / total),
+});
+
+/** Full calendar months between two dates (the backend counts in Asia/Baku). */
+export function fullMonths(from: Date, to: Date): number {
+  const months = (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth();
+  return Math.max(0, to.getDate() < from.getDate() ? months - 1 : months);
+}
+
+/**
+ * Same rules as the backend StoreFactsService, counted from the sample products, so the
+ * demo never shows a number that does not follow from its own data. Sample products have
+ * no hallmark photos: 0 of them.
+ */
+export function mockStoreFacts(slug: string, now = new Date()): StoreFacts | null {
+  const store = STORES.find((s) => s.slug === slug);
+  if (!store) return null;
+  const own = PRODUCTS.filter((p) => p.store.id === store.id);
+  const updated = own.map((p) => p.publishedAt).sort((a, b) => Date.parse(b) - Date.parse(a))[0];
+  return {
+    onJeparlaSince: store.createdAt,
+    monthsOnJeparla: fullMonths(new Date(store.createdAt), now),
+    activeProducts: own.length,
+    catalogUpdatedAt: updated ?? null,
+    verifiedExpertise: share(
+      own.filter((p) => p.verification.expertise === "VERIFIED").length,
+      own.length,
+    ),
+    metalLinkedPrice: share(
+      own.filter((p) => p.variants.some((v) => v.pricingMode === "METAL_LINKED")).length,
+      own.length,
+    ),
+    hallmarkPhoto: share(0, own.length),
+    documents: {
+      taxId: store.verification.documents === "VERIFIED",
+      tradeLicense: store.verification.documents === "VERIFIED",
+    },
+  };
+}
+
+export function mockStorePreview(slug: string): StorePreview | null {
+  const store = STORES.find((s) => s.slug === slug);
+  if (!store) return null;
+  const own = PRODUCTS.filter((p) => p.store.id === store.id).sort(
+    (a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt),
+  );
+  return {
+    slug: store.slug,
+    name: store.name,
+    city: store.city,
+    verified: store.verification.seller === "VERIFIED",
+    verification: store.verification,
+    productCount: store.productCount,
+    coverImageUrl: own[0]?.images[0]?.url ?? null,
+    logoUrl: store.logoUrl,
+  };
+}
 
 /** Demo only: sample stores have no own location, so "near me" uses the city centre. */
 const MOCK_CITY_CENTRES: Record<string, LatLng> = {
@@ -177,6 +238,12 @@ export const mockApi: JeparlaApi = {
   },
   async getStore(slug) {
     return STORES.find((s) => s.slug === slug) ?? null;
+  },
+  async getStoreFacts(slug) {
+    return mockStoreFacts(slug);
+  },
+  async getStorePreview(slug) {
+    return mockStorePreview(slug);
   },
   async listStoreProducts(slug, filters = {}) {
     return listProducts({ ...filters, store: [slug] });

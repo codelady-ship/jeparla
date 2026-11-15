@@ -19,6 +19,14 @@ import {
   relayHeaders,
 } from "./lib/auth/tokens";
 import { routing } from "./i18n/routing";
+import {
+  DEMO_SHARE_CODE,
+  DEMO_SHARE_SLUG,
+  LOCALE_COOKIE,
+  SHARE_PATH,
+  shareLocale,
+  shareTarget,
+} from "./lib/share-link";
 
 const intl = createMiddleware(routing);
 const LOCALE_PREFIX = new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`);
@@ -38,6 +46,8 @@ function decodeSlug(raw: string): string {
  */
 export default async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+  const share = pathname.match(SHARE_PATH);
+  if (share) return shareRedirect(request, share[1].toLowerCase());
   const locale = pathname.match(LOCALE_PREFIX)?.[1];
   const rest = locale ? pathname.slice(locale.length + 1) || "/" : pathname;
 
@@ -80,6 +90,44 @@ export default async function proxy(request: NextRequest) {
     }
   }
   return intl(request);
+}
+
+/** Store slug behind a share code; null for an unknown or replaced code, "error" when unreachable. */
+async function resolveShareCode(code: string): Promise<string | null | "error"> {
+  if (USING_MOCK) return code === DEMO_SHARE_CODE ? DEMO_SHARE_SLUG : null;
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/share/${encodeURIComponent(code)}`, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) return "error";
+    return ((await res.json()) as { slug: string }).slug;
+  } catch {
+    return "error";
+  }
+}
+
+/**
+ * /s/<code> (#100): a temporary redirect to the store page (the code can be replaced, so
+ * nothing may cache it for long), the 404 page for an unknown code, the store list when the
+ * backend cannot answer.
+ */
+async function shareRedirect(request: NextRequest, code: string) {
+  const locale = shareLocale(
+    request.cookies.get(LOCALE_COOKIE)?.value,
+    request.headers.get("accept-language"),
+  );
+  const slug = await resolveShareCode(code);
+  if (slug === null)
+    return NextResponse.rewrite(new URL(`/${locale}/404`, request.url), { status: 404 });
+  const target =
+    slug === "error"
+      ? `/${locale}/stores`
+      : shareTarget(slug, locale, request.nextUrl.searchParams);
+  const response = NextResponse.redirect(new URL(target, request.url), 307);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }
 
 type Tokens = { access: string; expiresIn: number; refresh: string | null };
