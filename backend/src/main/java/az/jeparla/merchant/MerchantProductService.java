@@ -230,7 +230,7 @@ public class MerchantProductService {
                         && current != ProductStatus.INACTIVE) {
                     throw transition();
                 }
-                requireSubmittable(product);
+                requireSubmittable(product, now);
                 product.submitForReview(now);
             }
             case DRAFT -> {
@@ -249,9 +249,7 @@ public class MerchantProductService {
                 if (current != ProductStatus.INACTIVE || !product.isHiddenBySeller()) {
                     throw transition();
                 }
-                if (!canSubmit(product.getStore())) {
-                    throw new ApiException(HttpStatus.CONFLICT, "merchant.seller_not_verified");
-                }
+                MerchantProducts.requireCanSubmit(product.getStore(), now);
                 product.showAgain();
             }
             default -> throw transition();
@@ -335,14 +333,8 @@ public class MerchantProductService {
         merchantProducts.afterChange(product, content, now);
     }
 
-    private static boolean canSubmit(Store store) {
-        return MerchantProducts.canSubmit(store);
-    }
-
-    private static void requireSubmittable(Product product) {
-        if (!canSubmit(product.getStore())) {
-            throw new ApiException(HttpStatus.CONFLICT, "merchant.seller_not_verified");
-        }
+    private static void requireSubmittable(Product product, Instant now) {
+        MerchantProducts.requireCanSubmit(product.getStore(), now);
         if (product.getImages().isEmpty()) {
             throw new ApiException(HttpStatus.CONFLICT, "merchant.images_required");
         }

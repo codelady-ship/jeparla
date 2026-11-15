@@ -14,6 +14,8 @@ import jakarta.validation.constraints.Size;
  *
  * @param sellerKind the wizard question "Do you sell official jewelry (gold, silver, platinum, diamonds)?"
  *                   (#128): yes = PRECIOUS, no, bijouterie or handmade = FASHION, both = MIXED
+ * @param codeAccepted the wizard checkbox "I accept the seller code of conduct" (#107); true records the
+ *                   acceptance of the current version, anything else leaves it to the cabinet
  */
 public record StoreRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -26,5 +28,6 @@ public record StoreRequest(
         @Size(max = 200) String openingHours,
         @NotNull LegalType legalType,
         @NotBlank @Pattern(regexp = "^[0-9]{10}$") String taxId,
-        @NotNull SellerKind sellerKind) {
+        @NotNull SellerKind sellerKind,
+        Boolean codeAccepted) {
 }

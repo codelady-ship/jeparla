@@ -122,7 +122,7 @@ public abstract class MerchantApiTestBase {
         return """
                 {"name": "%s", "whatsapp": "050 123 45 67", "city": "Bakı", "address": "Nizami küçəsi 10",
                  "social": "@test.zerger", "description": "Əl işi zərgərlik.", "openingHours": "Mo-Sa 10:00-19:00",
-                 "legalType": "SOLE_TRADER", "taxId": "1234567890", "sellerKind": "%s"}
+                 "legalType": "SOLE_TRADER", "taxId": "1234567890", "sellerKind": "%s", "codeAccepted": true}
                 """.formatted(name, kind);
     }
 

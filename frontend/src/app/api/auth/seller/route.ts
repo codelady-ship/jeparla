@@ -57,6 +57,8 @@ export async function POST(request: Request) {
         taxId: store.taxId,
         // The wizard is for gold, silver and diamond stores; bijouterie is chosen in the cabinet.
         sellerKind: "PRECIOUS",
+        // Required by the schema above, so always true here (#107).
+        codeAccepted: store.codeAccepted,
       },
     });
     if (product) {

@@ -371,7 +371,8 @@
     "nearActive": "Stores are sorted by distance from you. Stores without a saved address are at the end of the list.",
     "nearDenied": "Location access was not allowed. Choose a city or search for a store by name.",
     "nearUnavailable": "Your location could not be found. Choose a city or search for a store by name.",
-    "distance": "{km} km"
+    "distance": "{km} km",
+    "codeAccepted": "Accepted the code of conduct: {date}"
   },
   "About": {
     "title": "What is Jeparla?",
@@ -854,7 +855,8 @@
       "category": "Category",
       "fineness": "Fineness",
       "weight": "Weight (grams)",
-      "price": "Price (AZN)"
+      "price": "Price (AZN)",
+      "codeAccepted": "I have read and accept the <link>seller code of conduct</link>."
     },
     "hints": {
       "phone": "For example 050 123 45 67. SMS confirmation comes later.",
@@ -894,7 +896,8 @@
       "taxIdInvalid": "The tax ID has 10 digits.",
       "productNameShort": "The product name needs at least 3 characters.",
       "decimalInvalid": "Enter a positive number, for example 3.25.",
-      "passwordLost": "For security the password is not saved. Please type it again."
+      "passwordLost": "For security the password is not saved. Please type it again.",
+      "codeRequired": "Accept the code of conduct to apply."
     },
     "done": {
       "title": "Congratulations! You are signed up",
@@ -1554,6 +1557,15 @@
         "EVENING": "Evening",
         "MINIMAL": "Minimal"
       }
+    },
+    "code": {
+      "missingTitle": "Accept the code of conduct",
+      "dueTitle": "Confirm the code of conduct again: your acceptance ends on {date}",
+      "text": "You confirm the code once a year. Without it products cannot be sent to review. The acceptance date is shown on your store page.",
+      "read": "Read the code",
+      "accept": "I have read it and accept",
+      "failed": "The acceptance was not saved. Try again.",
+      "unavailable": "Acceptance is not saved in sample mode."
     }
   },
   "Admin": {
@@ -2243,7 +2255,8 @@
         "q": "What should I do if a product looks suspicious?",
         "a": "Press \"Report\" on the product page. The team checks the product and the store again."
       }
-    }
+    },
+    "codeAcceptance": "Sellers accept the code when they apply and confirm it again once a year in the cabinet. Without it no product can be sent to review. The acceptance date is shown on the store page."
   },
   "Guides": {
     "title": "Guides",

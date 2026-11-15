@@ -3,6 +3,7 @@ import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { CodeBanner } from "@/components/merchant/code-banner";
 import { DraftResume } from "@/components/merchant/draft-resume";
 import {
   MerchantIntl,
@@ -17,6 +18,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { USING_MOCK } from "@/lib/api";
 import { formatDecimal } from "@/lib/money";
+import { codeState } from "@/lib/merchant/code";
 import { merchantContext } from "@/lib/merchant/server";
 import { CONTACT_QUESTIONS } from "@/lib/whatsapp";
 import type { ProductStatus } from "@/types/api";
@@ -37,6 +39,8 @@ async function Dashboard() {
     api.dashboard(),
     api.products(),
   ]);
+  // Sample data has no acceptance: no banner there (codeVersion comes only from the backend).
+  const code = store.codeVersion === undefined ? null : codeState(store, new Date());
   const returned = rows.filter((r) => r.status === "RETURNED");
   const num = (n: number) => formatDecimal(String(n), locale);
 
@@ -54,6 +58,21 @@ async function Dashboard() {
       </div>
 
       <SellerBanner status={store.sellerStatus} />
+      {code && code.kind !== "valid" && (
+        <MerchantIntl>
+          <CodeBanner
+            kind={code.kind}
+            validUntil={
+              code.kind === "due"
+                ? new Intl.DateTimeFormat(locale, {
+                    dateStyle: "long",
+                    timeZone: "Asia/Baku",
+                  }).format(new Date(code.validUntil))
+                : undefined
+            }
+          />
+        </MerchantIntl>
+      )}
       <MerchantIntl>
         <DraftResume />
       </MerchantIntl>
