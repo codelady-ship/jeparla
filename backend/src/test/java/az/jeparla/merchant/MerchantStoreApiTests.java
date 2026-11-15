@@ -154,6 +154,8 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.views").value(Matchers.nullValue()))
                 .andExpect(jsonPath("$.whatsappClicks").value(0))
+                .andExpect(jsonPath("$.whatsappClicksByQuestion.SIZE").value(0))
+                .andExpect(jsonPath("$.whatsappClicksByQuestion.GENERAL").value(0))
                 .andExpect(jsonPath("$.counts.DRAFT").value(2))
                 .andExpect(jsonPath("$.counts.APPROVED").value(0))
                 .andExpect(jsonPath("$.counts.IN_REVIEW").value(0));

@@ -1039,7 +1039,9 @@
       "draftResume": "Davam et",
       "demoData": "Nümunə data",
       "fix": "Düzəlt",
-      "notCounted": "Baxışlar hələ sayılmır"
+      "notCounted": "Baxışlar hələ sayılmır",
+      "byQuestion": "WhatsApp sualları",
+      "byQuestionNote": "Son 30 gündə alıcının WhatsApp-dan əvvəl seçdiyi hazır sual. Alıcı haqqında heç nə saxlanılmır."
     },
     "products": {
       "title": "Məhsullar",
