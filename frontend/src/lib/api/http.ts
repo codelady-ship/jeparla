@@ -55,9 +55,11 @@ export type RequestOptions = {
   headers?: Record<string, string>;
   timeoutMs?: number;
   /** A body sent as is (e.g. a CSV file) instead of JSON; set its Content-Type in `headers`. */
-  rawBody?: string;
+  rawBody?: string | ArrayBuffer;
   /** Answer the response body as text (e.g. a CSV template) instead of JSON. */
   asText?: boolean;
+  /** Read a binary answer (an .xlsx template, #109) as an ArrayBuffer. */
+  asBytes?: boolean;
 };
 
 /** ProblemDetail fields the backend sends (RFC 9457 + `code`, `errors`). */
@@ -75,6 +77,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     timeoutMs = 6_000,
     rawBody,
     asText = false,
+    asBytes = false,
   } = options;
   const url = `${API_BASE}/api/v1${path}${toSearchParams(query)}`;
   let res: Response;
@@ -82,7 +85,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     res = await fetch(url, {
       method,
       headers: {
-        Accept: asText ? "*/*" : "application/json",
+        Accept: asText || asBytes ? "*/*" : "application/json",
         ...(body !== undefined && { "Content-Type": "application/json" }),
         ...(token && { Authorization: `Bearer ${token}` }),
         ...(locale && { "Accept-Language": locale }),
@@ -106,6 +109,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     );
   }
   if (res.status === 204) return null as T;
+  if (asBytes) return (await res.arrayBuffer()) as T;
   const text = await res.text();
   if (asText) return text as T;
   // 202 Accepted and similar answers may have no body at all.

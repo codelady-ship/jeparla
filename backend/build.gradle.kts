@@ -64,6 +64,9 @@ dependencies {
     implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
     // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
     implementation("org.apache.pdfbox:pdfbox:3.0.4")
+    // Excel (.xlsx) product import and template (#109): Apache POI, Apache-2.0. Only cell values are read; formulas
+    // are not evaluated, macros and external links are ignored, and zip bombs are refused (XlsxTable).
+    implementation("org.apache.poi:poi-ooxml:5.4.1")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

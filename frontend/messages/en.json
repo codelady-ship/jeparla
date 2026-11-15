@@ -1420,13 +1420,13 @@
     "import": {
       "title": "Bulk add",
       "intro": "Add many products at once: from a spreadsheet (CSV), or from photos and a PDF catalog. Everything starts as a draft; nothing appears on the site by itself.",
-      "csvTitle": "From a spreadsheet (CSV)",
+      "csvTitle": "From a spreadsheet (Excel, CSV)",
       "csvStep1": "Download the template and open it in Excel or Google Sheets.",
       "csvStep2": "Write one product per row; category, name (az) and price are required.",
-      "csvStep3": "Save the file as CSV and upload it here.",
+      "csvStep3": "Save the file as Excel (.xlsx) or CSV and upload it here.",
       "template": "Template ({lang})",
-      "csvLabel": "CSV file",
-      "csvHint": "At most 1 MB and 200 rows. Comma, semicolon or TAB separated; 4,20 and 4.20 are the same.",
+      "csvLabel": "CSV or Excel (.xlsx) file",
+      "csvHint": "At most 1 MB and 200 rows; in Excel only the first sheet is read. CSV may be comma, semicolon or TAB separated; 4,20 and 4.20 are the same.",
       "notPrecious": "If the file has bijouterie: I confirm those products are not precious metal or stones.",
       "importSubmit": "Upload file",
       "importing": "Uploading",
@@ -1469,7 +1469,7 @@
       },
       "errors": {
         "fileRequired": "Choose a file.",
-        "csvType": "Choose a CSV file (.csv).",
+        "csvType": "Choose a CSV or Excel (.xlsx) file.",
         "csvSize": "The file is too large (at most 1 MB).",
         "importFile": "The file could not be read. Save it as CSV again.",
         "photoType": "only JPEG, PNG or WebP.",
@@ -1477,7 +1477,8 @@
         "pdfType": "Choose a PDF file.",
         "pdfSize": "The PDF can be at most 20 MB.",
         "upload": "The file was not uploaded. Check the connection and try again."
-      }
+      },
+      "xlsxTemplate": "Excel template ({lang})"
     },
     "ai": {
       "title": "AI Studio",
