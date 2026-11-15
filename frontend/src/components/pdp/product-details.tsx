@@ -24,6 +24,7 @@ import type { ReactNode } from "react";
 import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
 import type { CheckStatus, Product, Store } from "@/types/api";
 import { Gallery } from "./gallery";
+import { PriceBreakdownBlock } from "./price-breakdown";
 import { RecentlyViewed } from "./recently-viewed";
 import { ReportDialog } from "./report-dialog";
 import { TermHint } from "./term-hint";
@@ -43,18 +44,21 @@ export async function ProductDetails({
   product: Product;
   store: Store | null;
 }) {
-  const [t, tp, tc, format, locale, categories, similar, share, rates] = await Promise.all([
-    getTranslations("Pdp"),
-    getTranslations("Product"),
-    getTranslations("Common"),
-    getFormatter(),
-    getLocale(),
-    api.listCategories(),
-    api.listProducts({ category: undefined, size: 96 }),
-    shareLabels(),
-    // USD/EUR is an extra (#53): without rates the page shows AZN only.
-    api.latestExchangeRates().catch(() => []),
-  ]);
+  const [t, tp, tc, format, locale, categories, similar, share, rates, metalPrices] =
+    await Promise.all([
+      getTranslations("Pdp"),
+      getTranslations("Product"),
+      getTranslations("Common"),
+      getFormatter(),
+      getLocale(),
+      api.listCategories(),
+      api.listProducts({ category: undefined, size: 96 }),
+      shareLabels(),
+      // USD/EUR is an extra (#53): without rates the page shows AZN only.
+      api.latestExchangeRates().catch(() => []),
+      // The price breakdown (#104) works without them: a FIXED price then shows the total only.
+      api.latestMetalPrices().catch(() => []),
+    ]);
   const rateDate = rates[0]?.date;
   const name = p.name[locale];
   const category = categories.find((c) => c.id === p.categoryId);
@@ -267,6 +271,12 @@ export async function ProductDetails({
                 compareOpen: tp("compareOpen"),
               },
             }}
+          />
+
+          <PriceBreakdownBlock
+            product={p}
+            variants={variants.map((v) => ({ id: v.id, label: v.label }))}
+            metalPrices={metalPrices}
           />
 
           <p className="text-sm leading-relaxed">{p.description[locale]}</p>
