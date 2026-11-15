@@ -1,5 +1,6 @@
 import { haversineKm, parseNear, type LatLng } from "@/lib/geo/near";
 import { compareDecimal } from "@/lib/pricing";
+import { audienceMatches } from "@/lib/catalog/filters";
 import { matchesQuery } from "@/lib/search/normalize";
 import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
 import type { StoreFacts, StorePreview } from "@/types/share";
@@ -136,6 +137,8 @@ function filterProducts(f: ProductFilters): Product[] {
     if (cats && !cats.has(p.categoryId)) return false;
     if (f.store?.length && !f.store.includes(p.store.slug)) return false;
     if (f.kind && p.materialKind !== f.kind) return false;
+    // The demo catalog is UNISEX throughout, as in the backend seed (V42 default).
+    if (f.audience && !audienceMatches("UNISEX", f.audience)) return false;
     if (f.metal && p.metal !== f.metal) return false;
     if (f.fineness?.length && (p.fineness === null || !f.fineness.includes(p.fineness)))
       return false;

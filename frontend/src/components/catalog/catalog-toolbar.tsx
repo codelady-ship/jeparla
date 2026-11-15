@@ -64,6 +64,8 @@ export function ActiveFilterChips({
         return data.categories.find((c) => c.slug === value)?.name[locale] ?? value;
       case "store":
         return data.stores.find((s) => s.slug === value)?.name ?? value;
+      case "audience":
+        return t(`audiences.${value as "MEN"}`);
       case "kind":
         return t(`kinds.${value as "FASHION"}`);
       case "metal":

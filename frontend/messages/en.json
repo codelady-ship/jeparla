@@ -208,7 +208,15 @@
       "PRECIOUS": "Precious metals and stones",
       "FASHION": "Fashion and handmade"
     },
-    "fashionSection": "Fashion and handmade"
+    "fashionSection": "Fashion and handmade",
+    "audience": "For whom",
+    "audiences": {
+      "WOMEN": "Women",
+      "MEN": "Men",
+      "KIDS": "Kids",
+      "UNISEX": "Unisex"
+    },
+    "audienceNote": "Women's and men's lists also show unisex pieces."
   },
   "Pdp": {
     "breadcrumb": "Breadcrumb",

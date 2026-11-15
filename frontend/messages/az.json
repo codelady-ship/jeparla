@@ -208,7 +208,15 @@
       "PRECIOUS": "Qiymətli metal və daş",
       "FASHION": "Bijuteriya və əl işi"
     },
-    "fashionSection": "Bijuteriya və əl işi"
+    "fashionSection": "Bijuteriya və əl işi",
+    "audience": "Kimin üçün",
+    "audiences": {
+      "WOMEN": "Qadın",
+      "MEN": "Kişi",
+      "KIDS": "Uşaq",
+      "UNISEX": "Uniseks"
+    },
+    "audienceNote": "Qadın və kişi seçimində uniseks məhsullar da göstərilir."
   },
   "Pdp": {
     "breadcrumb": "Naviqasiya yolu",
