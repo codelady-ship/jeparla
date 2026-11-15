@@ -15,7 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
 
-export type GalleryImage = { url: string; alt: string; aiGenerated: boolean };
+/** `badge` names a hallmark or label shot (#106); otherwise AI images carry the AI label. */
+export type GalleryImage = { url: string; alt: string; aiGenerated: boolean; badge?: string };
 
 type Labels = {
   prev: string;
@@ -100,9 +101,9 @@ export function Gallery({
   const position = fill(labels.position, index + 1, total);
 
   const aiBadge = (img: GalleryImage) =>
-    img.aiGenerated && (
+    (img.badge || img.aiGenerated) && (
       <Badge variant="secondary" className="absolute top-3 left-3 z-10">
-        {labels.ai}
+        {img.badge ?? labels.ai}
       </Badge>
     );
 

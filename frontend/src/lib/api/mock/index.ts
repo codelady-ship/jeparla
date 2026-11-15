@@ -149,6 +149,9 @@ function filterProducts(f: ProductFilters): Product[] {
     if (f.minPrice && compareDecimal(p.priceFrom.amount, f.minPrice) < 0) return false;
     if (f.maxPrice && compareDecimal(p.priceFrom.amount, f.maxPrice) > 0) return false;
     if (f.verified && p.verification.documents !== "VERIFIED") return false;
+    // Hallmark photos come from sellers; the demo catalog has none, as in the backend seed.
+    if (f.hallmarkPhoto && !(p.evidencePhotos ?? []).some((e) => e.kind === "HALLMARK"))
+      return false;
     if (f.inStock && p.stockStatus === "OUT_OF_STOCK") return false;
     if (f.city && p.store.city !== f.city) return false;
     if (hasDiamondFilter(f) && !p.stones.some((s) => diamondMatches(s, f))) return false;

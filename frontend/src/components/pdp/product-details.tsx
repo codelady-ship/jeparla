@@ -5,6 +5,7 @@ import {
   CircleX,
   MapPin,
   Shapes,
+  Stamp,
   Store as StoreIcon,
 } from "lucide-react";
 import { approxPrices } from "@/lib/currency";
@@ -121,6 +122,9 @@ export async function ProductDetails({
   // Quotable facts in the initial HTML; the price is the same "from" price as the JSON-LD offer.
   // Bijouterie (#128) has a material instead of a metal and a fineness; the weight is optional.
   const fashion = p.materialKind === "FASHION" || p.metal === null;
+  // Hallmark and label photos (#106): what the seller showed, not a laboratory assay.
+  const evidence = p.evidencePhotos ?? [];
+  const hallmark = evidence.find((e) => e.kind === "HALLMARK");
   const facts: [string, ReactNode, ReactNode?][] = [
     ...(fashion
       ? [
@@ -153,6 +157,15 @@ export async function ProductDetails({
           ] as [string, ReactNode],
         ]
       : []),
+    // Precious jewelry only: bijouterie has no hallmark (#128).
+    ...(fashion
+      ? []
+      : [
+          [t("facts.hallmarkPhoto"), hallmark ? t("evidence.yes") : t("evidence.no")] as [
+            string,
+            string,
+          ],
+        ]),
     [t("facts.store"), p.store.name],
     [t("facts.city"), p.store.city],
   ];
@@ -200,11 +213,20 @@ export async function ProductDetails({
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         <Gallery
           productId={p.id}
-          images={p.images.map((img) => ({
-            url: img.url,
-            alt: img.alt[locale],
-            aiGenerated: img.aiGenerated,
-          }))}
+          images={[
+            ...p.images.map((img) => ({
+              url: img.url,
+              alt: img.alt[locale],
+              aiGenerated: img.aiGenerated,
+            })),
+            // Hallmark and label shots after the product photos, each with its own badge (#106).
+            ...evidence.map((e) => ({
+              url: e.url,
+              alt: t(`evidence.alt.${e.kind}`, { name }),
+              aiGenerated: false,
+              badge: t(`evidence.badge.${e.kind}`),
+            })),
+          ]}
           labels={{
             prev: t("prevImage"),
             next: t("nextImage"),
@@ -317,6 +339,21 @@ export async function ProductDetails({
                 ))}
               </tbody>
             </table>
+            {evidence.length > 0 && (
+              <div
+                aria-label={t("evidence.title")}
+                className="mt-3 flex items-start gap-3 rounded-md border p-3 text-sm"
+              >
+                <Stamp aria-hidden className="mt-0.5 size-5 shrink-0 text-gold-text" />
+                <div className="flex flex-col gap-1">
+                  <p>{t("evidence.added")}</p>
+                  {evidence.some((e) => e.checked) && (
+                    <p className="text-muted-foreground">{t("evidence.checked")}</p>
+                  )}
+                  <p className="text-muted-foreground">{t("evidence.notAssay")}</p>
+                </div>
+              </div>
+            )}
           </section>
 
           <ReportDialog

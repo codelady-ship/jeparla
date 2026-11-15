@@ -77,6 +77,8 @@ export function ActiveFilterChips({
         return t(`chip.${key}`, { value: formatPrice(value, locale) });
       case "verified":
         return t("verifiedOnly");
+      case "hallmarkPhoto":
+        return t("hallmarkOnly");
       case "inStock":
         return t("inStockOnly");
       case "q":
