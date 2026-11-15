@@ -345,7 +345,30 @@
       }
     },
     "fashionTitle": "Fashion and handmade jewelry",
-    "fashionNote": "This piece is not precious metal: the seller has confirmed it. Its price is fixed and does not follow metal rates. For fashion jewelry only the seller is checked; there is no documents or expertise check."
+    "fashionNote": "This piece is not precious metal: the seller has confirmed it. Its price is fixed and does not follow metal rates. For fashion jewelry only the seller is checked; there is no documents or expertise check.",
+    "breakdown": {
+      "title": "How the price is calculated",
+      "metal": "Metal value",
+      "metalFormula": "{weight} × {fineness}/1000 × {gramPrice} (1 g of pure metal)",
+      "laborAndShare": "Workmanship and store share",
+      "stone": "Stone",
+      "fromSeller": "from the seller: no official source",
+      "total": "Total",
+      "clamped": {
+        "MIN": "The seller's minimum price applies.",
+        "MAX": "The seller's maximum price applies."
+      },
+      "quoteCbar": "Metal price: Central Bank of Azerbaijan rate, {date}.",
+      "quoteAdmin": "Metal price: rate of {date}, corrected by a Jeparla administrator.",
+      "cbarLink": "Open the CBAR bulletin",
+      "fixed": "The seller set a fixed price; workmanship and store share are not shown separately.",
+      "metalToday": "Today's estimated metal value at this weight",
+      "metalTodayFormula": "{weight} × {fineness}/1000 × {gramPrice}, CBAR {date}",
+      "perGram": "Price of this piece per gram",
+      "gramToday": "1 g of {fineness} metal today",
+      "note": "This is an estimate; the store confirms the final price.",
+      "variant": "Variant: {label}"
+    }
   },
   "Stores": {
     "title": "Stores",

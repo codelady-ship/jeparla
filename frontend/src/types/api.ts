@@ -139,6 +139,32 @@ export type Variant = {
   pricing: PricingRule | null;
   stockStatus: StockStatus;
   priceUpdatedAt: IsoDate;
+  /**
+   * How the price is made up (#104), from the backend PricingEngine. The demo mock does not send it
+   * (the contract keeps it in BACKEND_AHEAD), so the product page treats it as optional.
+   */
+  priceBreakdown?: VariantPriceBreakdown;
+};
+
+/** `Variant.priceBreakdown` (#104): only the parts the data holds; a missing part is null, never a guess. */
+export type VariantPriceBreakdown = {
+  /** Always the variant price (the same value as `Variant.price` and the JSON-LD offer). */
+  total: Money;
+  metal: {
+    value: Money;
+    weightGrams: Decimal;
+    fineness: number;
+    /** AZN per gram of pure metal of the quote, 4 decimals. */
+    gramPrice: Money;
+    quoteDate: IsoDate;
+    source: "CBAR" | "ADMIN";
+  } | null;
+  labor: { amount: Money; perGram: Money | null; fixed: Money | null } | null;
+  /** The seller's stone price: there is no official source. */
+  stone: Money | null;
+  markup: { percent: Decimal; amount: Money } | null;
+  clamped: "MIN" | "MAX" | null;
+  pricePerGram: Money | null;
 };
 
 /** What lists, grids and search results need. */
