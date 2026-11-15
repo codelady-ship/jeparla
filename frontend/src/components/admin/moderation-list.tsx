@@ -59,6 +59,12 @@ export function ModerationList({
           endpoint={`/api/admin/products/${row.id}`}
           name={name}
           actions={PRODUCT_ACTIONS[row.status]}
+          templates={[
+            {
+              label: t("products.hallmarkMismatch.label"),
+              text: t("products.hallmarkMismatch.text"),
+            },
+          ]}
           onDone={({ status, note }) => {
             setRows((all) => all.map((r) => (r.id === row.id ? { ...r, status, note } : r)));
             notices.show(t("done", { name, status: ts(status) }));

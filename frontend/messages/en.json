@@ -1386,6 +1386,48 @@
         "WOMEN": "Women",
         "MEN": "Men",
         "KIDS": "Children"
+      },
+      "evidence": {
+        "title": "Hallmark and label photos",
+        "intro": "Buyers want to see the fineness and weight for themselves. These photos appear at the end of the product gallery; an admin compares them with the product's fineness and weight.",
+        "optional": "optional",
+        "HALLMARK": {
+          "title": "Fineness hallmark",
+          "what": "A close-up of the fineness stamp on the piece (for example 585).",
+          "alt": "Photo of the fineness hallmark"
+        },
+        "TAG": {
+          "title": "Label",
+          "what": "The store label: fineness, weight and article number must be readable.",
+          "alt": "Photo of the label"
+        },
+        "guide": {
+          "title": "How to take it with a phone",
+          "macro": "Move in close (macro mode or 2x zoom) with the stamp in the middle of the frame.",
+          "light": "Shoot in daylight or next to a lamp; keep the glare off the digits.",
+          "steady": "Rest your elbow on the table and tap the screen to focus.",
+          "whole": "The digits must be complete and readable; do not crop or edit the photo."
+        },
+        "add": "Choose or take a photo",
+        "rules": "JPG, PNG or WebP, up to {max} MB.",
+        "replace": "Replace",
+        "remove": "Remove",
+        "removeNamed": "Remove the {name} photo",
+        "pickNamed": "Choose a photo for {name}",
+        "status": {
+          "NEW": "New",
+          "PENDING": "Waiting for the check",
+          "VERIFIED": "Compared by an admin",
+          "REJECTED": "Rejected"
+        },
+        "statusText": {
+          "NEW": "It is sent when you save the product and then goes to the check.",
+          "PENDING": "An admin will compare the photo with the product's fineness and weight.",
+          "VERIFIED": "The photo matches the product data.",
+          "REJECTED": "Upload a new, readable photo."
+        },
+        "reason": "Reason: {reason}",
+        "notAssay": "A hallmark photo is not a laboratory assay of the fineness: buyers only see the photo you added and the admin's comparison."
       }
     },
     "profile": {
@@ -1763,7 +1805,11 @@
       "search": "Product or store",
       "count": "{count, plural, =0 {No products} one {# product} other {# products}}",
       "queueEmpty": "No products are waiting for review.",
-      "preview": "View on site"
+      "preview": "View on site",
+      "hallmarkMismatch": {
+        "label": "Hallmark photo does not match",
+        "text": "The fineness or weight on the hallmark or label photo does not match the product data. Correct the data or add a new, readable photo."
+      }
     },
     "checks": {
       "title": "Document checks",
@@ -2206,6 +2252,47 @@
         "WRIST": "Wrist",
         "HALF_PORTRAIT": "Half portrait"
       }
+    },
+    "evidence": {
+      "title": "Hallmark photos",
+      "intro": "Compare the hallmark and label photos sellers added with the product's metal, fineness and weight. If they do not match, write the reason: the seller will see it.",
+      "sampleOnly": "There are no hallmark photos in sample data mode. This section works only with the real API.",
+      "empty": "No photos with this status.",
+      "status": {
+        "PENDING": "Waiting",
+        "VERIFIED": "Matches",
+        "REJECTED": "Rejected"
+      },
+      "kind": {
+        "HALLMARK": "Hallmark",
+        "TAG": "Label"
+      },
+      "alt": "{name}: {kind} photo",
+      "openPhoto": "{name}: open the {kind} photo at full size",
+      "store": "Store",
+      "metal": "Metal",
+      "fashion": "Bijouterie",
+      "fineness": "Fineness",
+      "weights": "Weight",
+      "grams": "{value} g",
+      "none": "not given",
+      "note": "Note",
+      "compareHint": "The fineness on the photo and the weight on the label must equal the data above. A mismatch is also a reason to return the product.",
+      "verify": "Matches",
+      "reject": "Reject",
+      "verifyNamed": "{name}: the {kind} photo matches",
+      "rejectNamed": "{name}: reject the {kind} photo",
+      "toProduct": "Open the product",
+      "verifyTitle": "{name}: does the {kind} photo match?",
+      "verifyText": "The product page will say \"compared by an admin\". The decision goes to the audit log.",
+      "rejectTitle": "{name}: reject the {kind} photo?",
+      "rejectText": "Buyers do not see the photo and the seller sees the reason in the cabinet. The decision goes to the audit log.",
+      "noteLabel": "Note (optional)",
+      "noteHint": "At most 1000 characters.",
+      "reasonLabel": "Reason",
+      "reasonHint": "At least 10 characters; the seller will see it (for example \"The stamp reads 500, not 585\").",
+      "doneVerified": "{name}: the photo is marked as matching.",
+      "doneRejected": "{name}: the photo is rejected."
     }
   },
   "MetalPrices": {

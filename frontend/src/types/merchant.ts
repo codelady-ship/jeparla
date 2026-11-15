@@ -108,6 +108,22 @@ export type PricingInput = {
   maxPrice: string;
 };
 
+/** Hallmark (fineness stamp) and label photos of a product (#106). */
+export const EVIDENCE_KINDS = ["HALLMARK", "TAG"] as const;
+export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
+
+export type EvidenceInput = {
+  /** Stored URL, or a downscaled data: URL that is uploaded when the form is saved. */
+  url: string;
+  /** Stored photos only: PENDING until an admin compared it with the product data. */
+  status?: CheckStatus;
+  /** The admin's reason for REJECTED (or an optional note). */
+  checkNote?: string | null;
+};
+
+/** PRECIOUS: gold, silver, platinum (documents, fineness). FASHION: bijouterie (#128). */
+export type MaterialKind = "PRECIOUS" | "FASHION";
+
 /** What the product form edits; also the body of POST/PUT /api/v1/merchant/products. */
 export type ProductInput = {
   images: ProductImageInput[];
@@ -126,6 +142,10 @@ export type ProductInput = {
   variants: VariantInput[];
   stones: StoneInput[];
   docs: { id: string; name: string; size: number; type: string }[];
+  /** Absent in older drafts: the stored product's kind (or PRECIOUS) is kept. */
+  materialKind?: MaterialKind;
+  /** Hallmark and label photos (#106); absent in older drafts. */
+  evidence?: Partial<Record<EvidenceKind, EvidenceInput>>;
 };
 
 export type MerchantProduct = { id: number; status: ProductStatus; input: ProductInput };

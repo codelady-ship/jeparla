@@ -1386,6 +1386,48 @@
         "WOMEN": "Qadın",
         "MEN": "Kişi",
         "KIDS": "Uşaq"
+      },
+      "evidence": {
+        "title": "Damğa və etiket şəkli",
+        "intro": "Alıcı əyarı və çəkini öz gözü ilə görmək istəyir. Bu şəkillər məhsul səhifəsində qalereyanın sonunda göstərilir; administrator onları məhsulun əyarı və çəkisi ilə müqayisə edir.",
+        "optional": "istəyə görə",
+        "HALLMARK": {
+          "title": "Əyar damğası",
+          "what": "Məmulatın üzərindəki əyar damğasının (məsələn, 585) yaxın planı.",
+          "alt": "Əyar damğasının şəkli"
+        },
+        "TAG": {
+          "title": "Etiket",
+          "what": "Mağaza etiketi: əyar, çəki və artikul oxunaqlı olsun.",
+          "alt": "Etiketin şəkli"
+        },
+        "guide": {
+          "title": "Telefonla necə çəkmək olar",
+          "macro": "Kameranı yaxınlaşdırın (makro rejimi və ya 2x), damğa kadrın ortasında olsun.",
+          "light": "Gün işığında və ya lampa yanında çəkin; parıltı rəqəmlərin üstünə düşməsin.",
+          "steady": "Telefonu dirsəklə stola dayayın, fokus üçün ekrana toxunun.",
+          "whole": "Rəqəmlər tam və oxunaqlı görünməlidir; şəkli kəsməyin və redaktə etməyin."
+        },
+        "add": "Şəkil seçin və ya çəkin",
+        "rules": "JPG, PNG və ya WebP, {max} MB-a qədər.",
+        "replace": "Dəyişdir",
+        "remove": "Sil",
+        "removeNamed": "{name} şəklini sil",
+        "pickNamed": "{name} üçün şəkil seçin",
+        "status": {
+          "NEW": "Yeni",
+          "PENDING": "Yoxlama gözləyir",
+          "VERIFIED": "Administrator müqayisə edib",
+          "REJECTED": "Rədd edilib"
+        },
+        "statusText": {
+          "NEW": "Məhsulu yadda saxlayanda göndəriləcək və yoxlamaya düşəcək.",
+          "PENDING": "Administrator şəkli məhsulun əyarı və çəkisi ilə müqayisə edəcək.",
+          "VERIFIED": "Şəkil məhsulun məlumatları ilə uyğun gəlir.",
+          "REJECTED": "Yeni, oxunaqlı şəkil yükləyin."
+        },
+        "reason": "Səbəb: {reason}",
+        "notAssay": "Damğa şəkli əyarın laborator yoxlaması deyil: alıcıya yalnız sizin əlavə etdiyiniz şəkil və administratorun müqayisəsi göstərilir."
       }
     },
     "profile": {
@@ -1763,7 +1805,11 @@
       "search": "Məhsul və ya mağaza",
       "count": "{count, plural, =0 {Məhsul yoxdur} one {# məhsul} other {# məhsul}}",
       "queueEmpty": "Yoxlama gözləyən məhsul yoxdur.",
-      "preview": "Saytda bax"
+      "preview": "Saytda bax",
+      "hallmarkMismatch": {
+        "label": "Damğa şəkli uyğun deyil",
+        "text": "Damğa və ya etiket şəklindəki əyar və ya çəki məhsulun məlumatı ilə uyğun gəlmir. Məlumatı düzəldin və ya oxunaqlı yeni şəkil əlavə edin."
+      }
     },
     "checks": {
       "title": "Sənəd yoxlaması",
@@ -2206,6 +2252,47 @@
         "WRIST": "Bilək",
         "HALF_PORTRAIT": "Yarım portret"
       }
+    },
+    "evidence": {
+      "title": "Damğa şəkilləri",
+      "intro": "Satıcının əlavə etdiyi əyar damğası və etiket şəkillərini məhsulun metalı, əyarı və çəkisi ilə müqayisə edin. Uyğun gəlmirsə, səbəbini yazın: satıcı onu görəcək.",
+      "sampleOnly": "Nümunə məlumat rejimində damğa şəkli yoxdur. Bu bölmə yalnız real API ilə işləyir.",
+      "empty": "Bu statusda şəkil yoxdur.",
+      "status": {
+        "PENDING": "Gözləyir",
+        "VERIFIED": "Uyğundur",
+        "REJECTED": "Rədd edilib"
+      },
+      "kind": {
+        "HALLMARK": "Damğa",
+        "TAG": "Etiket"
+      },
+      "alt": "{name}: {kind} şəkli",
+      "openPhoto": "{name}: {kind} şəklini tam ölçüdə aç",
+      "store": "Mağaza",
+      "metal": "Metal",
+      "fashion": "Bijuteriya",
+      "fineness": "Əyar",
+      "weights": "Çəki",
+      "grams": "{value} q",
+      "none": "göstərilməyib",
+      "note": "Qeyd",
+      "compareHint": "Şəkildəki əyar və etiketdəki çəki yuxarıdakı məlumatla eyni olmalıdır. Uyğunsuzluq məhsulu geri qaytarmaq üçün də səbəbdir.",
+      "verify": "Uyğundur",
+      "reject": "Rədd et",
+      "verifyNamed": "{name}: {kind} şəkli uyğundur",
+      "rejectNamed": "{name}: {kind} şəklini rədd et",
+      "toProduct": "Məhsula bax",
+      "verifyTitle": "{name}: {kind} şəkli uyğundur?",
+      "verifyText": "Məhsul səhifəsində \"administrator müqayisə edib\" qeydi görünəcək. Qərar audit jurnalına yazılır.",
+      "rejectTitle": "{name}: {kind} şəklini rədd edək?",
+      "rejectText": "Şəkil alıcıya göstərilmir, satıcı səbəbi kabinetdə görür. Qərar audit jurnalına yazılır.",
+      "noteLabel": "Qeyd (istəyə görə)",
+      "noteHint": "1000 simvola qədər.",
+      "reasonLabel": "Səbəb",
+      "reasonHint": "Ən azı 10 simvol; satıcı bunu görəcək (məsələn, \"Damğada 585 deyil, 500 oxunur\").",
+      "doneVerified": "{name}: şəkil uyğun kimi qeyd olundu.",
+      "doneRejected": "{name}: şəkil rədd edildi."
     }
   },
   "MetalPrices": {

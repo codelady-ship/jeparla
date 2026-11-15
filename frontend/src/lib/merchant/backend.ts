@@ -1,5 +1,11 @@
-import type { Category, Money, ProductStatus, StockStatus, Stone } from "@/types/api";
-import type { MerchantProduct, ProductAudience, ProductInput } from "@/types/merchant";
+import type { Category, CheckStatus, Money, ProductStatus, StockStatus, Stone } from "@/types/api";
+import type {
+  EvidenceKind,
+  EvidenceInput,
+  MerchantProduct,
+  ProductAudience,
+  ProductInput,
+} from "@/types/merchant";
 import { suggestAudience } from "./audience";
 import { EMPTY_PRICING } from "./draft";
 
@@ -45,6 +51,16 @@ export type BackendProduct = {
   stones: Stone[];
   /** Who the piece is for (#121); older answers may not have it. */
   audience?: ProductAudience | null;
+  /** Hallmark and label photos (#106), with the admin check. */
+  evidencePhotos?: BackendEvidencePhoto[];
+};
+
+export type BackendEvidencePhoto = {
+  id: number;
+  kind: EvidenceKind;
+  url: string;
+  status: CheckStatus;
+  checkNote: string | null;
 };
 
 export type ImageUpload = {
@@ -103,6 +119,13 @@ export function toProductInput(p: BackendProduct, categories: Category[]): Produ
     })),
     // Expertise documents are separate, private uploads (lib/api/merchant documents).
     docs: [],
+    materialKind: p.materialKind,
+    evidence: Object.fromEntries(
+      (p.evidencePhotos ?? []).map((e): [EvidenceKind, EvidenceInput] => [
+        e.kind,
+        { url: e.url, status: e.status, checkNote: e.checkNote },
+      ]),
+    ),
   };
 }
 
@@ -126,7 +149,7 @@ export function toProductRequest(
   const linked = input.pricingMode === "METAL_LINKED";
   const known = new Map(existing?.variants.map((v) => [v.id, v]) ?? []);
   return {
-    materialKind: existing?.materialKind ?? "PRECIOUS",
+    materialKind: input.materialKind ?? existing?.materialKind ?? "PRECIOUS",
     categoryId: categories.find((c) => c.slug === input.category)?.id ?? null,
     audience: input.audience,
     name: { az: input.name.trim(), en: existing?.name.en ?? null, ru: existing?.name.ru ?? null },
