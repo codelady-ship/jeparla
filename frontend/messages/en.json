@@ -2314,7 +2314,8 @@
       "fineness": "The pure gram price is multiplied by the fineness: 585 gold is 58.5% gold, so its gram price is 0.585 of the pure price. The result is rounded to 0.01 manat.",
       "weekend": "On weekends and holidays CBAR publishes no new rate, so the last published rate stays in force; the date above is the date of that rate.",
       "jewelry": "These are metal values, not jewelry prices. A piece also includes labor, stones and the store's margin, and the store confirms the final price."
-    }
+    },
+    "monthlyLink": "Monthly overview: how prices moved in past months"
   },
   "Verified": {
     "title": "How we verify",
@@ -2400,5 +2401,36 @@
     "sourcesNote": "Every source was opened and checked when the guide was written. No prices are quoted here: metal prices change every day.",
     "more": "Other guides",
     "external": "opens another site in a new tab"
+  },
+  "PricesMonthly": {
+    "title": "Gold and silver prices in Azerbaijan: monthly overview",
+    "description": "The price of 1 gram of gold and silver each month from the daily rates of the Central Bank of Azerbaijan: first and last day, lowest, highest, average and change, in manat.",
+    "lead": "For each month, the price of 1 gram of gold and silver is computed from the CBAR rates Jeparla stores every business day. No number is typed in, and none is a forecast.",
+    "today": "Today's prices",
+    "demoData": "Sample data",
+    "error": "The price history could not be loaded right now. Please look again a little later.",
+    "empty": "No rates are stored yet.",
+    "pure": "(pure)",
+    "summary": "1 gram of 585 gold cost {first} on the first rate day of the month (<d1>{firstDay}</d1>) and {last} on the last (<d2>{lastDay}</d2>), a change of {change}. The lowest price in the month was {low}, the highest {high} ({quotes, plural, one {# rate day} other {# rate days}}).",
+    "caption": "Price of 1 gram, in manat. Metal value only.",
+    "col": {
+      "metal": "Metal and fineness",
+      "first": "First day",
+      "last": "Last day",
+      "low": "Lowest",
+      "high": "Highest",
+      "average": "Average",
+      "change": "Change"
+    },
+    "quotes": "{count, plural, one {# rate day.} other {# rate days.}}",
+    "sourceLink": "CBAR bulletin, {day}",
+    "methodTitle": "How it is computed",
+    "method": {
+      "source": "Source: the bank metal rates CBAR publishes every business day (1 troy ounce of pure metal, in manat). Jeparla stores them daily; the overview is built only from stored days.",
+      "stats": "The price of 1 gram is the ounce price divided by 31.1034768, multiplied by the fineness for an alloy, and rounded to the qəpik. \"Average\" is the plain mean of the rate days in the month, \"change\" runs from the first to the last day.",
+      "gaps": "CBAR publishes no rate on weekends and holidays; those days are not part of the figures. While the current month is running, the last day is the last stored rate day.",
+      "corrected": "An asterisk (*) means a Jeparla admin corrected a CBAR rate in that month.",
+      "jewelry": "These are metal values, not jewellery prices: the price of a piece also includes the work, the stones and the store's margin."
+    }
   }
 }

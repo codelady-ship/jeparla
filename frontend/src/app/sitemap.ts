@@ -31,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = [
     entry("", 1),
     entry("/prices", 0.8),
+    entry("/prices/monthly", 0.7),
     entry("/products", 0.9),
     entry("/categories", 0.8),
     entry("/stores", 0.8),

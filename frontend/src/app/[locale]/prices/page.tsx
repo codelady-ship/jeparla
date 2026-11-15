@@ -6,6 +6,7 @@ import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
+import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
 import { formatPrice } from "@/lib/money";
@@ -161,6 +162,12 @@ export default async function PricesPage() {
           ))}
         </ol>
       </section>
+
+      <p>
+        <Link href="/prices/monthly" className="link-underline font-medium">
+          {t("monthlyLink")}
+        </Link>
+      </p>
 
       <MetalPriceWidget pricesLink={false} />
     </div>
