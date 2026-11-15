@@ -1551,13 +1551,13 @@
     "import": {
       "title": "Toplu əlavə",
       "intro": "Çox məhsulu bir dəfəyə əlavə edin: cədvəldən (CSV) və ya şəkillərdən və PDF kataloqdan. Hər şey əvvəl qaralama olur; heç nə avtomatik saytda görünmür.",
-      "csvTitle": "Cədvəldən (CSV)",
+      "csvTitle": "Cədvəldən (Excel, CSV)",
       "csvStep1": "Şablonu endirin və Excel və ya Google Sheets-də açın.",
       "csvStep2": "Hər sətirdə bir məhsul yazın; kateqoriya, ad (az) və qiymət mütləqdir.",
-      "csvStep3": "Faylı CSV kimi saxlayıb buradan yükləyin.",
+      "csvStep3": "Faylı Excel (.xlsx) və ya CSV kimi saxlayıb buradan yükləyin.",
       "template": "Şablon ({lang})",
-      "csvLabel": "CSV faylı",
-      "csvHint": "Ən çox 1 MB və 200 sətir. Ayırıcı vergül, nöqtəli vergül və ya TAB ola bilər; 4,20 və 4.20 eynidir.",
+      "csvLabel": "CSV və ya Excel (.xlsx) faylı",
+      "csvHint": "Ən çox 1 MB və 200 sətir; Excel-də yalnız birinci vərəq oxunur. CSV-də ayırıcı vergül, nöqtəli vergül və ya TAB ola bilər; 4,20 və 4.20 eynidir.",
       "notPrecious": "Faylda bijuteriya varsa: həmin məhsulların qiymətli metal və daş olmadığını təsdiq edirəm.",
       "importSubmit": "Faylı yüklə",
       "importing": "Yüklənir",
@@ -1600,7 +1600,7 @@
       },
       "errors": {
         "fileRequired": "Fayl seçin.",
-        "csvType": "CSV faylı seçin (.csv).",
+        "csvType": "CSV və ya Excel (.xlsx) faylı seçin.",
         "csvSize": "Fayl çox böyükdür (ən çox 1 MB).",
         "importFile": "Faylı oxumaq olmadı. CSV kimi yenidən saxlayın.",
         "photoType": "yalnız JPEG, PNG və ya WebP.",
@@ -1608,7 +1608,8 @@
         "pdfType": "PDF faylı seçin.",
         "pdfSize": "PDF ən çox 20 MB ola bilər.",
         "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
-      }
+      },
+      "xlsxTemplate": "Excel şablonu ({lang})"
     },
     "ai": {
       "title": "AI Studio",

@@ -54,3 +54,5 @@ export const DRAFT_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as co
 export const DRAFT_PHOTO_MAX_BYTES = 15 * 1024 * 1024;
 export const DRAFT_PDF_MAX_BYTES = 20 * 1024 * 1024;
 export const IMPORT_MAX_BYTES = 1024 * 1024;
+/** Media type of an Excel .xlsx workbook (#109). */
+export const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

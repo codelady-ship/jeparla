@@ -136,6 +136,38 @@ public class MerchantBulkService {
         } catch (IllegalArgumentException e) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.import_malformed");
         }
+        return importRows(rows, idempotencyKey, notPreciousConfirmed);
+    }
+
+    /**
+     * Imports the first sheet of an Excel .xlsx file (#109): the same columns, checks and answer as
+     * {@link #importCsv}. 400 {@code merchant.import_malformed} for bytes that are not a workbook.
+     */
+    public ImportResultDto importXlsx(byte[] xlsx, UUID idempotencyKey, boolean notPreciousConfirmed) {
+        eachRow.executeWithoutResult(status -> merchantStores.ownWritable());
+        if (xlsx == null || xlsx.length == 0) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.import_empty");
+        }
+        if (xlsx.length > MAX_CHARS) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.import_too_large");
+        }
+        List<Row> rows;
+        try {
+            rows = XlsxTable.parse(xlsx, MAX_ROWS);
+        } catch (IllegalArgumentException e) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.import_xlsx_unreadable");
+        }
+        return importRows(rows, idempotencyKey, notPreciousConfirmed);
+    }
+
+    /** The empty Excel template: one bold header row with the column labels in {@code language}. */
+    public byte[] xlsxTemplate(Language language) {
+        Locale locale = Locale.forLanguageTag(language.code());
+        return XlsxTable.template(Arrays.stream(ImportColumn.values())
+                .map(column -> messages.getMessage(column.messageKey(), null, locale)).toList());
+    }
+
+    private ImportResultDto importRows(List<Row> rows, UUID idempotencyKey, boolean notPreciousConfirmed) {
         if (rows.size() < 2) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.import_empty");
         }

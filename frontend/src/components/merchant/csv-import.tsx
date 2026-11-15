@@ -11,8 +11,17 @@ import { IMPORT_MAX_BYTES, type ImportResult } from "@/lib/merchant/bulk";
 import { isMessage } from "@/lib/api/problem";
 import { sendJson } from "@/lib/merchant/client";
 
+/** The file as base64, read in chunks so a 1 MB workbook does not overflow the call stack. */
+async function base64(file: File): Promise<string> {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
+}
+
 /**
- * CSV import (#109): one DRAFT product per row. The file is read in the browser and sent
+ * CSV and Excel (.xlsx) import (#109): one DRAFT product per row. The file is read in the browser and sent
  * to the cabinet route handler; a new Idempotency-Key is made only when a new file is chosen,
  * so pressing the button twice creates nothing twice. Bad rows are listed with line and column.
  */
@@ -40,14 +49,15 @@ export function CsvImport() {
     const form = new FormData(e.currentTarget);
     const file = form.get("file");
     if (!(file instanceof File) || file.size === 0) return setError("fileRequired");
-    if (!/\.(csv|txt)$/i.test(file.name)) return setError("csvType");
+    const excel = /\.xlsx$/i.test(file.name);
+    if (!excel && !/\.(csv|txt)$/i.test(file.name)) return setError("csvType");
     if (file.size > IMPORT_MAX_BYTES) return setError("csvSize");
     setError(null);
     setResult(null);
     setPending(true);
     try {
       const sent = await sendJson<ImportResult>("POST", "/api/merchant/products/import", {
-        csv: await file.text(),
+        ...(excel ? { xlsx: await base64(file) } : { csv: await file.text() }),
         notPreciousConfirmed: form.get("notPrecious") === "on",
         idempotencyKey: key ?? crypto.randomUUID(),
       });
@@ -84,6 +94,17 @@ export function CsvImport() {
             {t("template", { lang: lang.toUpperCase() })}
           </a>
         ))}
+        {(["az", "en", "ru"] as const).map((lang) => (
+          <a
+            key={`xlsx-${lang}`}
+            href={`/api/merchant/products/import/template?lang=${lang}&format=xlsx`}
+            download
+            className={cn(buttonVariants({ variant: "outline" }), "h-10 px-3")}
+          >
+            <FileSpreadsheet aria-hidden />
+            {t("xlsxTemplate", { lang: lang.toUpperCase() })}
+          </a>
+        ))}
       </div>
       {error && (
         <p
@@ -99,7 +120,7 @@ export function CsvImport() {
           id={`${id}-file`}
           name="file"
           type="file"
-          accept=".csv,text/csv,text/plain"
+          accept=".csv,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           onChange={() => {
             setKey(crypto.randomUUID());
             setResult(null);
