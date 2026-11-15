@@ -345,7 +345,30 @@
       }
     },
     "fashionTitle": "Bijuteriya və əl işi",
-    "fashionNote": "Bu məhsul qiymətli metal deyil: satıcı bunu təsdiqləyib. Qiyməti sabitdir, metal məzənnəsindən asılı deyil. Bijuteriya üçün yalnız satıcı yoxlanılır, sənəd və ekspertiza yoxlaması aparılmır."
+    "fashionNote": "Bu məhsul qiymətli metal deyil: satıcı bunu təsdiqləyib. Qiyməti sabitdir, metal məzənnəsindən asılı deyil. Bijuteriya üçün yalnız satıcı yoxlanılır, sənəd və ekspertiza yoxlaması aparılmır.",
+    "breakdown": {
+      "title": "Qiymət necə hesablanıb",
+      "metal": "Metal dəyəri",
+      "metalFormula": "{weight} × {fineness}/1000 × {gramPrice} (1 q xalis metal)",
+      "laborAndShare": "İşçilik və mağaza payı",
+      "stone": "Daş",
+      "fromSeller": "satıcıdan: rəsmi mənbəsi yoxdur",
+      "total": "Cəmi",
+      "clamped": {
+        "MIN": "Satıcının minimum qiyməti tətbiq olunub.",
+        "MAX": "Satıcının maksimum qiyməti tətbiq olunub."
+      },
+      "quoteCbar": "Metal qiyməti: AMB məzənnəsi, {date}.",
+      "quoteAdmin": "Metal qiyməti: {date} tarixli məzənnə, Jeparla administratoru düzəliş edib.",
+      "cbarLink": "AMB bülletenini aç",
+      "fixed": "Qiyməti satıcı sabit təyin edib; işçilik və mağaza payı ayrıca göstərilmir.",
+      "metalToday": "Bu çəkidə metalın bu günkü təxmini dəyəri",
+      "metalTodayFormula": "{weight} × {fineness}/1000 × {gramPrice}, AMB {date}",
+      "perGram": "Məhsulun 1 qram qiyməti",
+      "gramToday": "Bu gün 1 qram {fineness} metal",
+      "note": "Hesab təxminidir, yekun qiyməti mağaza təsdiqləyir.",
+      "variant": "Variant: {label}"
+    }
   },
   "Stores": {
     "title": "Mağazalar",
