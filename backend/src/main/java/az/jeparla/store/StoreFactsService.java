@@ -59,6 +59,7 @@ public class StoreFactsService {
         Instant updated = null;
         long expertise = 0;
         long metalLinked = 0;
+        long hallmark = 0;
         if (!categories.isEmpty()) {
             Object[] stats = products.listedStatsOfStore(store.getId(), categories).getFirst();
             active = ((Number) stats[0]).longValue();
@@ -66,6 +67,7 @@ public class StoreFactsService {
             if (active > 0) {
                 expertise = products.countListedWithVerifiedExpertise(store.getId(), categories);
                 metalLinked = products.countListedMetalLinked(store.getId(), categories);
+                hallmark = products.countListedWithHallmarkPhoto(store.getId(), categories);
             }
         }
         Instant since = store.getApprovedAt();
@@ -76,7 +78,7 @@ public class StoreFactsService {
                 updated == null ? null : updated.toString(),
                 ShareOfProducts.of(expertise, active),
                 ShareOfProducts.of(metalLinked, active),
-                null,
+                ShareOfProducts.of(hallmark, active),
                 documents(store));
     }
 

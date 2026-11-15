@@ -375,7 +375,7 @@ məhsul" kataloqdakı kimidir: `APPROVED`, silinməyib, `PRECIOUS`, görünən k
 | `catalogUpdatedAt` | aktiv məhsulların ən son dəyişmə vaxtı (`products.updated_at`; gündəlik metal qiyməti yeniləməsi məhsula toxunmur) | aktiv məhsul yoxdursa `null` |
 | `verifiedExpertise` | ekspertizası (`ASSAY_CERTIFICATE` və ya `LAB_REPORT`) admin tərəfindən təsdiqlənmiş aktiv məhsullar: `count` və `percent` (aşağı yuvarlaqlaşdırılır, heç vaxt şişirdilmir) | aktiv məhsul yoxdursa `percent: null` |
 | `metalLinkedPrice` | ən az bir canlı `METAL_LINKED` variantı olan aktiv məhsullar (qiyməti AMB-nin gündəlik məzənnəsinə bağlıdır) | eyni |
-| `hallmarkPhoto` | damğa şəkli olan məhsulların payı: şəkillər hələ "damğa şəkli" kimi işarələnmir | həmişə `null` |
+| `hallmarkPhoto` | alıcının gördüyü damğa şəkli (`product_evidence_photos.kind = HALLMARK`, #106; `REJECTED` olmayan, məhsul səhifəsindəki qayda) olan aktiv məhsullar: `count` və `percent` | aktiv məhsul yoxdursa `percent: null` |
 | `documents` | `taxId`, `tradeLicense`: həmin növdən ən az bir sənədi admin təsdiqləyibsə `true` (#40, #164) | `FASHION` mağaza üçün `null` (sənəd yoxlaması yoxdur) |
 
 Göstərilmir: reytinq və rəy (hələ yoxdur, #63) və WhatsApp cavab müddəti (söhbət Jeparla-dan kənardadır, ölçmək olmur).

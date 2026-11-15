@@ -94,6 +94,17 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     long countListedMetalLinked(@Param("storeId") long storeId, @Param("categoryIds") Collection<Long> categoryIds);
 
     /**
+     * Listed products of the store with a hallmark photo a buyer can see (#106): any status except REJECTED, the
+     * same rule as the product page.
+     */
+    @Query("select count(p) from Product p join p.store s where " + LISTED_IN_STORE
+            + " and exists (select e.id from ProductEvidencePhoto e where e.product = p"
+            + " and e.kind = az.jeparla.product.EvidenceKind.HALLMARK"
+            + " and e.status <> az.jeparla.verification.CheckStatus.REJECTED)")
+    long countListedWithHallmarkPhoto(@Param("storeId") long storeId,
+            @Param("categoryIds") Collection<Long> categoryIds);
+
+    /**
      * Image keys of the store's listed products, newest published product first and its cover (first image)
      * first: the first element is the store's share preview image.
      */

@@ -12,6 +12,8 @@ import az.jeparla.product.Product;
 import az.jeparla.support.CatalogApiTest;
 import az.jeparla.support.TestData;
 import jakarta.persistence.EntityManager;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -59,6 +61,20 @@ class StoreFactsApiTests {
                 draft.getId());
         jdbc.update("UPDATE product_variants SET pricing_mode = 'METAL_LINKED' WHERE product_id IN (?, ?)",
                 metalLinked.getId(), draft.getId());
+        String photo = """
+                INSERT INTO product_evidence_photos (product_id, kind, storage_key, width, height, content_type,
+                                                     size_bytes, status, check_note, checked_at)
+                VALUES (?, ?, ?, 800, 800, 'image/jpeg', 1000, ?, ?, ?)
+                """;
+        // A shown hallmark photo counts (pending or verified); a rejected one, a label photo or a draft do not.
+        jdbc.update(photo, certified.getId(), "HALLMARK", "products/t/" + TestData.next() + ".jpg", "PENDING",
+                null, null);
+        jdbc.update(photo, metalLinked.getId(), "HALLMARK", "products/t/" + TestData.next() + ".jpg", "REJECTED",
+                "blurred", Timestamp.from(Instant.parse("2026-11-01T10:00:00Z")));
+        jdbc.update(photo, metalLinked.getId(), "TAG", "products/t/" + TestData.next() + ".jpg", "PENDING", null,
+                null);
+        jdbc.update(photo, draft.getId(), "HALLMARK", "products/t/" + TestData.next() + ".jpg", "PENDING", null,
+                null);
         jdbc.update("UPDATE products SET updated_at = TIMESTAMPTZ '2026-10-20 12:00:00+04' WHERE store_id = ?",
                 store.getId());
         jdbc.update("UPDATE products SET updated_at = TIMESTAMPTZ '2026-11-05 09:30:00+04' WHERE id = ?",
@@ -77,7 +93,8 @@ class StoreFactsApiTests {
                 .andExpect(jsonPath("$.verifiedExpertise.percent").value(33))
                 .andExpect(jsonPath("$.metalLinkedPrice.count").value(1))
                 .andExpect(jsonPath("$.metalLinkedPrice.percent").value(33))
-                .andExpect(jsonPath("$.hallmarkPhoto").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.hallmarkPhoto.count").value(1))
+                .andExpect(jsonPath("$.hallmarkPhoto.percent").value(33))
                 .andExpect(jsonPath("$.documents.taxId").value(false))
                 .andExpect(jsonPath("$.documents.tradeLicense").value(false))
                 .andExpect(jsonPath("$.rating").doesNotExist())
@@ -112,7 +129,8 @@ class StoreFactsApiTests {
                 .andExpect(jsonPath("$.catalogUpdatedAt").value(Matchers.nullValue()))
                 .andExpect(jsonPath("$.verifiedExpertise.count").value(0))
                 .andExpect(jsonPath("$.verifiedExpertise.percent").value(Matchers.nullValue()))
-                .andExpect(jsonPath("$.metalLinkedPrice.percent").value(Matchers.nullValue()));
+                .andExpect(jsonPath("$.metalLinkedPrice.percent").value(Matchers.nullValue()))
+                .andExpect(jsonPath("$.hallmarkPhoto.percent").value(Matchers.nullValue()));
         mvc.perform(get("/api/v1/stores/" + store.getSlug() + "/preview"))
                 .andExpect(jsonPath("$.productCount").value(0))
                 .andExpect(jsonPath("$.coverImageUrl").value(Matchers.nullValue()));
