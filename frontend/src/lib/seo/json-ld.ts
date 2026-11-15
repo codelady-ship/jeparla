@@ -19,12 +19,44 @@ const AVAILABILITY: Record<Product["stockStatus"], string> = {
   OUT_OF_STOCK: "https://schema.org/OutOfStock",
 };
 
-const METAL_NAME: Record<Product["metal"], string> = {
+const METAL_NAME: Record<NonNullable<Product["metal"]>, string> = {
   GOLD: "Gold",
   SILVER: "Silver",
   PLATINUM: "Platinum",
   PALLADIUM: "Palladium",
 };
+
+/** Bijouterie (#128) has a material instead of a metal and a fineness, and maybe no weight. */
+function materialFacts(p: Product) {
+  const weight = p.weightGrams
+    ? {
+        weight: { "@type": "QuantitativeValue", value: p.weightGrams, unitCode: "GRM" },
+      }
+    : {};
+  const weightProp = p.weightGrams
+    ? [{ "@type": "PropertyValue", name: "weight_grams", value: p.weightGrams }]
+    : [];
+  if (p.metal === null) {
+    const material = (p.material ?? "OTHER").toLowerCase().replaceAll("_", " ");
+    return {
+      material,
+      ...weight,
+      additionalProperty: [
+        { "@type": "PropertyValue", name: "material_kind", value: "fashion jewelry" },
+        ...weightProp,
+      ],
+    };
+  }
+  return {
+    material: `${METAL_NAME[p.metal]} ${p.fineness}`,
+    ...weight,
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "fineness", value: p.fineness },
+      { "@type": "PropertyValue", name: "metal", value: METAL_NAME[p.metal] },
+      ...weightProp,
+    ],
+  };
+}
 
 const abs = (path: string) => (path.startsWith("http") ? path : `${SITE_URL}${path}`);
 const text = (v: string | null | undefined) => v?.trim() || undefined;
@@ -150,13 +182,7 @@ export function product(p: Product, locale: Locale): Thing {
     url,
     ...(first && { sku: first.sku }),
     ...(p.images.length > 0 && { image: p.images.map((i) => abs(i.url)) }),
-    material: `${METAL_NAME[p.metal]} ${p.fineness}`,
-    weight: { "@type": "QuantitativeValue", value: p.weightGrams, unitCode: "GRM" },
-    additionalProperty: [
-      { "@type": "PropertyValue", name: "fineness", value: p.fineness },
-      { "@type": "PropertyValue", name: "metal", value: METAL_NAME[p.metal] },
-      { "@type": "PropertyValue", name: "weight_grams", value: p.weightGrams },
-    ],
+    ...materialFacts(p),
     ...(offers.length === 1 && { offers: offers[0] }),
     ...(offers.length > 1 && {
       offers: {

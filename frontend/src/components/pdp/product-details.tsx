@@ -4,6 +4,7 @@ import {
   CircleMinus,
   CircleX,
   MapPin,
+  Shapes,
   Store as StoreIcon,
 } from "lucide-react";
 import { approxPrices } from "@/lib/currency";
@@ -60,14 +61,19 @@ export async function ProductDetails({
   const parent = category?.parentId ? categories.find((c) => c.id === category.parentId) : null;
   const url = `${SITE_URL}/${locale}/products/${p.slug}`;
   const related = similar.content
-    .filter((x) => x.id !== p.id && (x.categoryId === p.categoryId || x.metal === p.metal))
+    .filter(
+      (x) =>
+        x.id !== p.id &&
+        (x.categoryId === p.categoryId ||
+          (p.metal ? x.metal === p.metal : x.materialKind === p.materialKind)),
+    )
     .sort((a, b) => Number(b.categoryId === p.categoryId) - Number(a.categoryId === p.categoryId))
     .slice(0, 4);
 
   const variants: VariantView[] = p.variants.map((v) => {
     const label = [
-      v.fineness.label,
-      formatGrams(v.weightGrams, locale),
+      v.fineness?.label,
+      v.weightGrams && formatGrams(v.weightGrams, locale),
       v.size && t("size", { size: v.size }),
     ]
       .filter(Boolean)
@@ -109,14 +115,25 @@ export async function ProductDetails({
     .sort()
     .at(-1);
   // Quotable facts in the initial HTML; the price is the same "from" price as the JSON-LD offer.
+  // Bijouterie (#128) has a material instead of a metal and a fineness; the weight is optional.
+  const fashion = p.materialKind === "FASHION" || p.metal === null;
   const facts: [string, ReactNode, ReactNode?][] = [
-    [t("facts.metal"), tp(`metal.${p.metal}`)],
-    [
-      t("facts.fineness"),
-      first?.fineness.label ?? String(p.fineness),
-      hint("fineness", t("facts.fineness")),
-    ],
-    [t("facts.weight"), formatGrams(p.weightGrams, locale)],
+    ...(fashion
+      ? [
+          [t("facts.kind"), t("fashionTitle")] as [string, string],
+          [t("facts.material"), tp(`material.${p.material ?? "OTHER"}`)] as [string, string],
+        ]
+      : [
+          [t("facts.metal"), p.metal ? tp(`metal.${p.metal}`) : ""] as [string, string],
+          [
+            t("facts.fineness"),
+            first?.fineness?.label ?? String(p.fineness),
+            hint("fineness", t("facts.fineness")),
+          ] as [string, ReactNode, ReactNode],
+        ]),
+    ...(p.weightGrams
+      ? [[t("facts.weight"), formatGrams(p.weightGrams, locale)] as [string, string]]
+      : []),
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
     ...(isRealPrice(p.priceFrom)
       ? [[t("facts.price"), formatPrice(p.priceFrom.amount, locale)] as [string, string]]
@@ -254,6 +271,21 @@ export async function ProductDetails({
 
           <p className="text-sm leading-relaxed">{p.description[locale]}</p>
 
+          {fashion && (
+            <aside
+              aria-labelledby="fashion"
+              className="flex items-start gap-3 rounded-md border bg-muted/50 p-3 text-sm"
+            >
+              <Shapes aria-hidden className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+              <div>
+                <p id="fashion" className="font-medium">
+                  {t("fashionTitle")}
+                </p>
+                <p className="text-muted-foreground">{t("fashionNote")}</p>
+              </div>
+            </aside>
+          )}
+
           <section aria-labelledby="facts">
             <h2 id="facts" className="mb-3 text-xl">
               {t("factsTitle")}
@@ -362,7 +394,11 @@ export async function ProductDetails({
             </Link>
           </p>
           <ul className="flex flex-col gap-2">
-            {(["seller", "documents", "expertise"] as const).map((k) => {
+            {/* Bijouterie has only the seller check: no documents or expertise badges (#128). */}
+            {(fashion
+              ? (["seller"] as const)
+              : (["seller", "documents", "expertise"] as const)
+            ).map((k) => {
               const status = p.verification[k];
               const Icon = STATUS_ICON[status];
               return (
@@ -411,7 +447,8 @@ export async function ProductDetails({
           </Reveal>
         )}
 
-        <MetalPriceWidget className="lg:col-span-2" />
+        {/* Bijouterie prices do not follow metal rates, so no metal price block (#128). */}
+        {!fashion && <MetalPriceWidget className="lg:col-span-2" />}
       </div>
 
       {related.length > 0 && (
