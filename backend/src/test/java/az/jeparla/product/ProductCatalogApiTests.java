@@ -103,6 +103,10 @@ class ProductCatalogApiTests {
                 Arguments.of("city=G%C9%99nc%C9%99", "s.city = 'Gəncə'"),
                 Arguments.of("verified=true", "s.documents_status = 'VERIFIED'"),
                 Arguments.of("verified=false", "TRUE"),
+                // #106: the demo seed has no evidence photos, so the hallmark filter lists nothing.
+                Arguments.of("hallmarkPhoto=true", "EXISTS (SELECT 1 FROM product_evidence_photos e WHERE e.product_id = p.id "
+                        + "AND e.kind = 'HALLMARK' AND e.status <> 'REJECTED')"),
+                Arguments.of("hallmarkPhoto=false", "TRUE"),
                 Arguments.of("inStock=true", VARIANT + "v.stock_status <> 'OUT_OF_STOCK')"),
                 Arguments.of("category=boyunbagilar", "p.category_id IN (5, 6, 7)"),
                 Arguments.of("category=zencirler", "p.category_id = 6"),

@@ -63,6 +63,12 @@ describe("parseFilters", () => {
     expect(audienceMatches("KIDS", "KIDS")).toBe(true);
   });
 
+  it("reads the hallmark photo filter (#106)", () => {
+    expect(parseFilters({ hallmarkPhoto: "true" }).hallmarkPhoto).toBe(true);
+    expect(parseFilters({ hallmarkPhoto: "no" }).hallmarkPhoto).toBeUndefined();
+    expect(toQuery({ hallmarkPhoto: true })).toBe("?hallmarkPhoto=true");
+  });
+
   it("keeps decimals as strings (no float)", () => {
     const f = parseFilters({ minCarat: "0.25" });
     expect(f.minCarat).toBe("0.25");

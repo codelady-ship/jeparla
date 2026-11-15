@@ -33,6 +33,17 @@ describe("Gallery", () => {
     expect(within(second).getByText("AI şəkli")).toBeInTheDocument();
   });
 
+  it("names a hallmark shot with its own badge (#106)", () => {
+    const withHallmark = [
+      ...images,
+      { url: "/demo/d.jpg", alt: "Üzük: əyar damğası", aiGenerated: false, badge: "Damğa" },
+    ];
+    render(<Gallery productId={1} images={withHallmark} labels={labels} />);
+    const fourth = screen.getByRole("button", { name: "Şəkli böyüt: Şəkil 4 / 4" });
+    expect(within(fourth).getByText("Damğa")).toBeInTheDocument();
+    expect(within(fourth).getByAltText("Üzük: əyar damğası")).toBeInTheDocument();
+  });
+
   it("opens the full view at the clicked photo and moves with the arrow keys", async () => {
     render(<Gallery productId={1} images={images} labels={labels} />);
     fireEvent.click(screen.getByRole("button", { name: "Şəkli böyüt: Şəkil 2 / 3" }));

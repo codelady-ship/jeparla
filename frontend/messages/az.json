@@ -216,7 +216,8 @@
       "KIDS": "Uşaq",
       "UNISEX": "Uniseks"
     },
-    "audienceNote": "Qadın və kişi seçimində uniseks məhsullar da göstərilir."
+    "audienceNote": "Qadın və kişi seçimində uniseks məhsullar da göstərilir.",
+    "hallmarkOnly": "Damğa şəkli olan"
   },
   "Pdp": {
     "breadcrumb": "Naviqasiya yolu",
@@ -268,7 +269,8 @@
       "store": "Mağaza",
       "city": "Şəhər",
       "material": "Material",
-      "kind": "Növ"
+      "kind": "Növ",
+      "hallmarkPhoto": "Damğa şəkli"
     },
     "pricing": {
       "FIXED": "Sabit",
@@ -368,6 +370,22 @@
       "gramToday": "Bu gün 1 qram {fineness} metal",
       "note": "Hesab təxminidir, yekun qiyməti mağaza təsdiqləyir.",
       "variant": "Variant: {label}"
+    },
+    "evidence": {
+      "yes": "var",
+      "no": "yoxdur",
+      "badge": {
+        "HALLMARK": "Damğa",
+        "TAG": "Etiket"
+      },
+      "alt": {
+        "HALLMARK": "{name}: əyar damğasının yaxın planda şəkli, satıcı əlavə edib",
+        "TAG": "{name}: etiketin şəkli (çəki və əyar), satıcı əlavə edib"
+      },
+      "title": "Damğa və etiket",
+      "added": "Satıcı damğa və ya etiket şəklini əlavə edib.",
+      "checked": "Jeparla administratoru şəkli məhsulun məlumatı ilə müqayisə edib.",
+      "notAssay": "Damğa şəkli əyarın laborator yoxlaması deyil."
     }
   },
   "Stores": {

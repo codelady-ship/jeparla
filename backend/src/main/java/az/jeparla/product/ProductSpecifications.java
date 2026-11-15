@@ -61,6 +61,21 @@ public final class ProductSpecifications {
         };
     }
 
+    /**
+     * "Damğa şəkli olan" filter (#106): the seller added a hallmark photo that is shown on the product page, that is
+     * one an admin has not rejected.
+     */
+    public static Specification<Product> withHallmarkPhoto() {
+        return (root, query, cb) -> {
+            Subquery<Long> photo = query.subquery(Long.class);
+            Root<ProductEvidencePhoto> e = photo.from(ProductEvidencePhoto.class);
+            photo.select(e.get("id")).where(cb.equal(e.get("product"), root),
+                    cb.equal(e.get("kind"), EvidenceKind.HALLMARK),
+                    cb.notEqual(e.get("status"), CheckStatus.REJECTED));
+            return cb.exists(photo);
+        };
+    }
+
     public static Specification<Product> ofMetal(Metal metal) {
         return (root, query, cb) -> cb.equal(root.get("metal"), metal);
     }

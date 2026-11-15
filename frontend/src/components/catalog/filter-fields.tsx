@@ -324,6 +324,14 @@ export function FilterFields({
         <Check id={`${id}-verified`} name="verified" value="true" checked={f.verified ?? false}>
           {t("verifiedOnly")}
         </Check>
+        <Check
+          id={`${id}-hallmark`}
+          name="hallmarkPhoto"
+          value="true"
+          checked={f.hallmarkPhoto ?? false}
+        >
+          {t("hallmarkOnly")}
+        </Check>
         <Check id={`${id}-instock`} name="inStock" value="true" checked={f.inStock ?? false}>
           {t("inStockOnly")}
         </Check>

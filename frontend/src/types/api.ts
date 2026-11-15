@@ -196,11 +196,23 @@ export type ProductSummary = {
   publishedAt: IsoDate;
 };
 
+/** A hallmark or label photo the seller added (#106); not a laboratory assay. */
+export type EvidencePhoto = {
+  kind: "HALLMARK" | "TAG";
+  url: string;
+  width: number;
+  height: number;
+  /** An admin compared it with the product data and found it matching. */
+  checked: boolean;
+};
+
 export type Product = ProductSummary & {
   description: LocalizedText;
   variants: Variant[];
   stones: Stone[];
   status: ProductStatus;
+  /** HALLMARK first; the demo mock does not send it (contract BACKEND_AHEAD). */
+  evidencePhotos?: EvidencePhoto[];
 };
 
 /** One column of /compare: comparison is per variant (weight, fineness, price differ). */
@@ -257,6 +269,8 @@ export type ProductFilters = {
   minPrice?: Decimal;
   maxPrice?: Decimal;
   verified?: boolean;
+  /** Only products with a hallmark photo (#106). */
+  hallmarkPhoto?: boolean;
   inStock?: boolean;
   city?: string;
   /** "Bijouterie and handmade" section (FASHION) or precious only (#128). */
