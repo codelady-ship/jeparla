@@ -89,6 +89,8 @@ export type Store = StoreSummary & {
   openingHours: string;
   geo: { lat: Decimal; lng: Decimal } | null;
   createdAt: IsoDate;
+  /** Day (YYYY-MM-DD, Baku) the store last accepted the seller code (#107); absent if not valid. */
+  codeAcceptedOn?: string;
 };
 
 export type ProductImage = {

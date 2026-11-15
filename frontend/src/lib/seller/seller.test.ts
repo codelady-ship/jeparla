@@ -30,6 +30,7 @@ describe("store step", () => {
     social: "@ayzer.az",
     legalType: "SOLE_TRADER",
     taxId: "1234567890",
+    codeAccepted: true,
   };
   it("passes a complete store", () => {
     expect(storeStep.safeParse(ok).success).toBe(true);

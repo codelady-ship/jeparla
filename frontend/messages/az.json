@@ -379,7 +379,8 @@
     "nearActive": "Mağazalar sizə yaxınlığa görə sıralanıb. Ünvanı qeyd olunmayan mağazalar siyahının sonundadır.",
     "nearDenied": "Məkan icazəsi verilmədi. Şəhəri seçin və ya mağazanı adla axtarın.",
     "nearUnavailable": "Məkanı təyin etmək alınmadı. Şəhəri seçin və ya mağazanı adla axtarın.",
-    "distance": "{km} km"
+    "distance": "{km} km",
+    "codeAccepted": "Davranış kodeksini qəbul edib: {date}"
   },
   "About": {
     "title": "Jeparla nədir?",
@@ -862,7 +863,8 @@
       "category": "Kateqoriya",
       "fineness": "Əyar",
       "weight": "Çəki (qram)",
-      "price": "Qiymət (AZN)"
+      "price": "Qiymət (AZN)",
+      "codeAccepted": "<link>Satıcı davranış kodeksini</link> oxudum və qəbul edirəm."
     },
     "hints": {
       "phone": "Məsələn 050 123 45 67. SMS təsdiqi sonra əlavə olunacaq.",
@@ -902,7 +904,8 @@
       "taxIdInvalid": "VÖEN 10 rəqəmdən ibarətdir.",
       "productNameShort": "Məhsulun adı ən azı 3 simvol olmalıdır.",
       "decimalInvalid": "Müsbət ədəd yazın, məsələn 3,25.",
-      "passwordLost": "Təhlükəsizlik üçün şifrə yadda saxlanmır. Onu yenidən yazın."
+      "passwordLost": "Təhlükəsizlik üçün şifrə yadda saxlanmır. Onu yenidən yazın.",
+      "codeRequired": "Müraciət üçün davranış kodeksini qəbul edin."
     },
     "done": {
       "title": "Təbriklər! Siz qeydiyyatdan keçdiniz",
@@ -1562,6 +1565,15 @@
         "EVENING": "Axşam",
         "MINIMAL": "Minimalist"
       }
+    },
+    "code": {
+      "missingTitle": "Davranış kodeksini qəbul edin",
+      "dueTitle": "Davranış kodeksini yenidən təsdiqləyin: qəbul {date} tarixində bitir",
+      "text": "Kodeksi ildə bir dəfə təsdiqləyirsiniz. Qəbul olmadan məhsullar yoxlamaya göndərilə bilmir. Qəbul tarixi mağaza səhifəsində görünür.",
+      "read": "Kodeksi oxuyun",
+      "accept": "Oxudum, qəbul edirəm",
+      "failed": "Qəbul saxlanılmadı. Yenidən cəhd edin.",
+      "unavailable": "Nümunə rejimində qəbul saxlanılmır."
     }
   },
   "Admin": {
@@ -2251,7 +2263,8 @@
         "q": "Şübhəli məhsul görsəm nə edim?",
         "a": "Məhsul səhifəsində \"Şikayət et\" düyməsini basın. Komanda məhsulu və mağazanı yenidən yoxlayır."
       }
-    }
+    },
+    "codeAcceptance": "Satıcı kodeksi qeydiyyatda qəbul edir və ildə bir dəfə kabinetdə yenidən təsdiqləyir. Qəbul olmadan məhsul yoxlamaya göndərilə bilmir. Qəbul tarixi mağaza səhifəsində görünür."
   },
   "Guides": {
     "title": "Bələdçilər",

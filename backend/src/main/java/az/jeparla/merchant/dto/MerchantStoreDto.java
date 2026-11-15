@@ -1,11 +1,13 @@
 package az.jeparla.merchant.dto;
 
 import az.jeparla.store.LegalType;
+import az.jeparla.store.SellerCode;
 import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreStatus;
 import az.jeparla.verification.CheckStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Instant;
 
 /**
  * The seller's own store ({@code MerchantStore} in frontend/src/types/merchant.ts, plus status fields the
@@ -14,6 +16,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param status          marketplace status decided by an admin (PENDING until approved)
  * @param statusNote      reason of the last reject or block, or null
  * @param documentsStatus always NONE for a FASHION store (#128)
+ * @param codeVersion     the seller code of conduct version the store has to accept (#107)
+ * @param codeAcceptedAt  when the store last accepted the current version, or null
+ * @param codeValidUntil  when that acceptance runs out (a year later); after it, or when null, products cannot
+ *                        go to review until the seller accepts again
  */
 @Schema(name = "MerchantStore")
 public record MerchantStoreDto(
@@ -33,14 +39,23 @@ public record MerchantStoreDto(
         StoreStatus status,
         @Schema(nullable = true) String statusNote,
         CheckStatus sellerStatus,
-        CheckStatus documentsStatus) {
+        CheckStatus documentsStatus,
+        int codeVersion,
+        @Schema(nullable = true, format = "date-time") String codeAcceptedAt,
+        @Schema(nullable = true, format = "date-time") String codeValidUntil) {
 
     public static MerchantStoreDto of(Store store) {
+        Instant validUntil = SellerCode.validUntil(store);
         return new MerchantStoreDto(store.getId(), store.getSlug(), store.getName(), store.getCity(),
                 store.getAddress(), store.getWhatsapp(), store.getPhone(), nullToEmpty(store.getSocial()),
                 store.getDescription() == null ? "" : nullToEmpty(store.getDescription().az()),
                 nullToEmpty(store.getOpeningHours()), store.getLegalType(), store.getTaxId(), store.getSellerKind(),
-                store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus());
+                store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
+                SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString());
+    }
+
+    private static String acceptedAt(Store store) {
+        return SellerCode.validUntil(store) == null ? null : store.getCodeAcceptedAt().toString();
     }
 
     private static String nullToEmpty(String value) {
