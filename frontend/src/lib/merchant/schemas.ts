@@ -152,8 +152,23 @@ export const docsStep = z.object({
     .max(5),
 });
 
+const evidencePhoto = z.object({
+  url: z.string().min(1),
+  status: z.enum(["NONE", "PENDING", "VERIFIED", "REJECTED"]).optional(),
+  checkNote: z.string().max(1000).nullable().optional(),
+});
+
+/** Hallmark and label photos (#106) and the material kind (#128); optional for older drafts. */
+export const evidenceShape = {
+  materialKind: z.enum(["PRECIOUS", "FASHION"]).optional(),
+  evidence: z
+    .object({ HALLMARK: evidencePhoto.optional(), TAG: evidencePhoto.optional() })
+    .optional(),
+};
+
 export const productInput = z
   .object({
+    ...evidenceShape,
     ...imagesStep.shape,
     ...basicsStep.shape,
     ...metalShape,
