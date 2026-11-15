@@ -345,7 +345,30 @@
       }
     },
     "fashionTitle": "Bijuteriya və əl işi",
-    "fashionNote": "Bu məhsul qiymətli metal deyil: satıcı bunu təsdiqləyib. Qiyməti sabitdir, metal məzənnəsindən asılı deyil. Bijuteriya üçün yalnız satıcı yoxlanılır, sənəd və ekspertiza yoxlaması aparılmır."
+    "fashionNote": "Bu məhsul qiymətli metal deyil: satıcı bunu təsdiqləyib. Qiyməti sabitdir, metal məzənnəsindən asılı deyil. Bijuteriya üçün yalnız satıcı yoxlanılır, sənəd və ekspertiza yoxlaması aparılmır.",
+    "breakdown": {
+      "title": "Qiymət necə hesablanıb",
+      "metal": "Metal dəyəri",
+      "metalFormula": "{weight} × {fineness}/1000 × {gramPrice} (1 q xalis metal)",
+      "laborAndShare": "İşçilik və mağaza payı",
+      "stone": "Daş",
+      "fromSeller": "satıcıdan: rəsmi mənbəsi yoxdur",
+      "total": "Cəmi",
+      "clamped": {
+        "MIN": "Satıcının minimum qiyməti tətbiq olunub.",
+        "MAX": "Satıcının maksimum qiyməti tətbiq olunub."
+      },
+      "quoteCbar": "Metal qiyməti: AMB məzənnəsi, {date}.",
+      "quoteAdmin": "Metal qiyməti: {date} tarixli məzənnə, Jeparla administratoru düzəliş edib.",
+      "cbarLink": "AMB bülletenini aç",
+      "fixed": "Qiyməti satıcı sabit təyin edib; işçilik və mağaza payı ayrıca göstərilmir.",
+      "metalToday": "Bu çəkidə metalın bu günkü təxmini dəyəri",
+      "metalTodayFormula": "{weight} × {fineness}/1000 × {gramPrice}, AMB {date}",
+      "perGram": "Məhsulun 1 qram qiyməti",
+      "gramToday": "Bu gün 1 qram {fineness} metal",
+      "note": "Hesab təxminidir, yekun qiyməti mağaza təsdiqləyir.",
+      "variant": "Variant: {label}"
+    }
   },
   "Stores": {
     "title": "Mağazalar",
@@ -2292,7 +2315,8 @@
       "fineness": "Təmiz metalın qram qiyməti əyara vurulur: 585 əyar qızılda 58,5% qızıl var, ona görə onun qram qiyməti təmiz metalın qiymətinin 0,585 hissəsidir. Nəticə qəpiyə qədər yuvarlaqlaşdırılır.",
       "weekend": "Həftəsonu və bayram günlərində AMB yeni məzənnə dərc etmir, ona görə son dərc olunmuş məzənnə qüvvədə qalır; yuxarıdakı tarix həmin məzənnənin tarixidir.",
       "jewelry": "Bunlar zərgərlik məmulatının yox, metalın dəyəridir. Məmulatın qiymətinə işçilik, daşlar və mağazanın əlavəsi də daxildir; yekun qiyməti mağaza təsdiqləyir."
-    }
+    },
+    "monthlyLink": "Aylıq icmal: keçmiş aylarda qiymətlər necə dəyişib"
   },
   "Verified": {
     "title": "Necə yoxlayırıq",
@@ -2378,5 +2402,36 @@
     "sourcesNote": "Bələdçi yazılarkən hər mənbə açılıb yoxlanılıb. Burada qiymət göstərilmir: metal qiymətləri hər gün dəyişir.",
     "more": "Digər bələdçilər",
     "external": "başqa saytda yeni pəncərədə açılır"
+  },
+  "PricesMonthly": {
+    "title": "Azərbaycanda qızıl və gümüş qiymətləri: aylıq icmal",
+    "description": "Azərbaycan Mərkəzi Bankının gündəlik məzənnələrinə əsasən hər ay qızıl və gümüşün 1 qram qiyməti: ilk və son gün, ən aşağı, ən yüksək, orta qiymət və dəyişmə, manatla.",
+    "lead": "Hər ay üçün qızıl və gümüşün 1 qram qiyməti Jeparla-nın hər iş günü saxladığı AMB məzənnələrindən hesablanır. Rəqəmlər əl ilə yazılmır və proqnoz deyil.",
+    "today": "Bu günün qiymətləri",
+    "demoData": "Nümunə data",
+    "error": "Qiymət tarixçəsini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
+    "empty": "Hələ saxlanılmış məzənnə yoxdur.",
+    "pure": "(təmiz)",
+    "summary": "585 əyar qızılın 1 qramı ayın ilk məzənnə günü (<d1>{firstDay}</d1>) {first}, son məzənnə günü (<d2>{lastDay}</d2>) {last} olub, dəyişmə {change}. Ay ərzində ən aşağı qiymət {low}, ən yüksək {high} ({quotes, plural, one {# məzənnə günü} other {# məzənnə günü}}).",
+    "caption": "1 qramın qiyməti, manatla. Yalnız metalın dəyəri.",
+    "col": {
+      "metal": "Metal və əyar",
+      "first": "İlk gün",
+      "last": "Son gün",
+      "low": "Ən aşağı",
+      "high": "Ən yüksək",
+      "average": "Orta",
+      "change": "Dəyişmə"
+    },
+    "quotes": "{count, plural, one {# məzənnə günü.} other {# məzənnə günü.}}",
+    "sourceLink": "AMB bülleteni, {day}",
+    "methodTitle": "Necə hesablanır",
+    "method": {
+      "source": "Mənbə: AMB-nin hər iş günü dərc etdiyi bank metalları məzənnəsi (1 troy unsiya təmiz metal, manatla). Jeparla onu hər gün saxlayır; icmal yalnız saxlanılmış günlərdən qurulur.",
+      "stats": "1 qramın qiyməti unsiya qiymətinin 31,1034768-ə bölünməsi, əyar üçün isə əyara vurulması ilə alınır və qəpiyə qədər yuvarlaqlaşdırılır. \"Orta\" ay ərzindəki məzənnə günlərinin sadə ortasıdır, \"dəyişmə\" ilk gündən son günə qədərdir.",
+      "gaps": "Həftəsonu və bayram günlərində AMB məzənnə dərc etmir, həmin günlər hesablamaya daxil deyil. Cari ay hələ bitməyibsə, son gün son saxlanılmış məzənnə günüdür.",
+      "corrected": "Ulduz (*) həmin ayda AMB məzənnəsinin Jeparla admini tərəfindən düzəldildiyini göstərir.",
+      "jewelry": "Bunlar zərgərlik məmulatının yox, metalın dəyəridir: məmulatın qiymətinə işçilik, daşlar və mağazanın əlavəsi də daxildir."
+    }
   }
 }

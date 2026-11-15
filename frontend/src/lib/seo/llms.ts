@@ -19,6 +19,7 @@ function keyPages(site: string, code: string, m: (typeof LANGS)[number][2]): str
     `- [${m.Categories.title}](${site}/${code}/categories): ${m.Categories.description}`,
     `- [${m.Stores.title}](${site}/${code}/stores): ${m.Stores.description}`,
     `- [${m.PricesPage.title}](${site}/${code}/prices): ${m.PricesPage.description}`,
+    `- [${m.PricesMonthly.title}](${site}/${code}/prices/monthly): ${m.PricesMonthly.description}`,
   ];
 }
 
