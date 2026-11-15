@@ -114,7 +114,26 @@
     "emptyText": "Change the filters or browse another category.",
     "specs": "{metal} {fineness} · {weight}",
     "compareFull": "You can compare up to 4 items: more is unreadable on a phone. Remove one first to add another.",
-    "compareOpen": "Go to compare"
+    "compareOpen": "Go to compare",
+    "fashionBadge": "Fashion jewelry",
+    "fashionSpecs": "{material}",
+    "fashionSpecsWeight": "{material} · {weight}",
+    "material": {
+      "BEADS": "Beads",
+      "STAINLESS_STEEL": "Stainless steel",
+      "COPPER": "Copper",
+      "BRASS": "Brass",
+      "SILVER_PLATED": "Silver plated",
+      "GOLD_PLATED": "Gold plated",
+      "LEATHER": "Leather",
+      "TEXTILE": "Textile",
+      "WOOD": "Wood",
+      "GLASS": "Glass",
+      "CERAMIC": "Ceramic",
+      "RESIN": "Resin",
+      "NATURAL_STONE": "Natural stone",
+      "OTHER": "Other material"
+    }
   },
   "Catalog": {
     "title": "Catalog",
@@ -183,7 +202,13 @@
     "prev": "Previous",
     "next": "Next",
     "pageN": "Page {n}",
-    "results": "Results"
+    "results": "Results",
+    "kind": "Product type",
+    "kinds": {
+      "PRECIOUS": "Precious metals and stones",
+      "FASHION": "Fashion and handmade"
+    },
+    "fashionSection": "Fashion and handmade"
   },
   "Pdp": {
     "breadcrumb": "Breadcrumb",
@@ -233,7 +258,9 @@
       "pricing": "Pricing",
       "updated": "Price updated",
       "store": "Store",
-      "city": "City"
+      "city": "City",
+      "material": "Material",
+      "kind": "Type"
     },
     "pricing": {
       "FIXED": "Fixed",
@@ -308,7 +335,9 @@
         "label": "What is clarity?",
         "text": "Clarity shows how visible a stone's internal and surface flaws are: FL and IF (flawless), VVS1-VVS2, VS1-VS2, SI1-SI2, I1-I3. It is graded under 10x magnification."
       }
-    }
+    },
+    "fashionTitle": "Fashion and handmade jewelry",
+    "fashionNote": "This piece is not precious metal: the seller has confirmed it. Its price is fixed and does not follow metal rates. For fashion jewelry only the seller is checked; there is no documents or expertise check."
   },
   "Stores": {
     "title": "Stores",

@@ -80,6 +80,26 @@ describe("ProductCard", () => {
     expect(screen.getByText(az.Product.stock.OUT_OF_STOCK)).toBeInTheDocument();
   });
 
+  it("shows a bijouterie badge and the material instead of metal and fineness (#128)", () => {
+    renderIn(
+      <ProductCard
+        product={{
+          ...base,
+          materialKind: "FASHION",
+          material: "BEADS",
+          metal: null,
+          fineness: null,
+          weightGrams: null,
+          verification: { seller: "VERIFIED", documents: "NONE", expertise: "NONE" },
+        }}
+      />,
+    );
+    expect(screen.getByText(az.Product.fashionBadge)).toBeInTheDocument();
+    expect(screen.getByText(az.Product.material.BEADS)).toBeInTheDocument();
+    expect(screen.queryByText(/Qızıl/)).not.toBeInTheDocument();
+    expect(screen.queryByText(az.Product.verified)).not.toBeInTheDocument();
+  });
+
   it("toggles favorite with a pressed state and a changing label", () => {
     renderIn(<ProductCard product={base} />);
     const fav = screen.getByRole("button", { name: az.Product.favoriteAdd });

@@ -71,9 +71,12 @@ function filterProducts(f: ProductFilters): Product[] {
     if (f.store?.length && !f.store.includes(p.store.slug)) return false;
     if (f.kind && p.materialKind !== f.kind) return false;
     if (f.metal && p.metal !== f.metal) return false;
-    if (f.fineness?.length && !f.fineness.includes(p.fineness)) return false;
-    if (f.minWeight && compareDecimal(p.weightGrams, f.minWeight) < 0) return false;
-    if (f.maxWeight && compareDecimal(p.weightGrams, f.maxWeight) > 0) return false;
+    if (f.fineness?.length && (p.fineness === null || !f.fineness.includes(p.fineness)))
+      return false;
+    if (f.minWeight && (!p.weightGrams || compareDecimal(p.weightGrams, f.minWeight) < 0))
+      return false;
+    if (f.maxWeight && (!p.weightGrams || compareDecimal(p.weightGrams, f.maxWeight) > 0))
+      return false;
     if (f.minPrice && compareDecimal(p.priceFrom.amount, f.minPrice) < 0) return false;
     if (f.maxPrice && compareDecimal(p.priceFrom.amount, f.maxPrice) > 0) return false;
     if (f.verified && p.verification.documents !== "VERIFIED") return false;
@@ -93,7 +96,12 @@ function sortProducts(items: Product[], sort: ProductFilters["sort"]): Product[]
     case "price_desc":
       return out.sort((a, b) => compareDecimal(b.priceFrom.amount, a.priceFrom.amount));
     case "weight_asc":
-      return out.sort((a, b) => compareDecimal(a.weightGrams, b.weightGrams));
+      // No weight (some bijouterie) sorts last.
+      return out.sort((a, b) =>
+        a.weightGrams && b.weightGrams
+          ? compareDecimal(a.weightGrams, b.weightGrams)
+          : Number(!a.weightGrams) - Number(!b.weightGrams),
+      );
     case "newest":
       return out.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id - a.id);
     default:
