@@ -2,6 +2,7 @@
 
 import type { Session } from "./session";
 import { setSession } from "./client";
+import { syncFavorites } from "@/lib/saved/account-sync";
 
 // Kept apart from the session hook so pages only ship this with the forms and
 // the signed-in menu, not in every header.
@@ -27,6 +28,8 @@ export async function postAuth(path: string, body: unknown): Promise<AuthResult>
   };
   if (res.ok && data.session) {
     setSession(data.session);
+    // A buyer's favourites and their saved prices move into the account (#112).
+    if (data.session.role === "USER") void syncFavorites();
     return { ok: true, session: data.session };
   }
   return {

@@ -1,11 +1,12 @@
 import Big from "big.js";
+import { pushFavorite } from "@/lib/saved/account";
 import { favorites } from "@/lib/saved-list";
 import type { Decimal, Money } from "@/types/api";
 
 /**
  * The "from" price of a favourite at the moment it was added (#112), so the favourites
- * page can say how it changed since. Guests keep it in this browser; the account copy
- * (favorites.saved_price) comes with the backend part.
+ * page can say how it changed since. It is kept in this browser; for a signed-in buyer the
+ * account keeps it too (favorites.saved_price, lib/saved/account.ts).
  */
 export type SavedPrice = Money & { savedAt: string };
 
@@ -21,7 +22,7 @@ export function readSavedPrices(): Record<string, SavedPrice> {
   }
 }
 
-function write(next: Record<string, SavedPrice>) {
+export function writeSavedPrices(next: Record<string, SavedPrice>) {
   try {
     globalThis.localStorage?.setItem(KEY, JSON.stringify(next));
   } catch {
@@ -35,7 +36,8 @@ export function toggleFavorite(id: number, price: Money, now = new Date()): bool
   const prices = readSavedPrices();
   if (on) prices[id] = { ...price, savedAt: now.toISOString() };
   else delete prices[id];
-  write(prices);
+  writeSavedPrices(prices);
+  pushFavorite(id, on);
   return on;
 }
 

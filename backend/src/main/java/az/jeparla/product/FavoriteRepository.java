@@ -38,6 +38,17 @@ public interface FavoriteRepository extends Repository<Favorite, Long> {
     int insertIfAbsent(@Param("userId") long userId, @Param("productId") long productId,
             @Param("price") BigDecimal price, @Param("currency") String currency);
 
+    /** {@link #insertIfAbsent} with the price and time the guest saved it in the browser (#112). */
+    @Modifying
+    @Query(value = """
+            INSERT INTO favorites (user_id, product_id, saved_price, saved_currency, created_at)
+            VALUES (:userId, :productId, :price, :currency, :savedAt)
+            ON CONFLICT ON CONSTRAINT favorites_user_product_key DO NOTHING
+            """, nativeQuery = true)
+    int insertSavedIfAbsent(@Param("userId") long userId, @Param("productId") long productId,
+            @Param("price") BigDecimal price, @Param("currency") String currency,
+            @Param("savedAt") java.time.Instant savedAt);
+
     /** Removes one saved product of the user; returns the number of rows removed (0 or 1). */
     @Modifying
     @Query("delete from Favorite f where f.user.id = :userId and f.product.id = :productId")
