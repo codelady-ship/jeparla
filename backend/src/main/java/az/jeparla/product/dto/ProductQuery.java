@@ -55,6 +55,10 @@ public record ProductQuery(
         @Parameter(description = "Only products whose documents check passed (verification.documents = VERIFIED)")
         Boolean verified,
 
+        @Parameter(description = "Only products whose seller added a hallmark photo (#106) that an admin has not "
+                + "rejected")
+        Boolean hallmarkPhoto,
+
         @Parameter(description = "Only products that can be bought or ordered (not OUT_OF_STOCK)")
         Boolean inStock,
 
@@ -84,13 +88,14 @@ public record ProductQuery(
     /** No filters, first page. */
     public static ProductQuery none() {
         return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 
     /** The same query restricted to one store ({@code /stores/{slug}/products}). */
     public ProductQuery inStore(String storeSlug) {
-        return new ProductQuery(q, category, List.of(storeSlug), kind, audience, metal, fineness, minWeight, maxWeight, minPrice,
-                maxPrice, verified, inStock, city, shape, minCarat, maxCarat, color, clarity, sort, page, size);
+        return new ProductQuery(q, category, List.of(storeSlug), kind, audience, metal, fineness, minWeight,
+                maxWeight, minPrice, maxPrice, verified, hallmarkPhoto, inStock, city, shape, minCarat, maxCarat,
+                color, clarity, sort, page, size);
     }
 
     public int pageOrDefault() {

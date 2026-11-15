@@ -216,7 +216,8 @@
       "KIDS": "Kids",
       "UNISEX": "Unisex"
     },
-    "audienceNote": "Women's and men's lists also show unisex pieces."
+    "audienceNote": "Women's and men's lists also show unisex pieces.",
+    "hallmarkOnly": "With a hallmark photo"
   },
   "Pdp": {
     "breadcrumb": "Breadcrumb",
@@ -268,7 +269,8 @@
       "store": "Store",
       "city": "City",
       "material": "Material",
-      "kind": "Type"
+      "kind": "Type",
+      "hallmarkPhoto": "Hallmark photo"
     },
     "pricing": {
       "FIXED": "Fixed",
@@ -368,6 +370,22 @@
       "gramToday": "1 g of {fineness} metal today",
       "note": "This is an estimate; the store confirms the final price.",
       "variant": "Variant: {label}"
+    },
+    "evidence": {
+      "yes": "yes",
+      "no": "no",
+      "badge": {
+        "HALLMARK": "Hallmark",
+        "TAG": "Label"
+      },
+      "alt": {
+        "HALLMARK": "{name}: close-up of the fineness hallmark, added by the seller",
+        "TAG": "{name}: photo of the label (weight and fineness), added by the seller"
+      },
+      "title": "Hallmark and label",
+      "added": "The seller added a hallmark or label photo.",
+      "checked": "A Jeparla administrator compared the photo with the product data.",
+      "notAssay": "A hallmark photo is not a laboratory assay of the fineness."
     }
   },
   "Stores": {

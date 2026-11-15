@@ -9,6 +9,7 @@ import static az.jeparla.product.ProductSpecifications.inStores;
 import static az.jeparla.product.ProductSpecifications.isPublic;
 import static az.jeparla.product.ProductSpecifications.matchingWords;
 import static az.jeparla.product.ProductSpecifications.forAudience;
+import static az.jeparla.product.ProductSpecifications.withHallmarkPhoto;
 import static az.jeparla.product.ProductSpecifications.ofMaterialKind;
 import static az.jeparla.product.ProductSpecifications.ofMetal;
 import static az.jeparla.product.ProductSpecifications.withDiamond;
@@ -206,6 +207,9 @@ public class ProductCatalogService {
         }
         if (query.kind() != null) {
             spec = spec.and(ofMaterialKind(query.kind()));
+        }
+        if (Boolean.TRUE.equals(query.hallmarkPhoto())) {
+            spec = spec.and(withHallmarkPhoto());
         }
         if (query.audience() != null) {
             spec = spec.and(forAudience(query.audience()));
