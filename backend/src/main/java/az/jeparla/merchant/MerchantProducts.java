@@ -5,12 +5,14 @@ import az.jeparla.product.Product;
 import az.jeparla.product.ProductAccess;
 import az.jeparla.product.ProductRepository;
 import az.jeparla.product.ProductStatus;
+import az.jeparla.store.SellerCode;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreStatus;
 import az.jeparla.verification.CheckStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import java.time.Instant;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
@@ -55,7 +57,7 @@ public class MerchantProducts {
             return;
         }
         if (product.getStatus() == ProductStatus.APPROVED) {
-            if (canSubmit(product.getStore())) {
+            if (canSubmit(product.getStore(), now)) {
                 product.submitForReview(now);
             } else {
                 product.backToDraft();
@@ -77,8 +79,25 @@ public class MerchantProducts {
         products.flush();
     }
 
-    /** Only an approved store whose seller is verified sends products to review (PLAN 5.6, 5.9). */
-    static boolean canSubmit(Store store) {
+    /**
+     * Only an approved store whose seller is verified (PLAN 5.6, 5.9) and who accepted the current seller code of
+     * conduct within the last year (#107) sends products to review.
+     */
+    static boolean canSubmit(Store store, Instant now) {
+        return isVerified(store) && SellerCode.isAccepted(store, now);
+    }
+
+    /** {@link #canSubmit} with the reason: 409 merchant.seller_not_verified or merchant.code_not_accepted. */
+    static void requireCanSubmit(Store store, Instant now) {
+        if (!isVerified(store)) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.seller_not_verified");
+        }
+        if (!SellerCode.isAccepted(store, now)) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.code_not_accepted");
+        }
+    }
+
+    private static boolean isVerified(Store store) {
         return store.getStatus() == StoreStatus.APPROVED && store.getSellerStatus() == CheckStatus.VERIFIED;
     }
 }

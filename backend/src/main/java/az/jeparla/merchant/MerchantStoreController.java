@@ -53,6 +53,14 @@ public class MerchantStoreController {
         return stores.update(request);
     }
 
+    @PostMapping("/store/code-acceptance")
+    @Operation(summary = "Accept the seller code of conduct (#107)",
+            description = "Records the acceptance of the current version (the yearly confirmation). Without a "
+                    + "valid acceptance products cannot go to review (409 merchant.code_not_accepted).")
+    public MerchantStoreDto acceptCode() {
+        return stores.acceptCode();
+    }
+
     @GetMapping("/dashboard")
     @Operation(summary = "Products per status and WhatsApp clicks of the last 30 days")
     public MerchantDashboardDto dashboard() {

@@ -67,6 +67,8 @@ export const storeStep = z.object({
     .string()
     .trim()
     .regex(/^\d{10}$/, "taxIdInvalid"),
+  /** The seller code of conduct (#107, /verified#code) must be accepted to apply. */
+  codeAccepted: z.boolean().refine((v) => v, "codeRequired"),
 });
 
 export const DOC_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;

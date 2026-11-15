@@ -17,11 +17,13 @@ import az.jeparla.product.ProductContactClickRepository;
 import az.jeparla.product.ProductRepository;
 import az.jeparla.product.ProductStatus;
 import az.jeparla.store.GeoPoint;
+import az.jeparla.store.SellerCode;
 import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreRepository;
 import az.jeparla.verification.CheckStatus;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.EnumMap;
@@ -90,7 +92,29 @@ public class MerchantStoreService {
         stores.saveAndFlush(store);
         audit.record("STORE_CREATED", AuditTargetType.STORE, store.getId(), store.getName(), null,
                 "{\"sellerKind\":\"" + store.getSellerKind() + "\"}");
+        if (Boolean.TRUE.equals(request.codeAccepted())) {
+            recordCodeAcceptance(store, userId);
+        }
         return new Created<>(MerchantStoreDto.of(store), true);
+    }
+
+    /**
+     * The seller accepts the current code of conduct (#107): the wizard checkbox or the yearly confirmation in
+     * the cabinet. Each acceptance is kept in store_code_acceptances and in the audit log.
+     */
+    @Transactional
+    public MerchantStoreDto acceptCode() {
+        Store store = merchantStores.own();
+        recordCodeAcceptance(store, CurrentUser.id());
+        return MerchantStoreDto.of(store);
+    }
+
+    private void recordCodeAcceptance(Store store, long userId) {
+        Instant now = clock.instant();
+        store.acceptCode(SellerCode.CURRENT_VERSION, now);
+        stores.recordCodeAcceptance(store.getId(), SellerCode.CURRENT_VERSION, now, userId);
+        audit.record("SELLER_CODE_ACCEPTED", AuditTargetType.STORE, store.getId(), store.getName(), null,
+                "{\"version\":" + SellerCode.CURRENT_VERSION + "}");
     }
 
     @Transactional(readOnly = true)

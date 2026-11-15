@@ -35,6 +35,11 @@ export type MerchantStore = {
   statusNote?: string | null;
   documentsStatus?: CheckStatus;
   sellerKind?: "PRECIOUS" | "FASHION" | "MIXED";
+  /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
+  codeVersion?: number;
+  codeAcceptedAt?: string | null;
+  /** A year after the acceptance; after it products cannot go to review. */
+  codeValidUntil?: string | null;
 };
 
 export type MerchantDashboard = {

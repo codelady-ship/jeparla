@@ -1,4 +1,4 @@
-import { Clock, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Clock, FileCheck2, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
@@ -126,6 +126,19 @@ export default async function StorePage({
                 {t("productCount", { count: store.productCount })}
               </span>
             </div>
+            {store.codeAcceptedOn && (
+              <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                <FileCheck2 aria-hidden className="size-4" />
+                <Link href="/verified#code" prefetch={false} className="link-underline">
+                  {t("codeAccepted", {
+                    date: new Intl.DateTimeFormat(locale, {
+                      dateStyle: "long",
+                      timeZone: "UTC",
+                    }).format(new Date(`${store.codeAcceptedOn}T00:00:00Z`)),
+                  })}
+                </Link>
+              </p>
+            )}
             <p className="max-w-xl text-sm leading-relaxed">{store.description[locale]}</p>
             <ShareButton labels={share} title={store.name} className="mt-2 self-start" />
           </div>

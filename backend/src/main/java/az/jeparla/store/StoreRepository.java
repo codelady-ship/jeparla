@@ -7,10 +7,20 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
+
+    /** History row of a code of conduct acceptance (#107, V51); the store row keeps the latest one. */
+    @Modifying
+    @Query(value = """
+            INSERT INTO store_code_acceptances (store_id, version, accepted_at, accepted_by)
+            VALUES (:storeId, :version, :acceptedAt, :userId)
+            """, nativeQuery = true)
+    void recordCodeAcceptance(@Param("storeId") long storeId, @Param("version") int version,
+            @Param("acceptedAt") java.time.Instant acceptedAt, @Param("userId") Long userId);
 
     // ------------------------------------------------------------------ public (#37)
 
