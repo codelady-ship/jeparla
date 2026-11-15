@@ -113,6 +113,8 @@ public class ProductController {
             @RequestParam(required = false) String ref,
             @Parameter(description = "Used when ref is absent") @RequestParam(name = "utm_source", required = false)
             String utmSource,
+            @Parameter(description = "Ready question the buyer picked (#111); the click is also counted for it")
+            @RequestParam(required = false) ContactQuestion question,
             @RequestHeader(name = HttpHeaders.USER_AGENT, required = false) String userAgent,
             HttpServletRequest request) {
         try {
@@ -121,7 +123,7 @@ public class ProductController {
             catalog.requireListed(id);
             return ResponseEntity.noContent().build();
         }
-        feedback.contactClick(id, new ReferralService.Hit(ref, utmSource, userAgent, null, request.getRemoteAddr()));
+        feedback.contactClick(id, question, new ReferralService.Hit(ref, utmSource, userAgent, null, request.getRemoteAddr()));
         return ResponseEntity.noContent().build();
     }
 

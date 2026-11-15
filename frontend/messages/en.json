@@ -1039,7 +1039,9 @@
       "draftResume": "Continue",
       "demoData": "Sample data",
       "fix": "Fix",
-      "notCounted": "Views are not counted yet"
+      "notCounted": "Views are not counted yet",
+      "byQuestion": "WhatsApp questions",
+      "byQuestionNote": "The ready question buyers picked before opening WhatsApp in the last 30 days. Nothing about the buyer is stored."
     },
     "products": {
       "title": "Products",
