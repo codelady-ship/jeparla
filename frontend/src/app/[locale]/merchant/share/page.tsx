@@ -83,9 +83,7 @@ async function Share({ searchParams }: { searchParams: SP }) {
           <p className="text-muted-foreground">{t("sourcesText")}</p>
           <ul className="flex flex-col gap-1 font-mono text-xs break-all">
             {SOURCE_LINKS.map((s) => (
-              <li key={s}>
-                {`${link.url}?ref=${s}`}
-              </li>
+              <li key={s}>{`${link.url}?ref=${s}`}</li>
             ))}
           </ul>
         </div>
