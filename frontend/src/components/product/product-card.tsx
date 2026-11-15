@@ -1,4 +1,4 @@
-import { ShieldCheck, Sparkles } from "lucide-react";
+import { Shapes, ShieldCheck, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { ViewTransition } from "react";
@@ -13,6 +13,27 @@ export const CARD_SIZES = "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50
 /** Shown as "Jeparla Verified" only when both the seller and the documents passed. */
 export function isVerified(v: Verification) {
   return v.seller === "VERIFIED" && v.documents === "VERIFIED";
+}
+
+/**
+ * One line under the name: metal, fineness and weight for precious jewelry; the material (and the
+ * weight when the seller gave it) for bijouterie (#128), which has no metal or fineness.
+ */
+export function specs(
+  p: Pick<ProductSummary, "materialKind" | "material" | "metal" | "fineness" | "weightGrams">,
+  locale: string,
+  t: ReturnType<typeof useTranslations<"Product">>,
+): string {
+  const weight = p.weightGrams ? formatGrams(p.weightGrams, locale) : null;
+  if (p.materialKind === "FASHION" || !p.metal) {
+    const material = t(`material.${p.material ?? "OTHER"}`);
+    return weight ? t("fashionSpecsWeight", { material, weight }) : t("fashionSpecs", { material });
+  }
+  return t("specs", {
+    metal: t(`metal.${p.metal}`),
+    fineness: p.fineness ?? "",
+    weight: weight ?? "",
+  });
 }
 
 type Props = {
@@ -61,6 +82,12 @@ export function ProductCard({ product: p, preload = false }: Props) {
               {t("verified")}
             </Badge>
           )}
+          {p.materialKind === "FASHION" && (
+            <Badge variant="secondary">
+              <Shapes aria-hidden />
+              {t("fashionBadge")}
+            </Badge>
+          )}
           {main?.aiGenerated && (
             <Badge variant="secondary">
               <Sparkles aria-hidden />
@@ -99,13 +126,7 @@ export function ProductCard({ product: p, preload = false }: Props) {
             {p.name[locale]}
           </Link>
         </h3>
-        <p className="text-xs text-muted-foreground">
-          {t("specs", {
-            metal: t(`metal.${p.metal}`),
-            fineness: p.fineness,
-            weight: formatGrams(p.weightGrams, locale),
-          })}
-        </p>
+        <p className="text-xs text-muted-foreground">{specs(p, locale, t)}</p>
         <p className="mt-auto pt-1 font-semibold tabular-nums">
           {formatPrice(p.priceFrom.amount, locale)}
         </p>

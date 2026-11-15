@@ -13,6 +13,7 @@ import type {
   StockStatus,
   StoneType,
 } from "./api";
+import type { ContactQuestion } from "@/lib/whatsapp";
 
 /** Seller check (PLAN 5.9): only an APPROVED seller can send products to review. */
 export type SellerStatus = CheckStatus;
@@ -40,6 +41,8 @@ export type MerchantDashboard = {
   /** Last 30 days; null while views are not counted (never an invented number). */
   views: number | null;
   whatsappClicks: number;
+  /** The same clicks per ready question (#111); absent in the sample data (no invented split). */
+  whatsappClicksByQuestion?: Record<ContactQuestion, number>;
   counts: Record<ProductStatus, number>;
 };
 

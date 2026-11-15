@@ -17,6 +17,7 @@ const COLUMNS = [
     links: [
       { href: "/guides", label: "Guides.navLabel" },
       { href: "/products", label: "Nav.catalog" },
+      { href: "/products?kind=FASHION", label: "Catalog.fashionSection" },
       { href: "/stores", label: "Nav.stores" },
       { href: "/prices", label: "Footer.metalPrices" },
       { href: "/verified", label: "Footer.howWeVerify" },

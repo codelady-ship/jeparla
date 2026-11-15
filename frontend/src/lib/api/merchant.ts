@@ -124,8 +124,8 @@ export function toInput(p: Product): ProductInput {
     category: CATEGORIES.find((c) => c.id === p.categoryId)?.slug ?? "",
     audience: suggestAudience(p.categoryId, CATEGORIES),
     description: p.description.az,
-    metal: p.metal,
-    fineness: String(p.variants[0]?.fineness.id ?? ""),
+    metal: p.metal ?? "",
+    fineness: String(p.variants[0]?.fineness?.id ?? ""),
     pricingMode: p.variants[0]?.pricingMode ?? "FIXED",
     pricing: (() => {
       const r = p.variants.find((v) => v.pricing)?.pricing;
@@ -143,7 +143,7 @@ export function toInput(p: Product): ProductInput {
     variants: p.variants.map((v) => ({
       key: `v${v.id}`,
       size: v.size ?? "",
-      weightGrams: v.weightGrams,
+      weightGrams: v.weightGrams ?? "",
       price: v.price.amount,
       stockStatus: v.stockStatus,
     })),

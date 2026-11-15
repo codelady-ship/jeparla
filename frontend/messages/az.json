@@ -114,7 +114,26 @@
     "emptyText": "Filtrləri dəyişin və ya başqa kateqoriyaya baxın.",
     "specs": "{metal} {fineness} · {weight}",
     "compareFull": "Ən çox 4 məhsul müqayisə etmək olar: daha çoxu telefonda oxunmur. Yenisini əlavə etmək üçün əvvəlcə birini çıxarın.",
-    "compareOpen": "Müqayisəyə keç"
+    "compareOpen": "Müqayisəyə keç",
+    "fashionBadge": "Bijuteriya",
+    "fashionSpecs": "{material}",
+    "fashionSpecsWeight": "{material} · {weight}",
+    "material": {
+      "BEADS": "Muncuq",
+      "STAINLESS_STEEL": "Paslanmayan polad",
+      "COPPER": "Mis",
+      "BRASS": "Latun",
+      "SILVER_PLATED": "Gümüş suyu",
+      "GOLD_PLATED": "Qızıl suyu",
+      "LEATHER": "Dəri",
+      "TEXTILE": "Parça",
+      "WOOD": "Ağac",
+      "GLASS": "Şüşə",
+      "CERAMIC": "Keramika",
+      "RESIN": "Qatran",
+      "NATURAL_STONE": "Təbii daş",
+      "OTHER": "Digər material"
+    }
   },
   "Catalog": {
     "title": "Kataloq",
@@ -183,7 +202,13 @@
     "prev": "Əvvəlki",
     "next": "Növbəti",
     "pageN": "Səhifə {n}",
-    "results": "Nəticələr"
+    "results": "Nəticələr",
+    "kind": "Məhsul növü",
+    "kinds": {
+      "PRECIOUS": "Qiymətli metal və daş",
+      "FASHION": "Bijuteriya və əl işi"
+    },
+    "fashionSection": "Bijuteriya və əl işi"
   },
   "Pdp": {
     "breadcrumb": "Naviqasiya yolu",
@@ -233,7 +258,9 @@
       "pricing": "Qiymət növü",
       "updated": "Qiymət yenilənib",
       "store": "Mağaza",
-      "city": "Şəhər"
+      "city": "Şəhər",
+      "material": "Material",
+      "kind": "Növ"
     },
     "pricing": {
       "FIXED": "Sabit",
@@ -308,7 +335,9 @@
         "label": "Təmizlik nədir?",
         "text": "Təmizlik daşın daxili və xarici qüsurlarının nə qədər görünməsini göstərir: FL və IF (qüsursuz), VVS1-VVS2, VS1-VS2, SI1-SI2, I1-I3. 10 dəfə böyütmə ilə qiymətləndirilir."
       }
-    }
+    },
+    "fashionTitle": "Bijuteriya və əl işi",
+    "fashionNote": "Bu məhsul qiymətli metal deyil: satıcı bunu təsdiqləyib. Qiyməti sabitdir, metal məzənnəsindən asılı deyil. Bijuteriya üçün yalnız satıcı yoxlanılır, sənəd və ekspertiza yoxlaması aparılmır."
   },
   "Stores": {
     "title": "Mağazalar",
@@ -1087,7 +1116,9 @@
       "draftResume": "Davam et",
       "demoData": "Nümunə data",
       "fix": "Düzəlt",
-      "notCounted": "Baxışlar hələ sayılmır"
+      "notCounted": "Baxışlar hələ sayılmır",
+      "byQuestion": "WhatsApp sualları",
+      "byQuestionNote": "Son 30 gündə alıcının WhatsApp-dan əvvəl seçdiyi hazır sual. Alıcı haqqında heç nə saxlanılmır."
     },
     "products": {
       "title": "Məhsullar",

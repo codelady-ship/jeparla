@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SHARE_PATH, shareLocale, shareTarget } from "./share-link";
-import { readReferral, rememberReferral, sourceFrom } from "./referral";
+import { readReferral, referralSourceFor, rememberReferral, sourceFrom } from "./referral";
 import { emptyReferralStats } from "./api/merchant";
 
 describe("share link /s/<code> (#100)", () => {
@@ -55,6 +55,13 @@ describe("referral source in the browser (#100)", () => {
     expect(rememberReferral({ slug: "a", source: "ig" }, store)).toBe(false);
     expect(rememberReferral({ slug: "a", source: "tt" }, store)).toBe(true);
     expect(readReferral(store)).toEqual({ slug: "a", source: "tt" });
+  });
+
+  it("gives the source only for the store the visitor came to", () => {
+    const store = memory();
+    rememberReferral({ slug: "a", source: "ig" }, store);
+    expect(referralSourceFor("a", store)).toBe("ig");
+    expect(referralSourceFor("b", store)).toBeNull();
   });
 
   it("treats broken storage as no referral", () => {

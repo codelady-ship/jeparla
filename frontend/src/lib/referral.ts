@@ -85,11 +85,13 @@ export function reportVisit(referral: Referral) {
 }
 
 /**
- * POST /products/{id}/contact-click, with the source of this visit when the product belongs
- * to the store the visitor came to through a shared link.
+ * The source of this visit when the visitor came to this store through a shared link: a
+ * WhatsApp click on one of its products is then counted for that source too.
  */
-export function reportContactClick(productId: number, storeSlug: string) {
-  const referral = readReferral();
-  const ref = referral && referral.slug === storeSlug ? `?ref=${enc(referral.source)}` : "";
-  beacon(`${API_BASE}/api/v1/products/${productId}/contact-click${ref}`);
+export function referralSourceFor(
+  storeSlug: string,
+  store: SessionStore | null = session(),
+): string | null {
+  const referral = readReferral(store);
+  return referral && referral.slug === storeSlug ? referral.source : null;
 }

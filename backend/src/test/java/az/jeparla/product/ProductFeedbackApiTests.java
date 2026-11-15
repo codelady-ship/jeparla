@@ -62,6 +62,27 @@ class ProductFeedbackApiTests {
     }
 
     @Test
+    void theReadyQuestionIsCountedWithoutAnythingAboutTheBuyer() throws Exception {
+        mvc.perform(from(post("/api/v1/products/12/contact-click").param("question", "SIZE"), newIp()))
+                .andExpect(status().isNoContent());
+        mvc.perform(from(post("/api/v1/products/12/contact-click").param("question", "SIZE"), newIp()))
+                .andExpect(status().isNoContent());
+        mvc.perform(from(post("/api/v1/products/12/contact-click").param("question", "PRICE"), newIp()))
+                .andExpect(status().isNoContent());
+        mvc.perform(from(post("/api/v1/products/12/contact-click"), newIp())).andExpect(status().isNoContent());
+
+        assertThat(clicks(12)).as("every click is in the total").isEqualTo(4);
+        Map<String, Object> byQuestion = new java.util.HashMap<>();
+        jdbc.query("SELECT question, sum(clicks) AS n FROM product_contact_question_clicks WHERE product_id = 12 "
+                + "GROUP BY question", rs -> {
+                    byQuestion.put(rs.getString("question"), rs.getLong("n"));
+                });
+        assertThat(byQuestion).containsEntry("SIZE", 2L).containsEntry("PRICE", 1L).hasSize(2);
+        mvc.perform(from(post("/api/v1/products/12/contact-click").param("question", "NOPE"), newIp()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void clicksOverTheLimitAreNotCountedButNotRefused() throws Exception {
         String ip = newIp();
         for (int i = 0; i < CatalogApiTest.CONTACT_IP_LIMIT + 2; i++) {

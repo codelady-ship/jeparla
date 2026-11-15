@@ -4,7 +4,8 @@ import { GitCompareArrows, Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toggleCompare, type ProductActionLabels } from "@/components/product/product-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { reportContactClick } from "@/lib/referral";
+import { sendContactClick } from "@/lib/contact-click";
+import { referralSourceFor } from "@/lib/referral";
 import { compare, favorites } from "@/lib/saved-list";
 import { toggleFavorite } from "@/lib/saved-prices";
 import { useDisplayCurrency } from "@/lib/use-display-currency";
@@ -178,10 +179,17 @@ export function VariantPanel({
 
       <a
         href={contact?.href ?? "#"}
-        onClick={() => reportContactClick(productId, storeSlug)}
         target="_blank"
         rel="noopener noreferrer"
         data-keep-clear=""
+        onClick={() => {
+          if (contact)
+            sendContactClick({
+              productId,
+              question: contact.question,
+              ref: referralSourceFor(storeSlug),
+            });
+        }}
         className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-12 w-full text-base")}
       >
         <MessageCircle aria-hidden />

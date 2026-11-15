@@ -38,6 +38,22 @@ describe("robots", () => {
 describe("JSON-LD", () => {
   const p = PRODUCTS[0];
 
+  it("bijouterie has its material, no metal or fineness, and no weight when there is none (#128)", () => {
+    const fashion = {
+      ...p,
+      materialKind: "FASHION" as const,
+      material: "STAINLESS_STEEL" as const,
+      metal: null,
+      fineness: null,
+      weightGrams: null,
+      variants: p.variants.map((v) => ({ ...v, fineness: null, weightGrams: null })),
+    };
+    const ld = product(fashion, "en") as Record<string, unknown>;
+    expect(ld.material).toBe("stainless steel");
+    expect(ld).not.toHaveProperty("weight");
+    expect(JSON.stringify(ld.additionalProperty)).not.toMatch(/fineness|metal/);
+  });
+
   it("product offer price is the exact decimal string shown on the page", () => {
     const ld = product(p, "az") as { offers: { price: string; priceCurrency: string } };
     expect(ld.offers.price).toBe(p.variants[0].price.amount);

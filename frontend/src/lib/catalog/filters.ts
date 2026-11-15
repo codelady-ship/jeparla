@@ -1,4 +1,4 @@
-import type { MetalType, ProductFilters, ProductSort } from "@/types/api";
+import type { MaterialKind, MetalType, ProductFilters, ProductSort } from "@/types/api";
 
 /**
  * Catalog filters live in the URL so a filtered list can be shared and restored.
@@ -8,6 +8,7 @@ import type { MetalType, ProductFilters, ProductSort } from "@/types/api";
 export type SearchParams = Record<string, string | string[] | undefined>;
 
 export const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
+export const KINDS: MaterialKind[] = ["PRECIOUS", "FASHION"];
 export const SORTS: ProductSort[] = ["newest", "price_asc", "price_desc", "weight_asc"];
 export const SHAPES = ["ROUND", "OVAL", "PRINCESS", "EMERALD", "CUSHION", "PEAR"] as const;
 export const COLORS = ["D", "E", "F", "G", "H", "I", "J", "K"] as const;
@@ -50,6 +51,7 @@ export function parseFilters(sp: SearchParams): ProductFilters {
     q: q ? q.slice(0, 100) : undefined,
     category: category && SLUG.test(category) ? category : undefined,
     store: store.length ? store : undefined,
+    kind: oneOf(KINDS, first(sp.kind)),
     metal: oneOf(METALS, first(sp.metal)),
     fineness: fineness.length ? fineness : undefined,
     minWeight: decimal(first(sp.minWeight)),
@@ -94,6 +96,7 @@ const CHIP_KEYS: (keyof ProductFilters)[] = [
   "q",
   "category",
   "store",
+  "kind",
   "metal",
   "fineness",
   "minWeight",

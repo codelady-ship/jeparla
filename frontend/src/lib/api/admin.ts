@@ -130,7 +130,7 @@ function moderationItem(p: Product): ModerationItem {
     imageUrl: p.images[0]?.url ?? null,
     store: { id: p.store.id, name: p.store.name },
     metal: p.metal,
-    fineness: p.variants[0]?.fineness.label ?? "",
+    fineness: p.variants[0]?.fineness?.label ?? "",
     priceFrom: p.priceFrom,
     submittedAt: p.publishedAt,
     status,
@@ -196,7 +196,7 @@ const VERIFICATIONS: VerificationRequest[] = [
 
 const ADMIN_FINENESSES: AdminFineness[] = FINENESSES.map((f) => ({
   ...f,
-  productCount: PRODUCTS.filter((p) => p.variants.some((v) => v.fineness.id === f.id)).length,
+  productCount: PRODUCTS.filter((p) => p.variants.some((v) => v.fineness?.id === f.id)).length,
 }));
 
 const SYNONYMS: SynonymPair[] = [
