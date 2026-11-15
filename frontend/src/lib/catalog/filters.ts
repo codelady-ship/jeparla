@@ -1,4 +1,4 @@
-import type { MaterialKind, MetalType, ProductFilters, ProductSort } from "@/types/api";
+import type { Audience, MaterialKind, MetalType, ProductFilters, ProductSort } from "@/types/api";
 
 /**
  * Catalog filters live in the URL so a filtered list can be shared and restored.
@@ -9,6 +9,16 @@ export type SearchParams = Record<string, string | string[] | undefined>;
 
 export const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
 export const KINDS: MaterialKind[] = ["PRECIOUS", "FASHION"];
+export const AUDIENCES: Audience[] = ["WOMEN", "MEN", "KIDS", "UNISEX"];
+
+/**
+ * The audience filter of GET /api/v1/products (#121): a UNISEX piece suits women and men too, so it is in
+ * their lists; KIDS and UNISEX match only themselves.
+ */
+export function audienceMatches(piece: Audience, wanted: Audience): boolean {
+  return piece === wanted || (piece === "UNISEX" && (wanted === "WOMEN" || wanted === "MEN"));
+}
+
 export const SORTS: ProductSort[] = ["newest", "price_asc", "price_desc", "weight_asc"];
 export const SHAPES = ["ROUND", "OVAL", "PRINCESS", "EMERALD", "CUSHION", "PEAR"] as const;
 export const COLORS = ["D", "E", "F", "G", "H", "I", "J", "K"] as const;
@@ -52,6 +62,7 @@ export function parseFilters(sp: SearchParams): ProductFilters {
     category: category && SLUG.test(category) ? category : undefined,
     store: store.length ? store : undefined,
     kind: oneOf(KINDS, first(sp.kind)),
+    audience: oneOf(AUDIENCES, first(sp.audience)),
     metal: oneOf(METALS, first(sp.metal)),
     fineness: fineness.length ? fineness : undefined,
     minWeight: decimal(first(sp.minWeight)),
@@ -97,6 +108,7 @@ const CHIP_KEYS: (keyof ProductFilters)[] = [
   "category",
   "store",
   "kind",
+  "audience",
   "metal",
   "fineness",
   "minWeight",

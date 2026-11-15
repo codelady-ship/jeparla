@@ -1,5 +1,6 @@
 package az.jeparla.product.dto;
 
+import az.jeparla.product.Audience;
 import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Metal;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,10 @@ public record ProductQuery(
 
         @Parameter(description = "PRECIOUS (gold, silver, platinum, diamonds) or FASHION (bijouterie and handmade, #128)")
         MaterialKind kind,
+
+        @Parameter(description = "Who the piece is for (#121): WOMEN and MEN also match UNISEX pieces, KIDS and UNISEX "
+                + "match only themselves")
+        Audience audience,
 
         @Parameter(description = "A metal; FASHION products have none, so they never match")
         Metal metal,
@@ -79,12 +84,12 @@ public record ProductQuery(
     /** No filters, first page. */
     public static ProductQuery none() {
         return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
     }
 
     /** The same query restricted to one store ({@code /stores/{slug}/products}). */
     public ProductQuery inStore(String storeSlug) {
-        return new ProductQuery(q, category, List.of(storeSlug), kind, metal, fineness, minWeight, maxWeight, minPrice,
+        return new ProductQuery(q, category, List.of(storeSlug), kind, audience, metal, fineness, minWeight, maxWeight, minPrice,
                 maxPrice, verified, inStock, city, shape, minCarat, maxCarat, color, clarity, sort, page, size);
     }
 

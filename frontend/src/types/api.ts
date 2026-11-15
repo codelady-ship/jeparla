@@ -39,6 +39,8 @@ export type FashionMaterial =
   | "RESIN"
   | "NATURAL_STONE"
   | "OTHER";
+/** Who a piece is for (#121). */
+export type Audience = "WOMEN" | "MEN" | "KIDS" | "UNISEX";
 export type StockStatus = "IN_STOCK" | "MADE_TO_ORDER" | "OUT_OF_STOCK";
 export type ProductStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "RETURNED" | "INACTIVE";
 
@@ -233,6 +235,8 @@ export type ProductFilters = {
   city?: string;
   /** "Bijouterie and handmade" section (FASHION) or precious only (#128). */
   kind?: MaterialKind;
+  /** Who the piece is for (#121): WOMEN and MEN also match UNISEX pieces. */
+  audience?: Audience;
   /** Diamond filters (PLAN 5.4); match products with at least one such stone. */
   shape?: string[];
   minCarat?: Decimal;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeFilters, parseFilters, toQuery } from "./filters";
+import { activeFilters, audienceMatches, parseFilters, toQuery } from "./filters";
 
 describe("parseFilters", () => {
   it("reads valid params, repeated and comma separated", () => {
@@ -51,6 +51,16 @@ describe("parseFilters", () => {
     expect(parseFilters({ kind: "PRECIOUS" }).kind).toBe("PRECIOUS");
     expect(parseFilters({ kind: "gold" }).kind).toBeUndefined();
     expect(activeFilters({ kind: "FASHION" })).toHaveLength(1);
+  });
+
+  it("reads the audience (#121); unisex pieces count for women and men, not kids", () => {
+    expect(parseFilters({ audience: "MEN" }).audience).toBe("MEN");
+    expect(parseFilters({ audience: "adults" }).audience).toBeUndefined();
+    expect(audienceMatches("UNISEX", "WOMEN")).toBe(true);
+    expect(audienceMatches("UNISEX", "MEN")).toBe(true);
+    expect(audienceMatches("UNISEX", "KIDS")).toBe(false);
+    expect(audienceMatches("MEN", "WOMEN")).toBe(false);
+    expect(audienceMatches("KIDS", "KIDS")).toBe(true);
   });
 
   it("keeps decimals as strings (no float)", () => {

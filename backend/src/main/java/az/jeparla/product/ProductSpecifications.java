@@ -50,6 +50,17 @@ public final class ProductSpecifications {
         return (root, query, cb) -> cb.equal(root.get("materialKind"), kind);
     }
 
+    /**
+     * Who the piece is for (#121). A UNISEX piece also suits women and men, so it is in their lists too; KIDS
+     * lists only children's pieces, and UNISEX only pieces marked UNISEX.
+     */
+    public static Specification<Product> forAudience(Audience audience) {
+        return switch (audience) {
+            case WOMEN, MEN -> (root, query, cb) -> root.get("audience").in(audience, Audience.UNISEX);
+            case KIDS, UNISEX -> (root, query, cb) -> cb.equal(root.get("audience"), audience);
+        };
+    }
+
     public static Specification<Product> ofMetal(Metal metal) {
         return (root, query, cb) -> cb.equal(root.get("metal"), metal);
     }
