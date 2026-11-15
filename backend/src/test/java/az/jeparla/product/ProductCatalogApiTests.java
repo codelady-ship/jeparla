@@ -92,6 +92,10 @@ class ProductCatalogApiTests {
                 // Shape and carat must hold for the same stone: round demo diamonds are 0.10 ct.
                 Arguments.of("shape=ROUND&minCarat=0.2", DIAMOND + "d.shape = 'ROUND' AND d.carat >= 0.2)"),
                 Arguments.of("metal=SILVER", "p.metal = 'SILVER'"),
+                // #121: women and men lists include UNISEX pieces, kids only children's pieces.
+                Arguments.of("audience=MEN", "p.audience IN ('MEN', 'UNISEX')"),
+                Arguments.of("audience=WOMEN", "p.audience IN ('WOMEN', 'UNISEX')"),
+                Arguments.of("audience=KIDS", "p.audience = 'KIDS'"),
                 Arguments.of("fineness=585&fineness=999", VARIANT + "f.value IN (585, 999))"),
                 Arguments.of("minWeight=2&maxWeight=4", VARIANT + "v.weight_grams BETWEEN 2 AND 4)"),
                 Arguments.of("minPrice=100&maxPrice=500", PRICE_FROM + " BETWEEN 100 AND 500"),
@@ -232,7 +236,7 @@ class ProductCatalogApiTests {
     // ------------------------------------------------------------------ validation
 
     @ParameterizedTest
-    @ValueSource(strings = {"size=0", "size=97", "page=-1", "page=10001", "sort=cheapest", "metal=COPPER",
+    @ValueSource(strings = {"size=0", "size=97", "page=-1", "page=10001", "sort=cheapest", "metal=COPPER", "audience=ADULTS",
             "minPrice=abc", "minPrice=-1", "minWeight=1.2345", "fineness=0", "fineness=abc", "inStock=maybe",
             "minCarat=-0.1"})
     void invalidParametersGiveAValidationProblem(String query) throws Exception {

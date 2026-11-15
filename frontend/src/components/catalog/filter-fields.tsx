@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { CLARITIES, COLORS, KINDS, METALS, SHAPES } from "@/lib/catalog/filters";
+import { AUDIENCES, CLARITIES, COLORS, KINDS, METALS, SHAPES } from "@/lib/catalog/filters";
 import type { Category, Fineness, ProductFilters, StoreSummary } from "@/types/api";
 import { StoreOptions } from "./store-options";
 
@@ -192,6 +192,25 @@ export function FilterFields({
             {t(`kinds.${k}`)}
           </Check>
         ))}
+      </Group>
+
+      <Group legend={t("audience")}>
+        <Check id={`${id}-aud-all`} name="audience" value="" checked={!f.audience} type="radio">
+          {t("any")}
+        </Check>
+        {AUDIENCES.map((a) => (
+          <Check
+            key={a}
+            id={`${id}-aud-${a}`}
+            name="audience"
+            value={a}
+            checked={f.audience === a}
+            type="radio"
+          >
+            {t(`audiences.${a}`)}
+          </Check>
+        ))}
+        <p className="text-xs text-muted-foreground">{t("audienceNote")}</p>
       </Group>
 
       <Group legend={t("metal")}>
