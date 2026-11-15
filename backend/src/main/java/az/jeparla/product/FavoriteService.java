@@ -4,8 +4,12 @@ import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.dto.MoneyDto;
 import az.jeparla.common.error.ApiException;
 import az.jeparla.product.dto.FavoriteDto;
+import az.jeparla.product.dto.FavoriteImportRequest;
 import az.jeparla.product.dto.ProductSummaryDto;
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -30,10 +34,12 @@ public class FavoriteService {
 
     private final FavoriteRepository favorites;
     private final ProductCatalogService catalog;
+    private final Clock clock;
 
-    public FavoriteService(FavoriteRepository favorites, ProductCatalogService catalog) {
+    public FavoriteService(FavoriteRepository favorites, ProductCatalogService catalog, Clock clock) {
         this.favorites = favorites;
         this.catalog = catalog;
+        this.clock = clock;
     }
 
     /** The user's listed saved products, newest first, with today's and the saved price. */
@@ -81,18 +87,40 @@ public class FavoriteService {
      */
     @Transactional
     public List<FavoriteDto> importAll(List<Long> productIds) {
+        return importAll(productIds, List.of());
+    }
+
+    /**
+     * {@link #importAll(List)} that keeps the price each product had when the guest saved it in the browser
+     * (#112): a product the account does not have yet is saved with that price and time, so the "since you added
+     * it" change survives the sign-in. Products already in the account keep their own first saved price.
+     */
+    @Transactional
+    public List<FavoriteDto> importAll(List<Long> productIds, List<FavoriteImportRequest.SavedPrice> prices) {
         long userId = CurrentUser.id();
         if (productIds.isEmpty()) {
             return list();
         }
+        Map<Long, FavoriteImportRequest.SavedPrice> saved = new HashMap<>();
+        for (FavoriteImportRequest.SavedPrice price : prices) {
+            saved.putIfAbsent(price.productId(), price);
+        }
+        Instant now = clock.instant();
         long count = favorites.countByUserId(userId);
         // Listed products only, in the order sent; byIds never throws for hidden or unknown ids.
         for (ProductSummaryDto product : catalog.byIds(productIds.stream().distinct().toList())) {
             if (count >= MAX_FAVORITES) {
                 break;
             }
-            count += favorites.insertIfAbsent(userId, product.id(), new BigDecimal(product.priceFrom().amount()),
-                    product.priceFrom().currency());
+            FavoriteImportRequest.SavedPrice guest = saved.get(product.id());
+            if (guest != null) {
+                Instant at = guest.savedAt().isAfter(now) ? now : guest.savedAt();
+                count += favorites.insertSavedIfAbsent(userId, product.id(), new BigDecimal(guest.amount()),
+                        guest.currency(), at);
+            } else {
+                count += favorites.insertIfAbsent(userId, product.id(), new BigDecimal(product.priceFrom().amount()),
+                        product.priceFrom().currency());
+            }
         }
         return list();
     }

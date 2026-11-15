@@ -110,4 +110,37 @@ class FavoriteApiTests extends MerchantApiTestBase {
         mvc.perform(json(post(FAVORITES + "/import"), "{\"productIds\": [0]}").with(buyer(buyer)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void theGuestSavedPriceSurvivesTheMerge() throws Exception {
+        long buyer = newBuyer();
+        long kept = listedProduct("300.00");
+        long guestOnly = listedProduct("400.00");
+        long noPrice = listedProduct("500.00");
+        // Already in the account: its own first saved price stays.
+        mvc.perform(put(FAVORITES + "/" + kept).with(buyer(buyer))).andExpect(status().isNoContent());
+        String body = """
+                {"productIds": [%d, %d, %d],
+                 "prices": [
+                   {"productId": %d, "amount": "250.50", "currency": "AZN", "savedAt": "2026-10-01T08:00:00Z"},
+                   {"productId": %d, "amount": "1.00", "currency": "AZN", "savedAt": "2026-10-01T08:00:00Z"}
+                 ]}
+                """.formatted(kept, guestOnly, noPrice, guestOnly, kept);
+        mvc.perform(json(post(FAVORITES + "/import"), body).with(buyer(buyer))).andExpect(status().isOk());
+
+        assertThat(jdbc.queryForObject("SELECT saved_price FROM favorites WHERE user_id = ? AND product_id = ?",
+                java.math.BigDecimal.class, buyer, guestOnly)).isEqualByComparingTo("250.50");
+        assertThat(jdbc.queryForObject("SELECT created_at = TIMESTAMPTZ '2026-10-01 08:00:00+00' FROM favorites"
+                + " WHERE user_id = ? AND product_id = ?", Boolean.class, buyer, guestOnly)).isTrue();
+        assertThat(jdbc.queryForObject("SELECT saved_price FROM favorites WHERE user_id = ? AND product_id = ?",
+                java.math.BigDecimal.class, buyer, kept)).isEqualByComparingTo("300.00");
+        assertThat(jdbc.queryForObject("SELECT saved_price FROM favorites WHERE user_id = ? AND product_id = ?",
+                java.math.BigDecimal.class, buyer, noPrice)).isEqualByComparingTo("500.00");
+
+        String bad = """
+                {"productIds": [%d], "prices": [{"productId": %d, "amount": "1,5", "currency": "AZN",
+                 "savedAt": "2026-10-01T08:00:00Z"}]}
+                """.formatted(guestOnly, guestOnly);
+        mvc.perform(json(post(FAVORITES + "/import"), bad).with(buyer(buyer))).andExpect(status().isBadRequest());
+    }
 }

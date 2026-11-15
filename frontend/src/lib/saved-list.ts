@@ -12,6 +12,8 @@ export type SavedList = {
   toggle: (id: number) => boolean | "full";
   remove: (id: number) => void;
   clear: () => void;
+  /** Replaces the whole list, oldest first (the account list after a sync, #112). */
+  replace: (ids: readonly number[]) => void;
 };
 
 const EMPTY: readonly number[] = Object.freeze([]);
@@ -77,6 +79,12 @@ export function createSavedList(key: string, max = Infinity): SavedList {
     },
     clear() {
       write([]);
+    },
+    replace(ids) {
+      const next = [...new Set(ids.filter((x) => Number.isInteger(x)))];
+      const current = read();
+      if (next.length === current.length && next.every((x, i) => x === current[i])) return;
+      write(Number.isFinite(max) ? next.slice(-max) : next);
     },
   };
 }
