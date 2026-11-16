@@ -167,6 +167,8 @@ export function SellerWizard({
       if (!r.success) return fail({ form: "server" });
       return finish(3);
     }
+    // A bijouterie store adds its first product in the cabinet (material, not fineness).
+    if (fashionOnly) return void submit(true);
     const r = productStep.safeParse(draft.product);
     if (!r.success) return fail(fieldErrors(r.error));
     void submit(false);
@@ -175,6 +177,7 @@ export function SellerWizard({
   const a = draft.account;
   const s = draft.store;
   const p = draft.product;
+  const fashionOnly = s.sellerKind === "FASHION";
   const setAccount = (patch: Partial<SellerDraft["account"]>) =>
     update((d) => ({ ...d, account: { ...d.account, ...patch } }));
   const setStore = (patch: Partial<SellerDraft["store"]>) =>
@@ -257,6 +260,20 @@ export function SellerWizard({
 
         {step === 2 && (
           <div className="grid gap-5 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <RadioGroupField
+                id="s-kind"
+                label={t("sellerKind.question")}
+                value={s.sellerKind ?? "PRECIOUS"}
+                onChange={(v) => setStore({ sellerKind: v as NonNullable<typeof s.sellerKind> })}
+                error={err(errors.sellerKind)}
+                options={(["PRECIOUS", "FASHION", "MIXED"] as const).map((k) => ({
+                  value: k,
+                  label: t(`sellerKind.${k}`),
+                  hint: t(`sellerKind.${k}Hint`),
+                }))}
+              />
+            </div>
             <TextField
               id="s-store"
               label={t("fields.storeName")}
@@ -364,13 +381,26 @@ export function SellerWizard({
 
         {step === 3 && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm">{t("docs.what")}</p>
-            <DocUpload docs={draft.docs} onChange={(docs) => update((d) => ({ ...d, docs }))} />
-            <p className="text-xs text-muted-foreground">{t("docs.later")}</p>
+            {fashionOnly ? (
+              <p className="text-sm">{t("docs.fashion")}</p>
+            ) : (
+              <>
+                <p className="text-sm">{t("docs.what")}</p>
+                {s.sellerKind === "MIXED" && (
+                  <p className="text-sm text-muted-foreground">{t("docs.mixed")}</p>
+                )}
+                <DocUpload docs={draft.docs} onChange={(docs) => update((d) => ({ ...d, docs }))} />
+                <p className="text-xs text-muted-foreground">{t("docs.later")}</p>
+              </>
+            )}
           </div>
         )}
 
-        {step === 4 && (
+        {step === 4 && fashionOnly && (
+          <p className="rounded-lg bg-muted p-4 text-sm">{t("fashionProductLater")}</p>
+        )}
+
+        {step === 4 && !fashionOnly && (
           <div className="grid gap-5 sm:grid-cols-2">
             <TextField
               id="s-product"
@@ -430,7 +460,7 @@ export function SellerWizard({
             <span />
           )}
           <div className="flex flex-col-reverse gap-3 sm:flex-row">
-            {step === 4 && (
+            {step === 4 && !fashionOnly && (
               <Button
                 type="button"
                 variant="outline"

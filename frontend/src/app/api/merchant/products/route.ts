@@ -29,7 +29,8 @@ export async function POST(request: Request) {
     const store = await merchantApi(session).store();
     if (store.sellerStatus !== "VERIFIED")
       return Response.json({ errors: { form: "sellerNotApproved" } }, { status: 403 });
-    if (product.docs.length === 0)
+    // Bijouterie needs no documents (#128).
+    if (product.docs.length === 0 && product.materialKind !== "FASHION")
       return Response.json({ errors: { form: "docsRequired" } }, { status: 400 });
   }
   const status = intent === "REVIEW" ? "IN_REVIEW" : "DRAFT";

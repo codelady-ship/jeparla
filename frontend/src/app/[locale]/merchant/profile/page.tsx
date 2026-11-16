@@ -32,6 +32,7 @@ async function Profile() {
             social: store.social,
             description: store.description,
             openingHours: store.openingHours,
+            sellerKind: store.sellerKind ?? "PRECIOUS",
           }}
         />
       </MerchantIntl>

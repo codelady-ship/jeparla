@@ -975,7 +975,9 @@
       "badType": "{name}: yalnız PDF, JPG və PNG qəbul olunur.",
       "tooBig": "{name}: fayl {max} MB-dan böyükdür.",
       "tooMany": "Ən çox {max} fayl əlavə etmək olar.",
-      "later": "Sənədləri sonra kabinetdən də yükləyə bilərsiniz, amma yoxlama onlarsız başlamır. Demo rejimində fayllar heç yerə göndərilmir."
+      "later": "Sənədləri sonra kabinetdən də yükləyə bilərsiniz, amma yoxlama onlarsız başlamır. Demo rejimində fayllar heç yerə göndərilmir.",
+      "fashion": "Bijuteriya və əl işi satan mağazadan sənəd tələb olunmur. Mağazanı yalnız Jeparla komandası yoxlayır; \"Sənədlər yoxlanılıb\" nişanı göstərilmir.",
+      "mixed": "Sənədlər yalnız qiymətli metal və daş məhsulları üçün lazımdır."
     },
     "productDraft": "Məhsul qaralama kimi saxlanılır və mağaza təsdiqlənəndən sonra yayımlanır.",
     "back": "Geri",
@@ -1020,7 +1022,18 @@
       "dashboard": "Kabinetə keç",
       "home": "Ana səhifə",
       "startOver": "Yeni qeydiyyat başlat"
-    }
+    },
+    "sellerKind": {
+      "question": "Rəsmi zərgərlik məhsulları (qızıl, gümüş, platin, brilyant) satırsınız?",
+      "label": "Mağaza nə satır",
+      "PRECIOUS": "Bəli, qiymətli metal və daş",
+      "PRECIOUSHint": "Əyar, çəki və sənədlər tələb olunur; qiymət metal məzənnəsinə bağlana bilər.",
+      "FASHION": "Xeyr, bijuteriya və ya əl işi",
+      "FASHIONHint": "Muncuq, polad, mis, gümüş suyu, dəri və s. Sənəd tələb olunmur, yalnız satıcı yoxlaması.",
+      "MIXED": "Hər ikisi",
+      "MIXEDHint": "Hər məhsulda növü seçirsiniz; qiymətli məhsullar üçün sənəd tələb olunur."
+    },
+    "fashionProductLater": "Bijuteriya məhsulunu qeydiyyatdan sonra kabinetdə əlavə edəcəksiniz: orada metal və əyar əvəzinə materialı seçirsiniz. \"Qeydiyyatı bitir\" düyməsini basın."
   },
   "SellLanding": {
     "eyebrow": "Satıcılar üçün",
@@ -1262,7 +1275,9 @@
         "count": "Say",
         "certificateLab": "Sertifikat laboratoriyası",
         "certificateNumber": "Sertifikat nömrəsi",
-        "audience": "Kimin üçündür"
+        "audience": "Kimin üçündür",
+        "material": "Material",
+        "notPrecious": "Təsdiq edirəm: bu məhsul qiymətli metal deyil və adında, təsvirində qızıl, gümüş, brilyant və ya əyar (məsələn 585) yazılmayıb."
       },
       "hints": {
         "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
@@ -1270,7 +1285,9 @@
         "size": "Üzük və qolbaq üçün; digərlərində boş saxlayın.",
         "price": "Sabit qiymət, AZN.",
         "fineness": "Əvvəl metalı seçin.",
-        "audience": "Model üzərində AI şəklində uyğun modeli seçir. Kişi və uşaq kateqoriyalarında avtomatik seçilir, dəyişə bilərsiniz."
+        "audience": "Model üzərində AI şəklində uyğun modeli seçir. Kişi və uşaq kateqoriyalarında avtomatik seçilir, dəyişə bilərsiniz.",
+        "material": "Əsas materialı seçin; örtük varsa \"Gümüş suyu\" və ya \"Qızıl suyu\".",
+        "fashionPrice": "Bijuteriyada qiymət sabitdir: metal məzənnəsinə bağlanmır."
       },
       "images": {
         "drop": "Şəkilləri bura atın və ya seçin",
@@ -1317,7 +1334,8 @@
       },
       "docs": {
         "what": "Əyar möhürü, daş sertifikatı (GIA, IGI və s.) və ya alış sənədi.",
-        "separate": "Bu addımdakı fayllar məhsulla birlikdə göndərilmir. Ekspertiza sənədlərini (əyar möhürü, laboratoriya hesabatı) «Sənədlər» bölməsində qorunan yükləmə ilə əlavə edin."
+        "separate": "Bu addımdakı fayllar məhsulla birlikdə göndərilmir. Ekspertiza sənədlərini (əyar möhürü, laboratoriya hesabatı) «Sənədlər» bölməsində qorunan yükləmə ilə əlavə edin.",
+        "fashion": "Bijuteriya məhsulu üçün sənəd və sertifikat tələb olunmur."
       },
       "review": {
         "title": "Göndərməzdən əvvəl",
@@ -1428,6 +1446,13 @@
         },
         "reason": "Səbəb: {reason}",
         "notAssay": "Damğa şəkli əyarın laborator yoxlaması deyil: alıcıya yalnız sizin əlavə etdiyiniz şəkil və administratorun müqayisəsi göstərilir."
+      },
+      "kind": {
+        "label": "Məhsulun növü",
+        "PRECIOUS": "Qiymətli metal",
+        "PRECIOUSHint": "Metal, əyar və çəki göstərilir.",
+        "FASHION": "Bijuteriya və ya əl işi",
+        "FASHIONHint": "Material göstərilir, qiymət sabitdir. Sonra dəyişmək olmur."
       }
     },
     "profile": {
@@ -1468,7 +1493,8 @@
         "PENDING": "Yoxlamada",
         "VERIFIED": "Təsdiqlənib",
         "REJECTED": "Təsdiqlənmədi"
-      }
+      },
+      "sellerKindNote": "Mağazada bu növə uyğun olmayan aktiv məhsullar və ya yoxlanılmış sənədlər varsa, dəyişiklik qəbul edilmir."
     },
     "errors": {
       "imagesRequired": "Ən azı bir şəkil əlavə edin.",
@@ -1490,7 +1516,9 @@
       "unavailable": "Server indi cavab vermir. Bir az sonra yenidən cəhd edin.",
       "network": "Bağlantı alınmadı. İnterneti yoxlayıb yenidən cəhd edin.",
       "server": "Nəsə alınmadı. Yenidən cəhd edin.",
-      "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin."
+      "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin.",
+      "notPreciousRequired": "Məhsulun qiymətli metal olmadığını təsdiq edin.",
+      "fashionFixedOnly": "Bijuteriyada yalnız sabit qiymət olur."
     },
     "sampleOnly": "Bu bölmə yalnız real serverlə işləyir. Nümunə data rejimində sənəd yüklənmir və bildiriş yoxdur.",
     "documents": {

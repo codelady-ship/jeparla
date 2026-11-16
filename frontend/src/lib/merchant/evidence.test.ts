@@ -51,6 +51,8 @@ describe("hallmark and label photos (#106)", () => {
         fineness: "1",
         variants: [{ ...EMPTY_INPUT.variants[0], weightGrams: "2", price: "100" }],
         materialKind: "FASHION",
+        material: "BEADS",
+        notPreciousConfirmed: true,
         evidence: { TAG: { url: "data:image/jpeg;base64,AA==" } },
       },
     });

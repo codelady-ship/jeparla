@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Plus, Trash2 } from "luci
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { DocUpload } from "@/components/sell/doc-upload";
-import { SelectField, TextField } from "@/components/sell/fields";
+import { RadioGroupField, SelectField, TextField } from "@/components/sell/fields";
 import { Stepper } from "@/components/sell/stepper";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -26,8 +26,11 @@ import {
 import type { DocMeta } from "@/lib/seller/schemas";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
 import {
+  FASHION_MATERIALS,
   PRODUCT_AUDIENCES,
+  type MaterialKind,
   type ProductAudience,
+  type SellerKind,
   type ProductInput,
   type StoneInput,
   type VariantInput,
@@ -64,7 +67,10 @@ export function ProductForm({
   sellerApproved,
   quotes,
   requireDocs = true,
+  sellerKind = "PRECIOUS",
 }: {
+  /** What the store sells (#128): FASHION stores add bijouterie, MIXED stores choose per new product. */
+  sellerKind?: SellerKind;
   /** "new" or the product id. */
   draftKey: string;
   initial?: ProductInput;
@@ -152,6 +158,11 @@ export function ProductForm({
     );
 
   const p = draft.input;
+  // Bijouterie (#128): the stored product's kind; a new one follows the store, a MIXED store chooses.
+  const kind: MaterialKind = p.materialKind ?? (sellerKind === "FASHION" ? "FASHION" : "PRECIOUS");
+  const fashion = kind === "FASHION";
+  const chooseKind = sellerKind === "MIXED" && draftKey === "new";
+  const withKind = { ...p, materialKind: kind };
   const update = (fn: (d: ProductDraft) => ProductDraft) => store.update(fn);
   const set = (patch: Partial<ProductInput>) =>
     update((d) => ({ ...d, input: { ...d.input, ...patch } }));
@@ -184,7 +195,7 @@ export function ProductForm({
   /** Checks one step; returns its errors (empty when fine). */
   function check(n: number): Record<string, string> {
     const schema = [imagesStep, basicsStep, metalStep, stonesStep, docsStep][n - 1];
-    const r = schema.safeParse(p);
+    const r = schema.safeParse(withKind);
     return r.success ? {} : pathErrors(r.error);
   }
 
@@ -205,19 +216,25 @@ export function ProductForm({
         return fail(errs);
       }
     }
-    if (requireDocs && intent === "REVIEW" && p.docs.length === 0 && productStatus !== "APPROVED")
+    if (
+      requireDocs &&
+      !fashion &&
+      intent === "REVIEW" &&
+      p.docs.length === 0 &&
+      productStatus !== "APPROVED"
+    )
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result =
       draftKey === "new"
         ? await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>("POST", "/api/merchant/products", {
             intent,
-            product: p,
+            product: withKind,
           })
         : await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>(
             "PUT",
             `/api/merchant/products/${draftKey}`,
-            { intent, product: p },
+            { intent, product: withKind },
           );
     setPending(null);
     if (!result.ok) {
@@ -233,7 +250,7 @@ export function ProductForm({
   const metalFinenesses = finenesses.filter((f) => f.metal === p.metal);
   const finenessValue = finenesses.find((f) => f.value === p.fineness)?.fineness ?? null;
   const quote = p.metal ? (quotes[p.metal] ?? null) : null;
-  const linked = p.pricingMode === "METAL_LINKED";
+  const linked = !fashion && p.pricingMode === "METAL_LINKED";
 
   return (
     <div className="flex flex-col gap-6">
@@ -293,7 +310,7 @@ export function ProductForm({
             <div className="mt-4 border-t pt-5">
               <EvidenceUpload
                 value={p.evidence ?? {}}
-                materialKind={p.materialKind ?? "PRECIOUS"}
+                materialKind={kind}
                 onChange={(evidence) => set({ evidence })}
               />
             </div>
@@ -302,6 +319,27 @@ export function ProductForm({
 
         {current === 2 && (
           <div className="grid gap-5 sm:grid-cols-2">
+            {chooseKind && (
+              <div className="sm:col-span-2">
+                <RadioGroupField
+                  id="p-kind"
+                  label={t("kind.label")}
+                  value={kind}
+                  onChange={(v) =>
+                    set(
+                      v === "FASHION"
+                        ? { materialKind: "FASHION", pricingMode: "FIXED" }
+                        : { materialKind: "PRECIOUS" },
+                    )
+                  }
+                  options={(["PRECIOUS", "FASHION"] as const).map((k) => ({
+                    value: k,
+                    label: t(`kind.${k}`),
+                    hint: t(`kind.${k}Hint`),
+                  }))}
+                />
+              </div>
+            )}
             <TextField
               id="p-name"
               label={t("fields.name")}
@@ -367,40 +405,79 @@ export function ProductForm({
 
         {current === 3 && (
           <div className="flex flex-col gap-6">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <SelectField
-                id="p-metal"
-                label={t("fields.metal")}
-                placeholder={t("choose")}
-                options={METALS.map((m) => ({ value: m, label: tp(`metal.${m}`) }))}
-                value={p.metal}
-                onChange={(e) => set({ metal: e.target.value as MetalType, fineness: "" })}
-                error={err(errors.metal)}
-              />
-              <SelectField
-                id="p-fineness"
-                label={t("fields.fineness")}
-                placeholder={t("choose")}
-                options={metalFinenesses}
-                value={p.fineness}
-                disabled={!p.metal}
-                onChange={(e) => set({ fineness: e.target.value })}
-                error={err(errors.fineness)}
-                hint={p.metal ? undefined : t("hints.fineness")}
-              />
-            </div>
+            {fashion ? (
+              <div className="flex flex-col gap-4">
+                <SelectField
+                  id="p-material"
+                  label={t("fields.material")}
+                  placeholder={t("choose")}
+                  options={FASHION_MATERIALS.map((m) => ({ value: m, label: tp(`material.${m}`) }))}
+                  value={p.material ?? ""}
+                  onChange={(e) => set({ material: e.target.value as ProductInput["material"] })}
+                  error={err(errors.material)}
+                  hint={t("hints.material")}
+                />
+                <p className="text-sm text-muted-foreground">{t("hints.fashionPrice")}</p>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="p-not-precious" className="flex items-start gap-3 text-sm">
+                    <input
+                      id="p-not-precious"
+                      type="checkbox"
+                      checked={p.notPreciousConfirmed === true}
+                      onChange={(e) => set({ notPreciousConfirmed: e.target.checked })}
+                      aria-invalid={errors.notPreciousConfirmed ? true : undefined}
+                      aria-describedby={
+                        errors.notPreciousConfirmed ? "p-not-precious-error" : undefined
+                      }
+                      className="mt-0.5 size-5 shrink-0 accent-primary"
+                    />
+                    <span>{t("fields.notPrecious")}</span>
+                  </label>
+                  {errors.notPreciousConfirmed && (
+                    <p id="p-not-precious-error" className="text-sm text-destructive">
+                      {err(errors.notPreciousConfirmed)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2">
+                <SelectField
+                  id="p-metal"
+                  label={t("fields.metal")}
+                  placeholder={t("choose")}
+                  options={METALS.map((m) => ({ value: m, label: tp(`metal.${m}`) }))}
+                  value={p.metal}
+                  onChange={(e) => set({ metal: e.target.value as MetalType, fineness: "" })}
+                  error={err(errors.metal)}
+                />
+                <SelectField
+                  id="p-fineness"
+                  label={t("fields.fineness")}
+                  placeholder={t("choose")}
+                  options={metalFinenesses}
+                  value={p.fineness}
+                  disabled={!p.metal}
+                  onChange={(e) => set({ fineness: e.target.value })}
+                  error={err(errors.fineness)}
+                  hint={p.metal ? undefined : t("hints.fineness")}
+                />
+              </div>
+            )}
 
-            <PricingFields
-              mode={p.pricingMode}
-              pricing={p.pricing}
-              variants={p.variants}
-              fineness={finenessValue}
-              quote={quote}
-              errors={errors}
-              err={err}
-              onMode={(pricingMode) => set({ pricingMode })}
-              onPricing={(patch) => set({ pricing: { ...p.pricing, ...patch } })}
-            />
+            {!fashion && (
+              <PricingFields
+                mode={p.pricingMode}
+                pricing={p.pricing}
+                variants={p.variants}
+                fineness={finenessValue}
+                quote={quote}
+                errors={errors}
+                err={err}
+                onMode={(pricingMode) => set({ pricingMode })}
+                onPricing={(patch) => set({ pricing: { ...p.pricing, ...patch } })}
+              />
+            )}
 
             <ol className="flex flex-col gap-4">
               {p.variants.map((v, i) => (
@@ -413,6 +490,7 @@ export function ProductForm({
                       <TextField
                         id={`v-${v.key}-weight`}
                         label={t("fields.weight")}
+                        optional={fashion ? t("optional") : undefined}
                         inputMode="decimal"
                         placeholder="3,25"
                         value={v.weightGrams}
@@ -627,17 +705,28 @@ export function ProductForm({
 
         {current === 5 && (
           <div className="flex flex-col gap-5">
-            <p className="text-sm">{t("docs.what")}</p>
-            {!requireDocs && <p className="text-sm text-muted-foreground">{t("docs.separate")}</p>}
-            <DocUpload docs={p.docs as DocMeta[]} onChange={(docs) => set({ docs })} />
+            {fashion ? (
+              <p className="text-sm">{t("docs.fashion")}</p>
+            ) : (
+              <>
+                <p className="text-sm">{t("docs.what")}</p>
+                {!requireDocs && (
+                  <p className="text-sm text-muted-foreground">{t("docs.separate")}</p>
+                )}
+                <DocUpload docs={p.docs as DocMeta[]} onChange={(docs) => set({ docs })} />
+              </>
+            )}
             <div className="flex flex-col gap-2 rounded-lg bg-muted p-4 text-sm">
               <h3 className="font-sans font-semibold">{t("review.title")}</h3>
               {sellerApproved ? (
                 <>
                   <p>{t("review.ready")}</p>
-                  {requireDocs && p.docs.length === 0 && productStatus !== "APPROVED" && (
-                    <p className="text-muted-foreground">{t("review.docsNeeded")}</p>
-                  )}
+                  {requireDocs &&
+                    !fashion &&
+                    p.docs.length === 0 &&
+                    productStatus !== "APPROVED" && (
+                      <p className="text-muted-foreground">{t("review.docsNeeded")}</p>
+                    )}
                   {productStatus === "APPROVED" && (
                     <p className="text-muted-foreground">{t("review.liveNote")}</p>
                   )}

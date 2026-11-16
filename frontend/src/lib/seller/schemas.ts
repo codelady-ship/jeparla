@@ -62,6 +62,11 @@ export const storeStep = z.object({
     .max(200, "socialInvalid")
     .refine((v) => v === "" || /^(@[\w.]{2,30}|https:\/\/\S+)$/.test(v), "socialInvalid"),
   legalType: z.enum(LEGAL_TYPES, "required"),
+  /**
+   * "Do you sell official jewellery (gold, silver, platinum, diamonds)?" (#128): PRECIOUS, FASHION
+   * (bijouterie and handmade, no documents) or MIXED. Older drafts without it read as PRECIOUS.
+   */
+  sellerKind: z.enum(["PRECIOUS", "FASHION", "MIXED"], "required").default("PRECIOUS"),
   /** VOEN: 10 digits, the same for companies and sole traders. */
   taxId: z
     .string()

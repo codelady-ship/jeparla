@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { compareDecimal } from "@/lib/pricing";
 import { normalizePhone } from "@/lib/seller/schemas";
-import { PRODUCT_AUDIENCES } from "@/types/merchant";
+import { FASHION_MATERIALS, PRODUCT_AUDIENCES, SELLER_KINDS } from "@/types/merchant";
 
 /**
  * Product form and store profile (PLAN 5.7), one schema per form step so the
@@ -16,19 +16,6 @@ export const MAX_STONES = 6;
 const METALS = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"] as const;
 const STOCK = ["IN_STOCK", "MADE_TO_ORDER", "OUT_OF_STOCK"] as const;
 const STONES = ["DIAMOND", "RUBY", "SAPPHIRE", "EMERALD", "PEARL", "CUBIC_ZIRCONIA"] as const;
-
-/** Decimal as typed ("3,25" or "3.25"), kept as a string: never a float. */
-const decimal = (max: number, scale = 3) =>
-  z
-    .string()
-    .trim()
-    .min(1, "required")
-    .transform((v) => v.replace(",", "."))
-    .refine(
-      (v) =>
-        new RegExp(`^\\d{1,8}(\\.\\d{1,${scale}})?$`).test(v) && Number(v) > 0 && Number(v) <= max,
-      "decimalInvalid",
-    );
 
 export const imagesStep = z.object({
   images: z
@@ -55,7 +42,11 @@ const isMoney = (v: string, max = 10_000_000) =>
 export const variantSchema = z.object({
   key: z.string(),
   size: z.string().trim().max(20, "sizeLong"),
-  weightGrams: decimal(10_000),
+  /** Required for PRECIOUS, optional for FASHION (#128); checked by checkMaterial. */
+  weightGrams: z
+    .string()
+    .trim()
+    .transform((v) => v.replace(",", ".")),
   /** Required for FIXED; ignored (recomputed daily) for METAL_LINKED. */
   price: money,
   stockStatus: z.enum(STOCK),
@@ -71,14 +62,48 @@ export const pricingSchema = z.object({
 });
 
 const metalShape = {
-  metal: z.enum(METALS, "required"),
-  fineness: z.string().min(1, "required"),
+  /** Absent in older drafts: PRECIOUS. */
+  materialKind: z.enum(["PRECIOUS", "FASHION"]).optional(),
+  /** PRECIOUS only; checked by checkMaterial. */
+  metal: z.union([z.enum(METALS), z.literal("")]),
+  fineness: z.string(),
+  /** FASHION only (#128): the main material and "this is not a precious metal". */
+  material: z.union([z.enum(FASHION_MATERIALS), z.literal("")]).optional(),
+  notPreciousConfirmed: z.boolean().optional(),
   pricingMode: z.enum(["FIXED", "METAL_LINKED"]),
   pricing: pricingSchema,
   variants: z.array(variantSchema).min(1, "variantsRequired").max(MAX_VARIANTS, "variantsTooMany"),
 };
 
 type MetalValues = z.output<z.ZodObject<typeof metalShape>>;
+
+const isWeight = (v: string) =>
+  /^\d{1,8}(\.\d{1,3})?$/.test(v) && Number(v) > 0 && Number(v) <= 10_000;
+
+/**
+ * PRECIOUS needs metal, fineness and a weight on every variant. FASHION (#128) needs a material,
+ * the "not a precious metal" confirmation and a FIXED price; the weight is optional. Then the price.
+ */
+function checkMaterial(v: MetalValues, ctx: z.RefinementCtx) {
+  const issue = (path: (string | number)[], message: string) =>
+    ctx.addIssue({ code: "custom", path, message });
+  const fashion = v.materialKind === "FASHION";
+  if (fashion) {
+    if (!v.material) issue(["material"], "required");
+    if (!v.notPreciousConfirmed) issue(["notPreciousConfirmed"], "notPreciousRequired");
+    if (v.pricingMode !== "FIXED") issue(["pricingMode"], "fashionFixedOnly");
+  } else {
+    if (!v.metal) issue(["metal"], "required");
+    if (!v.fineness) issue(["fineness"], "required");
+  }
+  v.variants.forEach((variant, i) => {
+    if (variant.weightGrams === "") {
+      if (!fashion) issue(["variants", i, "weightGrams"], "required");
+    } else if (!isWeight(variant.weightGrams))
+      issue(["variants", i, "weightGrams"], "decimalInvalid");
+  });
+  checkPricing(v, ctx);
+}
 
 /**
  * FIXED needs a price on every variant. METAL_LINKED needs the rule (PLAN 5.10):
@@ -113,7 +138,7 @@ function checkPricing(v: MetalValues, ctx: z.RefinementCtx) {
     issue(["pricing", "maxPrice"], "maxBelowMin");
 }
 
-export const metalStep = z.object(metalShape).superRefine(checkPricing);
+export const metalStep = z.object(metalShape).superRefine(checkMaterial);
 
 export const stoneSchema = z.object({
   key: z.string(),
@@ -158,9 +183,8 @@ const evidencePhoto = z.object({
   checkNote: z.string().max(1000).nullable().optional(),
 });
 
-/** Hallmark and label photos (#106) and the material kind (#128); optional for older drafts. */
+/** Hallmark and label photos (#106); optional for older drafts. */
 export const evidenceShape = {
-  materialKind: z.enum(["PRECIOUS", "FASHION"]).optional(),
   evidence: z
     .object({ HALLMARK: evidencePhoto.optional(), TAG: evidencePhoto.optional() })
     .optional(),
@@ -175,7 +199,7 @@ export const productInput = z
     ...stonesStep.shape,
     ...docsStep.shape,
   })
-  .superRefine(checkPricing);
+  .superRefine(checkMaterial);
 
 /**
  * DRAFT keeps the product private; REVIEW sends it to the admin (PLAN 5.9) and
@@ -204,6 +228,8 @@ export const profileSchema = z.object({
     .refine((v) => v === "" || /^(@[\w.]{2,30}|https:\/\/\S+)$/.test(v), "socialInvalid"),
   description: z.string().trim().max(1000, "descriptionLong"),
   openingHours: z.string().max(200),
+  /** What the store sells (#128); absent keeps the stored answer. */
+  sellerKind: z.enum(SELLER_KINDS).optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;

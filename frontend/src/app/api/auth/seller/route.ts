@@ -55,13 +55,14 @@ export async function POST(request: Request) {
         social: store.social,
         legalType: store.legalType,
         taxId: store.taxId,
-        // The wizard is for gold, silver and diamond stores; bijouterie is chosen in the cabinet.
-        sellerKind: "PRECIOUS",
+        // The wizard question (#128): precious, bijouterie or both.
+        sellerKind: store.sellerKind,
         // Required by the schema above, so always true here (#107).
         codeAccepted: store.codeAccepted,
       },
     });
-    if (product) {
+    // The wizard's first product is a precious one; a bijouterie store adds it in the cabinet.
+    if (product && store.sellerKind !== "FASHION") {
       const [categories, finenesses] = await Promise.all([
         api.listCategories(),
         api.listFinenesses(),
