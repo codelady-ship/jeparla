@@ -12,7 +12,8 @@ set -euo pipefail
 : "${BACKUP_PASSPHRASE_FILE:?}" "${BACKUP_S3_BUCKET:?}" "${BACKUP_S3_ENDPOINT:?}"
 : "${AWS_ACCESS_KEY_ID:?}" "${AWS_SECRET_ACCESS_KEY:?}"
 prefix="${BACKUP_PREFIX:-postgres/}"
-export AWS_DEFAULT_REGION=auto
+# R2: auto. Oracle Object Storage (S3 compatibility): the region, e.g. eu-frankfurt-1.
+export AWS_DEFAULT_REGION="${BACKUP_S3_REGION:-auto}"
 s3() { aws s3 --endpoint-url "$BACKUP_S3_ENDPOINT" "$@"; }
 
 key="${1:-}"

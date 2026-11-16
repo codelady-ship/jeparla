@@ -1,0 +1,286 @@
+# Jeparla production stack on one Oracle Cloud Always Free ARM VM (#45, PLAN 3a, docs/deploy.md).
+#
+#   cp deploy/.env.example deploy/.env && deploy/scripts/gen-secrets.sh && nano deploy/.env
+#   deploy/scripts/deploy.sh    # not a bare `up --build`: the site image needs the running API to build
+#
+# Services: web (Next.js), api (Spring Boot), postgres 16, redis 7, s3 (Silo, S3-compatible, optional) and
+# caddy (HTTPS for the site, the API and the images).
+# Only Caddy publishes ports (80, 443). Every image is multi-arch (arm64). No secret lives in this file:
+# all of them come from deploy/.env (gitignored), and the ":?" ones stop `up` when they are missing.
+#
+# Memory plan for the A1 free shape (2 OCPU / 12 GB, Oracle Always Free as of 2026-11): about 5 GB in
+# total, the rest stays free for the OS, the page cache of PostgreSQL and the image builds (Gradle, Next.js).
+#
+# Object storage: the local "s3" service (profile local-s3) is the default. To use Cloudflare R2 instead,
+# set COMPOSE_PROFILES= (empty) and the JEPARLA_S3_* values of R2 in deploy/.env; no change here.
+
+name: jeparla
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    # Same three roles as the local stack (#165): image superuser (this container only), migration owner, API role.
+    environment:
+      POSTGRES_DB: ${JEPARLA_DB_NAME:-jeparla}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${JEPARLA_DB_ADMIN_PASSWORD:?set JEPARLA_DB_ADMIN_PASSWORD in deploy/.env}
+      JEPARLA_DB_MIGRATION_USER: ${JEPARLA_DB_MIGRATION_USER:-jeparla_owner}
+      JEPARLA_DB_MIGRATION_PASSWORD: ${JEPARLA_DB_MIGRATION_PASSWORD:?set JEPARLA_DB_MIGRATION_PASSWORD in deploy/.env}
+      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla_app}
+      JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD:?set JEPARLA_DB_PASSWORD in deploy/.env}
+      TZ: UTC
+      PGTZ: UTC
+    command: ["postgres", "-c", "shared_buffers=256MB", "-c", "max_connections=50"]
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../docker/postgres/10-jeparla-roles.sh:/docker-entrypoint-initdb.d/10-jeparla-roles.sh:ro
+    networks: [internal]
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    # Rate-limit counters only; the API keeps working without Redis (see docker-compose.yml for the policy).
+    command:
+      - redis-server
+      - --requirepass
+      - ${JEPARLA_REDIS_PASSWORD:?set JEPARLA_REDIS_PASSWORD in deploy/.env}
+      - --maxmemory
+      - 128mb
+      - --maxmemory-policy
+      - noeviction
+    environment:
+      REDISCLI_AUTH: ${JEPARLA_REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks: [internal]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    logging: *logging
+
+  # S3-compatible storage on the VM (Silo, the maintained MinIO fork; same image as the local stack).
+  # Default because Cloudflare R2 may ask for a card. Browsers reach it only through Caddy on S3_DOMAIN.
+  s3:
+    image: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
+    profiles: [local-s3]
+    restart: unless-stopped
+    command: ["server", "/data"]
+    environment:
+      MINIO_ROOT_USER: ${JEPARLA_S3_ACCESS_KEY:?set JEPARLA_S3_ACCESS_KEY in deploy/.env}
+      MINIO_ROOT_PASSWORD: ${JEPARLA_S3_SECRET_KEY:?set JEPARLA_S3_SECRET_KEY in deploy/.env}
+      MC_HOST_local: http://${JEPARLA_S3_ACCESS_KEY}:${JEPARLA_S3_SECRET_KEY}@127.0.0.1:9000
+      # Browser uploads (presigned PUT) come from the frontend origin only.
+      MINIO_API_CORS_ALLOW_ORIGIN: https://${SITE_DOMAIN:?set SITE_DOMAIN in deploy/.env}
+      # No web console in production: buckets are managed with `mc` inside the container.
+      MINIO_BROWSER: "off"
+    volumes:
+      - s3-data:/data
+    networks: [internal]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    logging: *logging
+
+  # One-shot: public bucket (product images) and private bucket (uploads waiting for their check, documents).
+  s3-init:
+    image: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
+    profiles: [local-s3]
+    restart: "no"
+    depends_on:
+      s3:
+        condition: service_healthy
+    environment:
+      MC_HOST_local: http://${JEPARLA_S3_ACCESS_KEY}:${JEPARLA_S3_SECRET_KEY}@s3:9000
+      PUBLIC_BUCKET: ${JEPARLA_S3_PUBLIC_BUCKET:-jeparla-public}
+      PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mc mb --ignore-existing "local/$$PUBLIC_BUCKET"
+        mc mb --ignore-existing "local/$$PRIVATE_BUCKET"
+        mc anonymous set download "local/$$PUBLIC_BUCKET"
+        mc anonymous set none "local/$$PRIVATE_BUCKET"
+        echo '{"Rules":[{"ID":"expire-staging","Status":"Enabled","Filter":{"Prefix":"staging/"},"Expiration":{"Days":1}}]}' \
+          | mc ilm import "local/$$PRIVATE_BUCKET"
+        echo "buckets ready: $$PUBLIC_BUCKET (public read), $$PRIVATE_BUCKET (private)"
+    networks: [internal]
+    logging: *logging
+
+  api:
+    build:
+      context: ../backend
+    image: jeparla-backend:prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      # Absent when COMPOSE_PROFILES has no local-s3 (R2 mode): then it is skipped.
+      s3-init:
+        condition: service_completed_successfully
+        required: false
+    environment:
+      PORT: "8080"
+      # The JVM takes 75% of the container limit (Dockerfile JAVA_TOOL_OPTIONS).
+      JEPARLA_FRONTEND_ORIGIN: https://${SITE_DOMAIN}
+      JEPARLA_JWT_SECRET: ${JEPARLA_JWT_SECRET:?set JEPARLA_JWT_SECRET in deploy/.env (openssl rand -hex 32)}
+      JEPARLA_COOKIE_SECURE: "true"
+      # Only Caddy (fixed address below) may name the client in X-Forwarded-For (#132).
+      JEPARLA_TRUSTED_PROXIES: 172.30.0.10/32
+      JEPARLA_FRONTEND_TOKEN: ${JEPARLA_FRONTEND_TOKEN:-}
+      JEPARLA_INTERNAL_JOB_TOKEN: ${JEPARLA_INTERNAL_JOB_TOKEN:-}
+      JEPARLA_DB_URL: jdbc:postgresql://postgres:5432/${JEPARLA_DB_NAME:-jeparla}
+      # application.yml allows out-of-order migrations for development databases; production applies them
+      # strictly in version order (a migration numbered below the applied ones stops the start instead).
+      SPRING_FLYWAY_OUT_OF_ORDER: ${SPRING_FLYWAY_OUT_OF_ORDER:-false}
+      JEPARLA_DB_MIGRATION_USER: ${JEPARLA_DB_MIGRATION_USER:-jeparla_owner}
+      JEPARLA_DB_MIGRATION_PASSWORD: ${JEPARLA_DB_MIGRATION_PASSWORD}
+      JEPARLA_DB_USER: ${JEPARLA_DB_USER:-jeparla_app}
+      JEPARLA_DB_PASSWORD: ${JEPARLA_DB_PASSWORD}
+      JEPARLA_SUPPORT_EMAIL: ${JEPARLA_SUPPORT_EMAIL:-}
+      JEPARLA_SUPPORT_URL: ${JEPARLA_SUPPORT_URL:-}
+      JEPARLA_PUBLIC_SITE_URL: https://${SITE_DOMAIN}
+      JEPARLA_SMTP_HOST: ${JEPARLA_SMTP_HOST:-}
+      JEPARLA_SMTP_PORT: ${JEPARLA_SMTP_PORT:-587}
+      JEPARLA_SMTP_USERNAME: ${JEPARLA_SMTP_USERNAME:-}
+      JEPARLA_SMTP_PASSWORD: ${JEPARLA_SMTP_PASSWORD:-}
+      JEPARLA_MAIL_FROM: ${JEPARLA_MAIL_FROM:-}
+      JEPARLA_REDIS_HOST: redis
+      JEPARLA_REDIS_PORT: "6379"
+      JEPARLA_REDIS_PASSWORD: ${JEPARLA_REDIS_PASSWORD}
+      # Local s3 by default; R2 values replace all of these in deploy/.env.
+      JEPARLA_S3_ENDPOINT: ${JEPARLA_S3_ENDPOINT:-http://s3:9000}
+      JEPARLA_S3_PRESIGN_ENDPOINT: ${JEPARLA_S3_PRESIGN_ENDPOINT:-https://${S3_DOMAIN}}
+      JEPARLA_S3_PUBLIC_URL: ${JEPARLA_S3_PUBLIC_URL:-https://${S3_DOMAIN}/jeparla-public}
+      JEPARLA_S3_REGION: ${JEPARLA_S3_REGION:-us-east-1}
+      JEPARLA_S3_ACCESS_KEY: ${JEPARLA_S3_ACCESS_KEY}
+      JEPARLA_S3_SECRET_KEY: ${JEPARLA_S3_SECRET_KEY}
+      JEPARLA_S3_PUBLIC_BUCKET: ${JEPARLA_S3_PUBLIC_BUCKET:-jeparla-public}
+      JEPARLA_S3_PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+    networks: [internal]
+    mem_limit: 2g
+    healthcheck:
+      # The runtime image has bash but no curl: a plain HTTP request over /dev/tcp.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf 'GET /actuator/health/readiness HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          grep -q '"UP"' <&3
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    logging: *logging
+
+  # The site (Next.js standalone server). On this VM, not on Cloudflare Workers: docs/deploy.md, section 9.
+  # Built by deploy/scripts/deploy.sh only after the API is healthy, because the build prerenders the
+  # catalog from the live API. The build runs on the host network and reaches the API through Caddy on
+  # 127.0.0.1:443 (same certificate, same URL the browser uses).
+  web:
+    build:
+      context: ../frontend
+      network: host
+      extra_hosts:
+        - "${API_DOMAIN}:127.0.0.1"
+      args:
+        NEXT_PUBLIC_SITE_URL: https://${SITE_DOMAIN}
+        NEXT_PUBLIC_API_URL: https://${API_DOMAIN}
+        NEXT_PUBLIC_USE_MOCK: "false"
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${JEPARLA_SUPPORT_EMAIL:-}
+        NEXT_PUBLIC_SUPPORT_URL: ${JEPARLA_SUPPORT_URL:-}
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+        GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+        BING_SITE_VERIFICATION: ${BING_SITE_VERIFICATION:-}
+        GITHUB_SHA: ${GIT_REVISION:-}
+    image: jeparla-frontend:prod
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      # Server-only shared secret with the API (#41): rate limits count visitors, not this server.
+      JEPARLA_FRONTEND_TOKEN: ${JEPARLA_FRONTEND_TOKEN:-}
+      GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      BING_SITE_VERIFICATION: ${BING_SITE_VERIFICATION:-}
+      NODE_OPTIONS: --max-old-space-size=768
+    # Server-side API calls go straight to Caddy inside the network (valid certificate, no hairpin NAT).
+    extra_hosts:
+      - "${API_DOMAIN}:172.30.0.10"
+    networks: [internal]
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/robots.txt').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging: *logging
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in deploy/.env (e.g. jeparla.duckdns.org)}
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN in deploy/.env (e.g. api.jeparla.duckdns.org)}
+      S3_DOMAIN: ${S3_DOMAIN:?set S3_DOMAIN in deploy/.env (e.g. s3.jeparla.duckdns.org)}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      internal:
+        ipv4_address: 172.30.0.10
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    logging: *logging
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+volumes:
+  postgres-data:
+  redis-data:
+  s3-data:
+  caddy-data:
+  caddy-config:
