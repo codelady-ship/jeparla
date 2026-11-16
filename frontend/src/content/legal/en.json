@@ -47,7 +47,7 @@
       "legalBasis": {
         "heading": "Legal basis",
         "items": [
-          "Account, store and listing data: the data you submit yourself in writing (through electronic forms) and your consent to its processing for the purposes in this policy (Articles 8.1 and 9.6.1 of the Law). You can withdraw consent by asking us to delete your account.",
+          "Account, store and listing data: the data you submit yourself in writing (through electronic forms) and your consent to its processing for the purposes in this policy (Articles 8.1 and 9.6.1 of the Law). You can withdraw consent by deleting your account on the \"My account\" page or by asking us to delete it.",
           "Seller documents, the declaration and the audit log: performance of the agreement with the seller (Seller terms) and the data the seller submits.",
           "Disclosure to state authorities: only in the cases and to the extent provided by law."
         ]
@@ -94,7 +94,7 @@
         "items": [
           "To learn which data about you is stored, why and to whom it was given, and to see it.",
           "To correct wrong data (you can change most account and store details yourself in the dashboard).",
-          "To ask for your data to be deleted or its processing stopped, except data the law requires us to keep.",
+          "To ask for your data to be deleted or its processing stopped, except data the law requires us to keep. You can delete your account yourself on the \"My account\" page; the name and contact in a seller declaration stay as evidence for the period stated above.",
           "To object to the collection and processing of your data.",
           "To complain to the competent executive authority or a court if your rights are violated."
         ],
@@ -167,7 +167,7 @@
         "items": [
           "Accounts are only for people aged 18 or over.",
           "Give accurate details when you register and never share your password. You are responsible for actions taken with your account; if you suspect unauthorized use, write to us at once.",
-          "You can ask us to delete your account at any time (Privacy policy, \"Your rights\")."
+          "You can delete your account yourself at any time, with your password, on the \"My account\" page; to delete an account with a store, write to support (Privacy policy, \"Your rights\")."
         ]
       },
       "prohibited": {

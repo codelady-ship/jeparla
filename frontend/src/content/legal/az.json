@@ -47,7 +47,7 @@
       "legalBasis": {
         "heading": "Hüquqi əsas",
         "items": [
-          "Hesab, mağaza və elan məlumatları: sizin özünüzün yazılı (elektron forma ilə) təqdim etdiyiniz məlumatlar və onların bu siyasətdə yazılmış məqsədlər üçün emalına razılığınız (Qanunun 8.1 və 9.6.1-ci maddələri). Razılığı hesabın silinməsini istəməklə geri götürə bilərsiniz.",
+          "Hesab, mağaza və elan məlumatları: sizin özünüzün yazılı (elektron forma ilə) təqdim etdiyiniz məlumatlar və onların bu siyasətdə yazılmış məqsədlər üçün emalına razılığınız (Qanunun 8.1 və 9.6.1-ci maddələri). Razılığı hesabı \"Hesabım\" səhifəsində silməklə və ya silinməsini istəməklə geri götürə bilərsiniz.",
           "Satıcı sənədləri, bəyanat və audit jurnalı: satıcı ilə razılaşmanın (Satıcı şərtləri) icrası və satıcının özünün təqdim etdiyi məlumatlar.",
           "Dövlət orqanlarına məlumat verilməsi: yalnız qanunda nəzərdə tutulan hallarda və həcmdə."
         ]
@@ -94,7 +94,7 @@
         "items": [
           "Sizin barənizdə hansı məlumatların saxlandığını, nə üçün və kimə verildiyini öyrənmək və onlarla tanış olmaq.",
           "Yanlış məlumatı düzəltmək (hesab və mağaza məlumatlarının çoxunu kabinetdə özünüz dəyişə bilərsiniz).",
-          "Məlumatın silinməsini və ya emalının dayandırılmasını tələb etmək, qanunla saxlanılmalı olan məlumat istisna olmaqla.",
+          "Məlumatın silinməsini və ya emalının dayandırılmasını tələb etmək, qanunla saxlanılmalı olan məlumat istisna olmaqla. Hesabı \"Hesabım\" səhifəsində özünüz silə bilərsiniz; satıcı bəyanatındakı ad və əlaqə sübut kimi yuxarıda yazılan müddətə qədər qalır.",
           "Məlumatın toplanmasına və emalına etiraz etmək.",
           "Hüququnuz pozulduqda səlahiyyətli icra hakimiyyəti orqanına və ya məhkəməyə şikayət etmək."
         ],
@@ -169,7 +169,7 @@
         "items": [
           "Hesab yalnız 18 yaşına çatmış şəxslər üçündür.",
           "Qeydiyyatda düzgün məlumat yazın və şifrənizi heç kimə verməyin. Hesabınızla görülən əməliyyatlara siz cavabdehsiniz; icazəsiz istifadədən şübhələnsəniz, dərhal bizə yazın.",
-          "Hesabı istənilən vaxt silməyimizi istəyə bilərsiniz (Məxfilik siyasəti, \"Sizin hüquqlarınız\")."
+          "Hesabı istənilən vaxt \"Hesabım\" səhifəsində şifrə ilə özünüz silə bilərsiniz; mağazası olan hesabı silmək üçün dəstəyə yazın (Məxfilik siyasəti, \"Sizin hüquqlarınız\")."
         ]
       },
       "prohibited": {

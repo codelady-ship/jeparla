@@ -54,6 +54,8 @@ export function homeFor(role: Role): string {
 export const PROTECTED: readonly { prefix: string; roles: readonly Role[] }[] = [
   { prefix: "/merchant", roles: ["MERCHANT", "ADMIN"] },
   { prefix: "/admin", roles: ["ADMIN"] },
+  // The signed-in user's own account page (#249): any role.
+  { prefix: "/account", roles: ["USER", "MERCHANT", "ADMIN"] },
 ];
 
 /** Only same-site paths are allowed as ?next= targets (no open redirect). */

@@ -25,6 +25,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Service
 public class AuditService {
 
+    /** Actor label of an account deleted by its owner (#249). */
+    public static final String DELETED_ACCOUNT = "deleted account";
+
     private final AuditLogRepository auditLogs;
     private final UserRepository users;
 
@@ -67,6 +70,16 @@ public class AuditService {
                 targetId == null ? null : String.valueOf(targetId), targetName)
                 .withContext(reason, detailsJson, clientIp());
         return auditLogs.save(entry);
+    }
+
+    /**
+     * The user deleted their own account (#249). Nothing personal is kept: no name, contact or IP, only the role
+     * and the former id, so the row shows that a deletion happened and when.
+     */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public AuditLog recordAccountDeletion(long userId, ActorRole role) {
+        return auditLogs.save(new AuditLog(null, DELETED_ACCOUNT, role, "ACCOUNT_DELETED", AuditTargetType.USER,
+                String.valueOf(userId), null));
     }
 
     private static String actorLabel(User user) {

@@ -297,6 +297,7 @@ Redis-də deyil (#151).
 | `image-search-account` | 60 / saat | hər şəkillə axtarış | user id (daxil olubsa), IP limitinə əlavə |
 | `image-upload-account` | 60 / saat | hər presign sorğusu | user id: `POST /merchant/products/{id}/images/uploads` (#154); limit yoxlaması sahiblikdən əvvəldir. Bundan əlavə mağaza üzrə 24 saatda 300 presign (429, `Retry-After` ən köhnə presign-in 24 saat tamam olmasına qədər) və məhsulda qoşulmuş şəkil + açıq yükləmə cəmi 8 (409 `merchant.image_limit`) |
 | `document-upload-account` | 20 / saat | hər sənəd presign sorğusu | user id: `POST /merchant/documents/uploads` (#40). Bundan əlavə mağaza üzrə 10 açıq yükləmə (409 `verification.upload_limit`) və 24 saatda 50 presign (429) |
+| `account-delete-account` | 5 / saat | hər hesab silmə cəhdi (şifrə yoxlanılır) | user id: `DELETE /auth/me` (#249) |
 | `ai-job-account` | 30 / saat | hər AI Studio tapşırığı və təkrar cəhd | user id: `POST /merchant/ai/jobs`, `POST /merchant/ai/jobs/{id}/retry` (#55). Bundan əlavə mağaza üzrə gündə `JEPARLA_AI_DAILY_JOBS_PER_STORE` tapşırıq (429, `Retry-After` Bakı vaxtı ilə gecə yarısına qədər) və bütün mağazalar üçün aylıq sərt xərc limiti (503 `ai.cost_limit`) |
 
 Limit aşılanda: `429`, `Retry-After` (saniyə), `code: rate_limited`, mətn 3 dildə. Dəyərlər
@@ -360,6 +361,11 @@ Admin əməliyyatları (#40): `DOCUMENT_VIEWED`, `DOCUMENT_APPROVED`, `DOCUMENT_
 dəyər), `USER_ROLE_CHANGED`, `USER_BLOCKED` (səbəblə), `USER_UNBLOCKED` (`USER`), `REPORT_RESOLVED`, `REPORT_DISMISSED`
 (`REPORT`, qeyd `reason`-dadır), `EVIDENCE_PHOTO_VERIFIED`, `EVIDENCE_PHOTO_REJECTED` (`CHECK`, hədəf məhsul;
 `details`-də `kind`, `photoId`, `from`, `to`; #106).
+
+İstifadəçinin öz hesabını silməsi (#249, `DELETE /api/v1/auth/me`, şifrə ilə): `ACCOUNT_DELETED` (`USER`, hədəf
+köhnə user id). Actor `null`, ad `deleted account`, IP yazılmır: sətirdə şəxsi məlumat qalmır. Admin və mağaza sahibi
+özünü buradan silə bilmir (409 `auth.account_admin`, `auth.account_owns_store`); satıcı bəyanatındakı ad və əlaqə
+sübut kimi qalır, `ON DELETE SET NULL` ilə hesabdan ayrılır.
 `GET /api/v1/admin/audit` jurnalı göstərir (`targetType`, `targetId` filtri).
 
 Hesab əməliyyatları (#131, hədəf `USER`): `EMAIL_VERIFIED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_RESET`

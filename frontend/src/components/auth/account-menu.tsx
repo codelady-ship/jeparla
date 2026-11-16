@@ -11,6 +11,7 @@ export type AccountLabels = {
   account: string;
   dashboard: string;
   favorites: string;
+  myAccount: string;
   logout: string;
 };
 

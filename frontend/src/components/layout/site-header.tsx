@@ -110,6 +110,7 @@ export function SiteHeader() {
               account: t("Nav.account"),
               dashboard: t("Nav.dashboard"),
               favorites: t("Nav.favorites"),
+              myAccount: t("Nav.myAccount"),
               logout: t("Nav.logout"),
             }}
           />
