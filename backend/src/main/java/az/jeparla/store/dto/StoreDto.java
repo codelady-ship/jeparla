@@ -36,7 +36,10 @@ public record StoreDto(
         @JsonInclude(JsonInclude.Include.NON_EMPTY) List<StoreServiceKind> services,
         @Schema(description = "The store's return terms in its own words (#174); left out when none",
                 nullable = true)
-        @JsonInclude(JsonInclude.Include.NON_EMPTY) String returnPolicy) {
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) String returnPolicy,
+        @Schema(description = "Made to order as the store declares it (#108); left out when not declared",
+                nullable = true)
+        @JsonInclude(JsonInclude.Include.NON_NULL) MadeToOrderDto madeToOrder) {
 
     /** Coordinates as decimal strings. */
     @Schema(name = "Geo", requiredProperties = {"lat", "lng"})

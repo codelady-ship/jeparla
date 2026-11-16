@@ -97,7 +97,12 @@ export type Store = StoreSummary & {
   services?: StoreServiceKind[];
   /** The store's return terms in its own words (#174); absent when none. */
   returnPolicy?: string;
+  /** Made to order as the store declares it (#108); absent when not declared. */
+  madeToOrder?: MadeToOrder | null;
 };
+
+/** The store's own answer (#108): days only with offered = true. */
+export type MadeToOrder = { offered: boolean; days: number | null };
 
 export const STORE_SERVICES = ["RESIZE", "ENGRAVING", "GIFT_WRAP", "DELIVERY", "RETURNS"] as const;
 export type StoreServiceKind = (typeof STORE_SERVICES)[number];

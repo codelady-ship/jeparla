@@ -56,6 +56,7 @@ export function ProfileForm({
     return ta("errors.server");
   };
   const set = (patch: Partial<ProfileInput>) => setForm((f) => ({ ...f, ...patch }));
+  const offered = form.madeToOrder?.offered ?? null;
   const setDay = (i: number, patch: Partial<WeekHours[number]>) =>
     setWeek((w) => w.map((d, j) => (j === i ? { ...d, ...patch } : d)));
 
@@ -206,6 +207,48 @@ export function ProfileForm({
             <p id="pr-return-policy-hint" className="text-xs text-muted-foreground">
               {errors.returnPolicy ? err(errors.returnPolicy) : t("services.returnPolicyHint")}
             </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SelectField
+              id="pr-made-to-order"
+              label={t("madeToOrder.label")}
+              placeholder={t("madeToOrder.notDeclared")}
+              options={[
+                { value: "yes", label: t("madeToOrder.yes") },
+                { value: "no", label: t("madeToOrder.no") },
+              ]}
+              value={offered === null ? "" : offered ? "yes" : "no"}
+              onChange={(e) => {
+                const v = e.target.value;
+                set({
+                  madeToOrder: {
+                    offered: v === "" ? null : v === "yes",
+                    days: v === "yes" ? (form.madeToOrder?.days ?? null) : null,
+                  },
+                });
+              }}
+            />
+            {offered === true && (
+              <TextField
+                id="pr-made-to-order-days"
+                label={t("madeToOrder.days")}
+                optional={ts("optional")}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={365}
+                value={form.madeToOrder?.days ?? ""}
+                onChange={(e) =>
+                  set({
+                    madeToOrder: {
+                      offered: true,
+                      days: e.target.value.trim() === "" ? null : Number(e.target.value),
+                    },
+                  })
+                }
+                error={err(errors["madeToOrder.days"])}
+              />
+            )}
           </div>
         </fieldset>
         {form.sellerKind !== "FASHION" && (

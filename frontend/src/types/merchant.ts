@@ -8,6 +8,7 @@ import type {
   FashionMaterial,
   IsoDate,
   LocalizedText,
+  MadeToOrder,
   MetalType,
   PricingMode,
   ProductStatus,
@@ -44,6 +45,8 @@ export type MerchantStore = {
   /** Backend only (#174): the store's own services and return terms. */
   services?: StoreServiceKind[];
   returnPolicy?: string;
+  /** Backend only (#108): made to order as the store declares it; null when not declared. */
+  madeToOrder?: MadeToOrder | null;
   /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
   codeVersion?: number;
   codeAcceptedAt?: string | null;

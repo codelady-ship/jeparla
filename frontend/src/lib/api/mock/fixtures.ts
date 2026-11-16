@@ -377,6 +377,13 @@ export const PRODUCTS: Product[] = Array.from({ length: 60 }, (_, i) => buildPro
 
 for (const s of STORES) s.productCount = PRODUCTS.filter((p) => p.store.id === s.id).length;
 
+// One demo store declares its own terms (#108, #174); the others have declared none.
+Object.assign(STORES[0], {
+  services: ["RESIZE", "RETURNS"],
+  returnPolicy: "14 gün ərzində, çek və qablaşdırma ilə dəyişdirmə.",
+  madeToOrder: { offered: true, days: 10 },
+} satisfies Partial<Store>);
+
 export const CATEGORIES: Category[] = CAT_SEEDS.map(([id, slug, parentId, az, en, ru]) => ({
   id,
   slug,
