@@ -19,6 +19,8 @@ import java.time.Instant;
  * @param address      the street address the seller gave
  * @param geo          the map point the seller set (#116), or null: the admin opens it in a map and checks it
  *                     against the address
+ * @param legalHoldAt  when an admin placed a legal hold on the store's evidence (#138, #249), or null; the reason
+ *                     is read with GET /admin/stores/{id}/legal-hold
  */
 @Schema(name = "AdminStore", requiredProperties = {
         "id", "slug", "name", "city", "sellerKind", "legalType", "taxId", "status", "sellerStatus", "documentsStatus",
@@ -27,7 +29,7 @@ public record AdminStoreDto(long id, String slug, String name, String city, Sell
         LegalType legalType, String taxId, StoreStatus status, String statusNote, CheckStatus sellerStatus,
         CheckStatus documentsStatus, String ownerName, String ownerContact, Instant createdAt, Instant approvedAt,
         long productCount, String whatsapp, @Schema(nullable = true) String phone, String address,
-        @Schema(nullable = true) StoreDto.GeoDto geo) {
+        @Schema(nullable = true) StoreDto.GeoDto geo, @Schema(nullable = true) Instant legalHoldAt) {
 
     public static AdminStoreDto of(Store store, long productCount) {
         String contact = store.getOwner().getEmail() != null ? store.getOwner().getEmail() : store.getOwner().getPhone();
@@ -35,6 +37,6 @@ public record AdminStoreDto(long id, String slug, String name, String city, Sell
                 store.getLegalType(), store.getTaxId(), store.getStatus(), store.getStatusNote(),
                 store.getSellerStatus(), store.getDocumentsStatus(), store.getOwner().getDisplayName(), contact,
                 store.getCreatedAt(), store.getApprovedAt(), productCount, store.getWhatsapp(), store.getPhone(),
-                store.getAddress(), StoreDtos.geo(store));
+                store.getAddress(), StoreDtos.geo(store), store.getLegalHoldAt());
     }
 }

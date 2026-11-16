@@ -54,7 +54,7 @@ export async function adminCall<T, R = T>(
     pick,
     status = 200,
   }: {
-    method?: "POST" | "PATCH" | "PUT" | "DELETE";
+    method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
     body?: unknown;
     pick?: (data: T) => R;
     status?: number;

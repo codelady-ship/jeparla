@@ -2385,7 +2385,11 @@
       "PASSWORD_RESET_LINK_ISSUED": "Password reset link issued",
       "PASSWORD_RESET_REQUESTED": "Password reset requested",
       "PASSWORD_RESET": "Password changed",
-      "EMAIL_VERIFIED": "Email verified"
+      "EMAIL_VERIFIED": "Email verified",
+      "LEGAL_HOLD_PLACED": "Legal hold placed",
+      "LEGAL_HOLD_RELEASED": "Legal hold released",
+      "RETENTION_APPLIED": "Retention periods applied",
+      "ACCOUNT_DELETED": "User deleted their account"
     },
     "suspensions": {
       "title": "Suspension requests",
@@ -2507,6 +2511,20 @@
       "reasonHint": "At least 10 characters; the seller will see it (for example \"The stamp reads 500, not 585\").",
       "doneVerified": "{name}: the photo is marked as matching.",
       "doneRejected": "{name}: the photo is rejected."
+    },
+    "legalHold": {
+      "place": "Legal hold",
+      "release": "Release hold",
+      "held": "On legal hold",
+      "placeTitle": "{name}: legal hold",
+      "releaseTitle": "{name}: release the legal hold",
+      "placeText": "While the hold is on, this store's documents, complaints, declarations and audit entries are not deleted or pseudonymised even after their retention period. The seller does not see it. Write the reason, e.g. the number of the authority's request.",
+      "releaseText": "Once the hold is released, data past its retention period is deleted or pseudonymised as usual the next night.",
+      "reason": "Reason",
+      "reasonHint": "10-500 characters; kept in the audit log.",
+      "since": "Placed",
+      "placed": "{name}: legal hold placed.",
+      "released": "{name}: legal hold released."
     }
   },
   "MetalPrices": {
