@@ -6,6 +6,7 @@ import az.jeparla.pricing.MetalPriceSnapshot;
 import az.jeparla.pricing.PricingEngine;
 import az.jeparla.pricing.QuoteSource;
 import az.jeparla.product.PricingMode;
+import az.jeparla.product.Product;
 import az.jeparla.product.ProductVariant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -34,9 +35,11 @@ import java.util.Currency;
  * @param markup       the seller's markup (store share); null for FIXED or when 0
  * @param clamped      MIN or MAX when the seller's limit decided the price; null otherwise
  * @param pricePerGram total / weight, 0.01 half up; plain arithmetic, not a judgement; null without a weight
+ * @param laborSeparate the store's choice (#104, V45): labor and markup as two lines; false (default) shows
+ *                      them as one line "labor and store share"; always false without the parts
  */
 @Schema(name = "PriceBreakdown", requiredProperties = {"total", "metal", "labor", "stone", "markup", "clamped",
-        "pricePerGram"})
+        "pricePerGram", "laborSeparate"})
 public record PriceBreakdownDto(
         MoneyDto total,
         @Schema(nullable = true) MetalValue metal,
@@ -44,7 +47,9 @@ public record PriceBreakdownDto(
         @Schema(nullable = true) MoneyDto stone,
         @Schema(nullable = true) Markup markup,
         @Schema(nullable = true) PricingEngine.Clamp clamped,
-        @Schema(nullable = true) MoneyDto pricePerGram) {
+        @Schema(nullable = true) MoneyDto pricePerGram,
+        @Schema(description = "The store shows labor and markup as two lines (#104); false: one line")
+        boolean laborSeparate) {
 
     /**
      * Metal value = weight x fineness / 1000 x gram price of the pure metal.
@@ -83,7 +88,7 @@ public record PriceBreakdownDto(
         MetalPriceSnapshot quote = variant.getMetalSnapshot();
         if (variant.getPricingMode() != PricingMode.METAL_LINKED || quote == null || variant.getFineness() == null
                 || variant.getWeightGrams() == null || !currency.equals(quote.getCurrency())) {
-            return new PriceBreakdownDto(total, null, null, null, null, null, perGram);
+            return new PriceBreakdownDto(total, null, null, null, null, null, perGram, false);
         }
         PricingEngine.Breakdown parts;
         try {
@@ -92,10 +97,10 @@ public record PriceBreakdownDto(
                             variant.getStonePrice(), variant.getMarkupPercent(), variant.getMinPrice(),
                             variant.getMaxPrice()));
         } catch (RuntimeException e) {
-            return new PriceBreakdownDto(total, null, null, null, null, null, perGram);
+            return new PriceBreakdownDto(total, null, null, null, null, null, perGram, false);
         }
         if (parts.total().compareTo(variant.getPrice()) != 0) {
-            return new PriceBreakdownDto(total, null, null, null, null, null, perGram);
+            return new PriceBreakdownDto(total, null, null, null, null, null, perGram, false);
         }
         MetalValue metal = new MetalValue(MoneyDto.of(parts.metal(), currency), Decimal.of(variant.getWeightGrams()),
                 variant.getFineness().getValue(), MoneyDto.of(quote.getPricePerGram(), currency),
@@ -109,7 +114,13 @@ public record PriceBreakdownDto(
                 ? new Markup(Decimal.of(variant.getMarkupPercent()), MoneyDto.of(parts.markup(), currency))
                 : null;
         return new PriceBreakdownDto(total, metal, labor, positive(variant.getStonePrice(), currency), markup,
-                parts.clamped(), perGram);
+                parts.clamped(), perGram, laborSeparate(variant));
+    }
+
+    /** The store's #104 choice; false for a variant not attached to a stored product. */
+    static boolean laborSeparate(ProductVariant variant) {
+        Product product = variant.getProduct();
+        return product != null && product.getStore() != null && product.getStore().isSplitLaborMarkup();
     }
 
     private static MoneyDto perGram(ProductVariant variant) {

@@ -58,8 +58,18 @@ export function PriceBreakdownBlock({
         }),
         value: money(b.metal.value.amount),
       });
-      // Labor and the store's markup on one line by default (#104).
-      if (b.labor || b.markup) {
+      // Labor and the store's markup on one line by default; two lines when the store chose so (#104).
+      if (b.laborSeparate) {
+        if (b.labor)
+          rows.push({ key: "labor", label: t("labor"), value: money(b.labor.amount.amount) });
+        if (b.markup)
+          rows.push({
+            key: "markup",
+            label: t("markup"),
+            detail: t("markupPercent", { percent: new Big(b.markup.percent).toString() }),
+            value: money(b.markup.amount.amount),
+          });
+      } else if (b.labor || b.markup) {
         const share = new Big(b.labor?.amount.amount ?? "0").plus(b.markup?.amount.amount ?? "0");
         rows.push({ key: "labor", label: t("laborAndShare"), value: money(cents(share)) });
       }

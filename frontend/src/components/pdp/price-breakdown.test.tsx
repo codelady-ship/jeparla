@@ -62,6 +62,16 @@ describe("PriceBreakdownBlock (#104)", () => {
     expect(within(block).getByText(az.Pdp.breakdown.title).closest("summary")).not.toBeNull();
   });
 
+  it("shows labor and the store share as two lines when the store chose so", () => {
+    const v = linked.variants[0];
+    const b = { ...backendBreakdown(linked, v), laborSeparate: true };
+    renderBlock({ ...linked, variants: [{ ...v, priceBreakdown: b }] });
+    const block = screen.getByTestId("price-breakdown");
+    expect(within(block).queryByText(az.Pdp.breakdown.laborAndShare)).not.toBeInTheDocument();
+    if (b.labor) expect(within(block).getByText(az.Pdp.breakdown.labor)).toBeInTheDocument();
+    if (b.markup) expect(within(block).getByText(az.Pdp.breakdown.markup)).toBeInTheDocument();
+  });
+
   it("shows metal, labor with store share on one line, the stone from the seller and the PDP total", () => {
     const v = linked.variants[0];
     const p = { ...linked, variants: [{ ...v, priceBreakdown: backendBreakdown(linked, v) }] };

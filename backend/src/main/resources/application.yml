@@ -48,6 +48,8 @@ spring:
         enabled: false
   flyway:
     locations: classpath:db/migration
+    # Parallel agents own number ranges (V45-V49, V50-V54): a lower number can land after a higher one.
+    out-of-order: true
     # Migration role (#165): owns the schema; only Flyway connects with it, on the datasource URL.
     user: ${JEPARLA_DB_MIGRATION_USER:jeparla_owner}
     password: ${JEPARLA_DB_MIGRATION_PASSWORD:}

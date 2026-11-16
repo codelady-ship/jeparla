@@ -369,7 +369,10 @@
       "perGram": "Məhsulun 1 qram qiyməti",
       "gramToday": "Bu gün 1 qram {fineness} metal",
       "note": "Hesab təxminidir, yekun qiyməti mağaza təsdiqləyir.",
-      "variant": "Variant: {label}"
+      "variant": "Variant: {label}",
+      "labor": "İşçilik",
+      "markup": "Mağaza payı",
+      "markupPercent": "{percent}%"
     },
     "evidence": {
       "yes": "var",
@@ -1494,7 +1497,9 @@
         "VERIFIED": "Təsdiqlənib",
         "REJECTED": "Təsdiqlənmədi"
       },
-      "sellerKindNote": "Mağazada bu növə uyğun olmayan aktiv məhsullar və ya yoxlanılmış sənədlər varsa, dəyişiklik qəbul edilmir."
+      "sellerKindNote": "Mağazada bu növə uyğun olmayan aktiv məhsullar və ya yoxlanılmış sənədlər varsa, dəyişiklik qəbul edilmir.",
+      "splitLaborMarkup": "Qiymət cədvəlində işçiliyi və mağaza payını ayrıca sətirlərdə göstər",
+      "splitLaborMarkupHint": "Metala bağlı qiymətli məhsulların səhifəsində \"Qiymət necə hesablanıb\" blokuna aiddir. Seçilməyibsə, ikisi bir sətirdə \"İşçilik və mağaza payı\" kimi göstərilir."
     },
     "errors": {
       "imagesRequired": "Ən azı bir şəkil əlavə edin.",

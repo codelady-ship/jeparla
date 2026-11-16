@@ -147,6 +147,9 @@ public class MerchantStoreService {
         store.setCity(request.city().strip());
         store.setAddress(request.address().strip());
         applyProfile(store, request.phone(), request.social(), request.description(), request.openingHours());
+        if (request.splitLaborMarkup() != null) {
+            store.setSplitLaborMarkup(request.splitLaborMarkup());
+        }
         GeoPoint location = location(request);
         if (location != null) {
             store.setGeo(location.latitude(), location.longitude());

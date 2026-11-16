@@ -112,6 +112,21 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theLaborAndMarkupSplitIsKeptUntilTheSellerChangesIt() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        String split = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",
+                "\"splitLaborMarkup\": true, \"sellerKind\"");
+        mvc.perform(json(put("/api/v1/merchant/store"), split).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.splitLaborMarkup").value(true));
+        // Absent keeps the saved choice (#104).
+        mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Test Zərgər", SellerKind.PRECIOUS))
+                        .with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.splitLaborMarkup").value(true));
+    }
+
+    @Test
     void theSellerKindCannotDropWhatTheStoreSells() throws Exception {
         Seller seller = seller(SellerKind.MIXED, false);
         createProduct(seller, beadsProduct(category(), "Muncuqlu bilərzik"));
