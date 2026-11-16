@@ -346,7 +346,28 @@ API token. `deploy/.env`-də `COMPOSE_PROFILES=` (boş) və `.env.example`-dakı
 
 | Tarix | Yoxlama | Nəticə |
 |---|---|---|
-| _hələ aparılmayıb_ | Lighthouse mobil və desktop (canlı URL) | |
-| _hələ aparılmayıb_ | Rich Results Test, `robots.txt`, `llms.txt` | |
+| 2026-11-16 | Lighthouse mobil və desktop (canlı URL) | **Mobil Performance həddi (90) keçmir**, qalan kateqoriyalar keçir. Bax: aşağıdakı cədvəl |
+| 2026-11-16 | Schema.org validator, `robots.txt`, `llms.txt`, sitemap | 14 ictimai səhifədə 0 xəta, 0 xəbərdarlıq; sitemap-in 60 URL-i 200, `noindex` yoxdur; `robots.txt`, `llms.txt`, `llms-full.txt` 200. Məhsul və mağaza səhifələri prod-da hələ yoxdur. Rich Results Test (Google hesabı ilə brauzerdə) aparılmayıb |
+
+**Lighthouse, canlı sayt (2026-11-16).** Lighthouse 13.6, headless Chrome, Windows noutbuku
+(`benchmarkIndex` 1000-1300; eyni vaxtda başqa proseslər də işləyirdi). Hər səhifə 3 dəfə, median.
+Prod bazası boşdur (mağaza və məhsul yoxdur), ona görə kataloq və mağaza siyahısı boş vəziyyətdədir.
+
+| Səhifə | Mobil Perf | Desktop Perf | A11y | BP | SEO | İlk yükləmə JS (transfer) |
+|---|---|---|---|---|---|---|
+| `/az` | 72-74 | 98-99 | 100 | 100 | 100 | 222 378 B |
+| `/en` | 76-78 | 87 | 100 | 100 | 100 | 222 405 B |
+| `/ru` | 85 | 98 | 100 | 100 | 100 | 222 347 B |
+| `/az/products` | 86 | 100 | 100 | 100 | 100 | 217 156 B |
+| `/az/prices` | 90 | 100 | 100 | 100 | 100 | 215 271 B |
+| `/az/stores` | 86 | 100 | 100 | 96 | 100 | 217 064 B |
+| `/az/help` | 86 | 100 | 100 | 100 | 100 | 213 624 B |
+
+- Skript büdcəsi (250 KB = 256 000 B) bütün səhifələrdə keçir, şrift faylı <= 2, CLS 0, LCP mobil 1,0-1,4 s.
+- Mobil Performance-ı aşağı salan TBT-dir (ana səhifədə 1,4-1,7 s): ən uzun tapşırıq React DOM
+  chunk-ında hidratasiyadır (600-1 400 ms). Bu maşın yavaşdır, ölçü mühitdən asılıdır;
+  sabit müqayisə üçün PageSpeed Insights (Google serverləri) və ya CI-dakı Lighthouse lazımdır.
+- `/az/stores`-da Best Practices 96 brauzer konsolundakı `MISSING_MESSAGE: Stores` xətasına görə idi;
+  PR #261 ilə düzəldildi, deploydan sonra yenidən ölçülməlidir.
 | _hələ aparılmayıb_ | Bərpa testi (bölmə 13) | |
 | _hələ aparılmayıb_ | 1 saat istifadəsiz qaldıqdan sonra giriş < 1 s (#45) | |
