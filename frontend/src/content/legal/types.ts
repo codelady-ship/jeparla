@@ -1,25 +1,29 @@
 /**
- * Legal pages (#56): privacy policy, terms of use, cookie notice. DRAFTS: the factual parts describe what
- * the code does today (what is stored, which providers); every legal statement (legal basis, retention,
- * liability, jurisdiction, the operator's identity) is a `review` placeholder for the owner and an Azerbaijani
- * lawyer (#57). The pages are noindex and carry a draft banner until the owner approves the text.
+ * Legal pages (#56, #57): privacy policy, terms of use, seller terms, cookie notice. The texts are in the
+ * messages (namespace LegalDocs, az/en/ru) and describe what the code does today (what is stored, where, for how
+ * long, which providers). Analysis and sources: docs/legal/analysis.md. The operator's legal name, VOEN and
+ * address come from configuration (src/lib/operator.ts), never from the text.
  */
-export type LegalDocId = "privacy" | "terms" | "cookies";
+export type LegalDocId = "privacy" | "terms" | "sellers" | "cookies";
 
 export type LegalSection = {
   heading: string;
   paragraphs?: string[];
   items?: string[];
-  /** What the owner or the lawyer must write or confirm here; shown as a visible placeholder. */
-  review?: string;
 };
 
 export type LegalDoc = {
   title: string;
   description: string;
-  sections: LegalSection[];
+  /** In page order; the keys are stable anchors (e.g. /legal/privacy#retention). */
+  sections: Record<string, LegalSection>;
 };
 
-export type LegalContent = Record<LegalDocId, LegalDoc>;
+export const LEGAL_DOCS: LegalDocId[] = ["privacy", "terms", "sellers", "cookies"];
 
-export const LEGAL_DOCS: LegalDocId[] = ["privacy", "terms", "cookies"];
+/** Date of the texts in force; change it with every change of a legal text. */
+export const LEGAL_UPDATED = "2026-11-16";
+
+/** Sections followed by the operator's details and by the contact block. */
+export const OPERATOR_SECTION = "operator";
+export const CONTACT_SECTION = "contact";

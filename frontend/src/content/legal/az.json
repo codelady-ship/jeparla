@@ -1,0 +1,374 @@
+{
+  "privacy": {
+    "title": "Məxfilik siyasəti",
+    "description": "Jeparla hansı fərdi məlumatları toplayır, nə üçün, harada və nə qədər saxlayır, kimlə paylaşır və sizin hüquqlarınız.",
+    "sections": {
+      "operator": {
+        "heading": "Məlumatlara kim cavabdehdir",
+        "paragraphs": [
+          "Jeparla saytını və onun məlumat bazasını aşağıdakı şəxs idarə edir. \"Fərdi məlumatlar haqqında\" Azərbaycan Respublikası Qanununun (11 may 2010-cu il, № 998-IIIQ) mənasında o, bu saytda toplanan fərdi məlumatların mülkiyyətçisi və operatorudur."
+        ]
+      },
+      "scope": {
+        "heading": "Bu siyasət nəyi əhatə edir",
+        "paragraphs": [
+          "Siyasət Jeparla saytına, alıcı və satıcı hesablarına və satıcı kabinetinə aiddir. Jeparla zərgərlik mağazalarının kataloqudur: satış, ödəniş və çatdırılma platformadan keçmir.",
+          "Mağazaya WhatsApp ilə yazanda yazışma Jeparla-dan keçmir. Nömrənizi və mesajınızı mağaza alır və onları öz adından emal edir; bu emal üçün mağaza özü cavabdehdir."
+        ]
+      },
+      "collected": {
+        "heading": "Hansı məlumatları toplayırıq və nə üçün",
+        "items": [
+          "Hesab: e-poçt ünvanı və ya telefon nömrəsi, ad, şifrənin heşi (şifrənin özü saxlanılmır), dil seçimi, e-poçtun təsdiqlənib-təsdiqlənmədiyi və son giriş vaxtı. Məqsəd: hesabı yaratmaq, girişi və hesabın təhlükəsizliyini təmin etmək.",
+          "Giriş sessiyası: imzalı sessiya tokeni və yeniləmə tokeninin heşi. Məqsəd: sizi hər səhifədə yenidən girişə məcbur etməmək.",
+          "E-poçtu təsdiqləmə və şifrəni bərpa linkləri: yalnız linkin heşi və bitmə vaxtı. Məqsəd: linkin bir dəfə və yalnız sizin tərəfinizdən istifadəsi.",
+          "Mağaza məlumatları: mağazanın adı, şəhəri, ünvanı, WhatsApp və telefon nömrəsi, sosial şəbəkə linki, iş saatları, xəritə nöqtəsi, loqosu, hüquqi forması və VÖEN-i. Məqsəd: mağazanı kataloqda göstərmək və yoxlamaq. VÖEN-dən başqa bu məlumatlar mağaza səhifəsində hamıya görünür.",
+          "Yoxlama sənədləri (qeydiyyat, VÖEN, əyar sənədi, laboratoriya hesabatı): fayl, onun SHA-256 heşi və yoxlama qərarı. Məqsəd: satıcını və məhsul məlumatını yoxlamaq. Fayllar məxfi saxlancda qalır, yalnız yoxlama komandası qısa müddətli linklə açır və hər baxış qeydə alınır.",
+          "Satıcı bəyanatı: hər sənəd yükləmədən əvvəl təsdiqlənən mətn, onun versiyası və dili, təsdiq vaxtı, IP ünvanı və təsdiq edənin adı ilə əlaqəsi. Məqsəd: sənədin kim tərəfindən və hansı bəyanatla təqdim olunduğunu sübut etmək.",
+          "Davranış kodeksinin qəbulu: kodeksin versiyası, qəbul tarixi və qəbul edən hesab.",
+          "Audit jurnalı: kabinetdə və admin paneldə görülən əhəmiyyətli əməliyyatlar (nə, nə vaxt, kim, IP ünvanı). Məqsəd: qərarların izlənilməsi və sui-istifadənin araşdırılması.",
+          "Bildirişlər: saytdaxili bildirişlər və göndərilməyi gözləyən və ya göndərilmiş məktublar (ünvan, mövzu, mətn).",
+          "Şikayətlər: məhsul barədə şikayətin səbəbi və mətni, daxil olmusunuzsa hesabınız. Şikayət hesabsız da göndərilə bilər.",
+          "WhatsApp düyməsinin basılması: yalnız məhsul üzrə gündəlik say. Kimin basdığı saxlanılmır.",
+          "Sui-istifadədən qorunma: IP ünvanı və ya hesab üzrə sayğaclar (məsələn, giriş cəhdləri). Hər sayğac öz müddəti bitəndə silinir, ən uzunu 30 gündür.",
+          "Satıcının yüklədiyi məhsul şəkilləri və PDF kataloqlar: şəkillər qaralama və ya məhsul şəkli kimi saxlanılır, PDF bir dəfə oxunur və silinir."
+        ]
+      },
+      "notCollected": {
+        "heading": "Nəyi toplamırıq",
+        "items": [
+          "Reklam və analitika izləyiciləri, reklam cookie-ləri və brauzer barmaq izi yoxdur.",
+          "\"Yaxınımdakı mağazalar\" üçün göndərilən yer yalnız həmin cavab üçün istifadə olunur, saxlanılmır.",
+          "Şəkillə axtarışda göndərilən şəkil yalnız həmin sorğu üçün emal olunur, saxlanılmır və jurnala yazılmır.",
+          "Seçilmişlər, müqayisə, son axtarışlar, tema və valyuta seçimi yalnız sizin brauzerinizdə qalır.",
+          "Ödəniş və bank kartı məlumatı: platformada ödəniş yoxdur."
+        ]
+      },
+      "legalBasis": {
+        "heading": "Hüquqi əsas",
+        "items": [
+          "Hesab, mağaza və elan məlumatları: sizin özünüzün yazılı (elektron forma ilə) təqdim etdiyiniz məlumatlar və onların bu siyasətdə yazılmış məqsədlər üçün emalına razılığınız (Qanunun 8.1 və 9.6.1-ci maddələri). Razılığı hesabın silinməsini istəməklə geri götürə bilərsiniz.",
+          "Satıcı sənədləri, bəyanat və audit jurnalı: satıcı ilə razılaşmanın (Satıcı şərtləri) icrası və satıcının özünün təqdim etdiyi məlumatlar.",
+          "Dövlət orqanlarına məlumat verilməsi: yalnız qanunda nəzərdə tutulan hallarda və həcmdə."
+        ]
+      },
+      "storage": {
+        "heading": "Məlumatlar harada saxlanılır",
+        "paragraphs": [
+          "Sayt, API, verilənlər bazası və fayllar Oracle Cloud-un Almaniyadakı (Frankfurt) serverində işləyir. Şifrələnmiş ehtiyat nüsxələr obyekt saxlancında (Oracle Cloud və ya Cloudflare R2) saxlanılır. Bu, fərdi məlumatların Azərbaycandan kənara ötürülməsidir (Qanunun 14-cü maddəsi). Hesab yaradanda və ya məlumat təqdim edəndə buna razılıq verirsiniz. Ötürülmə zamanı məlumatların təhlükəsizliyini biz təmin edirik."
+        ]
+      },
+      "sharing": {
+        "heading": "Məlumatları kimlərlə paylaşırıq",
+        "paragraphs": [
+          "Fərdi məlumatları satmırıq və reklam üçün vermirik. Məlumatlar yalnız aşağıdakılara və yalnız xidmət üçün lazım olan həcmdə çatır:"
+        ],
+        "items": [
+          "Oracle Cloud: server, verilənlər bazası və fayllar.",
+          "Cloudflare R2: ehtiyat nüsxələr və ya şəkillər bu saxlanca köçürüldükdə.",
+          "E-poçt göndərmə xidməti (SMTP): təsdiq, şifrə bərpası və bildiriş məktubları. Xidmət qoşulanda adı bu siyahıya əlavə olunur.",
+          "Sentry: yalnız qoşulduqda, xəta hesabatları. IP ünvanı, cookie, sorğu mətni və istifadəçi identifikatoru göndərilmir.",
+          "WhatsApp (Meta) və Google Maps: yalnız siz düyməni və ya xəritə linkini basanda, birbaşa həmin xidmətə keçirsiniz; onların öz qaydaları tətbiq olunur.",
+          "Azərbaycan Mərkəzi Bankı: metal və valyuta məzənnələri oxunur, ora heç bir fərdi məlumat göndərilmir.",
+          "Dövlət orqanları və məhkəmə: yalnız qanunla tələb olunanda, yazılı sorğu əsasında və tələb olunan həcmdə."
+        ]
+      },
+      "retention": {
+        "heading": "Nə qədər saxlayırıq",
+        "items": [
+          "Hesab məlumatları: hesab silinənə qədər.",
+          "Sessiya: sessiya cookie-si 7 gün, yeniləmə tokeni 30 gün (bir giriş ən çox 90 gün yenilənir). Təsdiq və bərpa linkləri müddəti bitəndə silinir.",
+          "Bildirişlər və məktub növbəsi: hesab silinənə qədər.",
+          "Təsdiqlənmiş yoxlama sənədləri: mağaza ilə əməkdaşlıq bitdikdən sonra 3 il.",
+          "Rədd edilmiş adi sənəd (oxunmur, müddəti bitib və s.): qərardan sonra 90 gün.",
+          "Satıcı bəyanatı: sübut kimi silinmir. Onun IP ünvanı və təsdiq edənin adı ilə əlaqəsi mağazanın son bəyanatından və əməkdaşlığın bitməsindən (hansı gecdirsə) 7 il sonra psevdonimləşdirilir: IP silinir, ad və əlaqə geri qaytarıla bilməyən açarlı heşlə əvəz olunur.",
+          "Audit jurnalı: 7 il; bəyanatla bağlı qeydlərdə ad və IP eyni qaydada psevdonimləşdirilir.",
+          "Şikayətlər: qərardan sonra 3 il. Hesab silinəndə şikayətlə hesab arasındakı əlaqə dərhal silinir.",
+          "Şifrələnmiş ehtiyat nüsxələr: 14 gün.",
+          "Sui-istifadə sayğacları: öz müddəti qədər, ən çox 30 gün.",
+          "İstisna: məhkəmə, istintaq və ya dövlət orqanının sorğusu ilə bağlı məlumat (\"legal hold\") iş bağlanana qədər saxlanılır və bu müddətdə dəyişdirilmir."
+        ]
+      },
+      "rights": {
+        "heading": "Sizin hüquqlarınız",
+        "items": [
+          "Sizin barənizdə hansı məlumatların saxlandığını, nə üçün və kimə verildiyini öyrənmək və onlarla tanış olmaq.",
+          "Yanlış məlumatı düzəltmək (hesab və mağaza məlumatlarının çoxunu kabinetdə özünüz dəyişə bilərsiniz).",
+          "Məlumatın silinməsini və ya emalının dayandırılmasını tələb etmək, qanunla saxlanılmalı olan məlumat istisna olmaqla.",
+          "Məlumatın toplanmasına və emalına etiraz etmək.",
+          "Hüququnuz pozulduqda səlahiyyətli icra hakimiyyəti orqanına və ya məhkəməyə şikayət etmək."
+        ],
+        "paragraphs": [
+          "Müraciəti aşağıdakı əlaqə ünvanına yazın. Qanuna görə müraciət yazılı ərizə və şəxsiyyəti təsdiq edən sənəd və ya gücləndirilmiş elektron imzalı sorğu ilə verilir; hesabınızın e-poçtundan yazdığınız sadə müraciətə də baxırıq, lakin şəxsiyyətinizi təsdiqləməyi xahiş edə bilərik. Müraciət pulsuzdur. Cavab müraciətin daxil olduğu gündən 7 iş günü ərzində verilir; başqa şəxsə müraciət lazım olsa, müddət daha 7 iş günü uzadıla bilər. Müraciəti qanuni əsasla rədd etsək, səbəbini 5 iş günü ərzində yazırıq."
+        ]
+      },
+      "security": {
+        "heading": "Məlumatları necə qoruyuruq",
+        "items": [
+          "Sayt və API yalnız HTTPS ilə işləyir.",
+          "Şifrələr BCrypt heşi ilə saxlanılır; tokenlərin yalnız heşi saxlanılır.",
+          "Satıcı sənədləri ictimai olmayan saxlancdadır və yalnız yoxlama komandası üçün bir neçə dəqiqəlik imzalı linklə açılır.",
+          "Tətbiq verilənlər bazasına minimal hüquqlu rol ilə qoşulur; bəyanatları və audit jurnalını tətbiq dəyişdirə və silə bilmir (yalnız yuxarıdakı psevdonimləşdirmə istisnadır).",
+          "Ehtiyat nüsxələr serverdən kənarda şifrələnmiş saxlanılır."
+        ]
+      },
+      "children": {
+        "heading": "Yaş həddi",
+        "paragraphs": [
+          "Hesab yalnız 18 yaşına çatmış şəxslər üçündür. Kataloqa baxmaq üçün hesab lazım deyil. 18 yaşdan kiçik şəxsin hesab açdığını öyrənsək, hesabı silirik."
+        ]
+      },
+      "changes": {
+        "heading": "Dəyişikliklər",
+        "paragraphs": [
+          "Siyasət dəyişəndə bu səhifədəki tarix yenilənir. Toplanan məlumatlar, məqsədlər və ya ötürmə ilə bağlı əhəmiyyətli dəyişiklik qüvvəyə minməzdən ən azı 15 gün əvvəl saytda elan olunur; satıcılara kabinetdə də bildirilir."
+        ]
+      },
+      "contact": {
+        "heading": "Əlaqə",
+        "paragraphs": [
+          "Məxfilik, fərdi məlumatlar və hesabın silinməsi ilə bağlı müraciətlər üçün:"
+        ]
+      }
+    }
+  },
+  "terms": {
+    "title": "İstifadə şərtləri",
+    "description": "Jeparla kataloqundan və alıcı hesabından istifadə qaydaları: platformanın rolu, qiymətlər, yoxlama, şikayətlər, məsuliyyət və mübahisələr.",
+    "sections": {
+      "operator": {
+        "heading": "Tərəflər və qəbul",
+        "paragraphs": [
+          "Bu şərtlər Jeparla saytının operatoru ilə saytdan istifadə edən şəxs arasındakı münasibəti tənzimləyir. Saytdan istifadə etməklə və ya hesab yaratmaqla bu şərtləri və Məxfilik siyasətini qəbul etmiş olursunuz. Mağazalar üçün əlavə olaraq Satıcı şərtləri tətbiq olunur."
+        ]
+      },
+      "service": {
+        "heading": "Jeparla nədir və nə deyil",
+        "paragraphs": [
+          "Jeparla zərgərlik mağazalarının məhsullarını bir kataloqda göstərən informasiya platformasıdır. Alıcı mağaza ilə WhatsApp vasitəsilə birbaşa əlaqə saxlayır.",
+          "Jeparla satıcı deyil: məhsulları satmır, sifariş qəbul etmir, ödəniş almır və çatdırmır. Alqı-satqı müqaviləsi yalnız alıcı ilə mağaza arasında bağlanır və mağaza onun tərəfidir. Kataloq xidməti alıcılar üçün pulsuzdur."
+        ]
+      },
+      "prices": {
+        "heading": "Qiymətlər və məhsul məlumatı",
+        "items": [
+          "Məhsul məlumatını (metal, əyar, çəki, daşlar, şəkillər, qiymət) mağaza yazır və onun düzgünlüyünə mağaza cavabdehdir.",
+          "Metala bağlı qiymətlər Azərbaycan Mərkəzi Bankının gündəlik metal məzənnəsi və mağazanın qaydası əsasında avtomatik hesablanır. Məzənnə gün ərzində dəyişə bilər.",
+          "USD və EUR ilə göstərilən qiymətlər təxminidir. Yekun qiyməti və şərtləri alışdan əvvəl mağaza təsdiqləyir.",
+          "Səhv qiymət və ya məlumat görsəniz, məhsul səhifəsindəki \"Şikayət et\" ilə bizə bildirin."
+        ]
+      },
+      "verification": {
+        "heading": "Yoxlama nə deməkdir",
+        "paragraphs": [
+          "\"Jeparla Verified\" nişanı mağazanın satıcı və sənəd yoxlamasından keçdiyini göstərir. Bu, riski azaldır, amma zəmanət deyil. Jeparla əyar nəzarəti orqanı deyil və məhsulu özü sınaqdan keçirmir; fiziki ekspertiza yalnız məhsulda ayrıca göstərildikdə aparılıb. Almadan əvvəl damğanı və çəkini mağazada yoxlayın və çek istəyin. Ətraflı: \"Necə yoxlayırıq\" səhifəsi."
+        ]
+      },
+      "account": {
+        "heading": "Hesab",
+        "items": [
+          "Hesab yalnız 18 yaşına çatmış şəxslər üçündür.",
+          "Qeydiyyatda düzgün məlumat yazın və şifrənizi heç kimə verməyin. Hesabınızla görülən əməliyyatlara siz cavabdehsiniz; icazəsiz istifadədən şübhələnsəniz, dərhal bizə yazın.",
+          "Hesabı istənilən vaxt silməyimizi istəyə bilərsiniz (Məxfilik siyasəti, \"Sizin hüquqlarınız\")."
+        ]
+      },
+      "prohibited": {
+        "heading": "Qadağan olunan istifadə",
+        "items": [
+          "Saxta və ya qərəzli şikayət, başqa şəxsin adından hesab, eyni şəxs üçün çox sayda hesab.",
+          "Mağazaları təqib etmək, onlara spam və ya hədə göndərmək.",
+          "Saytın təhlükəsizliyini icazəsiz yoxlamaq, limitləri keçməyə çalışmaq, saytın işinə mane olmaq.",
+          "Kataloqu avtomatik vasitələrlə toplu şəkildə köçürmək və başqa yerdə dərc etmək (axtarış sistemlərinin adi indeksləşdirməsi istisnadır).",
+          "Qanuna zidd və ya başqasının hüququnu pozan məzmun yerləşdirmək."
+        ],
+        "paragraphs": [
+          "Pozuntu olduqda hesabı xəbərdarlıqla və ya ağır hallarda xəbərdarlıqsız məhdudlaşdıra və ya bağlaya bilərik; qərarın səbəbini bildiririk."
+        ]
+      },
+      "complaints": {
+        "heading": "Şikayətlər və qanunsuz məzmun",
+        "paragraphs": [
+          "Məhsul və ya mağaza barədə şikayəti məhsul səhifəsindəki \"Şikayət et\" ilə (hesab tələb olunmur) və ya aşağıdakı əlaqə ünvanı ilə göndərin. Hüquqları pozulan şəxslər (məsələn, əmtəə nişanı və ya şəkil sahibi) də bu yolla müraciət edə bilər: məzmunu, hüququnuzu və əlaqə məlumatınızı yazın.",
+          "Hər şikayətə baxırıq. Əsaslı olduqda məhsulu gizlədir, mağazaya düzəlişə qaytarır və ya mağazanı dayandırırıq; qərar qeydə alınır. Məhkəmə qərarı və ya səlahiyyətli orqanın qanuni tələbi olduqda məlumatı dərhal silir və ya ona girişi məhdudlaşdırırıq."
+        ]
+      },
+      "consumer": {
+        "heading": "İstehlakçı hüquqlarınız",
+        "paragraphs": [
+          "\"İstehlakçıların hüquqlarının müdafiəsi haqqında\" Qanunla verilən hüquqlarınız (mal haqqında düzgün məlumat, keyfiyyətsiz malın dəyişdirilməsi və ya pulun qaytarılması, qanunda nəzərdə tutulan hallarda malın 14 gün ərzində dəyişdirilməsi və s.) alıcı ilə mağaza arasındakı satışa aiddir və onları mağazaya qarşı həyata keçirirsiniz. Mağaza ilə razılığa gələ bilməsəniz, bizə yazın: mağazanın Jeparla-dakı məlumatını sizə veririk və şikayəti mağazaya ötürürük. Həmçinin istehlakçı hüquqlarının müdafiəsi üzrə dövlət orqanına və ya məhkəməyə müraciət edə bilərsiniz.",
+          "Bu şərtlərdəki heç bir müddəa istehlakçı kimi qanunla verilən hüquqlarınızı məhdudlaşdırmır; belə məhdudlaşdırma qanuna görə etibarsızdır."
+        ]
+      },
+      "liability": {
+        "heading": "Məsuliyyət",
+        "items": [
+          "Jeparla öz xidmətinə görə qanunvericiliyə uyğun məsuliyyət daşıyır.",
+          "Alıcı ilə mağaza arasındakı satışın tərəfi olmadığımız üçün malın keyfiyyətinə, çatdırılmasına, qaytarılmasına və ödənişə görə mağaza cavabdehdir.",
+          "Mağazaların yazdığı məlumatı yoxlayırıq, lakin hər məhsulun hər xüsusiyyətinin düzgünlüyünü təmin edə bilmirik. Qanunsuz məlumatdan xəbər tutduqda onu dərhal gizlədirik.",
+          "Sayt pulsuzdur və texniki işlər və ya nasazlıq səbəbindən müvəqqəti əlçatmaz ola bilər.",
+          "Bu bölmə qəsdən və ya kobud ehtiyatsızlıqla vurulan zərərə görə və qanunla istisna edilə bilməyən digər hallarda məsuliyyətimizi istisna etmir."
+        ]
+      },
+      "content": {
+        "heading": "Saytın məzmunu",
+        "paragraphs": [
+          "Saytın dizaynı, mətnləri, loqosu və proqram təminatı operatora məxsusdur. Məhsul şəkilləri və təsvirləri mağazalara məxsusdur və saytda onların icazəsi ilə göstərilir. Şəxsi istifadə üçün baxmaq, paylaşmaq və linkləmək olar; kommersiya məqsədilə köçürmək üçün yazılı icazə lazımdır."
+        ]
+      },
+      "law": {
+        "heading": "Tətbiq olunan hüquq və mübahisələr",
+        "paragraphs": [
+          "Bu şərtlərə Azərbaycan Respublikasının qanunvericiliyi tətbiq olunur. Mübahisəni əvvəlcə bizə yazmaqla danışıqlar yolu ilə həll etməyə çalışırıq. Həll olunmasa, mübahisəyə Azərbaycan Respublikasının məhkəmələri qanunvericiliklə müəyyən edilmiş aidiyyət üzrə baxır. İstehlakçının qanunla verilən məhkəməyə və dövlət orqanlarına müraciət hüququ məhdudlaşdırılmır."
+        ]
+      },
+      "changes": {
+        "heading": "Şərtlərin dəyişməsi",
+        "paragraphs": [
+          "Şərtlər dəyişəndə bu səhifədəki tarix yenilənir. Əhəmiyyətli dəyişiklik qüvvəyə minməzdən ən azı 15 gün əvvəl saytda elan olunur. Dəyişiklikdən sonra saytdan istifadəni davam etdirsəniz, yeni şərtlər tətbiq olunur; razı deyilsinizsə, hesabın silinməsini istəyə bilərsiniz."
+        ]
+      },
+      "contact": {
+        "heading": "Əlaqə",
+        "paragraphs": ["Suallar, şikayətlər və hüquqi müraciətlər üçün:"]
+      }
+    }
+  },
+  "sellers": {
+    "title": "Satıcı şərtləri",
+    "description": "Jeparla-da mağaza açan və məhsul yerləşdirən satıcılar üçün şərtlər: yoxlama, bəyanat, məzmun qaydaları, alıcıların hüquqları, qərarlar və məsuliyyət.",
+    "sections": {
+      "operator": {
+        "heading": "Tərəflər və qəbul",
+        "paragraphs": [
+          "Bu şərtlər Jeparla saytının operatoru ilə Jeparla-da mağaza açan satıcı (hüquqi şəxs və ya fərdi sahibkar) arasındakı razılaşmadır. Satıcı qeydiyyatında Satıcının davranış kodeksi ilə birlikdə qəbul olunur və satıcının mağazası platformada olduğu müddətdə qüvvədədir. İstifadə şərtləri və Məxfilik siyasəti satıcıya da aiddir."
+        ]
+      },
+      "eligibility": {
+        "heading": "Kim satıcı ola bilər",
+        "items": [
+          "Azərbaycan Respublikasında qeydiyyatda olan (VÖEN-i olan) hüquqi şəxs və ya fərdi sahibkar, onun adından 18 yaşına çatmış səlahiyyətli şəxs qeydiyyatdan keçir.",
+          "Qiymətli metal və daş məmulatı satan mağaza bu fəaliyyət üçün qanunvericiliyin tələblərinə (o cümlədən dövlət əyar damğası tələbinə) əməl edir.",
+          "Bijuteriya və əl işi satan mağaza məhsulunu qiymətli metal və ya qiymətli daş kimi təqdim etmir."
+        ]
+      },
+      "verification": {
+        "heading": "Yoxlama və sənədlər",
+        "items": [
+          "Mağaza dərc olunmazdan əvvəl yoxlanılır. Məhsullar dərcdən əvvəl moderasiyadan keçir.",
+          "Qiymətli metal satıcısından qeydiyyat, VÖEN və əyar sənədləri istənilir. Hər sənəd yükləmədən əvvəl satıcı sənədlərin həqiqi və məlumatın düzgün olduğunu bəyan edir. Bəyanatın mətni, vaxtı və IP ünvanı sübut kimi saxlanılır.",
+          "Saxta sənəd və ya yanlış məlumat təqdim etmək qanunvericiliyə, o cümlədən Cinayət Məcəlləsinə uyğun məsuliyyətə səbəb ola bilər. Jeparla heç kimə cəza tətbiq etmir; o, yalnız elanı rədd edə, gizlədə, mağazanı dayandıra və qanunla tələb olunan hallarda məlumatı səlahiyyətli orqanlara verə bilər.",
+          "Yoxlama satıcını qanunla müəyyən edilmiş öhdəliklərdən azad etmir və dövlət orqanının yoxlamasını əvəz etmir."
+        ]
+      },
+      "listings": {
+        "heading": "Elan qaydaları",
+        "items": [
+          "Metal, əyar, çəki, daşlar və qiymət düzgün yazılır və məhsulun damğası ilə uyğun gəlir.",
+          "Şəkillər satılan məhsulun özünü göstərir; AI ilə yaradılmış və ya dəyişdirilmiş şəkil işarələnir.",
+          "Saxta endirim, saxta rəy və uydurma rəqəm yoxdur. Məhsul və şərtlər dəyişməyibsə, alıcıya Jeparla-da göstəriləndən yüksək qiymət deyilmir.",
+          "Başqasının əmtəə nişanından, şəklindən və mətnindən icazəsiz istifadə olunmur.",
+          "Satıcı Satıcının davranış kodeksinə əməl edir və onu ildə bir dəfə kabinetdə təsdiqləyir."
+        ]
+      },
+      "buyers": {
+        "heading": "Alıcılar qarşısında öhdəliklər",
+        "items": [
+          "Alqı-satqı müqaviləsinin tərəfi satıcıdır. Malın keyfiyyəti, çek, zəmanət, dəyişdirmə və qaytarma üzrə istehlakçı hüquqlarının qanunvericiliyi satıcıya tətbiq olunur və satıcı onlara əməl edir.",
+          "Satıcı alıcıya öz adını, ünvanını və əlaqə məlumatını düzgün bildirir.",
+          "WhatsApp ilə alınan alıcı nömrəsi və mesajları satıcı yalnız alıcının sualına cavab və satış üçün istifadə edir, \"Fərdi məlumatlar haqqında\" Qanuna əməl edir və onları reklam siyahısına əlavə etmir.",
+          "Jeparla alıcı şikayətini satıcıya ötürə bilər; satıcı şikayətə ağlabatan müddətdə cavab verir."
+        ]
+      },
+      "fees": {
+        "heading": "Ödəniş",
+        "paragraphs": [
+          "Hazırda Jeparla-da mağaza açmaq və məhsul yerləşdirmək üçün satıcıdan ödəniş alınmır. Komissiya və ya ödənişli xidmət tətbiq olunarsa, şərtləri ayrıca yazılı razılaşma ilə müəyyən edilir və qüvvəyə minməzdən ən azı 30 gün əvvəl satıcıya bildirilir. Keçmiş dövr üçün ödəniş tələb olunmur."
+        ]
+      },
+      "decisions": {
+        "heading": "Moderasiya qərarları",
+        "items": [
+          "Jeparla elanı və ya sənədi rədd edə, düzəlişə qaytara, gizlədə, mağazanı müvəqqəti dayandıra və ya bloklaya bilər. Hər qərar qeydə alınır və satıcıya səbəbi bildirilir.",
+          "Sənədlərin həqiqiliyinə şübhə olduqda mağaza əlavə yoxlama müddətinə dayandırıla bilər; bu qərar iki fərqli administratorun təsdiqi ilə verilir. Əlavə yoxlama bitəndə mağaza ya bərpa olunur, ya da əsaslandırılmış qərarla bağlanır.",
+          "Qərarla razı deyilsinizsə, izahınızı və əlavə sənədləri dəstək ünvanına göndərin; müraciətə baxılır və nəticə bildirilir.",
+          "Jeparla-nın qərarı dövlət orqanının qərarı deyil. Satıcının məhkəməyə müraciət hüququ məhdudlaşdırılmır."
+        ]
+      },
+      "authorities": {
+        "heading": "Dövlət orqanları ilə əməkdaşlıq",
+        "paragraphs": [
+          "Qanunla tələb olunan hallarda (məhkəmə qərarı, səlahiyyətli orqanın yazılı sorğusu) Jeparla satıcını müəyyən edən məlumatı və sübutları tələb olunan həcmdə verə, məlumatı silə və ya ona girişi məhdudlaşdıra bilər. Belə hallarda sübutlar iş bağlanana qədər dəyişdirilmədən saxlanılır."
+        ]
+      },
+      "license": {
+        "heading": "Məzmuna icazə",
+        "paragraphs": [
+          "Satıcı yüklədiyi şəkillərin və mətnlərin hüququna malik olduğunu təsdiq edir və Jeparla-ya onları saytda, axtarışda, paylaşım linklərində və Jeparla-nın öz tanıtımında göstərmək üçün pulsuz, qeyri-müstəsna icazə verir. Elan silinəndə icazə həmin elan üçün bitir, artıq paylaşılmış materiallar istisna olmaqla."
+        ]
+      },
+      "liability": {
+        "heading": "Məsuliyyət",
+        "items": [
+          "Satıcı elanlarının düzgünlüyünə və qanuniliyinə, məhsulun keyfiyyətinə və alıcı qarşısındakı öhdəliklərinə görə məsuliyyət daşıyır. Satıcının elanı və ya satışı səbəbindən Jeparla-ya qarşı iddia qaldırılarsa, satıcı Jeparla-ya dəyən zərəri qanunvericiliyə uyğun ödəyir.",
+          "Jeparla bu şərtlərə uyğun vicdanla qəbul edilmiş moderasiya qərarına görə əldən çıxan gəliri ödəmir, qanunla başqa hal nəzərdə tutulmayıbsa.",
+          "Bu bölmə qəsdən və ya kobud ehtiyatsızlıqla vurulan zərərə görə məsuliyyəti istisna etmir."
+        ]
+      },
+      "termination": {
+        "heading": "Əməkdaşlığın bitməsi",
+        "paragraphs": [
+          "Satıcı mağazasını istənilən vaxt dəstək ünvanına yazmaqla bağlaya bilər. Jeparla şərtlərin ciddi və ya təkrar pozulmasında əməkdaşlığı bitirə bilər. Mağaza bağlananda elanları saytdan çıxarılır; sənədlər, bəyanatlar və audit qeydləri Məxfilik siyasətində yazılan müddətlərdə saxlanılır."
+        ]
+      },
+      "law": {
+        "heading": "Tətbiq olunan hüquq və dəyişikliklər",
+        "paragraphs": [
+          "Bu şərtlərə Azərbaycan Respublikasının qanunvericiliyi tətbiq olunur; mübahisələrə danışıqlar yolu ilə həll olunmadıqda Azərbaycan Respublikasının məhkəmələri baxır. Şərtlər dəyişəndə bu səhifədəki tarix yenilənir və əhəmiyyətli dəyişiklik qüvvəyə minməzdən ən azı 15 gün əvvəl kabinetdə bildirilir."
+        ]
+      },
+      "contact": {
+        "heading": "Əlaqə",
+        "paragraphs": ["Satıcı sualları, apellyasiya və mağazanın bağlanması üçün:"]
+      }
+    }
+  },
+  "cookies": {
+    "title": "Cookie qaydası",
+    "description": "Jeparla hansı cookie-lərdən və brauzer yaddaşından istifadə edir və niyə razılıq banneri yoxdur.",
+    "sections": {
+      "cookies": {
+        "heading": "Cookie-lər",
+        "paragraphs": [
+          "Yalnız girişin işləməsi üçün zəruri cookie-lər istifadə olunur. Reklam, analitika və ya üçüncü tərəf cookie-si yoxdur."
+        ],
+        "items": [
+          "jeparla_session: daxil olmuş istifadəçinin sessiyası. Saytın öz cookie-sidir, 7 gün və ya çıxışa qədər.",
+          "jeparla_refresh: sessiyanın yenilənməsi üçün. Yalnız API-yə göndərilir, JavaScript onu oxuya bilmir (httpOnly), 30 gün və ya çıxışa qədər."
+        ]
+      },
+      "storage": {
+        "heading": "Brauzer yaddaşı (localStorage)",
+        "paragraphs": ["Bu məlumatlar yalnız sizin cihazınızda qalır və serverə göndərilmir:"],
+        "items": [
+          "Seçilmişlər və müqayisə siyahısı.",
+          "Son axtarışlar.",
+          "Gecə və ya gündüz teması və valyuta seçimi.",
+          "Satıcı formasının yarımçıq qaralaması.",
+          "Tətbiqi quraşdırma təklifinin bağlanması."
+        ]
+      },
+      "consent": {
+        "heading": "Niyə razılıq banneri yoxdur",
+        "paragraphs": [
+          "Yuxarıdakı cookie-lər yalnız sizin istədiyiniz xidməti (hesaba giriş) təmin edir, brauzer yaddaşı isə cihazınızdan çıxmır. Ona görə ayrıca razılıq soruşmuruq. Analitika və ya başqa vacib olmayan cookie əlavə olunsa, o, yalnız sizin razılığınızdan sonra işə düşəcək və bu səhifə əvvəlcədən yenilənəcək."
+        ]
+      },
+      "control": {
+        "heading": "İdarəetmə",
+        "paragraphs": [
+          "Çıxış edəndə hər iki cookie silinir. Cookie-ləri və brauzer yaddaşını brauzerin ayarlarından da silə bilərsiniz; onda yenidən daxil olmalı olacaqsınız və seçilmişlər siyahısı itəcək."
+        ]
+      }
+    }
+  }
+}

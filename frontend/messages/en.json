@@ -81,7 +81,8 @@
     "rights": "© Jeparla. All rights reserved.",
     "calculator": "Gold calculator",
     "cookies": "Cookie notice",
-    "howWeVerify": "How we verify"
+    "howWeVerify": "How we verify",
+    "sellerTerms": "Seller terms"
   },
   "Errors": {
     "notFoundTitle": "Page not found",
@@ -857,7 +858,8 @@
       "submit": "Create account",
       "haveAccount": "Already have an account?",
       "seller": "Own a jewelry store?",
-      "sellerLink": "Join as a seller"
+      "sellerLink": "Join as a seller",
+      "legalNotice": "By creating an account you confirm that you are 18 or over, accept the <terms>Terms of use</terms> and agree to the <privacy>Privacy policy</privacy>, including storage of your data on a server in Germany."
     },
     "forgot": {
       "title": "Reset password",
@@ -979,7 +981,7 @@
       "fineness": "Fineness",
       "weight": "Weight (grams)",
       "price": "Price (AZN)",
-      "codeAccepted": "I have read and accept the <link>seller code of conduct</link>."
+      "codeAccepted": "I have read and accept the <link>seller code of conduct</link> and the <terms>Seller terms</terms>."
     },
     "hints": {
       "phone": "For example 050 123 45 67. SMS confirmation comes later.",
@@ -2516,9 +2518,16 @@
     "banner": "The stores, products and prices on this site are samples, not real."
   },
   "Legal": {
-    "draftTitle": "Draft.",
-    "draftText": "This text has not been approved by the owner and a lawyer yet and is not in force. The marked places will be filled in.",
-    "reviewLabel": "Awaiting review:"
+    "updated": "Last updated: <time>{date}</time>",
+    "operatorName": "Legal name",
+    "operatorTaxId": "VOEN (tax ID)",
+    "operatorAddress": "Registered address",
+    "ownerField": "[owner's details]",
+    "contactEmail": "Email",
+    "contactUrl": "Contact page",
+    "contactHelp": "The support contact is on the help page:",
+    "helpLink": "Help and support",
+    "nav": "Legal documents"
   },
   "PricesPage": {
     "title": "Gold and silver price per gram today",

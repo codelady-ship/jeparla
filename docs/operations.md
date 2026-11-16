@@ -83,10 +83,16 @@ sonra backend-i başladın. Bu addımlar ilk real bərpa testindən sonra dəqiq
 
 ## 5. Hüquqi səhifələr
 
-`/legal/privacy`, `/legal/terms`, `/legal/cookies` (az, en, ru): mətn `frontend/src/content/legal/` qovluğundadır.
-Faktlar (hansı məlumat saxlanılır, provayderlər, cookie-lər) kodun bugünkü vəziyyətinə uyğundur. Hüquqi hissələr
-(hüquqi əsas, saxlama müddəti, məsuliyyət, operatorun rekvizitləri) **"Təsdiq gözlənilir"** qeydi ilə boş saxlanılıb.
-Sahib və hüquqşünas (#57) təsdiqləyənə qədər:
+`/legal/privacy`, `/legal/terms`, `/legal/sellers`, `/legal/cookies` (az, en, ru): yekun mətnlər (sahibin qərarı,
+2026-11-16, #57), `frontend/messages/*.json`, `LegalDocs` namespace-i. Səhifələr indekslənir və sitemap-dədir.
+Faktlar (hansı məlumat saxlanılır, harada, nə qədər, provayderlər, cookie-lər) kodun bugünkü vəziyyətinə uyğundur;
+`src/lib/legal-texts.test.ts` qadağan ifadələri, rəqəmləri və kodla uyğunluğu yoxlayır.
 
-- səhifələrin yuxarısında "Qaralama" bildirişi var və səhifələr `noindex`-dir (`LEGAL_DRAFT = true`);
-- yeni provayder (məs. analitika) əlavə olunanda məxfilik siyasətindəki provayder siyahısı da yenilənməlidir.
+- Operatorun hüquqi adı, VÖEN və ünvanı mətndə yox, `JEPARLA_OPERATOR_NAME`, `JEPARLA_OPERATOR_TAX_ID`,
+  `JEPARLA_OPERATOR_ADDRESS`-dən gəlir (web build arg); boşdursa səhifədə "[sahibin məlumatı]" görünür.
+- Mətn dəyişəndə `frontend/src/content/legal/types.ts`-də `LEGAL_UPDATED` tarixi də dəyişir; əhəmiyyətli dəyişiklik
+  15 gün əvvəl saytda elan olunur (şərtlərdə yazılıb).
+- Yeni provayder (məs. e-poçt, analitika) əlavə olunanda məxfilik siyasətindəki provayder siyahısı da yenilənməlidir.
+- Saxlama müddətləri məxfilik siyasətindədir. Bəyanatın IP-si və etiketi 7 ildən sonra avtomatik psevdonimləşdirilir
+  (`DeclarationRetentionJob`, `JEPARLA_PSEUDONYM_KEY` lazımdır); sənədlər, şikayətlər və audit purge hələ əl ilədir.
+- Məhkəmə işi və ya orqan sorğusu olanda mağazaya legal hold qoyun: `POST /api/v1/admin/stores/{id}/legal-hold`.

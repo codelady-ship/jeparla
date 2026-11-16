@@ -12,6 +12,20 @@ export default async function RegisterPage() {
       kind="register"
       footer={
         <>
+          <p className="text-sm text-muted-foreground">
+            {t.rich("register.legalNotice", {
+              terms: (chunks) => (
+                <Link href="/legal/terms" className="link-underline text-foreground">
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href="/legal/privacy" className="link-underline text-foreground">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
           <p className="text-muted-foreground">
             {t("register.haveAccount")}{" "}
             <Link href="/login" className="link-underline font-medium text-foreground">
