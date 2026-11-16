@@ -128,6 +128,29 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theStoreDeclaresWhetherItMakesToOrder() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        String declared = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",
+                "\"madeToOrder\": {\"offered\": true, \"days\": 10}, \"sellerKind\"");
+        mvc.perform(json(put("/api/v1/merchant/store"), declared).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.madeToOrder.offered").value(true))
+                .andExpect(jsonPath("$.madeToOrder.days").value(10));
+        // Absent keeps the saved answer (#108).
+        mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Test Zərgər", SellerKind.PRECIOUS))
+                        .with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.madeToOrder.days").value(10));
+        mvc.perform(json(put("/api/v1/merchant/store"), declared.replace("\"days\": 10", "\"days\": 400"))
+                        .with(seller.token()))
+                .andExpect(status().isBadRequest());
+        mvc.perform(json(put("/api/v1/merchant/store"), declared.replace("\"offered\": true", "\"offered\": null"))
+                        .with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.madeToOrder").value(Matchers.nullValue()));
+    }
+
+    @Test
     void theLaborAndMarkupSplitIsKeptUntilTheSellerChangesIt() throws Exception {
         Seller seller = seller(SellerKind.PRECIOUS, false);
         String split = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",

@@ -380,6 +380,12 @@ məhsul" kataloqdakı kimidir: `APPROVED`, silinməyib, `PRECIOUS`, görünən k
 
 Göstərilmir: reytinq və rəy (hələ yoxdur, #63) və WhatsApp cavab müddəti (söhbət Jeparla-dan kənardadır, ölçmək olmur).
 
+**Mağazanın öz bəyan etdiyi şərtlər (#108).** Ölçülən fakt deyil, mağaza səhifəsində faktlardan ayrı, "mağaza bəyan
+edib, Jeparla yoxlamır" qeydi ilə göstərilir: xidmətlər (`services`: ölçü dəyişmə, qaytarma və s.) və qaytarma şərti
+(`returnPolicy`, mağazanın öz sözləri) #174-dən (V46), sifarişlə hazırlama isə `madeToOrder` (V55):
+`{"offered": true|false, "days": 1-365 | null}`; günlər yalnız `true` ilə saxlanılır. `PUT /api/v1/merchant/store`-da
+obyekt göndərilməsə saxlanılan cavab qalır, `offered: null` onu silir; bəyan edilməyibsə `GET /stores/{slug}`-da açar yoxdur.
+
 ## Yoxlama sənədləri, moderasiya və bildirişlər (#40, #138)
 
 Sənəd yalnız qiymətli metal satan mağazadan (`PRECIOUS`, `MIXED`) və yalnız `PRECIOUS` məhsul üçün qəbul

@@ -3,6 +3,8 @@ package az.jeparla.merchant.dto;
 import az.jeparla.auth.AzMobilePhone;
 import az.jeparla.store.SellerKind;
 import az.jeparla.store.StoreServiceKind;
+import az.jeparla.store.dto.MadeToOrderDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -26,6 +28,8 @@ import java.util.Set;
  *
  * <p>{@code services} and {@code returnPolicy} (#174): what the store says it offers and its return terms;
  * absent keeps the saved ones, an empty set or text clears them.
+ *
+ * <p>{@code madeToOrder} (#108): absent keeps the saved answer, {@code offered: null} clears it.
  */
 public record StoreProfileRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -42,7 +46,8 @@ public record StoreProfileRequest(
         @DecimalMin("-180") @DecimalMax("180") @Digits(integer = 3, fraction = 8) BigDecimal longitude,
         Boolean splitLaborMarkup,
         Set<StoreServiceKind> services,
-        @Size(max = 500) String returnPolicy) {
+        @Size(max = 500) String returnPolicy,
+        @Valid MadeToOrderDto madeToOrder) {
 
     /** An Instagram-style handle or an https link, or empty (frontend {@code social}). */
     public static final String SOCIAL = "^$|^@[\\w.]{2,30}$|^https://\\S+$";

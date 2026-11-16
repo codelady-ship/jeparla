@@ -6,6 +6,7 @@ import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreServiceKind;
 import az.jeparla.store.StoreStatus;
+import az.jeparla.store.dto.MadeToOrderDto;
 import az.jeparla.store.dto.StoreDto;
 import az.jeparla.store.dto.StoreDtos;
 import az.jeparla.verification.CheckStatus;
@@ -26,6 +27,7 @@ import java.util.List;
  *                        go to review until the seller accepts again
  * @param geo             the saved map point for "near me" (#116), or null; set from a map link or coordinates
  * @param splitLaborMarkup the product page shows labor and markup as two lines (#104); false: one line
+ * @param madeToOrder     made to order as the store declares it (#108), or null when not declared
  */
 @Schema(name = "MerchantStore")
 public record MerchantStoreDto(
@@ -52,7 +54,8 @@ public record MerchantStoreDto(
         @Schema(nullable = true) StoreDto.GeoDto geo,
         boolean splitLaborMarkup,
         List<StoreServiceKind> services,
-        String returnPolicy) {
+        String returnPolicy,
+        @Schema(nullable = true) MadeToOrderDto madeToOrder) {
 
     public static MerchantStoreDto of(Store store) {
         Instant validUntil = SellerCode.validUntil(store);
@@ -63,7 +66,7 @@ public record MerchantStoreDto(
                 store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
                 SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString(),
                 StoreDtos.geo(store), store.isSplitLaborMarkup(), store.getServices(),
-                nullToEmpty(store.getReturnPolicy()));
+                nullToEmpty(store.getReturnPolicy()), MadeToOrderDto.of(store));
     }
 
     private static String acceptedAt(Store store) {

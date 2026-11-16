@@ -93,6 +93,14 @@ public class Store extends TimestampedEntity {
     @Column(name = "return_policy")
     private String returnPolicy;
 
+    /** Whether the store says it makes pieces to order (#108, V55); null when not declared. */
+    @Column(name = "made_to_order")
+    private Boolean madeToOrder;
+
+    /** Usual days to make a piece; only with {@code madeToOrder = true}. */
+    @Column(name = "made_to_order_days")
+    private Integer madeToOrderDays;
+
     /** Product page price breakdown (#104, V45): labor and markup as two lines instead of one. */
     @Column(name = "split_labor_markup", nullable = false)
     private boolean splitLaborMarkup;
@@ -315,6 +323,23 @@ public class Store extends TimestampedEntity {
 
     public String getReturnPolicy() {
         return returnPolicy;
+    }
+
+    public Boolean getMadeToOrder() {
+        return madeToOrder;
+    }
+
+    public Integer getMadeToOrderDays() {
+        return madeToOrderDays;
+    }
+
+    /**
+     * Made to order as the store declares it (#108): null clears the answer; the days are kept only with
+     * {@code true}, so the stored answer is always consistent.
+     */
+    public void declareMadeToOrder(Boolean offered, Integer days) {
+        this.madeToOrder = offered;
+        this.madeToOrderDays = Boolean.TRUE.equals(offered) ? days : null;
     }
 
     public void setReturnPolicy(String returnPolicy) {

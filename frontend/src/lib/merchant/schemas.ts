@@ -265,6 +265,19 @@ export const profileSchema = z.object({
   /** The store's own services and return terms (#174); absent keeps them. */
   services: z.array(z.enum(STORE_SERVICES)).optional(),
   returnPolicy: z.string().trim().max(500, "returnPolicyLong").optional(),
+  /** Made to order (#108): offered null = not declared; absent keeps the saved answer. */
+  madeToOrder: z
+    .object({
+      offered: z.boolean().nullable(),
+      days: z
+        .number("daysInvalid")
+        .int("daysInvalid")
+        .min(1, "daysInvalid")
+        .max(365, "daysInvalid")
+        .nullable(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;

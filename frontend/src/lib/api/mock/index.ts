@@ -234,8 +234,17 @@ export const mockApi: JeparlaApi = {
         (!params.city || s.city === params.city) &&
         (!params.q || matchesQuery(`${s.name} ${s.city}`, params.q)),
     ).map(
-      ({ description: _d, address: _a, whatsapp: _w, phone: _p, createdAt: _c, ...summary }) =>
-        summary,
+      ({
+        description: _d,
+        address: _a,
+        whatsapp: _w,
+        phone: _p,
+        createdAt: _c,
+        services: _s,
+        returnPolicy: _r,
+        madeToOrder: _m,
+        ...summary
+      }) => summary,
     );
     const near = parseNear(params.near);
     if (!near) return found;

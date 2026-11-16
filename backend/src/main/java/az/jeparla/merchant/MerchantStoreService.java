@@ -156,6 +156,9 @@ public class MerchantStoreService {
         if (request.returnPolicy() != null) {
             store.setReturnPolicy(request.returnPolicy());
         }
+        if (request.madeToOrder() != null) {
+            store.declareMadeToOrder(request.madeToOrder().offered(), request.madeToOrder().days());
+        }
         GeoPoint location = location(request);
         if (location != null) {
             store.setGeo(location.latitude(), location.longitude());

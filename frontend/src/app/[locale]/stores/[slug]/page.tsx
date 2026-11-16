@@ -13,6 +13,7 @@ import { ShareButton } from "@/components/share/share-button";
 import { shareLabels } from "@/components/share/share-labels";
 import { StoreFacts } from "@/components/stores/store-facts";
 import { StoreProducts } from "@/components/stores/store-products";
+import { hasDeclaredTerms, StoreTerms } from "@/components/stores/store-terms";
 import { StoreVisit } from "@/components/stores/store-visit";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -202,6 +203,12 @@ export default async function StorePage({
       {facts && (
         <div className="mt-8">
           <StoreFacts facts={facts} />
+        </div>
+      )}
+
+      {hasDeclaredTerms(store) && (
+        <div className="mt-8">
+          <StoreTerms store={store} />
         </div>
       )}
 
