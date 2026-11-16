@@ -61,7 +61,34 @@
     "mainNav": "Main navigation",
     "account": "Account menu",
     "dashboard": "Dashboard",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "myAccount": "My account"
+  },
+  "Account": {
+    "title": "My account",
+    "description": "Account details and account deletion.",
+    "intro": "The account you are signed in with, and the option to delete it.",
+    "name": "Name",
+    "contact": "Email or phone",
+    "deleteTitle": "Delete the account",
+    "deleteGoes": "The account, saved products, notifications and sessions are deleted right away. Your complaints stay, but their link to your account is removed.",
+    "deleteStays": "If you confirmed a seller declaration, your name and contact in it are kept as evidence as the law requires and are pseudonymised when the period ends. Audit log entries stay for the period stated in the Privacy policy.",
+    "deleteStore": "If a store is linked to your account, it cannot be deleted here: write to support, the store is closed first.",
+    "deleteButton": "Delete account",
+    "confirmTitle": "Delete the account for good?",
+    "confirmText": "This cannot be undone. Enter your password to confirm.",
+    "password": "Password",
+    "confirmButton": "Yes, delete the account",
+    "cancel": "Cancel",
+    "deleted": "Your account was deleted.",
+    "errors": {
+      "required": "Enter your password.",
+      "unavailable": "Accounts are not deleted in sample mode.",
+      "sessionExpired": "The session has ended. Sign in again.",
+      "rateLimited": "Too many attempts. Try again a little later.",
+      "network": "Network error. Try again.",
+      "server": "The account was not deleted. Try again."
+    }
   },
   "Footer": {
     "about": "About Jeparla",

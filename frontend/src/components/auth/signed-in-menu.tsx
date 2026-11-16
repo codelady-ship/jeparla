@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@base-ui/react/menu";
-import { Heart, LayoutDashboard, LogOut } from "lucide-react";
+import { Heart, LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import { signOut } from "@/lib/auth/actions";
@@ -50,6 +50,10 @@ export default function SignedInMenu({
             <Menu.LinkItem render={<Link href="/favorites" />} className={item}>
               <Heart aria-hidden />
               {labels.favorites}
+            </Menu.LinkItem>
+            <Menu.LinkItem render={<Link href="/account" />} className={item}>
+              <UserRound aria-hidden />
+              {labels.myAccount}
             </Menu.LinkItem>
             <Menu.Item
               className={item}

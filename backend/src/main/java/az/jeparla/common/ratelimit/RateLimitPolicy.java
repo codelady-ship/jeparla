@@ -106,7 +106,12 @@ public enum RateLimitPolicy {
      * AI Studio job requests and retries of one seller account (#55, PLAN 5.13): each may cost money at the
      * provider. The daily quota per store and the monthly cost limit apply as well.
      */
-    AI_JOB_ACCOUNT("ai-job-account", 30, Duration.ofHours(1));
+    AI_JOB_ACCOUNT("ai-job-account", 30, Duration.ofHours(1)),
+    /**
+     * Self-service account deletions tried by one signed-in account (#249): each checks the password, so this
+     * stops a left-open session from being used to guess it.
+     */
+    ACCOUNT_DELETE_ACCOUNT("account-delete-account", 5, Duration.ofHours(1));
 
     private final String id;
     private final int defaultLimit;

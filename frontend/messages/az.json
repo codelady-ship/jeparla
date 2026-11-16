@@ -61,7 +61,34 @@
     "mainNav": "Əsas naviqasiya",
     "account": "Hesab menyusu",
     "dashboard": "Kabinet",
-    "logout": "Çıxış"
+    "logout": "Çıxış",
+    "myAccount": "Hesabım"
+  },
+  "Account": {
+    "title": "Hesabım",
+    "description": "Hesab məlumatları və hesabın silinməsi.",
+    "intro": "Daxil olduğunuz hesab və onu silmək imkanı.",
+    "name": "Ad",
+    "contact": "E-poçt və ya telefon",
+    "deleteTitle": "Hesabı silmək",
+    "deleteGoes": "Hesab, seçilmişlər, bildirişlər və sessiyalar dərhal silinir. Şikayətləriniz qalır, amma hesabınızla əlaqəsi silinir.",
+    "deleteStays": "Satıcı bəyanatı təsdiqləmisinizsə, bəyanatdakı adınız və əlaqəniz qanunla sübut kimi saxlanılır və müddət bitəndə psevdonimləşdirilir. Audit jurnalındakı qeydlər Məxfilik siyasətində yazılan müddətə qədər qalır.",
+    "deleteStore": "Hesabınıza mağaza bağlıdırsa, hesabı buradan silmək olmur: dəstəyə yazın, əvvəlcə mağaza bağlanır.",
+    "deleteButton": "Hesabı sil",
+    "confirmTitle": "Hesab həmişəlik silinsin?",
+    "confirmText": "Bu əməliyyat geri qaytarılmır. Təsdiq üçün şifrənizi yazın.",
+    "password": "Şifrə",
+    "confirmButton": "Bəli, hesabı sil",
+    "cancel": "Ləğv et",
+    "deleted": "Hesabınız silindi.",
+    "errors": {
+      "required": "Şifrəni yazın.",
+      "unavailable": "Nümunə rejimində hesab silinmir.",
+      "sessionExpired": "Sessiya bitib. Yenidən daxil olun.",
+      "rateLimited": "Çox cəhd oldu. Bir az sonra yenidən yoxlayın.",
+      "network": "Şəbəkə xətası. Yenidən cəhd edin.",
+      "server": "Hesab silinmədi. Yenidən cəhd edin."
+    }
   },
   "Footer": {
     "about": "Jeparla haqqında",
