@@ -25,7 +25,7 @@
           "Mağaza məlumatları: mağazanın adı, şəhəri, ünvanı, WhatsApp və telefon nömrəsi, sosial şəbəkə linki, iş saatları, xəritə nöqtəsi, loqosu, hüquqi forması və VÖEN-i. Məqsəd: mağazanı kataloqda göstərmək və yoxlamaq. VÖEN-dən başqa bu məlumatlar mağaza səhifəsində hamıya görünür.",
           "Yoxlama sənədləri (qeydiyyat, VÖEN, əyar sənədi, laboratoriya hesabatı): fayl, onun SHA-256 heşi və yoxlama qərarı. Məqsəd: satıcını və məhsul məlumatını yoxlamaq. Fayllar məxfi saxlancda qalır, yalnız yoxlama komandası qısa müddətli linklə açır və hər baxış qeydə alınır.",
           "Satıcı bəyanatı: hər sənəd yükləmədən əvvəl təsdiqlənən mətn, onun versiyası və dili, təsdiq vaxtı, IP ünvanı və təsdiq edənin adı ilə əlaqəsi. Məqsəd: sənədin kim tərəfindən və hansı bəyanatla təqdim olunduğunu sübut etmək.",
-          "Davranış kodeksinin qəbulu: kodeksin versiyası, qəbul tarixi və qəbul edən hesab.",
+          "Davranış kodeksinin və Satıcı şərtlərinin qəbulu: kodeksin və şərtlərin versiyası, qəbul tarixi və qəbul edən hesab.",
           "Audit jurnalı: kabinetdə və admin paneldə görülən əhəmiyyətli əməliyyatlar (nə, nə vaxt, kim, IP ünvanı). Məqsəd: qərarların izlənilməsi və sui-istifadənin araşdırılması.",
           "Bildirişlər: saytdaxili bildirişlər və göndərilməyi gözləyən və ya göndərilmiş məktublar (ünvan, mövzu, mətn).",
           "Şikayətlər: məhsul barədə şikayətin səbəbi və mətni, daxil olmusunuzsa hesabınız. Şikayət hesabsız da göndərilə bilər.",
@@ -267,7 +267,7 @@
           "Şəkillər satılan məhsulun özünü göstərir; AI ilə yaradılmış və ya dəyişdirilmiş şəkil işarələnir.",
           "Saxta endirim, saxta rəy və uydurma rəqəm yoxdur. Məhsul və şərtlər dəyişməyibsə, alıcıya Jeparla-da göstəriləndən yüksək qiymət deyilmir.",
           "Başqasının əmtəə nişanından, şəklindən və mətnindən icazəsiz istifadə olunmur.",
-          "Satıcı Satıcının davranış kodeksinə əməl edir və onu ildə bir dəfə kabinetdə təsdiqləyir."
+          "Satıcı Satıcının davranış kodeksinə əməl edir. Kodeksi və bu şərtləri ildə bir dəfə, həmçinin onların yeni versiyası çıxanda kabinetdə yenidən təsdiqləyir; təsdiq olmadan məhsul yoxlamaya göndərilmir."
         ]
       },
       "buyers": {

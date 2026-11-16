@@ -1871,10 +1871,11 @@
       }
     },
     "code": {
-      "missingTitle": "Accept the code of conduct",
+      "missingTitle": "Accept the code of conduct and the seller terms",
       "dueTitle": "Confirm the code of conduct again: your acceptance ends on {date}",
-      "text": "You confirm the code once a year. Without it products cannot be sent to review. The acceptance date is shown on your store page.",
+      "text": "You confirm the code and the seller terms once a year and whenever they are updated. Without it products cannot be sent to review. The acceptance date is shown on your store page.",
       "read": "Read the code",
+      "readTerms": "Read the seller terms",
       "accept": "I have read it and accept",
       "failed": "The acceptance was not saved. Try again.",
       "unavailable": "Acceptance is not saved in sample mode."
@@ -2653,7 +2654,8 @@
       "4": "Stones are described honestly: natural, lab-grown or imitation; certificate numbers are given correctly.",
       "5": "Photos show the actual product; AI-generated images are labelled.",
       "6": "No fake reviews, fake discounts or invented numbers.",
-      "7": "The buyer's contact details are used only to answer them and for the sale."
+      "7": "The buyer's contact details are used only to answer them and for the sale.",
+      "8": "The buyer's consumer rights (an accurate description, a receipt, the warranty, replacement of a faulty item or a refund) are respected as the law requires; no condition limits them."
     },
     "faqTitle": "Questions",
     "faq": {

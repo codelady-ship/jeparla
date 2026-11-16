@@ -50,7 +50,7 @@ Oxunmayan aktlar (mətnlərdə maddə nömrəsi ilə istinad edilmir): Mülki M�
 1. Razılığın forması (FMQ 8.1, 8.2, 8.6 EHİS): veb bildiriş kifayət etməyə bilər. Hüquqşünas sualı № 1.
 2. İnformasiya sisteminin qeydiyyatı və lisenziya (FMQ 15.2, 9.14; İXM 375).
 3. Əvvəlcədən sənəd yoxlaması "ümumi monitorinq" sayıla bilərmi (ET 12.5).
-4. Satıcı şərtlərinin qəbulu: bazada yalnız kodeks versiyası saxlanılır; kodeks v2 ilə hamıdan yenidən qəbul.
+4. Satıcı şərtlərinin qəbulu: kodeks və şərtlərin versiyası ayrıca saxlanılır (V58, `seller_terms_versions`); kodeks v2 (istehlakçı hüquqları bəndi) ilə hamıdan yenidən qəbul tələb olunur, versiya dəyişəndə də.
 5. Bəyanatda "Cinayət Məcəlləsi" ifadəsi: özəl sertifikat üçün ehtimal formasında; mətn dəyişdirilmədi.
 6. Saxlama müddətləri gündəlik job ilə icra olunur (#249); job dayanarsa (məs. `JEPARLA_RETENTION_CRON=-`), silmə gecikir.
 7. Hesab silinəndə bəyanatdakı ad 7 il qalır (FMQ 7.1.5 istisnası): hüquqşünas təsdiqləməlidir.

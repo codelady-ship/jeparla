@@ -1871,10 +1871,11 @@
       }
     },
     "code": {
-      "missingTitle": "Davranış kodeksini qəbul edin",
+      "missingTitle": "Davranış kodeksini və satıcı şərtlərini qəbul edin",
       "dueTitle": "Davranış kodeksini yenidən təsdiqləyin: qəbul {date} tarixində bitir",
-      "text": "Kodeksi ildə bir dəfə təsdiqləyirsiniz. Qəbul olmadan məhsullar yoxlamaya göndərilə bilmir. Qəbul tarixi mağaza səhifəsində görünür.",
+      "text": "Kodeksi və satıcı şərtlərini ildə bir dəfə, həmçinin onlar yenilənəndə təsdiqləyirsiniz. Qəbul olmadan məhsullar yoxlamaya göndərilə bilmir. Qəbul tarixi mağaza səhifəsində görünür.",
       "read": "Kodeksi oxuyun",
+      "readTerms": "Satıcı şərtlərini oxuyun",
       "accept": "Oxudum, qəbul edirəm",
       "failed": "Qəbul saxlanılmadı. Yenidən cəhd edin.",
       "unavailable": "Nümunə rejimində qəbul saxlanılmır."
@@ -2653,7 +2654,8 @@
       "4": "Daşlar dürüst təsvir olunur: təbii, laboratoriyada yetişdirilmiş və ya imitasiya; sertifikat varsa nömrəsi düzgün yazılır.",
       "5": "Şəkillər satılan məhsulun özünü göstərir; AI ilə yaradılmış şəkil işarələnir.",
       "6": "Saxta rəy, saxta endirim və uydurma rəqəm yoxdur.",
-      "7": "Alıcının əlaqə məlumatı yalnız onun sualına cavab və satış üçün istifadə olunur."
+      "7": "Alıcının əlaqə məlumatı yalnız onun sualına cavab və satış üçün istifadə olunur.",
+      "8": "Alıcının istehlakçı hüquqlarına (malın düzgün təsviri, çek, zəmanət, keyfiyyətsiz malın dəyişdirilməsi və ya pulun qaytarılması) qanuna uyğun əməl olunur; bu hüquqları məhdudlaşdıran şərt qoyulmur."
     },
     "faqTitle": "Suallar",
     "faq": {

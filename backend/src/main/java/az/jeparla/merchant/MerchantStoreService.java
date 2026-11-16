@@ -111,10 +111,12 @@ public class MerchantStoreService {
 
     private void recordCodeAcceptance(Store store, long userId) {
         Instant now = clock.instant();
-        store.acceptCode(SellerCode.CURRENT_VERSION, now);
-        stores.recordCodeAcceptance(store.getId(), SellerCode.CURRENT_VERSION, now, userId);
+        store.acceptCode(SellerCode.CURRENT_VERSION, SellerCode.CURRENT_TERMS_VERSION, now);
+        stores.recordCodeAcceptance(store.getId(), SellerCode.CURRENT_VERSION, SellerCode.CURRENT_TERMS_VERSION,
+                now, userId);
         audit.record("SELLER_CODE_ACCEPTED", AuditTargetType.STORE, store.getId(), store.getName(), null,
-                "{\"version\":" + SellerCode.CURRENT_VERSION + "}");
+                "{\"version\":" + SellerCode.CURRENT_VERSION + ",\"termsVersion\":"
+                        + SellerCode.CURRENT_TERMS_VERSION + "}");
     }
 
     @Transactional(readOnly = true)

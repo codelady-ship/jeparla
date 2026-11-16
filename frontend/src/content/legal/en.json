@@ -25,7 +25,7 @@
           "Store details: the store's name, city, address, WhatsApp and phone number, social link, opening hours, map point, logo, legal form and VOEN (tax ID). Purpose: to show the store in the catalog and to verify it. Except the VOEN, these details are public on the store page.",
           "Verification documents (registration, VOEN, assay document, lab report): the file, its SHA-256 hash and the review decision. Purpose: to verify the seller and the product details. Files stay in private storage; only the verification team opens them through a short-lived link, and every view is logged.",
           "Seller declaration: the text confirmed before every document upload, its version and language, the time, the IP address and the name and contact of the person who confirmed it. Purpose: to prove who submitted a document and under which declaration.",
-          "Acceptance of the code of conduct: the code version, the date and the account that accepted it.",
+          "Acceptance of the code of conduct and the Seller terms: the version of the code and of the terms, the date and the account that accepted them.",
           "Audit log: significant actions in the seller dashboard and the admin panel (what, when, who, IP address). Purpose: to trace decisions and investigate misuse.",
           "Notifications: in-site notifications and emails waiting to be sent or sent (address, subject, text).",
           "Reports: the reason and text of a report about a product and, if you are signed in, your account. Reports can be sent without an account.",
@@ -265,7 +265,7 @@
           "Photos show the actual product for sale; photos created or altered with AI are marked.",
           "No fake discounts, fake reviews or made-up numbers. If the product and terms have not changed, the buyer is not quoted a higher price than the one shown on Jeparla.",
           "Other people's trademarks, photos and texts are not used without permission.",
-          "The seller follows the seller code of conduct and confirms it once a year in the dashboard."
+          "The seller follows the seller code of conduct. The seller confirms the code and these terms again in the dashboard once a year and whenever a new version of either is published; without that confirmation no product is sent to review."
         ]
       },
       "buyers": {

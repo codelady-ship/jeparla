@@ -13,14 +13,17 @@ import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    /** History row of a code of conduct acceptance (#107, V51); the store row keeps the latest one. */
+    /**
+     * History row of a code of conduct and seller terms acceptance (#107, V51, V58); the store row keeps the latest.
+     */
     @Modifying
     @Query(value = """
-            INSERT INTO store_code_acceptances (store_id, version, accepted_at, accepted_by)
-            VALUES (:storeId, :version, :acceptedAt, :userId)
+            INSERT INTO store_code_acceptances (store_id, version, terms_version, accepted_at, accepted_by)
+            VALUES (:storeId, :version, :termsVersion, :acceptedAt, :userId)
             """, nativeQuery = true)
     void recordCodeAcceptance(@Param("storeId") long storeId, @Param("version") int version,
-            @Param("acceptedAt") java.time.Instant acceptedAt, @Param("userId") Long userId);
+            @Param("termsVersion") int termsVersion, @Param("acceptedAt") java.time.Instant acceptedAt,
+            @Param("userId") Long userId);
 
     // ------------------------------------------------------------------ public (#37)
 

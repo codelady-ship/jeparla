@@ -92,10 +92,41 @@ class SellerCodeApiTests extends MerchantApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codeAcceptedOn").value(Matchers.matchesPattern("\\d{4}-\\d{2}-\\d{2}")));
 
-        jdbc.update("UPDATE stores SET code_version = NULL, code_accepted_at = NULL WHERE id = ?", seller.storeId());
+        jdbc.update("UPDATE stores SET code_version = NULL, terms_version = NULL, code_accepted_at = NULL WHERE id = ?",
+                seller.storeId());
         mvc.perform(get("/api/v1/stores/" + slug))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codeAcceptedOn").doesNotExist());
+    }
+
+    @Test
+    void bothVersionsAreStoredAndAnOlderVersionMustBeAcceptedAgain() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, true);
+        assertThat(jdbc.queryForMap("SELECT version, terms_version FROM store_code_acceptances WHERE store_id = ?",
+                seller.storeId()))
+                .containsEntry("version", SellerCode.CURRENT_VERSION)
+                .containsEntry("terms_version", SellerCode.CURRENT_TERMS_VERSION);
+        assertThat(jdbc.queryForObject("SELECT details ->> 'termsVersion' FROM audit_logs"
+                + " WHERE action = 'SELLER_CODE_ACCEPTED' AND target_id = ?", String.class,
+                String.valueOf(seller.storeId()))).isEqualTo(String.valueOf(SellerCode.CURRENT_TERMS_VERSION));
+        long product = readyProduct(seller);
+
+        // Accepted before code v2 and the versioned terms (V58): a recent date is not enough.
+        jdbc.update("UPDATE stores SET code_version = 1, terms_version = NULL, code_accepted_at = now() WHERE id = ?",
+                seller.storeId());
+        mvc.perform(get("/api/v1/merchant/store").with(seller.token()))
+                .andExpect(jsonPath("$.codeAcceptedAt").value(Matchers.nullValue()));
+        submit(seller, product).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("merchant.code_not_accepted"));
+
+        // The current code with older terms is not enough either.
+        jdbc.update("UPDATE stores SET code_version = ?, terms_version = NULL WHERE id = ?",
+                SellerCode.CURRENT_VERSION, seller.storeId());
+        submit(seller, product).andExpect(status().isConflict());
+
+        mvc.perform(post("/api/v1/merchant/store/code-acceptance").with(seller.token()))
+                .andExpect(status().isOk());
+        submit(seller, product).andExpect(status().isOk());
     }
 
     @Test
