@@ -130,6 +130,12 @@ public class Store extends TimestampedEntity {
     @Column(name = "status_note")
     private String statusNote;
 
+    @Column(name = "legal_hold_at")
+    private Instant legalHoldAt;
+
+    @Column(name = "legal_hold_reason")
+    private String legalHoldReason;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "seller_status", nullable = false)
     private CheckStatus sellerStatus = CheckStatus.NONE;
@@ -201,6 +207,28 @@ public class Store extends TimestampedEntity {
     public void acceptCode(int version, Instant now) {
         this.codeVersion = version;
         this.codeAcceptedAt = now;
+    }
+
+    public Instant getLegalHoldAt() {
+        return legalHoldAt;
+    }
+
+    public String getLegalHoldReason() {
+        return legalHoldReason;
+    }
+
+    /**
+     * Legal hold (#138, V56): the store's evidence (declarations and their audit rows) is kept as it is, the
+     * retention job does not pseudonymise it. Set by an admin with a reason; never shown to the seller.
+     */
+    public void placeLegalHold(String reason, Instant now) {
+        this.legalHoldReason = reason;
+        this.legalHoldAt = now;
+    }
+
+    public void releaseLegalHold() {
+        this.legalHoldReason = null;
+        this.legalHoldAt = null;
     }
 
     /** Admin decision: the store becomes public. */

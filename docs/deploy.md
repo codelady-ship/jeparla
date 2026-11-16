@@ -139,7 +139,8 @@ nano deploy/.env                  # aşağıdakı cədvəl üzrə yoxlayın, Ctr
 | Dəyişən | Haradan gəlir |
 |---|---|
 | `SITE_DOMAIN`, `API_DOMAIN`, `S3_DOMAIN` | DuckDNS adı (bölmə 5): `jeparla.duckdns.org`, `api.jeparla.duckdns.org`, `s3.jeparla.duckdns.org` |
-| `JEPARLA_JWT_SECRET`, `JEPARLA_FRONTEND_TOKEN`, `JEPARLA_DB_*_PASSWORD`, `JEPARLA_REDIS_PASSWORD`, `JEPARLA_S3_SECRET_KEY`, `JEPARLA_INTERNAL_JOB_TOKEN` | `gen-secrets.sh` yaradır. Əl ilə istəsəniz: `openssl rand -hex 32` |
+| `JEPARLA_JWT_SECRET`, `JEPARLA_FRONTEND_TOKEN`, `JEPARLA_DB_*_PASSWORD`, `JEPARLA_REDIS_PASSWORD`, `JEPARLA_S3_SECRET_KEY`, `JEPARLA_INTERNAL_JOB_TOKEN`, `JEPARLA_PSEUDONYM_KEY` | `gen-secrets.sh` yaradır. Əl ilə istəsəniz: `openssl rand -hex 32`. `JEPARLA_PSEUDONYM_KEY` dəyişməməlidir (köhnə psevdonimlər onunla tutuşdurulur), surəti VM-dən kənarda saxlanılsın |
+| `JEPARLA_OPERATOR_NAME`, `JEPARLA_OPERATOR_TAX_ID`, `JEPARLA_OPERATOR_ADDRESS` | operatorun hüquqi adı, VÖEN-i və ünvanı (hüquqi səhifələrdə görünür, `docs/legal/analysis.md`). Boşdursa səhifədə "[sahibin məlumatı]" yazılır |
 | `COMPOSE_PROFILES` | `local-s3` (standart, şəkillər VM-də). R2-yə keçid: bölmə 13 |
 | `JEPARLA_SUPPORT_EMAIL` və ya `JEPARLA_SUPPORT_URL` | dəstək ünvanınız (məs. WhatsApp linki); saytın /help səhifəsində də görünür |
 | `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION` | indi boş; bölmə 14 |

@@ -167,6 +167,17 @@ jeparla:
       # Life of the presigned URL an admin opens a document with (every view is audited).
       view-url-ttl: 5m
       cleanup-lock-at-most-for: 15m
+    declarations:
+      # #138, docs/legal/analysis.md section 5: the IP and the user label of a seller declaration (and of its
+      # audit rows) are pseudonymised this many years after the later of the store's last declaration and the
+      # end of its relationship with Jeparla; stores under legal hold are skipped. At least 7.
+      retention-years: ${JEPARLA_DECLARATION_RETENTION_YEARS:7}
+      # HMAC key of the label pseudonym, at least 32 characters (e.g. openssl rand -hex 32). Keep a copy outside
+      # the VM: without the same key old pseudonyms cannot be matched. Empty: the job does nothing (warning).
+      pseudonym-key: ${JEPARLA_PSEUDONYM_KEY:}
+      # Daily, Asia/Baku; "-" turns the schedule off.
+      cron: ${JEPARLA_DECLARATION_RETENTION_CRON:0 20 4 * * *}
+      lock-at-most-for: 30m
   support:
     # Contact at the end of every notification that asks the seller to contact support (#138), also in the
     # email. Empty both: the help page is named instead, /{lang}/help in the app and its absolute URL on

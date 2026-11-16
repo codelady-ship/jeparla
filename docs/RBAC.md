@@ -368,7 +368,9 @@ Hesab əməliyyatları (#131, hədəf `USER`): `EMAIL_VERIFIED`, `PASSWORD_RESET
 `audit_logs` append-only-dir (V16, #165): tətbiq yalnız oxuyur və əlavə edir; yeganə dəyişiklik hesab
 silinəndə `actor_id`-nin `NULL` olmasıdır (`actor_label` qalır). Köhnə sətirlərin silinməsi yalnız sahib rolunun
 çağıra bildiyi `jeparla_purge_audit_logs(interval)` funksiyası ilə, ən azı 5 ildən köhnə sətirlər üçün mümkündür
-(müddət hüquqşünasın təsdiqini gözləyir, `docs/legal/sellers-liability.md` 3.6, #57); planlı job yoxdur.
+(məxfilik siyasətindəki müddət 7 ildir, #57); planlı purge job yoxdur. İkinci istisna (V56, #138): 7 ildən köhnə
+bəyanat hadisələrində IP-nin `NULL`, `actor_label`-in açarlı heşlə əvəzlənməsi, yalnız
+`jeparla_pseudonymise_declaration` funksiyası içində.
 
 ## Verilənlər bazası rolları (#165)
 
