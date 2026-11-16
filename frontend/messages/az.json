@@ -1253,11 +1253,48 @@
         "METAL_LINKED": "Metala bağlı",
         "labor": "İşçilik, 1 qram üçün (AZN)",
         "apply": "Görünən qaralamalara tətbiq et",
-        "hint": "Sabit qiymətə keçəndə hər variant indiki qiymətini saxlayır. Metala bağlıya keçəndə 1 qram işçilik yazılır, qalan qaydalar (sabit işçilik, daş, əlavə faiz) 0 olur və ya əvvəlki qayda qalır; redaktorda dəyişə bilərsiniz. Yalnız işçilik yazsanız, ancaq metala bağlı variantlar dəyişir. Yeni qiymətlər səhifəni yeniləyəndə görünür.",
-        "done": "{total} qaralamadan {done} dəyişdi. Yeni qiymətlər səhifəni yeniləyəndə görünür.",
+        "hint": "Sabit qiymətə keçəndə hər variant indiki qiymətini saxlayır. Metala bağlıya keçəndə 1 qram işçilik yazılır, qalan qaydalar (sabit işçilik, daş, əlavə faiz) 0 olur və ya əvvəlki qayda qalır; redaktorda dəyişə bilərsiniz. Yalnız işçilik yazsanız, ancaq metala bağlı variantlar dəyişir. Yeni qiymətlər cədvəldə dərhal görünür.",
+        "done": "{total} qaralamadan {done} dəyişdi.",
         "pricingEmpty": "Qiymət rejimini seçin və ya işçilik dəyərini yazın.",
         "laborInvalid": "İşçilik dəyərini rəqəmlə yazın, ən çox 2 onluq: məsələn 12,50.",
         "laborRequired": "Metala bağlı qiymət üçün 1 qram işçilik dəyərini yazın."
+      },
+      "quick": {
+        "open": "Qaralamaları sürətli redaktə et ({count})",
+        "close": "Sürətli redaktəni bağla",
+        "title": "Qaralamaların sürətli redaktəsi",
+        "keys": "Enter sətri saxlayır və növbəti sətrin eyni xanasına keçir, Shift+Enter yuxarı qalxır, Esc sətirdəki dəyişikliyi geri qaytarır. Sətirdən çıxanda dəyişiklik də saxlanılır. Ad, şəkil və qalan məlumatlar məhsul formasındadır.",
+        "loading": "Qaralamalar yüklənir",
+        "loadFailed": "Qaralamaları oxumaq olmadı. Səhifəni yeniləyib yenidən cəhd edin.",
+        "empty": "Görünən qaralama yoxdur.",
+        "colProduct": "Məhsul",
+        "colState": "Vəziyyət",
+        "col": {
+          "category": "Kateqoriya",
+          "metal": "Metal",
+          "fineness": "Əyar",
+          "weightGrams": "Çəki (q)",
+          "pricingMode": "Qiymət rejimi"
+        },
+        "fieldOf": "{field}: {name}",
+        "choose": "Seçin",
+        "fashion": "Bijuteriya: metal yoxdur",
+        "manyVariants": "{count, plural, other {# variant: formada}}",
+        "saving": "Saxlanılır",
+        "saved": "Saxlanıldı",
+        "unsaved": "Dəyişiklik saxlanmayıb",
+        "save": "Saxla",
+        "undo": "Geri qaytar",
+        "saveNamed": "{name}: saxla",
+        "undoNamed": "{name}: dəyişikliyi geri qaytar",
+        "rowSaved": "{name} saxlanıldı.",
+        "rowFailed": "{name} saxlanmadı; səbəb sətirdə yazılıb.",
+        "rowInvalid": "{name}: sətirdə səhv var, saxlanmadı.",
+        "errors": {
+          "required": "seçin və ya yazın.",
+          "decimalInvalid": "rəqəmlə yazın, məsələn 3,25.",
+          "quickNotDraft": "Bu məhsul artıq qaralama deyil; məhsul formasında dəyişin."
+        }
       }
     },
     "form": {
@@ -1723,10 +1760,28 @@
         "photoSize": "şəkil ən çox 15 MB ola bilər.",
         "pdfType": "PDF faylı seçin.",
         "pdfSize": "PDF ən çox 20 MB ola bilər.",
-        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin.",
+        "photoRead": "şəkli oxumaq olmadı."
       },
       "xlsxTemplate": "Excel şablonu ({lang})",
-      "makeProductNamed": "Məhsul yarat: {name}"
+      "makeProductNamed": "Məhsul yarat: {name}",
+      "queueTitle": "Yükləməyə hazır şəkillər ({count})",
+      "queueHint": "Lazım olsa şəkli fırladın və ya kəsin (orijinal, kvadrat, 4:5), sonra yükləyin. Dəyişiklik brauzerdə edilir və yalnız yüklənən nüsxəyə tətbiq olunur. Yüklənməyən şəkil səbəbi ilə burada qalır.",
+      "queueClear": "Növbəni təmizlə",
+      "queueLimit": "Bir dəfəyə ən çox {max} şəkil; qalanları götürülmədi.",
+      "uploadAll": "{count, plural, other {Hamısını yüklə (#)}}",
+      "retryFailed": "{count, plural, other {Alınmayanları yenidən göndər (#)}}",
+      "retry": "Yenidən cəhd et",
+      "failedStay": "{count, plural, other {# şəkil yüklənmədi və növbədə qaldı.}}",
+      "rotateLeft": "{name}: sola fırlat",
+      "rotateRight": "{name}: sağa fırlat",
+      "cropLabel": "{name}: kəsmə",
+      "cropOriginal": "Orijinal",
+      "cropSquare": "Kvadrat",
+      "cropPortrait": "4:5",
+      "previewAlt": "{name}: önizləmə",
+      "remove": "Çıxar",
+      "removeFromQueue": "{name}: növbədən çıxar"
     },
     "ai": {
       "title": "AI Studio",
