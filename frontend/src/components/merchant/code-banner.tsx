@@ -8,8 +8,9 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { sendJson } from "@/lib/merchant/client";
 
 /**
- * Asks the seller to accept the code of conduct (#107) when there is no valid acceptance
- * or it runs out within 30 days. Without it products cannot go to review.
+ * Asks the seller to accept the code of conduct and the seller terms (#107) when there is no
+ * valid acceptance (none, a new version of either, or the year is over) or it runs out within
+ * 30 days. Without it products cannot go to review.
  */
 export function CodeBanner({
   kind,
@@ -45,9 +46,14 @@ export function CodeBanner({
             {kind === "due" ? t("dueTitle", { date: validUntil ?? "" }) : t("missingTitle")}
           </h2>
           <p className="text-muted-foreground">{t("text")}</p>
-          <Link href="/verified#code" className="self-start link-underline">
-            {t("read")}
-          </Link>
+          <span className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/verified#code" className="link-underline">
+              {t("read")}
+            </Link>
+            <Link href="/legal/sellers" className="link-underline">
+              {t("readTerms")}
+            </Link>
+          </span>
         </div>
       </div>
       <div className="flex flex-col gap-1">

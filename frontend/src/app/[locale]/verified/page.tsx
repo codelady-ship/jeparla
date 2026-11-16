@@ -16,7 +16,8 @@ const CHECKS = [
 ] as const satisfies readonly (readonly [string, LucideIcon])[];
 const PARTS = ["what", "who", "not"] as const;
 const COMPLAINT = ["1", "2", "3"] as const;
-const CODE = ["1", "2", "3", "4", "5", "6", "7"] as const;
+// Version 2 of the code (#107, backend SellerCode.CURRENT_VERSION) added "8", the consumer-rights clause.
+const CODE = ["1", "2", "3", "4", "5", "6", "7", "8"] as const;
 const FAQ_KEYS = ["meaning", "guarantee", "report"] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
