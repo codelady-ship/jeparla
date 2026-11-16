@@ -13,6 +13,7 @@ import type {
   ProductStatus,
   StockStatus,
   StoneType,
+  StoreServiceKind,
 } from "./api";
 import type { ContactQuestion } from "@/lib/whatsapp";
 
@@ -30,6 +31,8 @@ export type MerchantStore = {
   description: string;
   /** schema.org openingHours, e.g. "Mo-Fr 10:00-19:00; Sa 11:00-17:00". */
   openingHours: string;
+  /** The store's map point for "near me" (#116); null or absent until the seller sets it. */
+  geo?: { lat: Decimal; lng: Decimal } | null;
   sellerStatus: SellerStatus;
   /** Backend only (absent in the sample data): the application and the documents check. */
   status?: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";
@@ -38,6 +41,9 @@ export type MerchantStore = {
   sellerKind?: SellerKind;
   /** Backend only: the price breakdown shows labor and store share as two lines (#104). */
   splitLaborMarkup?: boolean;
+  /** Backend only (#174): the store's own services and return terms. */
+  services?: StoreServiceKind[];
+  returnPolicy?: string;
   /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
   codeVersion?: number;
   codeAcceptedAt?: string | null;
@@ -149,6 +155,9 @@ export const FASHION_MATERIALS = [
 export const SELLER_KINDS = ["PRECIOUS", "FASHION", "MIXED"] as const;
 export type SellerKind = (typeof SELLER_KINDS)[number];
 
+export const DIMENSION_KEYS = ["widthMm", "thicknessMm", "lengthMm", "diameterMm"] as const;
+export type DimensionsInput = Partial<Record<(typeof DIMENSION_KEYS)[number], string>>;
+
 /** What the product form edits; also the body of POST/PUT /api/v1/merchant/products. */
 export type ProductInput = {
   images: ProductImageInput[];
@@ -173,6 +182,10 @@ export type ProductInput = {
   material?: FashionMaterial | "";
   /** FASHION only: the seller confirms "this is not a precious metal". */
   notPreciousConfirmed?: boolean;
+  /** Sizes in mm as typed (#174), each optional; absent in older drafts. */
+  dimensions?: DimensionsInput;
+  /** Up to 5 key features (#174), one per line as typed; absent in older drafts. */
+  keyFeatures?: string[];
   /** Hallmark and label photos (#106); absent in older drafts. */
   evidence?: Partial<Record<EvidenceKind, EvidenceInput>>;
 };

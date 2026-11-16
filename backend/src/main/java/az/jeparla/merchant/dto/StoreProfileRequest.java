@@ -2,6 +2,7 @@ package az.jeparla.merchant.dto;
 
 import az.jeparla.auth.AzMobilePhone;
 import az.jeparla.store.SellerKind;
+import az.jeparla.store.StoreServiceKind;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * Store profile ({@code PUT /api/v1/merchant/store}), {@code profileSchema} in
@@ -21,6 +23,9 @@ import java.math.BigDecimal;
  *
  * <p>{@code splitLaborMarkup} (#104): the product page shows labor and the store's markup as two lines
  * (true) or as one line (false, the default); absent keeps the saved choice.
+ *
+ * <p>{@code services} and {@code returnPolicy} (#174): what the store says it offers and its return terms;
+ * absent keeps the saved ones, an empty set or text clears them.
  */
 public record StoreProfileRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -35,7 +40,9 @@ public record StoreProfileRequest(
         @Size(max = 2000) String mapLink,
         @DecimalMin("-90") @DecimalMax("90") @Digits(integer = 2, fraction = 8) BigDecimal latitude,
         @DecimalMin("-180") @DecimalMax("180") @Digits(integer = 3, fraction = 8) BigDecimal longitude,
-        Boolean splitLaborMarkup) {
+        Boolean splitLaborMarkup,
+        Set<StoreServiceKind> services,
+        @Size(max = 500) String returnPolicy) {
 
     /** An Instagram-style handle or an https link, or empty (frontend {@code social}). */
     public static final String SOCIAL = "^$|^@[\\w.]{2,30}$|^https://\\S+$";

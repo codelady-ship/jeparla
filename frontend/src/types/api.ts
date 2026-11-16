@@ -76,6 +76,10 @@ export type StoreSummary = {
   logoUrl: string | null;
   verification: Verification;
   productCount: number;
+  /** schema.org openingHours ("Mo-Sa 10:00-20:00"); empty when the store has not filled it in. */
+  openingHours: string;
+  /** The store's public map point (#116); null until the seller sets it. */
+  geo: { lat: Decimal; lng: Decimal } | null;
   /** Kilometres from the `near` point, 0.1 km; only in a list asked with `near`. */
   distanceKm?: Decimal;
 };
@@ -86,11 +90,24 @@ export type Store = StoreSummary & {
   /** E.164, used for the WhatsApp link. */
   whatsapp: string;
   phone: string;
-  openingHours: string;
-  geo: { lat: Decimal; lng: Decimal } | null;
   createdAt: IsoDate;
   /** Day (YYYY-MM-DD, Baku) the store last accepted the seller code (#107); absent if not valid. */
   codeAcceptedOn?: string;
+  /** What the store says it offers (#174): its own statement, not a Jeparla guarantee; absent when none. */
+  services?: StoreServiceKind[];
+  /** The store's return terms in its own words (#174); absent when none. */
+  returnPolicy?: string;
+};
+
+export const STORE_SERVICES = ["RESIZE", "ENGRAVING", "GIFT_WRAP", "DELIVERY", "RETURNS"] as const;
+export type StoreServiceKind = (typeof STORE_SERVICES)[number];
+
+/** Sizes of a piece in millimetres (#174); a size the seller did not enter is null. */
+export type Dimensions = {
+  widthMm: Decimal | null;
+  thicknessMm: Decimal | null;
+  lengthMm: Decimal | null;
+  diameterMm: Decimal | null;
 };
 
 export type ProductImage = {
@@ -215,6 +232,10 @@ export type Product = ProductSummary & {
   status: ProductStatus;
   /** HALLMARK first; the demo mock does not send it (contract BACKEND_AHEAD). */
   evidencePhotos?: EvidencePhoto[];
+  /** Sizes in mm (#174); absent when the seller entered none. */
+  dimensions?: Dimensions | null;
+  /** Up to 5 key features the seller wrote (#174); absent when none. */
+  keyFeatures?: string[];
 };
 
 /** One column of /compare: comparison is per variant (weight, fineness, price differ). */

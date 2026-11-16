@@ -10,6 +10,7 @@ import az.jeparla.product.ProductStatus;
 import az.jeparla.product.StockStatus;
 import az.jeparla.store.dto.StoreRefDto;
 import az.jeparla.verification.dto.VerificationDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -45,14 +46,19 @@ public record ProductDto(
         List<StoneDto> stones,
         @Schema(description = "Always APPROVED in the public API") ProductStatus status,
         @Schema(description = "Hallmark and label photos (#106), HALLMARK first; empty when the seller added none")
-        List<EvidencePhotoDto> evidencePhotos) {
+        List<EvidencePhotoDto> evidencePhotos,
+        @Schema(nullable = true, description = "Sizes in mm (#174); left out when the seller entered none")
+        @JsonInclude(JsonInclude.Include.NON_NULL) DimensionsDto dimensions,
+        @Schema(description = "Up to 5 key features the seller wrote (#174); left out when none")
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> keyFeatures) {
 
     public static ProductDto of(ProductSummaryDto summary, LocalizedTextDto description, List<VariantDto> variants,
-            List<StoneDto> stones, ProductStatus status, List<EvidencePhotoDto> evidencePhotos) {
+            List<StoneDto> stones, ProductStatus status, List<EvidencePhotoDto> evidencePhotos,
+            DimensionsDto dimensions, List<String> keyFeatures) {
         return new ProductDto(summary.id(), summary.slug(), summary.name(), summary.categoryId(), summary.store(),
                 summary.materialKind(), summary.material(), summary.metal(), summary.priceFrom(), summary.defaultVariantId(), summary.pricingMode(),
                 summary.fineness(), summary.weightGrams(), summary.images(), summary.hasStones(),
                 summary.verification(), summary.stockStatus(), summary.publishedAt(), description, variants, stones,
-                status, evidencePhotos);
+                status, evidencePhotos, dimensions, keyFeatures);
     }
 }

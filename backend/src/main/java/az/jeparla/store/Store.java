@@ -18,6 +18,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -69,6 +72,26 @@ public class Store extends TimestampedEntity {
     /** schema.org openingHours, e.g. "Mo-Fr 10:00-19:00; Sa 11:00-17:00". */
     @Column(name = "opening_hours")
     private String openingHours;
+
+    /** Services the store says it offers (#174, V46); its own statement, not a Jeparla guarantee. */
+    @Column(name = "service_resize", nullable = false)
+    private boolean serviceResize;
+
+    @Column(name = "service_engraving", nullable = false)
+    private boolean serviceEngraving;
+
+    @Column(name = "service_gift_wrap", nullable = false)
+    private boolean serviceGiftWrap;
+
+    @Column(name = "service_delivery", nullable = false)
+    private boolean serviceDelivery;
+
+    @Column(name = "service_returns", nullable = false)
+    private boolean serviceReturns;
+
+    /** The store's return terms in its own words (#174), at most 500 characters; null when none. */
+    @Column(name = "return_policy")
+    private String returnPolicy;
 
     /** Product page price breakdown (#104, V45): labor and markup as two lines instead of one. */
     @Column(name = "split_labor_markup", nullable = false)
@@ -259,6 +282,43 @@ public class Store extends TimestampedEntity {
 
     public void setOpeningHours(String openingHours) {
         this.openingHours = openingHours;
+    }
+
+    /** The services in a fixed order (#174). */
+    public List<StoreServiceKind> getServices() {
+        List<StoreServiceKind> services = new ArrayList<>();
+        if (serviceResize) {
+            services.add(StoreServiceKind.RESIZE);
+        }
+        if (serviceEngraving) {
+            services.add(StoreServiceKind.ENGRAVING);
+        }
+        if (serviceGiftWrap) {
+            services.add(StoreServiceKind.GIFT_WRAP);
+        }
+        if (serviceDelivery) {
+            services.add(StoreServiceKind.DELIVERY);
+        }
+        if (serviceReturns) {
+            services.add(StoreServiceKind.RETURNS);
+        }
+        return services;
+    }
+
+    public void setServices(Collection<StoreServiceKind> services) {
+        this.serviceResize = services.contains(StoreServiceKind.RESIZE);
+        this.serviceEngraving = services.contains(StoreServiceKind.ENGRAVING);
+        this.serviceGiftWrap = services.contains(StoreServiceKind.GIFT_WRAP);
+        this.serviceDelivery = services.contains(StoreServiceKind.DELIVERY);
+        this.serviceReturns = services.contains(StoreServiceKind.RETURNS);
+    }
+
+    public String getReturnPolicy() {
+        return returnPolicy;
+    }
+
+    public void setReturnPolicy(String returnPolicy) {
+        this.returnPolicy = returnPolicy == null || returnPolicy.isBlank() ? null : returnPolicy.strip();
     }
 
     public boolean isSplitLaborMarkup() {

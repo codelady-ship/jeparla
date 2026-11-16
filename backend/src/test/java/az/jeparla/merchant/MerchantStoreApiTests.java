@@ -112,6 +112,22 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theOwnerSetsTheStoreServicesAndReturnTerms() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        String body = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",
+                "\"services\": [\"ENGRAVING\", \"RESIZE\"], \"returnPolicy\": \" 14 gün ərzində \", \"sellerKind\"");
+        mvc.perform(json(put("/api/v1/merchant/store"), body).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.services", Matchers.contains("RESIZE", "ENGRAVING")))
+                .andExpect(jsonPath("$.returnPolicy").value("14 gün ərzində"));
+        // Absent keeps them (#174).
+        mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Test Zərgər", SellerKind.PRECIOUS))
+                        .with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.services", Matchers.contains("RESIZE", "ENGRAVING")));
+    }
+
+    @Test
     void theLaborAndMarkupSplitIsKeptUntilTheSellerChangesIt() throws Exception {
         Seller seller = seller(SellerKind.PRECIOUS, false);
         String split = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",

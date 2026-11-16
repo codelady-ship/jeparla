@@ -1,8 +1,10 @@
-import { MapPin, ShieldCheck } from "lucide-react";
+import { MapIcon, MapPin, ShieldCheck } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
+import { StoreOpenStatus } from "@/components/pdp/store-open-status";
 import { isVerified } from "@/components/product/product-card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
+import { mapHref } from "@/lib/geo/map-link";
 import type { StoreSummary } from "@/types/api";
 
 /** Monogram stands in until stores upload logos (#30); no invented artwork. */
@@ -24,7 +26,10 @@ export function StoreMonogram({ name, size = "md" }: { name: string; size?: "md"
 export function StoreCard({ store }: { store: StoreSummary }) {
   const t = useTranslations("Stores");
   const tp = useTranslations("Product");
+  const tpd = useTranslations("Pdp");
   const format = useFormatter();
+  // Only the seller's own point: a city name alone would open the wrong place.
+  const map = mapHref(store.geo);
   return (
     <article className="relative flex h-full items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50">
       <StoreMonogram name={store.name} />
@@ -60,6 +65,30 @@ export function StoreCard({ store }: { store: StoreSummary }) {
             </Badge>
           )}
         </div>
+        {store.openingHours && (
+          <StoreOpenStatus
+            openingHours={store.openingHours}
+            labels={{
+              open: tpd("contact.open"),
+              closedToday: tpd.raw("contact.closedToday") as string,
+              closedTomorrow: tpd.raw("contact.closedTomorrow") as string,
+              closedOn: tpd.raw("contact.closedOn") as string,
+            }}
+          />
+        )}
+        {map && (
+          // Above the card's stretched link, so both stay clickable.
+          <a
+            href={map}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t("openMapOf", { store: store.name })}
+            className="touch-target relative z-10 flex items-center gap-1 self-start link-underline text-sm font-medium"
+          >
+            <MapIcon aria-hidden className="size-3.5 text-gold-text" />
+            {t("openMap")}
+          </a>
+        )}
       </div>
     </article>
   );

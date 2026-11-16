@@ -12,7 +12,8 @@ export type StoreStatusLabels = {
   closedToday: string;
   closedTomorrow: string;
   closedOn: string;
-  closedHint: string;
+  /** Left out on store cards (#116), where the line stays short. */
+  closedHint?: string;
 };
 
 // The current minute, so the status refreshes while the page stays open.
@@ -62,7 +63,7 @@ export function StoreOpenStatus({
       <Clock aria-hidden className={cn("mt-0.5 size-4 shrink-0", state.open && "text-success")} />
       <span>
         {text}
-        {!state.open && <span className="block">{labels.closedHint}</span>}
+        {!state.open && labels.closedHint && <span className="block">{labels.closedHint}</span>}
       </span>
     </p>
   );

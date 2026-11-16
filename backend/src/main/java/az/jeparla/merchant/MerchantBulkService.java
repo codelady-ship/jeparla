@@ -259,7 +259,7 @@ public class MerchantBulkService {
         VariantRequest variant = new VariantRequest(null, sku.isBlank() ? null : sku, finenessId, weight,
                 size.isBlank() ? null : size, PricingMode.FIXED, price, null, stock);
         return new ProductRequest(kind, categoryId, name, description, parsedMetal, parsedMaterial, confirmed,
-                List.of(variant), List.of(), null);
+                List.of(variant), List.of(), null, null, null);
     }
 
     private void validate(ProductRequest request) {
