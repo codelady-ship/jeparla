@@ -128,7 +128,6 @@ class EvidenceTablesTests {
         "ALTER TABLE seller_declarations OWNER TO jeparla_app",
         "DROP TABLE audit_logs",
         "SET session_replication_role = replica",
-        "SELECT jeparla_purge_audit_logs(INTERVAL '10 years')",
     })
     void theApplicationCannotBypassTheTriggers(String statement) {
         Fixture f = fixture();
@@ -195,9 +194,9 @@ class EvidenceTablesTests {
                 .rootCause().hasMessageContaining("append-only");
         assertThatThrownBy(() -> owner.update("UPDATE seller_declarations SET text = 'x' WHERE id = ?",
                 f.declaration())).rootCause().hasMessageContaining("append-only");
-        // Retention shorter than the proposed minimum (sellers-liability.md 3.6) is refused.
-        assertThatThrownBy(() -> owner.queryForObject("SELECT jeparla_purge_audit_logs(INTERVAL '1 year')",
-                Long.class)).rootCause().hasMessageContaining("at least 5 years");
+        // Retention shorter than 7 years (analysis.md section 5, V57) is refused.
+        assertThatThrownBy(() -> owner.queryForObject("SELECT jeparla_purge_audit_logs(INTERVAL '6 years')",
+                Long.class)).rootCause().hasMessageContaining("at least 7 years");
     }
 
     @Test
@@ -205,9 +204,11 @@ class EvidenceTablesTests {
         Fixture f = fixture();
         long old = superuser.queryForObject("""
                 INSERT INTO audit_logs (actor_label, action, target_type, created_at)
-                VALUES ('System', 'OLD_EVENT', 'STORE', now() - INTERVAL '6 years') RETURNING id
+                VALUES ('System', 'OLD_EVENT', 'STORE', now() - INTERVAL '8 years') RETURNING id
                 """, Long.class);
-        assertThat(owner.queryForObject("SELECT jeparla_purge_audit_logs(INTERVAL '5 years')", Long.class)).isOne();
+        // Other tests leave old rows too (pseudonymisation), so at least this one.
+        assertThat(owner.queryForObject("SELECT jeparla_purge_audit_logs(INTERVAL '7 years')", Long.class))
+                .isPositive();
         assertThat(app.queryForObject("SELECT count(*) FROM audit_logs WHERE id = ?", Integer.class, old)).isZero();
         assertThat(app.queryForObject("SELECT count(*) FROM audit_logs WHERE id = ?", Integer.class, f.audit()))
                 .isOne();

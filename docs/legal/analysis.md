@@ -52,7 +52,7 @@ Oxunmayan aktlar (mətnlərdə maddə nömrəsi ilə istinad edilmir): Mülki M�
 3. Əvvəlcədən sənəd yoxlaması "ümumi monitorinq" sayıla bilərmi (ET 12.5).
 4. Satıcı şərtlərinin qəbulu: bazada yalnız kodeks versiyası saxlanılır; kodeks v2 ilə hamıdan yenidən qəbul.
 5. Bəyanatda "Cinayət Məcəlləsi" ifadəsi: özəl sertifikat üçün ehtimal formasında; mətn dəyişdirilmədi.
-6. Saxlama müddətlərinin bir hissəsi avtomatik deyil; əl ilə silinməlidir.
+6. Saxlama müddətləri gündəlik job ilə icra olunur (#249); job dayanarsa (məs. `JEPARLA_RETENTION_CRON=-`), silmə gecikir.
 7. Hesab silinəndə bəyanatdakı ad 7 il qalır (FMQ 7.1.5 istisnası): hüquqşünas təsdiqləməlidir.
 8. Komissiya modelinin vergi tərəfi araşdırılmayıb.
 
@@ -64,13 +64,15 @@ Oxunmayan aktlar (mətnlərdə maddə nömrəsi ilə istinad edilmir): Mülki M�
 | Sessiya / yeniləmə / ailə | 7 gün / 30 gün / 90 gün | Avtomatik |
 | Sui-istifadə sayğacları | ≤ 30 gün | Redis TTL |
 | Şifrəli backup | 14 gün | Bucket lifecycle (sahib) |
-| Təsdiqlənmiş sənədlər | Əməkdaşlıqdan sonra 3 il | Əl ilə |
-| Rədd edilmiş adi sənəd | 90 gün | Əl ilə |
+| Təsdiqlənmiş sənədlər | Əməkdaşlıqdan sonra 3 il | `RetentionJob` (gündəlik), fayl da silinir |
+| Rədd edilmiş adi sənəd | 90 gün | `RetentionJob`; `AUTHENTICITY` və dayandırma sorğusundakı sənəd qalır |
 | Şübhəli sənəd və sübut | Legal hold | `stores.legal_hold_at` (V56) |
 | Bəyanat mətni | Silinmir | V15, V16 |
 | Bəyanatın IP-si və etiketi, eyni yükləmənin audit sətirləri | 7 il, sonra psevdonim | `DeclarationRetentionJob`, V56 |
-| Audit jurnalı | 7 il | `jeparla_purge_audit_logs`, cron yoxdur |
-| Şikayətlər | Qərardan 3 il; hesab silinəndə əlaqə dərhal | ON DELETE SET NULL; silmə əl ilə |
+| Audit jurnalı | 7 il | `RetentionJob` -> `jeparla_purge_audit_logs` (V57); bəyanat sətirləri psevdonimlə qalır |
+| Şikayətlər | Qərardan 3 il; hesab silinəndə əlaqə dərhal | ON DELETE SET NULL; `RetentionJob` |
+
+Legal hold (`stores.legal_hold_at`) olan mağazanın sənədi, şikayəti və audit sətri heç bir müddətlə silinmir.
 
 N = 7 il: CM 15 və 75.1 üzrə az ağır cinayətlərin müddəti; CM 320.2 və 200 üçün 2 il, CM 178.2 (5 000-50 000 AZN) üçün 7 il. Qəbul edilən risk: CM 178.3 (12 il), legal hold və açarlı heş ilə azaldılır. Dəyişmək üçün `JEPARLA_DECLARATION_RETENTION_YEARS` (7-dən az ola bilməz). Saymanın başlanğıcı: bəyanat, mağazanın son bəyanatı və mağazanın APPROVED-dan çıxması; hamısı N ildən köhnə olmalıdır.
 

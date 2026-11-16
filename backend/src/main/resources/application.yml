@@ -178,6 +178,12 @@ jeparla:
       # Daily, Asia/Baku; "-" turns the schedule off.
       cron: ${JEPARLA_DECLARATION_RETENTION_CRON:0 20 4 * * *}
       lock-at-most-for: 30m
+  retention:
+    # #249, docs/legal/analysis.md section 5: daily (Asia/Baku) deletion of approved documents 3 years after the
+    # store's relationship ended, rejected ordinary documents after 90 days, closed complaints 3 years after the
+    # decision and audit rows after 7 years; nothing of a store under legal hold. The periods are fixed in
+    # RetentionStore (the privacy policy promises them). "-" turns the schedule off.
+    cron: ${JEPARLA_RETENTION_CRON:0 40 4 * * *}
   support:
     # Contact at the end of every notification that asks the seller to contact support (#138), also in the
     # email. Empty both: the help page is named instead, /{lang}/help in the app and its absolute URL on
