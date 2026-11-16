@@ -366,9 +366,12 @@ Hesab əməliyyatları (#131, hədəf `USER`): `EMAIL_VERIFIED`, `PASSWORD_RESET
 (aktor hesabın özüdür, `AuditService.recordAs`), `PASSWORD_RESET_LINK_ISSUED` (aktor admin).
 
 `audit_logs` append-only-dir (V16, #165): tətbiq yalnız oxuyur və əlavə edir; yeganə dəyişiklik hesab
-silinəndə `actor_id`-nin `NULL` olmasıdır (`actor_label` qalır). Köhnə sətirlərin silinməsi yalnız sahib rolunun
-çağıra bildiyi `jeparla_purge_audit_logs(interval)` funksiyası ilə, ən azı 5 ildən köhnə sətirlər üçün mümkündür
-(məxfilik siyasətindəki müddət 7 ildir, #57); planlı purge job yoxdur. İkinci istisna (V56, #138): 7 ildən köhnə
+silinəndə `actor_id`-nin `NULL` olmasıdır (`actor_label` qalır). Köhnə sətirlərin silinməsi yalnız
+`jeparla_purge_audit_logs(interval)` funksiyası ilə, ən azı 7 ildən köhnə sətirlər üçün mümkündür (V57, #249).
+Funksiyanı gündəlik `RetentionJob` çağırır (ShedLock `data-retention`); legal hold altındakı mağazaya aid sətirlər
+və bəyanat yükləməsinin sətirləri (`declarationId`) silinmir. Tətbiqin öz `DELETE` hüququ yoxdur. Eyni job təsdiqlənmiş
+sənədləri (əməkdaşlıqdan 3 il sonra), rədd edilmiş adi sənədləri (90 gün), bağlanmış şikayətləri (qərardan 3 il)
+silir; audit-ə `RETENTION_APPLIED` (yalnız saylar) yazılır. İkinci istisna (V56, #138): 7 ildən köhnə
 bəyanat hadisələrində IP-nin `NULL`, `actor_label`-in açarlı heşlə əvəzlənməsi, yalnız
 `jeparla_pseudonymise_declaration` funksiyası içində.
 

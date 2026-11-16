@@ -21,6 +21,9 @@ jeparla:
   merchant:
     images:
       cleanup-cron: "-"
+  # RetentionJobTests and RetentionDatabaseTests run the retention themselves.
+  retention:
+    cron: "-"
   metal-prices:
     cron: "-"
     source-url: http://127.0.0.1:9/currencies/{date}.xml
