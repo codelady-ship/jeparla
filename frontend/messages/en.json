@@ -8,7 +8,8 @@
     "themeToDark": "Switch to dark mode",
     "themeToLight": "Switch to light mode",
     "skipToContent": "Skip to main content",
-    "compare": "Compare"
+    "compare": "Compare",
+    "favoritesPriceChanged": "{count, plural, one {: # price changed} other {: # prices changed}}"
   },
   "LocaleSwitcher": {
     "label": "Language",

@@ -8,7 +8,8 @@
     "themeToDark": "Включить тёмную тему",
     "themeToLight": "Включить светлую тему",
     "skipToContent": "Перейти к основному содержанию",
-    "compare": "Сравнение"
+    "compare": "Сравнение",
+    "favoritesPriceChanged": "{count, plural, one {: изменилась цена # товара} few {: изменились цены # товаров} many {: изменились цены # товаров} other {: изменились цены # товара}}"
   },
   "LocaleSwitcher": {
     "label": "Язык",

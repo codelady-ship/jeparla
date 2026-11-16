@@ -2,7 +2,8 @@
 
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { markPricesSeen } from "@/lib/price-seen";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { formatPrice } from "@/lib/money";
@@ -33,6 +34,14 @@ export function PriceChanges({ products }: { products: ProductSummary[] }) {
   const t = useTranslations("Saved.priceChanges");
   const locale = useLocale() as Locale;
   const saved = useSyncExternalStore(noop, snapshot, () => none);
+  // The visitor sees every change here, so the header note (#112) goes quiet until a price moves again.
+  const seenKey = products
+    .map((p) => `${p.id}:${p.priceFrom.amount}${p.priceFrom.currency}`)
+    .join();
+  useEffect(() => {
+    markPricesSeen(products);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seenKey stands for the prices shown
+  }, [seenKey]);
 
   const changed = products.flatMap((p) => {
     const before = saved[p.id];
