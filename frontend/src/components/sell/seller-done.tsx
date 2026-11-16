@@ -25,9 +25,18 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
     headingRef.current?.focus();
   }, []);
 
+  // Bijouterie stores need no documents (#128): no documents row and no reminder.
+  const fashion = draft.store.sellerKind === "FASHION";
   const rows: { label: string; status: Status }[] = [
     { label: t("rows.seller"), status: "pending" },
-    { label: t("rows.documents"), status: draft.docs.length ? "pending" : "waiting" },
+    ...(fashion
+      ? []
+      : [
+          {
+            label: t("rows.documents"),
+            status: (draft.docs.length ? "pending" : "waiting") as Status,
+          },
+        ]),
     { label: t("rows.product"), status: draft.productSkipped ? "none" : "draft" },
   ];
 
@@ -72,7 +81,7 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
         <h3 className="text-lg">{t("nextTitle")}</h3>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
           <li>{t("next.review")}</li>
-          {!draft.docs.length && <li>{t("next.docs")}</li>}
+          {!fashion && !draft.docs.length && <li>{t("next.docs")}</li>}
           <li>{t("next.products")}</li>
           <li>{t("next.publish")}</li>
         </ol>

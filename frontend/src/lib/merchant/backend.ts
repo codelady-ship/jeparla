@@ -1,4 +1,12 @@
-import type { Category, CheckStatus, Money, ProductStatus, StockStatus, Stone } from "@/types/api";
+import type {
+  Category,
+  CheckStatus,
+  FashionMaterial,
+  Money,
+  ProductStatus,
+  StockStatus,
+  Stone,
+} from "@/types/api";
 import type {
   EvidenceKind,
   EvidenceInput,
@@ -46,6 +54,9 @@ export type BackendProduct = {
   name: { az: string; en: string | null; ru: string | null };
   description: { az: string | null; en: string | null; ru: string | null } | null;
   metal: string | null;
+  /** FASHION only (#128). */
+  material?: FashionMaterial | null;
+  notPreciousConfirmedAt?: string | null;
   images: BackendImage[];
   variants: BackendVariant[];
   stones: Stone[];
@@ -120,6 +131,8 @@ export function toProductInput(p: BackendProduct, categories: Category[]): Produ
     // Expertise documents are separate, private uploads (lib/api/merchant documents).
     docs: [],
     materialKind: p.materialKind,
+    material: p.material ?? "",
+    notPreciousConfirmed: p.materialKind === "FASHION" && Boolean(p.notPreciousConfirmedAt),
     evidence: Object.fromEntries(
       (p.evidencePhotos ?? []).map((e): [EvidenceKind, EvidenceInput] => [
         e.kind,
@@ -146,10 +159,13 @@ export function toProductRequest(
   categories: Category[],
   existing: BackendProduct | null,
 ) {
-  const linked = input.pricingMode === "METAL_LINKED";
+  const kind = input.materialKind ?? existing?.materialKind ?? "PRECIOUS";
+  const fashion = kind === "FASHION";
+  // Bijouterie (#128): material instead of metal and fineness, FIXED prices only.
+  const linked = !fashion && input.pricingMode === "METAL_LINKED";
   const known = new Map(existing?.variants.map((v) => [v.id, v]) ?? []);
   return {
-    materialKind: input.materialKind ?? existing?.materialKind ?? "PRECIOUS",
+    materialKind: kind,
     categoryId: categories.find((c) => c.slug === input.category)?.id ?? null,
     audience: input.audience,
     name: { az: input.name.trim(), en: existing?.name.en ?? null, ru: existing?.name.ru ?? null },
@@ -158,16 +174,18 @@ export function toProductRequest(
       en: existing?.description?.en ?? null,
       ru: existing?.description?.ru ?? null,
     },
-    metal: input.metal || null,
+    metal: fashion ? null : input.metal || null,
+    material: fashion ? input.material || null : null,
+    notPreciousConfirmed: fashion ? input.notPreciousConfirmed === true : null,
     variants: input.variants.map((v) => {
       const id = /^v(\d+)$/.exec(v.key) ? Number(v.key.slice(1)) : null;
       const stored = id !== null ? known.get(id) : undefined;
       return {
         ...(stored && { id: stored.id, sku: stored.sku }),
-        finenessId: Number(input.fineness),
-        weightGrams: v.weightGrams.replace(",", "."),
+        finenessId: fashion ? null : Number(input.fineness),
+        weightGrams: blank(v.weightGrams.replace(",", ".")),
         size: blank(v.size),
-        pricingMode: input.pricingMode,
+        pricingMode: linked ? "METAL_LINKED" : "FIXED",
         price: linked ? null : v.price.replace(",", "."),
         rule: linked
           ? {

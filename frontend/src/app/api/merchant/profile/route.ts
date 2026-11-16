@@ -23,13 +23,20 @@ export async function PUT(request: Request) {
   if (USING_MOCK) return Response.json({ profile: { ...profile, whatsapp } });
   try {
     const locale = requestLocale(request);
-    // Fields the form does not edit (second phone, what the store sells) are kept.
+    // Fields the form does not edit (the second phone) are kept.
     const stored = await userFetch<StoredStore>("/merchant/store", { canRefresh: true, locale });
     const saved = await userFetch<typeof profile>("/merchant/store", {
       method: "PUT",
       canRefresh: true,
       locale,
-      body: { ...profile, whatsapp, phone: stored.phone, sellerKind: stored.sellerKind },
+      body: {
+        ...profile,
+        whatsapp,
+        phone: stored.phone,
+        // The backend refuses a change that would leave listed products or checked documents
+        // without a matching kind (409 merchant.seller_kind_conflict, #128).
+        sellerKind: profile.sellerKind ?? stored.sellerKind,
+      },
     });
     return Response.json({ profile: saved });
   } catch (e) {

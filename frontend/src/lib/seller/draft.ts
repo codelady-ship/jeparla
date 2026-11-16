@@ -26,6 +26,7 @@ export const EMPTY_DRAFT: SellerDraft = Object.freeze({
     address: "",
     social: "",
     legalType: "COMPANY",
+    sellerKind: "PRECIOUS",
     taxId: "",
     codeAccepted: false,
   },

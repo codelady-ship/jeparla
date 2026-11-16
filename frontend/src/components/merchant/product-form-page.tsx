@@ -62,6 +62,7 @@ export async function ProductFormPage({ id }: { id?: string }) {
           quotes={quotes}
           sellerApproved={store.sellerStatus === "VERIFIED"}
           requireDocs={USING_MOCK}
+          sellerKind={store.sellerKind ?? "PRECIOUS"}
         />
       </MerchantIntl>
     </div>

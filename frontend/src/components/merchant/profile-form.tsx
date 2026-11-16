@@ -3,7 +3,8 @@
 import { Copy, Loader2, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { SelectField, TextField } from "@/components/sell/fields";
+import { RadioGroupField, SelectField, TextField } from "@/components/sell/fields";
+import { SELLER_KINDS, type SellerKind } from "@/types/merchant";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { mapHref, type StoreGeo } from "@/lib/geo/map-link";
@@ -144,6 +145,21 @@ export function ProfileForm({
           hint={ts("hints.social")}
           className="sm:col-span-2"
         />
+        <div className="sm:col-span-2">
+          <RadioGroupField
+            id="pr-seller-kind"
+            label={ts("sellerKind.label")}
+            value={form.sellerKind ?? "PRECIOUS"}
+            onChange={(v) => set({ sellerKind: v as SellerKind })}
+            error={err(errors.sellerKind)}
+            options={SELLER_KINDS.map((k) => ({
+              value: k,
+              label: ts(`sellerKind.${k}`),
+              hint: ts(`sellerKind.${k}Hint`),
+            }))}
+          />
+          <p className="mt-2 text-xs text-muted-foreground">{t("sellerKindNote")}</p>
+        </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
           <Label htmlFor="pr-description">
             {t("fields.description")}

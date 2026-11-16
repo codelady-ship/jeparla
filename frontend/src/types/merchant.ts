@@ -5,6 +5,7 @@
 import type {
   CheckStatus,
   Decimal,
+  FashionMaterial,
   IsoDate,
   LocalizedText,
   MetalType,
@@ -36,7 +37,7 @@ export type MerchantStore = {
   status?: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";
   statusNote?: string | null;
   documentsStatus?: CheckStatus;
-  sellerKind?: "PRECIOUS" | "FASHION" | "MIXED";
+  sellerKind?: SellerKind;
   /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
   codeVersion?: number;
   codeAcceptedAt?: string | null;
@@ -126,6 +127,28 @@ export type EvidenceInput = {
 /** PRECIOUS: gold, silver, platinum (documents, fineness). FASHION: bijouterie (#128). */
 export type MaterialKind = "PRECIOUS" | "FASHION";
 
+/** Main material of a bijouterie product; values of backend `FashionMaterial`. */
+export const FASHION_MATERIALS = [
+  "BEADS",
+  "STAINLESS_STEEL",
+  "COPPER",
+  "BRASS",
+  "SILVER_PLATED",
+  "GOLD_PLATED",
+  "LEATHER",
+  "TEXTILE",
+  "WOOD",
+  "GLASS",
+  "CERAMIC",
+  "RESIN",
+  "NATURAL_STONE",
+  "OTHER",
+] as const satisfies readonly FashionMaterial[];
+
+/** What the store sells (#128): asked in the seller wizard, changeable in the profile. */
+export const SELLER_KINDS = ["PRECIOUS", "FASHION", "MIXED"] as const;
+export type SellerKind = (typeof SELLER_KINDS)[number];
+
 /** What the product form edits; also the body of POST/PUT /api/v1/merchant/products. */
 export type ProductInput = {
   images: ProductImageInput[];
@@ -146,6 +169,10 @@ export type ProductInput = {
   docs: { id: string; name: string; size: number; type: string }[];
   /** Absent in older drafts: the stored product's kind (or PRECIOUS) is kept. */
   materialKind?: MaterialKind;
+  /** FASHION only (#128): the main material instead of metal and fineness. */
+  material?: FashionMaterial | "";
+  /** FASHION only: the seller confirms "this is not a precious metal". */
+  notPreciousConfirmed?: boolean;
   /** Hallmark and label photos (#106); absent in older drafts. */
   evidence?: Partial<Record<EvidenceKind, EvidenceInput>>;
 };

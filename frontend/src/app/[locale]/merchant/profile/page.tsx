@@ -33,6 +33,7 @@ async function Profile() {
             description: store.description,
             openingHours: store.openingHours,
             mapLink: "",
+            sellerKind: store.sellerKind ?? "PRECIOUS",
           }}
           geo={store.geo ?? null}
         />
