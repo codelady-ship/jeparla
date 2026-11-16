@@ -1,11 +1,13 @@
 import { Plus } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MerchantIntl, merchantMetadata } from "@/components/merchant/merchant-shell";
 import { ProductTable } from "@/components/merchant/product-table";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { api as publicApi } from "@/lib/api";
 import { STATUS_FILTERS, type StatusFilter } from "@/lib/merchant/filter";
 import { merchantContext } from "@/lib/merchant/server";
 
@@ -16,12 +18,26 @@ type SP = PageProps<"/[locale]/merchant/products">["searchParams"];
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
 async function Products({ searchParams }: { searchParams: SP }) {
-  const [{ api }, sp, t] = await Promise.all([
+  const [{ api }, sp, t, locale] = await Promise.all([
     merchantContext(),
     searchParams,
     getTranslations("Merchant.dashboard"),
+    getLocale(),
   ]);
-  const rows = await api.products();
+  const [rows, categories, finenesses] = await Promise.all([
+    api.products(),
+    // Options of the drafts quick edit (#109); without them the table still works.
+    publicApi.listCategories().catch(() => []),
+    publicApi.listFinenesses().catch(() => []),
+  ]);
+  // Leaf categories only, as in the product form: a product sits in the most specific one.
+  const parents = new Set(categories.map((c) => c.parentId).filter((v) => v !== null));
+  const quickOptions = {
+    categories: categories
+      .filter((c) => !parents.has(c.id))
+      .map((c) => ({ value: c.slug, label: c.name[locale as Locale] })),
+    finenesses: finenesses.map((f) => ({ value: String(f.id), label: f.label, metal: f.metal })),
+  };
   const status = first(sp.status);
   const initialStatus: StatusFilter = (STATUS_FILTERS as readonly string[]).includes(status)
     ? (status as StatusFilter)
@@ -37,7 +53,12 @@ async function Products({ searchParams }: { searchParams: SP }) {
 
   return (
     <MerchantIntl>
-      <ProductTable rows={rows} initialQuery={first(sp.q)} initialStatus={initialStatus} />
+      <ProductTable
+        rows={rows}
+        initialQuery={first(sp.q)}
+        initialStatus={initialStatus}
+        quickOptions={quickOptions}
+      />
     </MerchantIntl>
   );
 }

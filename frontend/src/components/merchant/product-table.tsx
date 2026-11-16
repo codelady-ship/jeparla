@@ -1,12 +1,18 @@
 "use client";
 
-import { Coins, Pause, Pencil, Play, Search, Send, Sparkles } from "lucide-react";
+import { Coins, Pause, Pencil, Play, Search, Send, Sparkles, TableProperties } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import {
+  DraftQuickEdit,
+  type QuickFineness,
+  type QuickOption,
+  type QuickSaved,
+} from "./draft-quick-edit";
 import { StatusBadge } from "./status-badge";
 import type { Locale } from "@/i18n/routing";
 import type { BulkStatusResult } from "@/lib/merchant/bulk";
@@ -32,15 +38,28 @@ export function ProductTable({
   rows: initial,
   initialQuery,
   initialStatus,
+  quickOptions,
 }: {
   rows: MerchantProductRow[];
   initialQuery: string;
   initialStatus: StatusFilter;
+  /** Options of the drafts quick edit (#109). */
+  quickOptions?: { categories: QuickOption[]; finenesses: QuickFineness[] };
 }) {
   const t = useTranslations("Merchant.products");
   const ts = useTranslations("Merchant.status");
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const [rows, setRows] = useState(initial);
+  // Fresh rows from the server (router.refresh after a bulk change) replace the local copy.
+  const [lastInitial, setLastInitial] = useState(initial);
+  if (initial !== lastInitial) {
+    setLastInitial(initial);
+    setRows(initial);
+  }
+  const [quickOpen, setQuickOpen] = useState(false);
+  /** Bumped after a bulk change, so the quick-edit table reads the drafts again. */
+  const [quickKey, setQuickKey] = useState(0);
   const [q, setQ] = useState(initialQuery);
   const [status, setStatus] = useState<StatusFilter>(initialStatus);
   const [busy, setBusy] = useState<number | null>(null);
@@ -141,6 +160,28 @@ export function ProductTable({
         .map((r) => `${names.get(r.id) ?? r.id}: ${r.message ?? t("bulkFailed")}`),
     );
     notices.show(t("bulkPricing.done", { done, total: result.data.length }));
+    if (done > 0) {
+      // New prices: the server component reads the list again, no full page reload.
+      setQuickKey((k) => k + 1);
+      router.refresh();
+    }
+  }
+
+  /** One row saved in the quick-edit table (#109): status, category and price in the list. */
+  function quickSaved(saved: QuickSaved) {
+    setRows((all) =>
+      all.map((r) =>
+        r.id === saved.id
+          ? {
+              ...r,
+              status: saved.status,
+              categoryId: saved.categoryId ?? r.categoryId,
+              priceFrom: saved.priceFrom ?? r.priceFrom,
+              updatedAt: new Date().toISOString(),
+            }
+          : r,
+      ),
+    );
   }
 
   const price = (row: MerchantProductRow) =>
@@ -236,18 +277,51 @@ export function ProductTable({
           {t("count", { count: shown.length })}
         </p>
         {drafts.length > 0 && (
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            disabled={bulkBusy}
-            onClick={() => void sendDrafts()}
-          >
-            <Send aria-hidden />
-            {t("bulkReview", { count: drafts.length })}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {quickOptions && (
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                aria-expanded={quickOpen}
+                aria-controls="drafts-quick-edit"
+                onClick={() => setQuickOpen((o) => !o)}
+              >
+                <TableProperties aria-hidden />
+                {quickOpen ? t("quick.close") : t("quick.open", { count: drafts.length })}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              disabled={bulkBusy}
+              onClick={() => void sendDrafts()}
+            >
+              <Send aria-hidden />
+              {t("bulkReview", { count: drafts.length })}
+            </Button>
+          </div>
         )}
       </div>
+      {quickOpen && quickOptions && drafts.length > 0 && (
+        <section
+          id="drafts-quick-edit"
+          aria-labelledby="drafts-quick-edit-title"
+          className="flex flex-col gap-2 rounded-lg border bg-card p-4"
+        >
+          <h2 id="drafts-quick-edit-title" className="text-base font-medium">
+            {t("quick.title")}
+          </h2>
+          <DraftQuickEdit
+            key={quickKey}
+            drafts={drafts}
+            categories={quickOptions.categories}
+            finenesses={quickOptions.finenesses}
+            onSaved={quickSaved}
+          />
+        </section>
+      )}
       {drafts.length > 0 && (
         <details className="group rounded-lg border bg-card p-4">
           <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
