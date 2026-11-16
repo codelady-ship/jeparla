@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { FavoritesPriceNote } from "@/components/saved/favorites-price-note";
 import { SavedCount } from "@/components/saved/saved-count";
 import { SearchLauncher } from "@/components/search/search-launcher";
 import { AccountMenu } from "@/components/auth/account-menu";
@@ -95,6 +96,7 @@ export function SiteHeader() {
             <Heart aria-hidden />
             <span className="sr-only">{t("Nav.favorites")}</span>
             <SavedCount list="favorites" />
+            <FavoritesPriceNote />
           </Link>
           <div className="hidden sm:block">
             <LocaleSwitcher />
