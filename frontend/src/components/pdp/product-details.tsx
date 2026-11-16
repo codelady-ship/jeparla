@@ -1,15 +1,22 @@
 import {
+  Check,
   CircleCheck,
   CircleDashed,
   CircleMinus,
   CircleX,
+  Gift,
   MapPin,
+  PenLine,
+  Ruler,
   Shapes,
   Stamp,
   Store as StoreIcon,
+  Truck,
+  Undo2,
+  type LucideIcon,
 } from "lucide-react";
 import { approxPrices } from "@/lib/currency";
-import { formatGrams, formatPrice } from "@/lib/money";
+import { formatGrams, formatMm, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
@@ -23,7 +30,7 @@ import { api } from "@/lib/api";
 import { breadcrumbs, isRealPrice, product as productLd } from "@/lib/seo/json-ld";
 import type { ReactNode } from "react";
 import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
-import type { CheckStatus, Product, Store } from "@/types/api";
+import type { CheckStatus, Dimensions, Product, Store, StoreServiceKind } from "@/types/api";
 import { Gallery } from "./gallery";
 import { PriceBreakdownBlock } from "./price-breakdown";
 import { RecentlyViewed } from "./recently-viewed";
@@ -36,6 +43,22 @@ const STATUS_ICON: Record<CheckStatus, typeof CircleCheck> = {
   PENDING: CircleDashed,
   REJECTED: CircleX,
   NONE: CircleMinus,
+};
+
+const DIMENSION_FIELDS = [
+  "widthMm",
+  "thicknessMm",
+  "lengthMm",
+  "diameterMm",
+] as const satisfies readonly (keyof Dimensions)[];
+
+/** The store's own services (#174); Ruler for resizing. */
+const SERVICE_ICONS: Record<StoreServiceKind, LucideIcon> = {
+  RESIZE: Ruler,
+  ENGRAVING: PenLine,
+  GIFT_WRAP: Gift,
+  DELIVERY: Truck,
+  RETURNS: Undo2,
 };
 
 export async function ProductDetails({
@@ -143,6 +166,11 @@ export async function ProductDetails({
       ? [[t("facts.weight"), formatGrams(p.weightGrams, locale)] as [string, string]]
       : []),
     ...(first?.size ? [[t("facts.size"), first.size] as [string, string]] : []),
+    // Sizes in mm (#174): a row only for what the seller entered.
+    ...DIMENSION_FIELDS.flatMap((k) => {
+      const v = p.dimensions?.[k];
+      return v ? [[t(`facts.${k}`), formatMm(v, locale)] as [string, string]] : [];
+    }),
     ...(isRealPrice(p.priceFrom)
       ? [[t("facts.price"), formatPrice(p.priceFrom.amount, locale)] as [string, string]]
       : []),
@@ -303,6 +331,22 @@ export async function ProductDetails({
           />
 
           <p className="text-sm leading-relaxed">{p.description[locale]}</p>
+
+          {(p.keyFeatures ?? []).length > 0 && (
+            <section aria-labelledby="features">
+              <h2 id="features" className="mb-2 text-base font-semibold">
+                {t("keyFeatures")}
+              </h2>
+              <ul className="flex flex-col gap-1.5 text-sm">
+                {(p.keyFeatures ?? []).map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {fashion && (
             <aside
@@ -491,6 +535,31 @@ export async function ProductDetails({
                 {store.address}
               </p>
               <p className="text-sm text-muted-foreground">{store.description[locale]}</p>
+              {((store.services ?? []).length > 0 || store.returnPolicy) && (
+                <div className="mt-2 flex flex-col gap-2 border-t pt-3">
+                  <h3 className="text-sm font-semibold">{t("services.title")}</h3>
+                  {(store.services ?? []).length > 0 && (
+                    <ul className="grid gap-1.5 text-sm sm:grid-cols-2">
+                      {(store.services ?? []).map((s) => {
+                        const Icon = SERVICE_ICONS[s];
+                        return (
+                          <li key={s} className="flex items-center gap-2">
+                            <Icon aria-hidden className="size-4 shrink-0 text-gold-text" />
+                            {t(`services.${s}`)}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {store.returnPolicy && (
+                    <p className="text-sm">
+                      <span className="font-medium">{t("services.returnPolicy")}: </span>
+                      {store.returnPolicy}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">{t("services.note")}</p>
+                </div>
+              )}
             </div>
           </Reveal>
         )}

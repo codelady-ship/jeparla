@@ -11,6 +11,7 @@ import az.jeparla.merchant.dto.MerchantVariantDto;
 import az.jeparla.product.Product;
 import az.jeparla.product.ProductEvidencePhoto;
 import az.jeparla.product.ProductImage;
+import az.jeparla.product.dto.DimensionsDto;
 import az.jeparla.product.dto.StoneDto;
 import java.util.Comparator;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,8 @@ class MerchantViews {
                 product.getImages().stream().sorted(IMAGE_ORDER).map(this::image).toList(),
                 product.getVariants().stream().map(MerchantVariantDto::of).toList(),
                 product.getStones().stream().map(StoneDto::of).toList(),
-                product.getEvidencePhotos().stream().map(this::evidence).toList());
+                product.getEvidencePhotos().stream().map(this::evidence).toList(),
+                DimensionsDto.of(product), product.getKeyFeatures());
     }
 
     MerchantEvidencePhotoDto evidence(ProductEvidencePhoto photo) {

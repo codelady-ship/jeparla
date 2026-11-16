@@ -136,6 +136,11 @@ class ProductRequestChecks {
         if (found.isPresent()) {
             throw invalid("merchant.fashion_claim", "description").withArgs(found.get());
         }
+        // Key features (#174) are shown under the description: the same rule.
+        found = claim(request.keyFeaturesOrEmpty().toArray(String[]::new));
+        if (found.isPresent()) {
+            throw invalid("merchant.fashion_claim", "keyFeatures").withArgs(found.get());
+        }
     }
 
     private static void stone(MaterialKind kind, StoneRequest stone, String field) {

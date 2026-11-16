@@ -39,7 +39,8 @@ public final class StoreDtos {
         return new StoreDto(store.getId(), store.getSlug(), store.getName(), store.getCity(), logoUrl,
                 verification(store), productCount, LocalizedTextDto.of(store.getDescription()), store.getAddress(),
                 store.getWhatsapp(), orEmpty(store.getPhone()), orEmpty(store.getOpeningHours()), geo(store),
-                store.getCreatedAt().toString(), codeAcceptedOn(store));
+                store.getCreatedAt().toString(), codeAcceptedOn(store), store.getServices(),
+                store.getReturnPolicy());
     }
 
     /** The store's public map point (#116), or null while the seller has not set it. */

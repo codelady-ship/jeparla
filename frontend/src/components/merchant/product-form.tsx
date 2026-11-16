@@ -17,6 +17,8 @@ import {
   basicsStep,
   docsStep,
   imagesStep,
+  KEY_FEATURE_LENGTH,
+  MAX_KEY_FEATURES,
   MAX_STONES,
   MAX_VARIANTS,
   metalStep,
@@ -26,6 +28,7 @@ import {
 import type { DocMeta } from "@/lib/seller/schemas";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
 import {
+  DIMENSION_KEYS,
   FASHION_MATERIALS,
   PRODUCT_AUDIENCES,
   type MaterialKind,
@@ -50,6 +53,9 @@ const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
 const STOCK: StockStatus[] = ["IN_STOCK", "MADE_TO_ORDER", "OUT_OF_STOCK"];
 const STONES: StoneType[] = ["DIAMOND", "RUBY", "SAPPHIRE", "EMERALD", "PEARL", "CUBIC_ZIRCONIA"];
 const noop = () => () => {};
+/** The first per-line key feature error ("keyFeatures.2": "keyFeatureLong"), if any. */
+const firstKeyFeatureError = (errors: Record<string, string>) =>
+  Object.entries(errors).find(([k]) => k.startsWith("keyFeatures."))?.[1];
 const newKey = (p: string) => `${p}${Date.now().toString(36)}${Math.floor(performance.now())}`;
 
 /**
@@ -401,6 +407,50 @@ export function ProductForm({
                 </p>
               )}
             </div>
+            <div className="flex flex-col gap-2 sm:col-span-2">
+              <Label htmlFor="p-features">
+                {t("fields.keyFeatures")}
+                <span className="font-normal text-muted-foreground">({t("optional")})</span>
+              </Label>
+              <textarea
+                id="p-features"
+                rows={4}
+                value={(p.keyFeatures ?? []).join("\n")}
+                onChange={(e) => set({ keyFeatures: e.target.value.split("\n") })}
+                aria-invalid={errors.keyFeatures ? true : undefined}
+                aria-describedby={`p-features-hint${errors.keyFeatures ? " p-features-error" : ""}`}
+                className="rounded-lg border border-input bg-background px-2.5 py-2 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm"
+              />
+              <p id="p-features-hint" className="text-xs text-muted-foreground">
+                {t("hints.keyFeatures", { max: MAX_KEY_FEATURES, length: KEY_FEATURE_LENGTH })}
+              </p>
+              {(errors.keyFeatures ?? firstKeyFeatureError(errors)) && (
+                <p id="p-features-error" className="text-sm text-destructive">
+                  {err(errors.keyFeatures ?? firstKeyFeatureError(errors))}
+                </p>
+              )}
+            </div>
+            <fieldset className="flex min-w-0 flex-col gap-3 rounded-lg border p-4 sm:col-span-2">
+              <legend className="px-1 text-sm font-semibold">
+                {t("dimensions.title")}{" "}
+                <span className="font-normal text-muted-foreground">({t("optional")})</span>
+              </legend>
+              <p className="text-xs text-muted-foreground">{t("dimensions.hint")}</p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {DIMENSION_KEYS.map((k) => (
+                  <TextField
+                    key={k}
+                    id={`p-dim-${k}`}
+                    label={t(`dimensions.${k}`)}
+                    inputMode="decimal"
+                    placeholder="2,5"
+                    value={p.dimensions?.[k] ?? ""}
+                    onChange={(e) => set({ dimensions: { ...p.dimensions, [k]: e.target.value } })}
+                    error={err(errors[`dimensions.${k}`])}
+                  />
+                ))}
+              </div>
+            </fieldset>
           </div>
         )}
 

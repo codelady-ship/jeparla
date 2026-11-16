@@ -35,6 +35,8 @@ async function Profile() {
             mapLink: "",
             sellerKind: store.sellerKind ?? "PRECIOUS",
             splitLaborMarkup: store.splitLaborMarkup ?? false,
+            services: store.services ?? [],
+            returnPolicy: store.returnPolicy ?? "",
           }}
           geo={store.geo ?? null}
         />

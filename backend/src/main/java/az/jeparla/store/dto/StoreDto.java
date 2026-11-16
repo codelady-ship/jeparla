@@ -3,7 +3,9 @@ package az.jeparla.store.dto;
 import az.jeparla.common.dto.LocalizedTextDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import az.jeparla.verification.dto.VerificationDto;
+import az.jeparla.store.StoreServiceKind;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 /**
  * Store page ({@code Store} = {@code StoreSummary} + contact details in frontend/src/types/api.ts).
@@ -28,7 +30,13 @@ public record StoreDto(
         @Schema(format = "date-time") String createdAt,
         @Schema(description = "Day (Asia/Baku) the store last accepted the seller code of conduct (#107); left "
                 + "out when there is no valid acceptance", format = "date", nullable = true)
-        @JsonInclude(JsonInclude.Include.NON_NULL) String codeAcceptedOn) {
+        @JsonInclude(JsonInclude.Include.NON_NULL) String codeAcceptedOn,
+        @Schema(description = "Services the store says it offers (#174): its own statement, not a Jeparla "
+                + "guarantee; left out when none")
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) List<StoreServiceKind> services,
+        @Schema(description = "The store's return terms in its own words (#174); left out when none",
+                nullable = true)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) String returnPolicy) {
 
     /** Coordinates as decimal strings. */
     @Schema(name = "Geo", requiredProperties = {"lat", "lng"})

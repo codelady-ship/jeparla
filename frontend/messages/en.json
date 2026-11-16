@@ -270,7 +270,11 @@
       "city": "City",
       "material": "Material",
       "kind": "Type",
-      "hallmarkPhoto": "Hallmark photo"
+      "hallmarkPhoto": "Hallmark photo",
+      "widthMm": "Width",
+      "thicknessMm": "Thickness",
+      "lengthMm": "Length",
+      "diameterMm": "Diameter"
     },
     "pricing": {
       "FIXED": "Fixed",
@@ -389,6 +393,17 @@
       "added": "The seller added a hallmark or label photo.",
       "checked": "A Jeparla administrator compared the photo with the product data.",
       "notAssay": "A hallmark photo is not a laboratory assay of the fineness."
+    },
+    "keyFeatures": "Key features",
+    "services": {
+      "title": "Store services",
+      "RESIZE": "Resizing",
+      "ENGRAVING": "Engraving",
+      "GIFT_WRAP": "Gift wrapping",
+      "DELIVERY": "Delivery",
+      "RETURNS": "Returns",
+      "returnPolicy": "Return terms",
+      "note": "This is the store's own statement; Jeparla does not check these services. Ask for the exact terms on WhatsApp."
     }
   },
   "Stores": {
@@ -1295,7 +1310,8 @@
         "certificateNumber": "Certificate number",
         "audience": "Who it is for",
         "material": "Material",
-        "notPrecious": "I confirm that this product is not a precious metal and that its name and description do not mention gold, silver, diamonds or a fineness (for example 585)."
+        "notPrecious": "I confirm that this product is not a precious metal and that its name and description do not mention gold, silver, diamonds or a fineness (for example 585).",
+        "keyFeatures": "Key features"
       },
       "hints": {
         "name": "For example: Gold engagement ring with diamond.",
@@ -1305,7 +1321,8 @@
         "fineness": "Choose the metal first.",
         "audience": "Picks the model of an on-model AI image. Set automatically in men's and children's categories; you can change it.",
         "material": "Choose the main material; for a plating pick \"Silver plated\" or \"Gold plated\".",
-        "fashionPrice": "Bijouterie has a fixed price: it does not follow the metal rate."
+        "fashionPrice": "Bijouterie has a fixed price: it does not follow the metal rate.",
+        "keyFeatures": "One feature per line, up to {max} lines of {length} characters each. For example: Handmade, Made for everyday wear."
       },
       "images": {
         "drop": "Drop photos here or choose them",
@@ -1472,6 +1489,14 @@
         "FASHION": "Bijouterie or handmade",
         "FASHIONHint": "The material is shown and the price is fixed. It cannot be changed later."
       },
+      "dimensions": {
+        "title": "Dimensions, mm",
+        "hint": "Enter only what you measured; an empty size is not shown on the product page.",
+        "widthMm": "Width",
+        "thicknessMm": "Thickness",
+        "lengthMm": "Length (chain, bracelet)",
+        "diameterMm": "Diameter (earring, pendant)"
+      },
       "fromDraft": "The form starts with the photo of your draft. Fill in the other fields: the photo is added to the product only when you save, and the draft then leaves the list.",
       "fromDraftSuggested": "The form starts with the photo of your draft and the name, price and weight read from the catalog page. These are only suggestions: check every field. The photo is added to the product only when you save, and the draft then leaves the list."
     },
@@ -1525,7 +1550,18 @@
       },
       "sellerKindNote": "The change is refused while the store has live products of another kind or checked documents.",
       "splitLaborMarkup": "Show workmanship and the store share as separate lines in the price breakdown",
-      "splitLaborMarkupHint": "Applies to the \"How the price is calculated\" block of metal-linked products. When off, both are shown on one line as \"Workmanship and store share\"."
+      "splitLaborMarkupHint": "Applies to the \"How the price is calculated\" block of metal-linked products. When off, both are shown on one line as \"Workmanship and store share\".",
+      "services": {
+        "title": "Store services",
+        "hint": "Choose only the services you really offer. They appear on the product page as the store's own statement.",
+        "RESIZE": "Resizing",
+        "ENGRAVING": "Engraving",
+        "GIFT_WRAP": "Gift wrapping",
+        "DELIVERY": "Delivery",
+        "RETURNS": "Returns",
+        "returnPolicy": "Return terms",
+        "returnPolicyHint": "In your own words, up to 500 characters. For example: within 14 days, with the receipt and packaging."
+      }
     },
     "errors": {
       "imagesRequired": "Add at least one photo.",
@@ -1549,7 +1585,10 @@
       "server": "Something went wrong. Try again.",
       "rateLimited": "Too many attempts in a short time. Try again a little later.",
       "notPreciousRequired": "Confirm that the product is not a precious metal.",
-      "fashionFixedOnly": "Bijouterie can only have a fixed price."
+      "fashionFixedOnly": "Bijouterie can only have a fixed price.",
+      "keyFeatureLong": "A feature can be at most 120 characters.",
+      "keyFeaturesTooMany": "Write at most 5 features.",
+      "returnPolicyLong": "Return terms can be at most 500 characters."
     },
     "sampleOnly": "This section works with the real server only. In sample data mode no documents are uploaded and there are no notifications.",
     "documents": {
