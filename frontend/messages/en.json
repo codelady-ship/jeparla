@@ -1219,7 +1219,21 @@
       "bulkSent": "{done} of {total} products sent to review.",
       "bulkFailed": "The bulk change failed. Try again.",
       "aiStudio": "AI Studio",
-      "aiStudioNamed": "{name}: AI Studio"
+      "aiStudioNamed": "{name}: AI Studio",
+      "bulkPricing": {
+        "title": "Draft prices: {count, plural, one {# draft} other {# drafts}}",
+        "mode": "Price mode",
+        "keep": "Keep as it is",
+        "FIXED": "Fixed price",
+        "METAL_LINKED": "Linked to metal",
+        "labor": "Labour per gram (AZN)",
+        "apply": "Apply to the drafts in view",
+        "hint": "Switching to a fixed price keeps each variant's current price. Switching to metal-linked sets the labour per gram; the other rule fields (fixed labour, stones, markup) are 0 or stay as they were, and you can change them in the editor. With labour alone, only metal-linked variants change. New prices show after you reload the page.",
+        "done": "{done} of {total} drafts changed. New prices show after you reload the page.",
+        "pricingEmpty": "Choose a price mode or type a labour cost.",
+        "laborInvalid": "Type the labour cost as a number with at most 2 decimals, e.g. 12.50.",
+        "laborRequired": "Type the labour cost per gram for a metal-linked price."
+      }
     },
     "form": {
       "newTitle": "New product",
@@ -1457,7 +1471,9 @@
         "PRECIOUSHint": "Metal, fineness and weight are shown.",
         "FASHION": "Bijouterie or handmade",
         "FASHIONHint": "The material is shown and the price is fixed. It cannot be changed later."
-      }
+      },
+      "fromDraft": "The form starts with the photo of your draft. Fill in the other fields: the photo is added to the product only when you save, and the draft then leaves the list.",
+      "fromDraftSuggested": "The form starts with the photo of your draft and the name, price and weight read from the catalog page. These are only suggestions: check every field. The photo is added to the product only when you save, and the draft then leaves the list."
     },
     "profile": {
       "title": "Store profile",
@@ -1652,7 +1668,8 @@
         "pdfSize": "The PDF can be at most 20 MB.",
         "upload": "The file was not uploaded. Check the connection and try again."
       },
-      "xlsxTemplate": "Excel template ({lang})"
+      "xlsxTemplate": "Excel template ({lang})",
+      "makeProductNamed": "Create product: {name}"
     },
     "ai": {
       "title": "AI Studio",

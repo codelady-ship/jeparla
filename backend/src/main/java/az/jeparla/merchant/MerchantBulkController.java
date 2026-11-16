@@ -4,6 +4,7 @@ import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.i18n.Language;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
+import az.jeparla.merchant.dto.BulkPricingRequest;
 import az.jeparla.merchant.dto.BulkStatusRequest;
 import az.jeparla.merchant.dto.BulkStatusResultDto;
 import az.jeparla.merchant.dto.ImportResultDto;
@@ -102,5 +103,11 @@ public class MerchantBulkController {
     @Operation(summary = "Change the status of up to 100 own products, each on its own (e.g. drafts to review)")
     public List<BulkStatusResultDto> bulkStatus(@Valid @RequestBody BulkStatusRequest request) {
         return bulk.changeStatus(request.ids(), request.status());
+    }
+
+    @PostMapping("/bulk-pricing")
+    @Operation(summary = "Change the price mode and/or labour per gram of up to 100 own products, each on its own")
+    public List<BulkStatusResultDto> bulkPricing(@Valid @RequestBody BulkPricingRequest request) {
+        return bulk.changePricing(request.ids(), request.pricingMode(), request.laborPerGram());
     }
 }

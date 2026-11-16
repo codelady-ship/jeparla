@@ -6,6 +6,7 @@ import { EVIDENCE_KINDS, type ProductInput } from "@/types/merchant";
 import {
   backendImageId,
   dataUrlBytes,
+  draftImageId,
   toProductRequest,
   type BackendProduct,
   type ImageUpload,
@@ -65,6 +66,16 @@ export async function saveProduct(
     const stored = backendImageId(img.id);
     if (stored !== null) {
       order.push(stored);
+      continue;
+    }
+    // A photo from a draft (#109) is already in private storage: the API copies it over.
+    const draftId = draftImageId(img.id);
+    if (draftId !== null) {
+      const attached = await call<{ id: number }>(
+        `/merchant/products/${saved.id}/images/from-draft`,
+        { method: "POST", body: { draftId, altAz: input.name.trim().slice(0, 200) } },
+      );
+      order.push(attached.id);
       continue;
     }
     const file = dataUrlBytes(img.url);

@@ -83,6 +83,14 @@ export type ImageUpload = {
 
 /** Form id of a photo that is already stored: `img<backend id>`. */
 export const storedImageId = (id: number) => `img${id}`;
+/** Form id of a photo taken over from a draft (#109): "draft<id>". */
+export const draftImageFormId = (draftId: number) => `draft${draftId}`;
+
+export const draftImageId = (formId: string) => {
+  const m = /^draft(\d+)$/.exec(formId);
+  return m ? Number(m[1]) : null;
+};
+
 export const backendImageId = (formId: string) => {
   const m = /^img(\d+)$/.exec(formId);
   return m ? Number(m[1]) : null;

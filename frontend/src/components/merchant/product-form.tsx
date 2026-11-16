@@ -94,6 +94,8 @@ export function ProductForm({
   const ts = useTranslations("Sell");
   const ta = useTranslations("Auth");
   const store = productDraft(draftKey, initial);
+  // "new" or "draft-<id>" (a photo draft, #109) create a product; a number edits one.
+  const creating = draftKey === "new" || draftKey.startsWith("draft-");
   const hydrated = useSyncExternalStore(
     noop,
     () => true,
@@ -161,7 +163,7 @@ export function ProductForm({
   // Bijouterie (#128): the stored product's kind; a new one follows the store, a MIXED store chooses.
   const kind: MaterialKind = p.materialKind ?? (sellerKind === "FASHION" ? "FASHION" : "PRECIOUS");
   const fashion = kind === "FASHION";
-  const chooseKind = sellerKind === "MIXED" && draftKey === "new";
+  const chooseKind = sellerKind === "MIXED" && creating;
   const withKind = { ...p, materialKind: kind };
   const update = (fn: (d: ProductDraft) => ProductDraft) => store.update(fn);
   const set = (patch: Partial<ProductInput>) =>
@@ -225,17 +227,16 @@ export function ProductForm({
     )
       return fail({ form: "docsRequired" });
     setPending(intent);
-    const result =
-      draftKey === "new"
-        ? await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>("POST", "/api/merchant/products", {
-            intent,
-            product: withKind,
-          })
-        : await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>(
-            "PUT",
-            `/api/merchant/products/${draftKey}`,
-            { intent, product: withKind },
-          );
+    const result = creating
+      ? await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>("POST", "/api/merchant/products", {
+          intent,
+          product: withKind,
+        })
+      : await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>(
+          "PUT",
+          `/api/merchant/products/${draftKey}`,
+          { intent, product: withKind },
+        );
     setPending(null);
     if (!result.ok) {
       const errs = result.errors;

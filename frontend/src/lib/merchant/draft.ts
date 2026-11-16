@@ -68,7 +68,8 @@ export function productDraft(key: string, initial: ProductInput = EMPTY_INPUT): 
   const storageKey = PREFIX + key;
   const first: ProductDraft = {
     input: initial,
-    done: key === "new" ? [] : [1, 2, 3, 4],
+    // A new product ("new", or "draft-<id>" from a photo draft, #109) starts at step 1.
+    done: key === "new" || key.startsWith("draft-") ? [] : [1, 2, 3, 4],
     savedAt: null,
   };
   let cache: ProductDraft | null = null;

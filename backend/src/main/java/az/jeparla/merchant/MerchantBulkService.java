@@ -9,6 +9,8 @@ import az.jeparla.merchant.dto.DescriptionRequest;
 import az.jeparla.merchant.dto.ImportResultDto;
 import az.jeparla.merchant.dto.LocalizedTextRequest;
 import az.jeparla.merchant.dto.MerchantProductDto;
+import az.jeparla.merchant.dto.MerchantVariantDto;
+import az.jeparla.merchant.dto.PricingRuleRequest;
 import az.jeparla.merchant.dto.ProductRequest;
 import az.jeparla.merchant.dto.VariantRequest;
 import az.jeparla.product.Category;
@@ -405,6 +407,75 @@ public class MerchantBulkService {
             }
         }
         return results;
+    }
+
+    // ------------------------------------------------------------------ bulk pricing
+
+    /**
+     * Changes the price mode and/or the labour cost per gram of each product's variants, each product in its own
+     * transaction through {@link MerchantProductService#updateVariant} (the same checks, ownership and audit as the
+     * editor). To FIXED: the variant keeps its current price as the seller's fixed price. To METAL_LINKED: a variant
+     * that already had a rule keeps it with the new labour per gram, one without a rule gets labour per gram only
+     * (fixed labour, stones and markup 0, which the seller can change in the editor). Labour alone changes only the
+     * METAL_LINKED variants; a product without one is reported, not changed.
+     */
+    public List<BulkStatusResultDto> changePricing(List<Long> ids, PricingMode mode, BigDecimal laborPerGram) {
+        if (mode == null && laborPerGram == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.bulk_pricing_empty", "pricingMode");
+        }
+        if (mode == PricingMode.METAL_LINKED && laborPerGram == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.bulk_labor_required", "laborPerGram");
+        }
+        if (mode == PricingMode.FIXED && laborPerGram != null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.bulk_labor_fixed", "laborPerGram");
+        }
+        List<BulkStatusResultDto> results = new ArrayList<>();
+        for (Long id : ids.stream().distinct().toList()) {
+            try {
+                ProductStatus status = eachRow.execute(tx -> repriced(id, mode, laborPerGram));
+                results.add(new BulkStatusResultDto(id, true, status, null, null));
+            } catch (ApiException e) {
+                results.add(new BulkStatusResultDto(id, false, null, e.code(), text(e.code(), e.args())));
+            } catch (AccessDeniedException e) {
+                results.add(new BulkStatusResultDto(id, false, null, "auth.forbidden",
+                        text("auth.forbidden", null)));
+            }
+        }
+        return results;
+    }
+
+    private ProductStatus repriced(long id, PricingMode mode, BigDecimal laborPerGram) {
+        MerchantProductDto product = products.get(id);
+        int changed = 0;
+        for (MerchantVariantDto v : product.variants()) {
+            PricingMode target = mode != null ? mode : v.pricingMode();
+            if (mode == null && v.pricingMode() != PricingMode.METAL_LINKED) {
+                continue;
+            }
+            PricingRuleRequest rule = null;
+            BigDecimal price = null;
+            if (target == PricingMode.METAL_LINKED) {
+                rule = v.rule() == null
+                        ? new PricingRuleRequest(laborPerGram, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, null,
+                                null)
+                        : new PricingRuleRequest(laborPerGram, decimal(v.rule().laborFixed()),
+                                decimal(v.rule().stonePrice()), decimal(v.rule().markupPercent()),
+                                decimal(v.rule().minPrice()), decimal(v.rule().maxPrice()));
+            } else {
+                price = decimal(v.price().amount());
+            }
+            products.updateVariant(id, v.id(), new VariantRequest(v.id(), v.sku(), v.finenessId(),
+                    decimal(v.weightGrams()), v.size(), target, price, rule, v.stockStatus()));
+            changed++;
+        }
+        if (changed == 0) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.bulk_not_linked");
+        }
+        return products.get(id).status();
+    }
+
+    private static BigDecimal decimal(String value) {
+        return value == null || value.isBlank() ? null : new BigDecimal(value);
     }
 
     /** A problem of one import row: the column, the message code and its arguments. */

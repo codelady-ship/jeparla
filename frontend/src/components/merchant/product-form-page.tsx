@@ -1,3 +1,4 @@
+import { FileImage } from "lucide-react";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -5,13 +6,22 @@ import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing } from "@/i18n/routing";
 import { api as publicApi, USING_MOCK } from "@/lib/api";
+import { merchantDrafts } from "@/lib/api/drafts";
 import { suggestAudience } from "@/lib/merchant/audience";
+import { draftInput } from "@/lib/merchant/from-draft";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
 import { ProductForm } from "./product-form";
 
 /** Server part of /merchant/products/new and /[id]/edit: options, seller status, product. */
-export async function ProductFormPage({ id }: { id?: string }) {
+export async function ProductFormPage({
+  id,
+  draft,
+}: {
+  id?: string;
+  /** `?draft=<id>` of /merchant/products/new (#109). */
+  draft?: Promise<string | undefined>;
+}) {
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return null;
   const { api } = await merchantContext();
@@ -30,6 +40,13 @@ export async function ProductFormPage({ id }: { id?: string }) {
   );
   if (productId !== null && !product) notFound();
 
+  // "Create product" from a photo or catalog PDF draft (#109): its photo and suggestions.
+  const draftId = productId === null && draft ? Number(await draft) : NaN;
+  const fromDraft = Number.isInteger(draftId)
+    ? ((await merchantDrafts().catch(() => [])).find((d) => d.id === draftId) ?? null)
+    : null;
+  const initial = product?.input ?? (fromDraft ? draftInput(fromDraft) : undefined);
+
   // Leaf categories only: a product sits in the most specific one.
   const parents = new Set(categories.map((c) => c.parentId).filter((v) => v !== null));
   const options = categories
@@ -47,10 +64,18 @@ export async function ProductFormPage({ id }: { id?: string }) {
         <p className="text-muted-foreground">{t("intro")}</p>
       </div>
       <SellerBanner status={store.sellerStatus} />
+      {fromDraft && (
+        <p className="flex items-start gap-2 rounded-lg border bg-card p-3 text-sm">
+          <FileImage aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
+          {fromDraft.suggestedName || fromDraft.suggestedPrice || fromDraft.suggestedWeight
+            ? t("fromDraftSuggested")
+            : t("fromDraft")}
+        </p>
+      )}
       <MerchantIntl>
         <ProductForm
-          draftKey={product ? String(product.id) : "new"}
-          initial={product?.input}
+          draftKey={product ? String(product.id) : fromDraft ? `draft-${fromDraft.id}` : "new"}
+          initial={initial}
           productStatus={product?.status}
           categories={options}
           finenesses={finenesses.map((f) => ({

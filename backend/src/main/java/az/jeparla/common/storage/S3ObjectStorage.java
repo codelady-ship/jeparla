@@ -233,6 +233,23 @@ public class S3ObjectStorage implements ObjectStorage, AutoCloseable {
         client.deleteObject(DeleteObjectRequest.builder().bucket(privateBucket).key(key).build());
     }
 
+    @Override
+    public Optional<StoredObject> headPrivate(String key) {
+        requirePrivateKey(key);
+        try {
+            HeadObjectResponse response = client.headObject(
+                    HeadObjectRequest.builder().bucket(privateBucket).key(key).build());
+            return Optional.of(new StoredObject(response.contentLength(), response.contentType(), response.eTag()));
+        } catch (NoSuchKeyException e) {
+            return Optional.empty();
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) {
+                return Optional.empty();
+            }
+            throw e;
+        }
+    }
+
     /** A server-side copy between the two buckets of one account; content type and length are kept. */
     @Override
     public void publishPrivate(String privateKey, String publicKey) {

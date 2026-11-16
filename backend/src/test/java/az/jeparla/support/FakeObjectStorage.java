@@ -136,6 +136,13 @@ public class FakeObjectStorage implements ObjectStorage {
     }
 
     @Override
+    public Optional<StoredObject> headPrivate(String key) {
+        Stored stored = privateObjects.get(key);
+        return stored == null ? Optional.empty()
+                : Optional.of(new StoredObject(stored.bytes().length, stored.contentType(), stored.etag()));
+    }
+
+    @Override
     public void putPrivate(String key, byte[] bytes, String contentType) {
         privateObjects.put(key, new Stored(bytes.clone(), contentType, etag(bytes)));
     }

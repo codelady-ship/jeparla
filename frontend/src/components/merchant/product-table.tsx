@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Pencil, Play, Search, Send, Sparkles } from "lucide-react";
+import { Coins, Pause, Pencil, Play, Search, Send, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { StatusBadge } from "./status-badge";
 import type { Locale } from "@/i18n/routing";
 import type { BulkStatusResult } from "@/lib/merchant/bulk";
+import { bulkPricingBody } from "@/lib/merchant/bulk-pricing";
 import { sendJson } from "@/lib/merchant/client";
 import {
   filterRows,
@@ -19,7 +20,7 @@ import {
 } from "@/lib/merchant/filter";
 import { formatDecimal, formatPrice } from "@/lib/money";
 import { notices } from "@/lib/notice";
-import type { ProductStatus } from "@/types/api";
+import type { PricingMode, ProductStatus } from "@/types/api";
 import type { MerchantProductRow } from "@/types/merchant";
 
 /**
@@ -45,6 +46,9 @@ export function ProductTable({
   const [busy, setBusy] = useState<number | null>(null);
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+  const [pricingMode, setPricingMode] = useState<PricingMode | "">("");
+  const [labor, setLabor] = useState("");
+  const [pricingError, setPricingError] = useState<string | null>(null);
   const shown = filterRows(rows, q, status);
   /** Drafts in the current view; the API takes 100 per call. */
   const drafts = shown.filter((r) => r.status === "DRAFT").slice(0, 100);
@@ -103,6 +107,40 @@ export function ProductTable({
         .map((r) => `${names.get(r.id) ?? r.id}: ${r.message ?? t("bulkFailed")}`),
     );
     notices.show(t("bulkSent", { done: done.size, total: result.data.length }));
+  }
+
+  /** Price mode and/or labour per gram of the drafts in view (#109), each on its own. */
+  async function applyPricing() {
+    const built = bulkPricingBody(
+      drafts.map((r) => r.id),
+      pricingMode,
+      labor,
+    );
+    if (!built.ok) {
+      setPricingError(t(`bulkPricing.${built.error}`));
+      return;
+    }
+    setPricingError(null);
+    setBulkBusy(true);
+    setBulkErrors([]);
+    const result = await sendJson<BulkStatusResult[]>(
+      "POST",
+      "/api/merchant/products/bulk-pricing",
+      built.body,
+    );
+    setBulkBusy(false);
+    if (!result.ok) {
+      setPricingError(result.errors.form ?? t("bulkFailed"));
+      return;
+    }
+    const names = new Map(rows.map((r) => [r.id, r.name[locale]]));
+    const done = result.data.filter((r) => r.ok).length;
+    setBulkErrors(
+      result.data
+        .filter((r) => !r.ok)
+        .map((r) => `${names.get(r.id) ?? r.id}: ${r.message ?? t("bulkFailed")}`),
+    );
+    notices.show(t("bulkPricing.done", { done, total: result.data.length }));
   }
 
   const price = (row: MerchantProductRow) =>
@@ -210,6 +248,58 @@ export function ProductTable({
           </Button>
         )}
       </div>
+      {drafts.length > 0 && (
+        <details className="group rounded-lg border bg-card p-4">
+          <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+            <Coins aria-hidden className="size-4 text-gold-text" />
+            {t("bulkPricing.title", { count: drafts.length })}
+          </summary>
+          <form
+            noValidate
+            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void applyPricing();
+            }}
+          >
+            <label className="flex flex-col gap-1 text-sm font-medium sm:w-56">
+              {t("bulkPricing.mode")}
+              <select
+                value={pricingMode}
+                onChange={(e) => setPricingMode(e.target.value as PricingMode | "")}
+                className="h-11 rounded-lg border border-input bg-background px-2.5 text-base font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
+              >
+                <option value="">{t("bulkPricing.keep")}</option>
+                <option value="FIXED">{t("bulkPricing.FIXED")}</option>
+                <option value="METAL_LINKED">{t("bulkPricing.METAL_LINKED")}</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm font-medium sm:w-56">
+              {t("bulkPricing.labor")}
+              <Input
+                inputMode="decimal"
+                value={labor}
+                disabled={pricingMode === "FIXED"}
+                onChange={(e) => setLabor(e.target.value)}
+                aria-invalid={pricingError ? true : undefined}
+                aria-describedby="bulk-pricing-hint"
+                className="h-11"
+              />
+            </label>
+            <Button type="submit" variant="outline" size="lg" disabled={bulkBusy}>
+              {t("bulkPricing.apply")}
+            </Button>
+          </form>
+          <p id="bulk-pricing-hint" className="mt-2 text-xs text-muted-foreground">
+            {t("bulkPricing.hint")}
+          </p>
+          {pricingError && (
+            <p role="alert" className="mt-2 text-sm text-destructive">
+              {pricingError}
+            </p>
+          )}
+        </details>
+      )}
       {bulkErrors.length > 0 && (
         <ul
           role="alert"

@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,11 +94,13 @@ public class MerchantImageService {
     private final MerchantImageProperties properties;
     private final Clock clock;
     private final ApplicationEventPublisher events;
+    private final ProductDraftRepository drafts;
 
     public MerchantImageService(MerchantProducts productService, ImageUploadSlotRepository slots,
             ObjectStorage storage, MerchantViews views, AuditService audit, MerchantImageProperties properties,
-            Clock clock, ApplicationEventPublisher events) {
+            Clock clock, ApplicationEventPublisher events, ProductDraftRepository drafts) {
         this.events = events;
+        this.drafts = drafts;
         this.productService = productService;
         this.slots = slots;
         this.storage = storage;
@@ -217,6 +220,60 @@ public class MerchantImageService {
         audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
         publish(key, checked.stored());
+        return new Created<>(views.image(image), true);
+    }
+
+    /**
+     * Makes the photo of a draft (#109, "create product" from a photo or catalog PDF draft) a photo of the product.
+     * The draft photo was checked when the draft was made (size, magic bytes, dimensions) and sits in the private
+     * bucket; it is copied to the public bucket only after the rows are written, and the draft and its private file
+     * go after the commit. Another store's draft is 403, a missing one 404 (also when it was already used).
+     */
+    @Transactional
+    public Created<MerchantImageDto> attachDraft(long productId, long draftId, String altAz) {
+        Product product = productService.ownedWritable(productId);
+        productService.lockStore(product);
+        ProductDraft draft = drafts.findById(draftId).orElseThrow(ApiException::notFound);
+        if (!draft.getStoreId().equals(product.getStore().getId())) {
+            throw new AccessDeniedException("Another store's draft");
+        }
+        if (product.getImages().size() >= MAX_IMAGES) {
+            throw new ApiException(HttpStatus.CONFLICT, "merchant.image_limit");
+        }
+        String privateKey = draft.getImageKey();
+        StoredObject stored = storage.headPrivate(privateKey)
+                .orElseThrow(() -> invalid("merchant.image_missing", "draftId"));
+        String extension = EXTENSIONS.get(draft.getContentType());
+        String publicKey = prefix(product) + UUID.randomUUID() + "." + extension;
+        Instant now = clock.instant();
+        int sortOrder = product.getImages().stream().mapToInt(ProductImage::getSortOrder).max().orElse(-1) + 1;
+        ProductImage image = new ProductImage(publicKey, draft.getWidth(), draft.getHeight(), draft.getContentType(),
+                stored.sizeBytes(), false, sortOrder);
+        String alt = blankToNull(altAz);
+        if (alt != null) {
+            image.setAlt(LocalizedText.of(alt, null, null));
+        }
+        product.addImage(image);
+        drafts.delete(draft);
+        productService.afterChange(product, true, now);
+        productService.flush();
+        if (originals(product) == 1) {
+            events.publishEvent(new FirstOriginalPhotoAttached(product.getId(), image.getId()));
+        }
+        audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
+                "{\"imageId\":" + image.getId() + ",\"aiGenerated\":false,\"draftId\":" + draftId + "}");
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (status == STATUS_COMMITTED) {
+                    discardPrivate(privateKey);
+                } else {
+                    discard(publicKey);
+                }
+            }
+        });
+        // Public only now, after the rows; a rollback removes the copy again.
+        storage.publishPrivate(privateKey, publicKey);
         return new Created<>(views.image(image), true);
     }
 
@@ -447,6 +504,15 @@ public class MerchantImageService {
             storage.delete(key);
         } catch (RuntimeException e) {
             log.warn("Could not delete stored object {}: {}", key, e.toString());
+        }
+    }
+
+    /** Best effort: a private draft file left behind is never shown (no row points at it). */
+    private void discardPrivate(String key) {
+        try {
+            storage.deletePrivate(key);
+        } catch (RuntimeException e) {
+            log.warn("Could not delete private object {}: {}", key, e.toString());
         }
     }
 
