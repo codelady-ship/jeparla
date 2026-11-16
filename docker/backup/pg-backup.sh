@@ -11,7 +11,8 @@
 #   BACKUP_S3_BUCKET         R2 bucket for backups (separate from the image buckets, private)
 #   BACKUP_S3_ENDPOINT       https://<account-id>.r2.cloudflarestorage.com
 #   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY   an R2 token limited to that bucket
-# Optional: JEPARLA_DB_NAME (default jeparla), BACKUP_PREFIX (default postgres/).
+# Optional: JEPARLA_DB_NAME (default jeparla), BACKUP_PREFIX (default postgres/),
+#           BACKUP_S3_REGION (default auto, R2; Oracle Object Storage needs its region).
 #
 # Retention (14 days) is an R2 lifecycle rule on the bucket, not this script: a broken cron never deletes.
 set -euo pipefail
@@ -37,6 +38,7 @@ if [ "$size" -lt 1024 ]; then
   exit 1
 fi
 
-AWS_DEFAULT_REGION=auto aws s3 cp --only-show-errors --endpoint-url "$BACKUP_S3_ENDPOINT" \
+# R2: auto. Oracle Object Storage (S3 compatibility): the region, e.g. eu-frankfurt-1.
+AWS_DEFAULT_REGION="${BACKUP_S3_REGION:-auto}" aws s3 cp --only-show-errors --endpoint-url "$BACKUP_S3_ENDPOINT" \
   "$work/$name" "s3://${BACKUP_S3_BUCKET}/${prefix}${name}"
 echo "backup ok: s3://${BACKUP_S3_BUCKET}/${prefix}${name} (${size} bytes)"

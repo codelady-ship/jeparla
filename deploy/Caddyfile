@@ -1,0 +1,45 @@
+# Jeparla HTTPS entry point (deploy/docker-compose.prod.yml). Domains come from deploy/.env:
+#   SITE_DOMAIN  e.g. jeparla.duckdns.org       (free DuckDNS name; fallback: 141-147-1-2.sslip.io)
+#   API_DOMAIN   e.g. api.jeparla.duckdns.org   (DuckDNS answers every sub-name with the same IP)
+#   S3_DOMAIN    e.g. s3.jeparla.duckdns.org
+# Caddy gets and renews Let's Encrypt certificates itself (HTTP-01 on port 80, TLS-ALPN on 443).
+#
+# No trusted_proxies here on purpose: Caddy then replaces any X-Forwarded-For a client sends with the
+# client's real address. The API trusts that header from Caddy's fixed address (172.30.0.10) only.
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
+# The site (Next.js). The frontend names the visitor to the API from cf-connecting-ip, x-real-ip or
+# x-forwarded-for (src/lib/auth/tokens.ts): drop a client-sent cf-connecting-ip and set x-real-ip here,
+# so a visitor cannot pick the address the rate limits count.
+{$SITE_DOMAIN} {
+	import security_headers
+	encode zstd gzip
+	reverse_proxy web:3000 {
+		header_up -Cf-Connecting-Ip
+		header_up X-Real-Ip {remote_host}
+	}
+}
+
+{$API_DOMAIN} {
+	import security_headers
+	encode zstd gzip
+	reverse_proxy api:8080
+}
+
+# Product images (public bucket) and presigned uploads (private bucket) of the local S3 service.
+# Caddy keeps the Host header, so the signatures made for https://{$S3_DOMAIN} stay valid.
+# With Cloudflare R2 (COMPOSE_PROFILES empty) this site is unused and answers 502.
+{$S3_DOMAIN} {
+	import security_headers
+	request_body {
+		max_size 25MB
+	}
+	reverse_proxy s3:9000
+}
