@@ -39,9 +39,15 @@ göstərir. Compose faylı bu həddə görə qurulub (konteyner limitlərinin c�
    resurslar yalnız home region-dadır. Frankfurt-da A1 tutumu bəzən bitir ("Out of capacity"); onda
    `Netherlands Northwest (Amsterdam)` və ya `UK South (London)` da uyğundur.
 3. Kart doğrulaması: kartdan kiçik məbləğ bloklanır və qaytarılır. Bu addımı yalnız siz edirsiniz.
-4. Hesab açılandan sonra (tövsiyə, bölmə 12): **Billing & Cost Management -> Upgrade and Manage Payment ->
-   Pay As You Go**. Always Free limitində ödəniş yoxdur. Dərhal **Budgets -> Create Budget**: 1 USD, 100%
-   olanda e-poçt xəbərdarlığı.
+4. **Upgrade QADAĞANDIR** (sahibin qəti qərarı, 2026-11-16): hesab Free Tier-də qalır, **Pay As You Go**
+   və ya başqa pullu plana keçid edilmir. Oracle hesabı özü keçirmir; keçid yalnız sahibin konsolda
+   "Upgrade" düyməsi və şərtləri qəbulu ilə olur. Agentlər bu düyməyə toxunmur.
+5. Hesab açılan kimi qoruma:
+   - **Budgets -> Create Budget**: 1 USD, xərc 1% (0.01 USD) olanda sahibin e-poçtuna xəbərdarlıq.
+   - **Quota policy** (root compartment): yalnız Always Free resurslara icazə; pullu shape, əlavə
+     disk və digər pullu xidmətlər bağlıdır. Pullu ola biləcək hər addımdan əvvəl sahibdən çatda açıq
+     "bəli" alınır.
+   - Reserved public IP götürülmür: VM-in öz (ephemeral) IP-si VM silinməyənə qədər dəyişmir.
 
 ## 2. SSH açarı (sizin Windows kompüterinizdə)
 
@@ -241,8 +247,8 @@ Oracle Always Free instansiyanı 7 gün ərzində **hamısı** doğru olarsa "id
 
 Tədbirlər:
 
-1. **Pay As You Go** (bölmə 1.4). Rəsmi səhifə qaydanı "Always Free compute instances" üçün yazır; PAYG-nin
-   tam istisna olduğunu açıq demir. Hesab açılanda şərtləri yenidən oxuyun. 1 USD büdcə xəbərdarlığı mütləqdir.
+1. **Pay As You Go istifadə olunmur** (bölmə 1.4, sahibin qərarı). Qoruma yaddaş, backup və bərpa
+   addımlarıdır (aşağıda). Büdcə xəbərdarlığı mütləqdir.
 2. **Yaddaş**: üç meyarın hamısı lazımdır, ona görə yaddaş 20%-dən (12 GB-nin 2.4 GB-ı) yuxarı olsa,
    instansiya idle sayılmır. JVM, PostgreSQL `shared_buffers`, Next.js serveri və Silo birlikdə adətən bu
    həddən yuxarıdır; deploy-dan bir gün sonra `free -h` ilə yoxlayın ("used" 2.4 GB-dan çox olmalıdır).

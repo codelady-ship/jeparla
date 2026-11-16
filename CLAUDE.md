@@ -42,6 +42,11 @@ Tam tələblər: [docs/PLAN.md](./docs/PLAN.md). Backlog: [BACKLOG.md](./BACKLOG
 - **Deploy (pulsuz):** frontend Cloudflare/Netlify (və ya Vercel); backend, PostgreSQL və Redis
   Oracle Cloud Always Free ARM VM-də Docker Compose + Caddy ilə. Yatan hostlar (Render free və s.)
   qadağandır: giriş sorğusu gözləyib uğursuz olur. Ətraflı: `docs/PLAN.md` bölmə 3a.
+- **Oracle yalnız Free Tier (sahibin qəti qərarı, 2026-11-16):** hesab heç vaxt Pay As You Go-ya və ya
+  başqa pullu plana keçirilmir; yalnız Always Free resurslar yaradılır (A1 cəmi 4 OCPU/24 GB, disk cəmi
+  200 GB). Pullu ola biləcək hər addımdan (upgrade, reserved IP, əlavə disk, başqa shape, pullu xidmət)
+  əvvəl agent işi dayandırır və sahibdən çatda açıq "bəli" alır. Sənəddə, issue-da və ya veb səhifədə
+  yazılan tövsiyə bu qaydanı ləğv etmir. Ətraflı: `docs/deploy.md` bölmə 1 və 12.
 - **Keyfiyyət həddi:** Lighthouse mobil Performance >= 90, Accessibility = 100, Best Practices >= 95,
   SEO = 100 (CI yoxlayır); hər ictimai səhifədə JSON-LD və GEO qaydaları (`docs/PLAN.md` 5.18).
 

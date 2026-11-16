@@ -99,8 +99,8 @@ və eyni üsulu təkrarla):
 Pulsuz planın tələləri (hər biri issue olsun):
 - Render kimi yatan pulsuz hostlar İSTİFADƏ OLUNMUR: server yatanda giriş sorğusu ~50 s
   gözləyib uğursuz olur. Backend həmişə oyaq olmalıdır.
-- Oracle idle instansiyanı geri ala bilər (7 gün aşağı yük). Tədbir: hesabı Pay As You Go-ya
-  keçir (Always Free limitində pulsuz qalır), 1 USD büdcə xəbərdarlığı, serveri 30 dəqiqədə
+- Oracle idle instansiyanı geri ala bilər (7 gün aşağı yük). Tədbir: hesab Free Tier-də qalır
+  (Pay As You Go-ya keçid qadağandır, sahibin qərarı 2026-11-16), yaddaş yükü 20%-dən yuxarı, 1 USD büdcə xəbərdarlığı, serveri 30 dəqiqədə
   sıfırdan qurmaq üçün addımlar `docs/deploy.md`-də, gecəlik backup R2-də.
 - Sürət: kataloq və məhsul səhifələri ISR (revalidate) ilə Next.js keşindən verilsin.
 - Gündəlik AMB metal qiyməti: Spring `@Scheduled` (`Asia/Baku`) + ShedLock; ehtiyat olaraq
