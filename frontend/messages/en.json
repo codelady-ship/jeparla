@@ -975,7 +975,9 @@
       "badType": "{name}: only PDF, JPG and PNG are accepted.",
       "tooBig": "{name}: the file is larger than {max} MB.",
       "tooMany": "You can add at most {max} files.",
-      "later": "You can also upload documents later from your dashboard, but the check does not start without them. In demo mode files are not sent anywhere."
+      "later": "You can also upload documents later from your dashboard, but the check does not start without them. In demo mode files are not sent anywhere.",
+      "fashion": "A store that sells bijouterie and handmade pieces needs no documents. Only the Jeparla team checks the store; the \"Documents checked\" badge is not shown.",
+      "mixed": "Documents are needed only for precious metal and stone products."
     },
     "productDraft": "The product is saved as a draft and published after your store is approved.",
     "back": "Back",
@@ -1020,7 +1022,18 @@
       "dashboard": "Go to dashboard",
       "home": "Home",
       "startOver": "Start a new sign-up"
-    }
+    },
+    "sellerKind": {
+      "question": "Do you sell official jewellery (gold, silver, platinum, diamonds)?",
+      "label": "What the store sells",
+      "PRECIOUS": "Yes, precious metals and stones",
+      "PRECIOUSHint": "Fineness, weight and documents are required; prices can follow the metal rate.",
+      "FASHION": "No, bijouterie or handmade",
+      "FASHIONHint": "Beads, steel, copper, silver or gold plating, leather and more. No documents, only the seller check.",
+      "MIXED": "Both",
+      "MIXEDHint": "You choose the kind for each product; precious products need documents."
+    },
+    "fashionProductLater": "You add bijouterie products in the cabinet after sign-up: there you choose the material instead of metal and fineness. Press \"Finish sign-up\"."
   },
   "SellLanding": {
     "eyebrow": "For sellers",
@@ -1262,7 +1275,9 @@
         "count": "Count",
         "certificateLab": "Certificate lab",
         "certificateNumber": "Certificate number",
-        "audience": "Who it is for"
+        "audience": "Who it is for",
+        "material": "Material",
+        "notPrecious": "I confirm that this product is not a precious metal and that its name and description do not mention gold, silver, diamonds or a fineness (for example 585)."
       },
       "hints": {
         "name": "For example: Gold engagement ring with diamond.",
@@ -1270,7 +1285,9 @@
         "size": "For rings and bracelets; leave empty for others.",
         "price": "Fixed price, AZN.",
         "fineness": "Choose the metal first.",
-        "audience": "Picks the model of an on-model AI image. Set automatically in men's and children's categories; you can change it."
+        "audience": "Picks the model of an on-model AI image. Set automatically in men's and children's categories; you can change it.",
+        "material": "Choose the main material; for a plating pick \"Silver plated\" or \"Gold plated\".",
+        "fashionPrice": "Bijouterie has a fixed price: it does not follow the metal rate."
       },
       "images": {
         "drop": "Drop photos here or choose them",
@@ -1317,7 +1334,8 @@
       },
       "docs": {
         "what": "Hallmark, stone certificate (GIA, IGI and others) or purchase document.",
-        "separate": "Files in this step are not sent with the product. Add expertise documents (hallmark, lab report) in the Documents section through the protected upload."
+        "separate": "Files in this step are not sent with the product. Add expertise documents (hallmark, lab report) in the Documents section through the protected upload.",
+        "fashion": "A bijouterie product needs no documents or certificates."
       },
       "review": {
         "title": "Before sending",
@@ -1428,6 +1446,13 @@
         },
         "reason": "Reason: {reason}",
         "notAssay": "A hallmark photo is not a laboratory assay of the fineness: buyers only see the photo you added and the admin's comparison."
+      },
+      "kind": {
+        "label": "Product kind",
+        "PRECIOUS": "Precious metal",
+        "PRECIOUSHint": "Metal, fineness and weight are shown.",
+        "FASHION": "Bijouterie or handmade",
+        "FASHIONHint": "The material is shown and the price is fixed. It cannot be changed later."
       }
     },
     "profile": {
@@ -1468,7 +1493,8 @@
         "PENDING": "Being checked",
         "VERIFIED": "Approved",
         "REJECTED": "Not approved"
-      }
+      },
+      "sellerKindNote": "The change is refused while the store has live products of another kind or checked documents."
     },
     "errors": {
       "imagesRequired": "Add at least one photo.",
@@ -1490,7 +1516,9 @@
       "unavailable": "The server is not answering right now. Try again a little later.",
       "network": "Could not connect. Check your internet and try again.",
       "server": "Something went wrong. Try again.",
-      "rateLimited": "Too many attempts in a short time. Try again a little later."
+      "rateLimited": "Too many attempts in a short time. Try again a little later.",
+      "notPreciousRequired": "Confirm that the product is not a precious metal.",
+      "fashionFixedOnly": "Bijouterie can only have a fixed price."
     },
     "sampleOnly": "This section works with the real server only. In sample data mode no documents are uploaded and there are no notifications.",
     "documents": {

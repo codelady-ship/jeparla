@@ -30,7 +30,11 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/merchant/pro
   if (intent === "REVIEW") {
     if ((await api.store()).sellerStatus !== "VERIFIED")
       return Response.json({ errors: { form: "sellerNotApproved" } }, { status: 403 });
-    if (product.docs.length === 0 && existing.status === "DRAFT")
+    if (
+      product.docs.length === 0 &&
+      product.materialKind !== "FASHION" &&
+      existing.status === "DRAFT"
+    )
       return Response.json({ errors: { form: "docsRequired" } }, { status: 400 });
   }
   // Any change to a live product goes back to review (PLAN 5.9).
