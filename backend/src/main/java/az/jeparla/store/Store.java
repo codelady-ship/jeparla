@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A jewelry store (PLAN 5.6). Owned by one merchant; the owner never changes through the API.
@@ -98,6 +100,7 @@ public class Store extends TimestampedEntity {
     private Boolean madeToOrder;
 
     /** Usual days to make a piece; only with {@code madeToOrder = true}. */
+    @JdbcTypeCode(SqlTypes.SMALLINT)
     @Column(name = "made_to_order_days")
     private Integer madeToOrderDays;
 
