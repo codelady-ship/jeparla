@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class ImageGenerationProviders {
     private final ImageGenerationProvider active;
     private final ImageGenerationProvider studio;
 
+    @Autowired
     public ImageGenerationProviders(ObjectProvider<ImageGenerationProvider> candidates,
             @Value("${jeparla.ai.image-provider:none}") String selected,
             @Value("${jeparla.ai.studio-processor:none}") String studioProcessor) {

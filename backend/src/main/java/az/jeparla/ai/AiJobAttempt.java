@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /** One call to the provider (#55, V40): who ran it, how it ended and what it cost. */
 @Entity
@@ -37,6 +39,7 @@ public class AiJobAttempt extends LongIdEntity {
     @Column(name = "cost", nullable = false, precision = 12, scale = 4)
     private BigDecimal cost;
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "currency", nullable = false, length = 3, updatable = false)
     private Currency currency;
 
