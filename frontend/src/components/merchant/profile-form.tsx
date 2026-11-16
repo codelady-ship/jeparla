@@ -144,6 +144,24 @@ export function ProfileForm({ initial }: { initial: ProfileInput }) {
           />
           <p className="mt-2 text-xs text-muted-foreground">{t("sellerKindNote")}</p>
         </div>
+        {form.sellerKind !== "FASHION" && (
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <label htmlFor="pr-split" className="flex items-start gap-3 text-sm">
+              <input
+                id="pr-split"
+                type="checkbox"
+                checked={form.splitLaborMarkup === true}
+                onChange={(e) => set({ splitLaborMarkup: e.target.checked })}
+                aria-describedby="pr-split-hint"
+                className="mt-0.5 size-5 shrink-0 accent-primary"
+              />
+              <span>{t("splitLaborMarkup")}</span>
+            </label>
+            <p id="pr-split-hint" className="pl-8 text-xs text-muted-foreground">
+              {t("splitLaborMarkupHint")}
+            </p>
+          </div>
+        )}
         <div className="flex flex-col gap-2 sm:col-span-2">
           <Label htmlFor="pr-description">
             {t("fields.description")}

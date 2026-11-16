@@ -18,6 +18,9 @@ import java.math.BigDecimal;
  *
  * <p>Location for "near me" (#116), optional: a Google Maps or Yandex Maps link ({@code mapLink}) or the
  * coordinates themselves; both absent keeps the saved location. Rounded to 6 decimals.
+ *
+ * <p>{@code splitLaborMarkup} (#104): the product page shows labor and the store's markup as two lines
+ * (true) or as one line (false, the default); absent keeps the saved choice.
  */
 public record StoreProfileRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -31,7 +34,8 @@ public record StoreProfileRequest(
         @NotNull SellerKind sellerKind,
         @Size(max = 2000) String mapLink,
         @DecimalMin("-90") @DecimalMax("90") @Digits(integer = 2, fraction = 8) BigDecimal latitude,
-        @DecimalMin("-180") @DecimalMax("180") @Digits(integer = 3, fraction = 8) BigDecimal longitude) {
+        @DecimalMin("-180") @DecimalMax("180") @Digits(integer = 3, fraction = 8) BigDecimal longitude,
+        Boolean splitLaborMarkup) {
 
     /** An Instagram-style handle or an https link, or empty (frontend {@code social}). */
     public static final String SOCIAL = "^$|^@[\\w.]{2,30}$|^https://\\S+$";

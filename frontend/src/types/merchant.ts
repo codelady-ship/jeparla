@@ -36,6 +36,8 @@ export type MerchantStore = {
   statusNote?: string | null;
   documentsStatus?: CheckStatus;
   sellerKind?: SellerKind;
+  /** Backend only: the price breakdown shows labor and store share as two lines (#104). */
+  splitLaborMarkup?: boolean;
   /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
   codeVersion?: number;
   codeAcceptedAt?: string | null;

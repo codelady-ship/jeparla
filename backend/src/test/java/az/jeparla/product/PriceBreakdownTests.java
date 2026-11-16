@@ -57,6 +57,8 @@ class PriceBreakdownTests {
         assertThat(breakdown.metal().gramPrice()).isEqualTo(azn("221.1147"));
         assertThat(breakdown.metal().quoteDate()).isEqualTo("2026-11-10");
         assertThat(breakdown.metal().source()).isEqualTo(QuoteSource.CBAR);
+        // Not attached to a store: the default one line "labor and store share" (#104).
+        assertThat(breakdown.laborSeparate()).isFalse();
         assertThat(breakdown.labor().amount()).isEqualTo(azn("59.00"));
         assertThat(breakdown.labor().perGram()).isEqualTo(azn("12.00"));
         assertThat(breakdown.labor().fixed()).isEqualTo(azn("20.00"));

@@ -33,6 +33,7 @@ async function Profile() {
             description: store.description,
             openingHours: store.openingHours,
             sellerKind: store.sellerKind ?? "PRECIOUS",
+            splitLaborMarkup: store.splitLaborMarkup ?? false,
           }}
         />
       </MerchantIntl>

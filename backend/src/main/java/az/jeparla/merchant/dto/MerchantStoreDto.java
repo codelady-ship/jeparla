@@ -20,6 +20,7 @@ import java.time.Instant;
  * @param codeAcceptedAt  when the store last accepted the current version, or null
  * @param codeValidUntil  when that acceptance runs out (a year later); after it, or when null, products cannot
  *                        go to review until the seller accepts again
+ * @param splitLaborMarkup the product page shows labor and markup as two lines (#104); false: one line
  */
 @Schema(name = "MerchantStore")
 public record MerchantStoreDto(
@@ -42,7 +43,8 @@ public record MerchantStoreDto(
         CheckStatus documentsStatus,
         int codeVersion,
         @Schema(nullable = true, format = "date-time") String codeAcceptedAt,
-        @Schema(nullable = true, format = "date-time") String codeValidUntil) {
+        @Schema(nullable = true, format = "date-time") String codeValidUntil,
+        boolean splitLaborMarkup) {
 
     public static MerchantStoreDto of(Store store) {
         Instant validUntil = SellerCode.validUntil(store);
@@ -51,7 +53,8 @@ public record MerchantStoreDto(
                 store.getDescription() == null ? "" : nullToEmpty(store.getDescription().az()),
                 nullToEmpty(store.getOpeningHours()), store.getLegalType(), store.getTaxId(), store.getSellerKind(),
                 store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
-                SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString());
+                SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString(),
+                store.isSplitLaborMarkup());
     }
 
     private static String acceptedAt(Store store) {
