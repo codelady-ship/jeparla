@@ -2385,7 +2385,11 @@
       "PASSWORD_RESET_LINK_ISSUED": "Şifrə bərpa linki verildi",
       "PASSWORD_RESET_REQUESTED": "Şifrə bərpası istənildi",
       "PASSWORD_RESET": "Şifrə dəyişdirildi",
-      "EMAIL_VERIFIED": "E-poçt təsdiqləndi"
+      "EMAIL_VERIFIED": "E-poçt təsdiqləndi",
+      "LEGAL_HOLD_PLACED": "Hüquqi saxlama qoyuldu",
+      "LEGAL_HOLD_RELEASED": "Hüquqi saxlama götürüldü",
+      "RETENTION_APPLIED": "Saxlama müddəti tətbiq olundu",
+      "ACCOUNT_DELETED": "İstifadəçi hesabını sildi"
     },
     "suspensions": {
       "title": "Dayandırma sorğuları",
@@ -2507,6 +2511,20 @@
       "reasonHint": "Ən azı 10 simvol; satıcı bunu görəcək (məsələn, \"Damğada 585 deyil, 500 oxunur\").",
       "doneVerified": "{name}: şəkil uyğun kimi qeyd olundu.",
       "doneRejected": "{name}: şəkil rədd edildi."
+    },
+    "legalHold": {
+      "place": "Hüquqi saxlama",
+      "release": "Saxlamanı götür",
+      "held": "Hüquqi saxlamada",
+      "placeTitle": "{name}: hüquqi saxlama",
+      "releaseTitle": "{name}: hüquqi saxlamanı götürmək",
+      "placeText": "Saxlama qoyulanda bu mağazanın sənədləri, şikayətləri, bəyanatları və audit qeydləri saxlama müddəti bitsə də silinmir və psevdonimləşdirilmir. Satıcı bunu görmür. Səbəbi yazın, məsələn orqanın sorğusunun nömrəsi.",
+      "releaseText": "Saxlama götürüləndə müddəti keçmiş məlumat növbəti gecə adi qaydada silinir və ya psevdonimləşdirilir.",
+      "reason": "Səbəb",
+      "reasonHint": "10-500 simvol; audit jurnalında qalır.",
+      "since": "Qoyulub",
+      "placed": "{name}: hüquqi saxlama qoyuldu.",
+      "released": "{name}: hüquqi saxlama götürüldü."
     }
   },
   "MetalPrices": {

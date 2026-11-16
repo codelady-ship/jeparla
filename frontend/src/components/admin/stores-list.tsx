@@ -10,6 +10,7 @@ import { filterList, shortDate, STORE_FILTERS } from "@/lib/admin/filter";
 import { notices } from "@/lib/notice";
 import type { AdminStore, StoreStatus } from "@/types/admin";
 import { DecisionButtons } from "./decision-buttons";
+import { LegalHoldButton } from "./legal-hold-button";
 import { EmptyFiltered, ListToolbar, useListFilter } from "./list-toolbar";
 
 type Filter = (typeof STORE_FILTERS)[number];
@@ -45,15 +46,25 @@ export function StoresList({
 
   function actions(row: AdminStore) {
     return (
-      <DecisionButtons<StoreStatus>
-        endpoint={`/api/admin/stores/${row.id}`}
-        name={row.name}
-        actions={STORE_ACTIONS[row.status]}
-        onDone={({ status, note }) => {
-          setRows((all) => all.map((r) => (r.id === row.id ? { ...r, status, note } : r)));
-          notices.show(t("done", { name: row.name, status: t(`storeStatus.${status}`) }));
-        }}
-      />
+      <div className="flex flex-wrap items-center gap-2">
+        <DecisionButtons<StoreStatus>
+          endpoint={`/api/admin/stores/${row.id}`}
+          name={row.name}
+          actions={STORE_ACTIONS[row.status]}
+          onDone={({ status, note }) => {
+            setRows((all) => all.map((r) => (r.id === row.id ? { ...r, status, note } : r)));
+            notices.show(t("done", { name: row.name, status: t(`storeStatus.${status}`) }));
+          }}
+        />
+        <LegalHoldButton
+          storeId={row.id}
+          name={row.name}
+          heldAt={row.legalHoldAt ?? null}
+          onChange={(legalHoldAt) =>
+            setRows((all) => all.map((r) => (r.id === row.id ? { ...r, legalHoldAt } : r)))
+          }
+        />
+      </div>
     );
   }
 

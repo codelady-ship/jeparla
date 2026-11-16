@@ -42,6 +42,7 @@ type BackendStore = {
   productCount: number;
   address?: string;
   geo?: { lat: string; lng: string } | null;
+  legalHoldAt?: string | null;
 };
 
 type BackendProduct = {
@@ -152,6 +153,7 @@ export const toAdminStore = (s: BackendStore): AdminStore => ({
   productCount: s.productCount ?? null,
   address: s.address,
   geo: s.geo ?? null,
+  legalHoldAt: s.legalHoldAt ?? null,
 });
 
 export const toModerationItem = (p: BackendProduct): ModerationItem => ({

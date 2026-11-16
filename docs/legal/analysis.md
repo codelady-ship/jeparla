@@ -95,4 +95,4 @@ Cookie banneri yoxdur (yalnız zəruri cookie). Yaş həddi 18 (FMQ 8.3). Tətbi
 
 ## 9. Açıq texniki işlər
 
-Saxlama müddətlərinin avtomatlaşdırılması (sənədlər, şikayətlər, audit purge cron), hesabın özü tərəfindən silinməsi, mağaza səhifəsində satıcı rekvizitləri (ET 5.3), admin paneldə legal hold düyməsi, satıcı kodeksi v2 (istehlakçı hüquqları bəndi və satıcı şərtlərinin qəbulu).
+Bölmə 9-un siyahısı #249-da edildi (2026-11-16): saxlama müddətlərinin avtomatlaşdırılması və audit purge cron (V57, `RetentionJob`), hesabın özü tərəfindən silinməsi (`DELETE /auth/me`, "Hesabım" səhifəsi), mağaza səhifəsində satıcı rekvizitləri (V59), admin paneldə legal hold düyməsi (Mağazalar siyahısı), satıcı kodeksi v2 və satıcı şərtlərinin versiyalı qəbulu (V58). Açıq texniki iş qalmayıb; Testcontainers testləri lokal işlədilməyib, CI-da yoxlanmalıdır.
