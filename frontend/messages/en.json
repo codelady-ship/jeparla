@@ -2576,6 +2576,7 @@
     "updated": "Last updated: <time>{date}</time>",
     "operatorName": "Legal name",
     "operatorTaxId": "VOEN (tax ID)",
+    "operatorTaxIdPending": "Not yet: the project is run by a private individual; business registration will be completed before commercial activity starts",
     "operatorAddress": "Registered address",
     "ownerField": "[owner's details]",
     "contactEmail": "Email",

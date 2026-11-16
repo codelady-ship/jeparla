@@ -114,9 +114,15 @@ export default async function LegalPage({ params }: PageProps<"/[locale]/legal/[
               <dt className="text-muted-foreground">{t("operatorName")}</dt>
               <dd>{ownerValue(operator.name)}</dd>
               <dt className="text-muted-foreground">{t("operatorTaxId")}</dt>
-              <dd>{ownerValue(operator.taxId)}</dd>
-              <dt className="text-muted-foreground">{t("operatorAddress")}</dt>
-              <dd>{ownerValue(operator.address)}</dd>
+              {/* Before business registration the operator is a private person: say so plainly
+                  instead of an empty field, and do not publish a home address. */}
+              <dd>{operator.taxId ?? t("operatorTaxIdPending")}</dd>
+              {operator.address && (
+                <>
+                  <dt className="text-muted-foreground">{t("operatorAddress")}</dt>
+                  <dd>{operator.address}</dd>
+                </>
+              )}
             </dl>
           )}
           {id === CONTACT_SECTION && (
