@@ -5,6 +5,9 @@ import { defaultLocale } from "./src/i18n/routing";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // Self-contained server for the production container (frontend/Dockerfile sets NEXT_OUTPUT).
+  // Off elsewhere: `next start` (CI, Lighthouse) does not support standalone output.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   cacheComponents: true,
   // Server cache of backend reads (src/lib/api/live.ts), in line with the API's own CDN headers:
   // catalog s-maxage=300, metal prices s-maxage=3600 (backend/README.md). Seconds.
