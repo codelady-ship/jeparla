@@ -6,6 +6,8 @@ import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
 import az.jeparla.store.StoreServiceKind;
 import az.jeparla.store.StoreStatus;
+import az.jeparla.store.dto.StoreDto;
+import az.jeparla.store.dto.StoreDtos;
 import az.jeparla.verification.CheckStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
@@ -22,6 +24,7 @@ import java.util.List;
  * @param codeAcceptedAt  when the store last accepted the current version, or null
  * @param codeValidUntil  when that acceptance runs out (a year later); after it, or when null, products cannot
  *                        go to review until the seller accepts again
+ * @param geo             the saved map point for "near me" (#116), or null; set from a map link or coordinates
  * @param splitLaborMarkup the product page shows labor and markup as two lines (#104); false: one line
  */
 @Schema(name = "MerchantStore")
@@ -46,6 +49,7 @@ public record MerchantStoreDto(
         int codeVersion,
         @Schema(nullable = true, format = "date-time") String codeAcceptedAt,
         @Schema(nullable = true, format = "date-time") String codeValidUntil,
+        @Schema(nullable = true) StoreDto.GeoDto geo,
         boolean splitLaborMarkup,
         List<StoreServiceKind> services,
         String returnPolicy) {
@@ -58,7 +62,8 @@ public record MerchantStoreDto(
                 nullToEmpty(store.getOpeningHours()), store.getLegalType(), store.getTaxId(), store.getSellerKind(),
                 store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
                 SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString(),
-                store.isSplitLaborMarkup(), store.getServices(), nullToEmpty(store.getReturnPolicy()));
+                StoreDtos.geo(store), store.isSplitLaborMarkup(), store.getServices(),
+                nullToEmpty(store.getReturnPolicy()));
     }
 
     private static String acceptedAt(Store store) {

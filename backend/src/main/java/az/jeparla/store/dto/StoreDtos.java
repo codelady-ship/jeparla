@@ -31,17 +31,22 @@ public final class StoreDtos {
     /** A store card with its distance from the buyer ({@code ?near=}, #116); null distance leaves the key out. */
     public static StoreSummaryDto summary(Store store, String logoUrl, long productCount, BigDecimal distanceKm) {
         return new StoreSummaryDto(store.getId(), store.getSlug(), store.getName(), store.getCity(), logoUrl,
-                verification(store), productCount, distanceKm == null ? null : distanceKm.toPlainString());
+                verification(store), productCount, orEmpty(store.getOpeningHours()), geo(store),
+                distanceKm == null ? null : distanceKm.toPlainString());
     }
 
     public static StoreDto detail(Store store, String logoUrl, long productCount) {
-        StoreDto.GeoDto geo = store.getLatitude() == null || store.getLongitude() == null ? null
-                : new StoreDto.GeoDto(Decimal.of(store.getLatitude()), Decimal.of(store.getLongitude()));
         return new StoreDto(store.getId(), store.getSlug(), store.getName(), store.getCity(), logoUrl,
                 verification(store), productCount, LocalizedTextDto.of(store.getDescription()), store.getAddress(),
-                store.getWhatsapp(), orEmpty(store.getPhone()), orEmpty(store.getOpeningHours()), geo,
+                store.getWhatsapp(), orEmpty(store.getPhone()), orEmpty(store.getOpeningHours()), geo(store),
                 store.getCreatedAt().toString(), codeAcceptedOn(store), store.getServices(),
                 store.getReturnPolicy());
+    }
+
+    /** The store's public map point (#116), or null while the seller has not set it. */
+    public static StoreDto.GeoDto geo(Store store) {
+        return store.getLatitude() == null || store.getLongitude() == null ? null
+                : new StoreDto.GeoDto(Decimal.of(store.getLatitude()), Decimal.of(store.getLongitude()));
     }
 
     /** The acceptance day in Baku while it is valid (#107), else null. */

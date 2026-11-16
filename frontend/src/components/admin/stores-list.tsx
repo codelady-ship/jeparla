@@ -1,8 +1,10 @@
 "use client";
 
+import { MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { mapHref } from "@/lib/geo/map-link";
 import { STORE_ACTIONS } from "@/lib/admin/decisions";
 import { filterList, shortDate, STORE_FILTERS } from "@/lib/admin/filter";
 import { notices } from "@/lib/notice";
@@ -88,6 +90,7 @@ export function StoresList({
                     <p className="text-xs text-muted-foreground tabular-nums">
                       {t("submitted", { date: shortDate(row.submittedAt) })}
                     </p>
+                    <MapCheck row={row} />
                   </div>
                   {badge(row.status)}
                 </div>
@@ -129,6 +132,7 @@ export function StoresList({
                             ? row.city
                             : `${row.city} · ${t("stores.products", { count: row.productCount })}`}
                         </span>
+                        <MapCheck row={row} />
                         {row.note && <Note label={t("note")} text={row.note} />}
                       </div>
                     </th>
@@ -153,6 +157,34 @@ export function StoresList({
         </>
       )}
     </div>
+  );
+}
+
+/** The seller's address and map point (#116): the admin opens the point and compares it with the address. */
+function MapCheck({ row }: { row: AdminStore }) {
+  const t = useTranslations("Admin.stores");
+  const href = mapHref(row.geo);
+  return (
+    <span className="flex flex-col text-xs">
+      {row.address && <span className="text-muted-foreground">{row.address}</span>}
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t("mapCheck", { store: row.name })}
+          className="flex items-center gap-1 self-start link-underline font-medium"
+        >
+          <MapPin aria-hidden className="size-3.5" />
+          {t("mapCheckShort")}
+          <span className="text-muted-foreground tabular-nums">
+            ({row.geo?.lat}, {row.geo?.lng})
+          </span>
+        </a>
+      ) : (
+        <span className="text-muted-foreground">{t("noMap")}</span>
+      )}
+    </span>
   );
 }
 

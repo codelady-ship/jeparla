@@ -22,6 +22,7 @@ import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
 import { slugParams } from "@/lib/api/static-params";
+import { mapHref } from "@/lib/geo/map-link";
 import { formatOpeningHours } from "@/lib/opening-hours";
 import { breadcrumbs, jewelryStore } from "@/lib/seo/json-ld";
 import { whatsappLink } from "@/lib/whatsapp";
@@ -80,9 +81,7 @@ export default async function StorePage({
     // The facts are extra: the store page still works when they cannot be loaded.
     api.getStoreFacts(slug).catch(() => null),
   ]);
-  const mapHref = store.geo
-    ? `https://www.google.com/maps/search/?api=1&query=${store.geo.lat},${store.geo.lng}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`;
+  const map = mapHref(store.geo, store.address);
   const checks = (["seller", "documents"] as const).filter(
     (k) => store.verification[k] === "VERIFIED",
   );
@@ -155,15 +154,19 @@ export default async function StorePage({
             <MapPin aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
             <span>
               {store.address}
-              <br />
-              <a
-                href={mapHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-underline font-medium"
-              >
-                {t("openMap")}
-              </a>
+              {map && (
+                <>
+                  <br />
+                  <a
+                    href={map}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-underline font-medium"
+                  >
+                    {t("openMap")}
+                  </a>
+                </>
+              )}
             </span>
           </p>
           <div className="flex items-start gap-2 text-sm">
