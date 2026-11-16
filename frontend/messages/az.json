@@ -8,7 +8,8 @@
     "themeToDark": "Gecə rejiminə keç",
     "themeToLight": "Gündüz rejiminə keç",
     "skipToContent": "Əsas məzmuna keç",
-    "compare": "Müqayisə"
+    "compare": "Müqayisə",
+    "favoritesPriceChanged": "{count, plural, one {: # məhsulun qiyməti dəyişib} other {: # məhsulun qiyməti dəyişib}}"
   },
   "LocaleSwitcher": {
     "label": "Dil",
