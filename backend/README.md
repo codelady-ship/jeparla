@@ -408,7 +408,7 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 | `POST /api/v1/admin/stores/{id}/status` | `APPROVED`, `REJECTED`, `BLOCKED` (son ikisi ən az 10 simvol səbəblə) |
 | `POST /api/v1/admin/stores/{id}/seller-check` | Satıcı yoxlaması: `VERIFIED` və ya `REJECTED` (səbəblə) |
 | `GET /api/v1/admin/products?status=` | Yoxlamada olan məhsullar (default `IN_REVIEW`) |
-| `POST /api/v1/admin/products/{id}/decision` | `APPROVE` (mağaza `APPROVED`, `PRECIOUS` üçün satıcı bəyanatı lazımdır: `409 admin.declaration_missing`), `RETURN`, `DEACTIVATE` (səbəblə) |
+| `POST /api/v1/admin/products/{id}/decision` | `APPROVE` (mağaza `APPROVED`, `PRECIOUS` üçün satıcı bəyanatı lazımdır: `409 admin.declaration_missing`; məhsulun sənədi rədd edilibsə və yenisi yüklənməyibsə `409 admin.expertise_rejected`), `RETURN`, `DEACTIVATE` (səbəblə). Dərc olunmuş məhsulun sənədi rədd ediləndə (ekspertiza `REJECTED`) məhsul avtomatik `RETURNED` olur və heç bir ictimai endpoint-də görünmür (audit `PRODUCT_RETURNED`; satıcıya sənəd bildirişi kifayətdir) |
 | `GET /api/v1/admin/evidence-photos?status=` | Damğa və etiket şəkilləri (#106, default `PENDING`, köhnədən yeniyə), hər biri məhsulun metalı, canlı variantların əyarları (`finenesses`) və çəkiləri (`weightsGrams`) ilə yan-yana |
 | `GET /api/v1/admin/products/{id}/evidence-photos` | Bir məhsulun damğa və etiket şəkilləri (moderasiya ekranı üçün) |
 | `POST /api/v1/admin/evidence-photos/{photoId}/check` | `{decision: VERIFIED\|REJECTED, reason}`; `REJECTED` üçün ən az 10 simvol səbəb, öz mağazası 403, audit `EVIDENCE_PHOTO_VERIFIED`/`_REJECTED`. Məhsulun statusunu dəyişmir: uyğunsuzluqda məhsulu ayrıca `RETURN` edin |

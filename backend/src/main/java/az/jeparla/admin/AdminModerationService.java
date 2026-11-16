@@ -191,6 +191,10 @@ public class AdminModerationService {
                     // #138: a precious product is not published before its seller confirmed the declaration.
                     throw new ApiException(HttpStatus.CONFLICT, "admin.declaration_missing");
                 }
+                if (product.getExpertiseStatus() == CheckStatus.REJECTED) {
+                    // #138: its certificate did not pass; a new one has to be uploaded and reviewed first.
+                    throw new ApiException(HttpStatus.CONFLICT, "admin.expertise_rejected");
+                }
                 product.approve(now);
                 kind = NotificationKind.PRODUCT_APPROVED;
             }
