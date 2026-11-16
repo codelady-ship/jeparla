@@ -232,6 +232,8 @@ export const profileSchema = z.object({
   mapLink: z.string().trim().max(2000, "descriptionLong").optional(),
   /** What the store sells (#128); absent keeps the stored answer. */
   sellerKind: z.enum(SELLER_KINDS).optional(),
+  /** Product page price breakdown (#104): labor and store share as two lines; absent keeps it. */
+  splitLaborMarkup: z.boolean().optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;

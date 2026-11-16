@@ -70,6 +70,10 @@ public class Store extends TimestampedEntity {
     @Column(name = "opening_hours")
     private String openingHours;
 
+    /** Product page price breakdown (#104, V45): labor and markup as two lines instead of one. */
+    @Column(name = "split_labor_markup", nullable = false)
+    private boolean splitLaborMarkup;
+
     @Column(name = "latitude", precision = 9, scale = 6)
     private BigDecimal latitude;
 
@@ -255,6 +259,14 @@ public class Store extends TimestampedEntity {
 
     public void setOpeningHours(String openingHours) {
         this.openingHours = openingHours;
+    }
+
+    public boolean isSplitLaborMarkup() {
+        return splitLaborMarkup;
+    }
+
+    public void setSplitLaborMarkup(boolean splitLaborMarkup) {
+        this.splitLaborMarkup = splitLaborMarkup;
     }
 
     public BigDecimal getLatitude() {

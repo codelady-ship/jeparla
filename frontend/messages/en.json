@@ -369,7 +369,10 @@
       "perGram": "Price of this piece per gram",
       "gramToday": "1 g of {fineness} metal today",
       "note": "This is an estimate; the store confirms the final price.",
-      "variant": "Variant: {label}"
+      "variant": "Variant: {label}",
+      "labor": "Workmanship",
+      "markup": "Store share",
+      "markupPercent": "{percent}%"
     },
     "evidence": {
       "yes": "yes",
@@ -1504,7 +1507,9 @@
         "VERIFIED": "Approved",
         "REJECTED": "Not approved"
       },
-      "sellerKindNote": "The change is refused while the store has live products of another kind or checked documents."
+      "sellerKindNote": "The change is refused while the store has live products of another kind or checked documents.",
+      "splitLaborMarkup": "Show workmanship and the store share as separate lines in the price breakdown",
+      "splitLaborMarkupHint": "Applies to the \"How the price is calculated\" block of metal-linked products. When off, both are shown on one line as \"Workmanship and store share\"."
     },
     "errors": {
       "imagesRequired": "Add at least one photo.",

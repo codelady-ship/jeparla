@@ -167,6 +167,8 @@ export type VariantPriceBreakdown = {
   markup: { percent: Decimal; amount: Money } | null;
   clamped: "MIN" | "MAX" | null;
   pricePerGram: Money | null;
+  /** The store's choice (#104): labor and markup as two lines; false or absent: one line. */
+  laborSeparate?: boolean;
 };
 
 /** What lists, grids and search results need. */
