@@ -76,6 +76,10 @@ export type StoreSummary = {
   logoUrl: string | null;
   verification: Verification;
   productCount: number;
+  /** schema.org openingHours ("Mo-Sa 10:00-20:00"); empty when the store has not filled it in. */
+  openingHours: string;
+  /** The store's public map point (#116); null until the seller sets it. */
+  geo: { lat: Decimal; lng: Decimal } | null;
   /** Kilometres from the `near` point, 0.1 km; only in a list asked with `near`. */
   distanceKm?: Decimal;
 };
@@ -86,8 +90,6 @@ export type Store = StoreSummary & {
   /** E.164, used for the WhatsApp link. */
   whatsapp: string;
   phone: string;
-  openingHours: string;
-  geo: { lat: Decimal; lng: Decimal } | null;
   createdAt: IsoDate;
   /** Day (YYYY-MM-DD, Baku) the store last accepted the seller code (#107); absent if not valid. */
   codeAcceptedOn?: string;

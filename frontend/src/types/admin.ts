@@ -29,6 +29,9 @@ export type AdminStore = {
   note: string | null;
   /** Not reported by the API yet: null. */
   productCount: number | null;
+  /** Street address and the map point the seller set (#116); the admin checks one against the other. */
+  address?: string;
+  geo?: { lat: string; lng: string } | null;
 };
 
 export type ModerationItem = {
