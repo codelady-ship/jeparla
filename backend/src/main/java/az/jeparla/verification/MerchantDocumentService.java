@@ -63,8 +63,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *       issued to this store, its size, its first bytes are the PDF, JPEG or PNG it announced), hashes it
  *       (SHA-256, kept as evidence) and moves it to {@code documents/...} in the same private bucket. Nothing
  *       ever reaches the public bucket, and no response carries the key back to a URL.</li>
- *   <li><b>Declaration.</b> Every upload is confirmed with the declaration ({@link DeclarationText}, draft until
- *       the lawyer approves it, #57): without {@code declarationAccepted: true} 400
+ *   <li><b>Declaration.</b> Every upload is confirmed with the declaration ({@link DeclarationText}, final
+ *       text of 2026-11-16, #57): without {@code declarationAccepted: true} 400
  *       {@code verification.declaration_required}, with an older version 409
  *       {@code verification.declaration_outdated}. The text shown, its version and language, the user, the
  *       time and the IP are saved ({@link SellerDeclaration}) and audited.</li>

@@ -43,7 +43,7 @@ public class MerchantDocumentController {
     }
 
     @GetMapping("/declaration")
-    @Operation(summary = "The declaration to confirm with every upload (draft until the lawyer approves it, #57)")
+    @Operation(summary = "The declaration to confirm with every upload (final text, #57)")
     public DeclarationDto declaration() {
         return documents.declaration();
     }

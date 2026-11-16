@@ -415,13 +415,17 @@ onların `documents`/`expertise` statusu `NONE` qalır; satıcı yoxlaması admi
 | `GET /api/v1/admin/audit?targetType=&targetId=` | Audit jurnalı, yenilər əvvəl |
 | `GET /api/v1/notifications`, `GET /notifications/unread-count`, `POST /notifications/{id}/read`, `POST /notifications/read-all` | Daxil olmuş istifadəçinin öz bildirişləri |
 
-- **Bəyanat (#138):** hər yükləmə `docs/legal/sellers-liability.md` 2b-dəki mətnlə təsdiqlənir (hüquqşünas
-  təsdiqləyənə qədər **qaralama**, #57; `DeclarationText.VERSION`). Mətn dəyişəndə versiya da dəyişir və köhnə
+- **Bəyanat (#138):** hər yükləmə `docs/legal/sellers-liability.md` 2b-dəki mətnlə təsdiqlənir (yekun mətn,
+  #57; `DeclarationText.VERSION`). Mətn dəyişəndə versiya da dəyişir və köhnə
   versiya ilə göndəriş `409 verification.declaration_outdated` olur. `seller_declarations` cədvəli (V15)
   göstərilən mətni, versiyanı, dili, istifadəçini, vaxtı və IP-ni saxlayır. API-nin baza rolu onu yalnız oxuyur
   və əlavə edir; trigger sahib rolu üçün də dəyişməyi, silməyi və `TRUNCATE`-i rədd edir (yalnız hesab silinəndə
-  `user_id` `NULL` olur; "Verilənlər bazası rolları", #165). IP və istifadəçi etiketinin saxlama müddəti və
-  psevdonimləşdirmə planı: `docs/legal/sellers-liability.md` 3.6 (təklif, #57).
+  `user_id` `NULL` olur; "Verilənlər bazası rolları", #165). IP və istifadəçi etiketi 7 ildən sonra psevdonimləşdirilir (V56):
+  `DeclarationRetentionJob` hər gün 04:20 (Bakı) mağazanın son bəyanatı və aktivliyi 7 ildən köhnə olan, legal hold
+  altında olmayan bəyanatların IP-sini `NULL`, etiketini `hmac-sha256:<hex>` edir (eyni yükləmənin audit
+  sətirləri də). Açar `JEPARLA_PSEUDONYM_KEY` (ən az 32 simvol) yoxdursa iş heç nə etmir; müddət
+  `JEPARLA_DECLARATION_RETENTION_YEARS` (7-30). Legal hold: `GET/POST /api/v1/admin/stores/{id}/legal-hold`
+  (`{hold, reason}`, ADMIN, audit `LEGAL_HOLD_PLACED`/`LEGAL_HOLD_RELEASED`).
 - **Fayl:** brauzer private bucket-ə `staging/documents/<store>/<uuid>.<ext>` altına PUT edir. Təsdiqdə API
   faylın ilk baytlarını (PDF, PNG, JPEG imzası), ölçüsünü və SHA-256-ını yoxlayır, eyni faylın təkrarını
   (`409 verification.document_duplicate`) rədd edir və onu **eyni private bucket-də** `documents/...` altına

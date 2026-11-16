@@ -90,8 +90,12 @@ class VerificationUnitTests {
         assertThat(text.text(Language.AZ)).contains("Cinayət Məcəlləsinə").contains("əyar damğası");
         assertThat(text.text(Language.EN)).contains("including the Criminal Code").contains("assay hallmark");
         assertThat(text.text(Language.RU)).contains("включая Уголовный кодекс").contains("пробирное клеймо");
-        assertThat(DeclarationText.VERSION).hasSizeBetween(1, 64).endsWith("-draft");
-        assertThat(DeclarationText.DRAFT).as("draft until the lawyer approves it (#57)").isTrue();
+        assertThat(DeclarationText.VERSION).hasSizeBetween(1, 64).doesNotEndWith("-draft");
+        assertThat(DeclarationText.DRAFT).as("final text (#57, 2026-11-16)").isFalse();
+        // The seller is told what is kept as evidence (personal data law, art. 11.2).
+        assertThat(text.text(Language.AZ)).contains("IP ünvanı");
+        assertThat(text.text(Language.EN)).contains("IP address");
+        assertThat(text.text(Language.RU)).contains("IP-адрес");
     }
 
     private static Properties load(String file) throws IOException {

@@ -1,4 +1,5 @@
-> **QARALAMA. Hüquqi məsləhət deyil.** Lisenziyalı Azərbaycan hüquqşünası təsdiqləyənə qədər bu mətnlər saytda istifadə olunmur (#57, #138). Araşdırma tarixi: 2026-11-10.
+> **Hüquqi məsləhət deyil.** Araşdırma tarixi: 2026-11-10. 2026-11-16-da sahibin qərarı ilə bəyanat və rədd mətnləri
+> yekunlaşdırılıb və saytda istifadə olunur; saxlama müddəti N = 7 il seçilib və psevdonimləşdirmə qurulub (#138).
 
 # Jeparla: qiymətli metal satıcılarından sənəd tələbi, xəbərdarlıq və imtina mətnləri (hüquqi araşdırma)
 
@@ -175,7 +176,9 @@ We could not verify some of the documents you submitted and are carrying out an 
 - Surət saxlanılırsa: yalnız şəxsi bucket, server tərəfli şifrələmə, qısa ömürlü imzalı URL (məs. 5 dəqiqə), yalnız `VERIFIER`/`ADMIN` girişi, hər baxış audit log-a yazılır. FIN kodu və fotoşəkil kimi lazımsız sahələrin maskalanması tövsiyə olunur.
 - Alıcıya heç vaxt göstərilmir. Mağaza səhifəsində yalnız ET 5.3-ün tələb etdiyi açıq məlumat: ad, təşkilati-hüquqi forma, ünvan, əlaqə, VÖEN.
 
-**3.6. Saxlama müddəti (təklif, hüquqşünas təsdiqləməlidir)**
+**3.6. Saxlama müddəti** (2026-11-16: N = 7 il seçildi, CM 75.1 üzrə az ağır cinayətlərin müddəti; IP və etiketin
+psevdonimləşdirilməsi `DeclarationRetentionJob` və V56 ilə qurulub; audit log 7 il, sənədlər 3 il, rədd edilmiş
+sənəd 90 gün, məxfilik siyasətində yazılıb. Aşağıdakı cədvəl ilkin təklifdir.)
 | Məlumat | Müddət |
 |---|---|
 | Təsdiqlənmiş biznes sənədləri (VÖEN, reyestr çıxarışı) | Müqavilə müddəti + 3 il (vergi və mülki iddia müddətlərinə uyğunlaşdırılsın) |

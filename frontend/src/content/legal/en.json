@@ -1,0 +1,372 @@
+{
+  "privacy": {
+    "title": "Privacy policy",
+    "description": "Which personal data Jeparla collects, why, where and for how long it is kept, who it is shared with, and your rights.",
+    "sections": {
+      "operator": {
+        "heading": "Who is responsible for your data",
+        "paragraphs": [
+          "The Jeparla website and its database are run by the person below. Under the Law of the Republic of Azerbaijan \"On Personal Data\" (11 May 2010, No. 998-IIIQ), this person is the owner and operator of the personal data collected on this site."
+        ]
+      },
+      "scope": {
+        "heading": "What this policy covers",
+        "paragraphs": [
+          "This policy covers the Jeparla website, buyer and seller accounts, and the seller dashboard. Jeparla is a catalog of jewelry stores: sales, payments and delivery do not go through the platform.",
+          "When you message a store on WhatsApp, the conversation does not pass through Jeparla. The store receives your number and message and processes them on its own behalf; the store is responsible for that processing."
+        ]
+      },
+      "collected": {
+        "heading": "What we collect and why",
+        "items": [
+          "Account: email address or phone number, name, password hash (the password itself is never stored), language, whether the email is verified, and the last sign-in time. Purpose: to create the account and keep sign-in and the account secure.",
+          "Sign-in session: a signed session token and the hash of a refresh token. Purpose: so you do not have to sign in on every page.",
+          "Email verification and password reset links: only the hash of the link and its expiry. Purpose: the link works once and only for you.",
+          "Store details: the store's name, city, address, WhatsApp and phone number, social link, opening hours, map point, logo, legal form and VOEN (tax ID). Purpose: to show the store in the catalog and to verify it. Except the VOEN, these details are public on the store page.",
+          "Verification documents (registration, VOEN, assay document, lab report): the file, its SHA-256 hash and the review decision. Purpose: to verify the seller and the product details. Files stay in private storage; only the verification team opens them through a short-lived link, and every view is logged.",
+          "Seller declaration: the text confirmed before every document upload, its version and language, the time, the IP address and the name and contact of the person who confirmed it. Purpose: to prove who submitted a document and under which declaration.",
+          "Acceptance of the code of conduct: the code version, the date and the account that accepted it.",
+          "Audit log: significant actions in the seller dashboard and the admin panel (what, when, who, IP address). Purpose: to trace decisions and investigate misuse.",
+          "Notifications: in-site notifications and emails waiting to be sent or sent (address, subject, text).",
+          "Reports: the reason and text of a report about a product and, if you are signed in, your account. Reports can be sent without an account.",
+          "WhatsApp button clicks: only a daily count per product. Who clicked is not stored.",
+          "Abuse protection: counters per IP address or account (for example sign-in attempts). Each counter is deleted when its period ends; the longest is 30 days.",
+          "Product photos and PDF catalogs uploaded by sellers: photos are kept as drafts or product photos; a PDF is read once and deleted."
+        ]
+      },
+      "notCollected": {
+        "heading": "What we do not collect",
+        "items": [
+          "There are no advertising or analytics trackers, no advertising cookies and no browser fingerprinting.",
+          "The location sent for \"Stores near me\" is used only for that answer and is not stored.",
+          "A photo sent to search by photo is processed only for that request; it is not stored or logged.",
+          "Favorites, comparison, recent searches, theme and currency stay only in your browser.",
+          "Payment and bank card data: there are no payments on the platform."
+        ]
+      },
+      "legalBasis": {
+        "heading": "Legal basis",
+        "items": [
+          "Account, store and listing data: the data you submit yourself in writing (through electronic forms) and your consent to its processing for the purposes in this policy (Articles 8.1 and 9.6.1 of the Law). You can withdraw consent by asking us to delete your account.",
+          "Seller documents, the declaration and the audit log: performance of the agreement with the seller (Seller terms) and the data the seller submits.",
+          "Disclosure to state authorities: only in the cases and to the extent provided by law."
+        ]
+      },
+      "storage": {
+        "heading": "Where the data is stored",
+        "paragraphs": [
+          "The website, the API, the database and the files run on an Oracle Cloud server in Germany (Frankfurt). Encrypted backups are kept in object storage (Oracle Cloud or Cloudflare R2). This is a transfer of personal data outside Azerbaijan (Article 14 of the Law). By creating an account or submitting data you consent to it. We are responsible for the security of the data during the transfer."
+        ]
+      },
+      "sharing": {
+        "heading": "Who we share data with",
+        "paragraphs": [
+          "We do not sell personal data or give it out for advertising. Data reaches only the following, and only as far as the service needs:"
+        ],
+        "items": [
+          "Oracle Cloud: server, database and files.",
+          "Cloudflare R2: backups, or images if they are moved to this storage.",
+          "An email delivery service (SMTP): verification, password reset and notification emails. Its name is added to this list when the service is connected.",
+          "Sentry: only when it is connected, error reports. IP addresses, cookies, request bodies and user identifiers are not sent.",
+          "WhatsApp (Meta) and Google Maps: only when you press the button or the map link, you go directly to that service, and its own rules apply.",
+          "Central Bank of Azerbaijan: metal and currency rates are read; no personal data is sent there.",
+          "State authorities and courts: only when the law requires it, on a written request and to the extent requested."
+        ]
+      },
+      "retention": {
+        "heading": "How long we keep data",
+        "items": [
+          "Account data: until the account is deleted.",
+          "Session: the session cookie 7 days, the refresh token 30 days (one sign-in is renewed for at most 90 days). Verification and reset links are deleted when they expire.",
+          "Notifications and the email queue: until the account is deleted.",
+          "Approved verification documents: 3 years after the cooperation with the store ends.",
+          "A rejected ordinary document (unreadable, expired and so on): 90 days after the decision.",
+          "Seller declaration: never deleted, as it is evidence. Its IP address and the name and contact of the person who confirmed it are pseudonymised 7 years after the later of the store's last declaration and the end of the cooperation: the IP is deleted and the name and contact are replaced by a keyed hash that cannot be turned back.",
+          "Audit log: 7 years; in entries about a declaration the name and IP are pseudonymised in the same way.",
+          "Reports: 3 years after the decision. When an account is deleted, the link between its reports and the account is removed at once.",
+          "Encrypted backups: 14 days.",
+          "Abuse counters: for their own period, at most 30 days.",
+          "Exception: data related to a court case, an investigation or a request of a state authority (\"legal hold\") is kept until the matter is closed and is not changed during that time."
+        ]
+      },
+      "rights": {
+        "heading": "Your rights",
+        "items": [
+          "To learn which data about you is stored, why and to whom it was given, and to see it.",
+          "To correct wrong data (you can change most account and store details yourself in the dashboard).",
+          "To ask for your data to be deleted or its processing stopped, except data the law requires us to keep.",
+          "To object to the collection and processing of your data.",
+          "To complain to the competent executive authority or a court if your rights are violated."
+        ],
+        "paragraphs": [
+          "Send your request to the contact below. Under the Law, a request is made by a written application with an identity document or by an electronic request with an enhanced electronic signature; we also handle a simple request from your account's email address, but may ask you to confirm your identity. Requests are free. We answer within 7 working days of receipt; if we need to contact a third party, this can be extended by another 7 working days. If we refuse a request on a legal ground, we give the reason within 5 working days."
+        ]
+      },
+      "security": {
+        "heading": "How we protect data",
+        "items": [
+          "The website and the API work only over HTTPS.",
+          "Passwords are stored as BCrypt hashes; only hashes of tokens are stored.",
+          "Seller documents are in non-public storage and open only for the verification team through a signed link valid for a few minutes.",
+          "The application connects to the database with a least-privilege role; the application cannot change or delete declarations or the audit log (the pseudonymisation above is the only exception).",
+          "Backups are encrypted and stored outside the server."
+        ]
+      },
+      "children": {
+        "heading": "Age limit",
+        "paragraphs": [
+          "Accounts are only for people aged 18 or over. No account is needed to browse the catalog. If we learn that a person under 18 has opened an account, we delete it."
+        ]
+      },
+      "changes": {
+        "heading": "Changes",
+        "paragraphs": [
+          "When the policy changes, the date on this page is updated. A significant change to the data collected, the purposes or the transfers is announced on the site at least 15 days before it takes effect; sellers are also told in the dashboard."
+        ]
+      },
+      "contact": {
+        "heading": "Contact",
+        "paragraphs": ["For privacy, personal data and account deletion requests:"]
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of use",
+    "description": "Rules for using the Jeparla catalog and buyer accounts: the platform's role, prices, verification, reports, liability and disputes.",
+    "sections": {
+      "operator": {
+        "heading": "Parties and acceptance",
+        "paragraphs": [
+          "These terms govern the relationship between the operator of the Jeparla website and the person using it. By using the site or creating an account you accept these terms and the Privacy policy. Stores are also bound by the Seller terms."
+        ]
+      },
+      "service": {
+        "heading": "What Jeparla is and is not",
+        "paragraphs": [
+          "Jeparla is an information platform that shows the products of jewelry stores in one catalog. Buyers contact stores directly on WhatsApp.",
+          "Jeparla is not a seller: it does not sell products, take orders, accept payments or deliver. The sales contract is made only between the buyer and the store, and the store is the party to it. The catalog is free for buyers."
+        ]
+      },
+      "prices": {
+        "heading": "Prices and product details",
+        "items": [
+          "Product details (metal, fineness, weight, stones, photos, price) are written by the store, and the store is responsible for their accuracy.",
+          "Metal-linked prices are calculated automatically from the Central Bank of Azerbaijan's daily metal rate and the store's own rule. The rate can change during the day.",
+          "Prices in USD and EUR are approximate. The store confirms the final price and terms before the purchase.",
+          "If you see a wrong price or detail, tell us with \"Report\" on the product page."
+        ]
+      },
+      "verification": {
+        "heading": "What verification means",
+        "paragraphs": [
+          "The \"Jeparla Verified\" badge shows that the store passed the seller and document checks. It lowers the risk but is not a guarantee. Jeparla is not an assay authority and does not test products itself; a physical inspection was done only where the product says so. Before buying, check the hallmark and the weight in the store and ask for a receipt. More on the \"How we verify\" page."
+        ]
+      },
+      "account": {
+        "heading": "Account",
+        "items": [
+          "Accounts are only for people aged 18 or over.",
+          "Give accurate details when you register and never share your password. You are responsible for actions taken with your account; if you suspect unauthorized use, write to us at once.",
+          "You can ask us to delete your account at any time (Privacy policy, \"Your rights\")."
+        ]
+      },
+      "prohibited": {
+        "heading": "Prohibited use",
+        "items": [
+          "False or malicious reports, accounts in another person's name, many accounts for one person.",
+          "Harassing stores or sending them spam or threats.",
+          "Testing the site's security without permission, trying to get around limits, disrupting the site.",
+          "Copying the catalog in bulk with automated tools and publishing it elsewhere (ordinary indexing by search engines is allowed).",
+          "Posting content that is illegal or violates the rights of others."
+        ],
+        "paragraphs": [
+          "In case of a violation we may restrict or close the account after a warning or, in serious cases, without one; we give the reason for the decision."
+        ]
+      },
+      "complaints": {
+        "heading": "Reports and illegal content",
+        "paragraphs": [
+          "Send a report about a product or a store with \"Report\" on the product page (no account needed) or to the contact below. People whose rights are violated (for example the owner of a trademark or a photo) can use the same channels: describe the content, your right and how to reach you.",
+          "We review every report. If it is justified, we hide the product, return it to the store for changes or suspend the store; the decision is logged. On a court decision or a lawful demand of a competent authority we remove the information or restrict access to it without delay."
+        ]
+      },
+      "consumer": {
+        "heading": "Your consumer rights",
+        "paragraphs": [
+          "Your rights under the Law \"On Protection of Consumer Rights\" (accurate information about the goods, replacement of defective goods or a refund, exchange of goods within 14 days in the cases set by law, and others) apply to the sale between you and the store, and you exercise them against the store. If you cannot reach an agreement with the store, write to us: we give you the store's details held by Jeparla and pass your complaint on to the store. You can also apply to the state consumer protection authority or a court.",
+          "Nothing in these terms limits your rights as a consumer under the law; such a limitation would be void under the law."
+        ]
+      },
+      "liability": {
+        "heading": "Liability",
+        "items": [
+          "Jeparla is liable for its own service in accordance with the law.",
+          "As we are not a party to the sale between the buyer and the store, the store is responsible for the quality of the goods, delivery, returns and payment.",
+          "We check the details stores write, but we cannot ensure that every feature of every product is accurate. When we learn of illegal information, we hide it without delay.",
+          "The site is free and may be temporarily unavailable because of maintenance or failures.",
+          "This section does not exclude our liability for damage caused intentionally or by gross negligence, or in other cases where the law does not allow it to be excluded."
+        ]
+      },
+      "content": {
+        "heading": "Site content",
+        "paragraphs": [
+          "The design, texts, logo and software of the site belong to the operator. Product photos and descriptions belong to the stores and are shown with their permission. You may view, share and link to them for personal use; copying for commercial purposes needs written permission."
+        ]
+      },
+      "law": {
+        "heading": "Governing law and disputes",
+        "paragraphs": [
+          "These terms are governed by the law of the Republic of Azerbaijan. We first try to settle a dispute by negotiation when you write to us. If that fails, the dispute is heard by the courts of the Republic of Azerbaijan with jurisdiction under the law. A consumer's statutory right to go to court or to state authorities is not limited."
+        ]
+      },
+      "changes": {
+        "heading": "Changes to the terms",
+        "paragraphs": [
+          "When the terms change, the date on this page is updated. A significant change is announced on the site at least 15 days before it takes effect. If you keep using the site after the change, the new terms apply; if you do not agree, you can ask us to delete your account."
+        ]
+      },
+      "contact": {
+        "heading": "Contact",
+        "paragraphs": ["For questions, complaints and legal requests:"]
+      }
+    }
+  },
+  "sellers": {
+    "title": "Seller terms",
+    "description": "Terms for sellers who open a store and list products on Jeparla: verification, the declaration, listing rules, buyers' rights, decisions and liability.",
+    "sections": {
+      "operator": {
+        "heading": "Parties and acceptance",
+        "paragraphs": [
+          "These terms are the agreement between the operator of the Jeparla website and the seller (a legal entity or a sole trader) who opens a store on Jeparla. They are accepted together with the seller code of conduct when the seller registers and apply as long as the store is on the platform. The Terms of use and the Privacy policy apply to sellers as well."
+        ]
+      },
+      "eligibility": {
+        "heading": "Who can sell",
+        "items": [
+          "A legal entity or sole trader registered in the Republic of Azerbaijan (with a VOEN); an authorized person aged 18 or over registers on its behalf.",
+          "A store that sells precious metal and stone jewelry meets the legal requirements for that activity (including the state assay hallmark requirement).",
+          "A store that sells fashion jewelry and handmade pieces does not present its products as precious metal or precious stones."
+        ]
+      },
+      "verification": {
+        "heading": "Verification and documents",
+        "items": [
+          "A store is reviewed before it is published. Products are moderated before they are published.",
+          "Precious metal sellers are asked for registration, VOEN and assay documents. Before every document upload the seller declares that the documents are genuine and the details are accurate. The text, time and IP address of the declaration are kept as evidence.",
+          "Submitting false documents or false information may lead to liability under the law, including the Criminal Code. Jeparla does not punish anyone; it can only reject or hide a listing, suspend a store and, where the law requires, give information to the competent authorities.",
+          "Verification does not release the seller from its legal obligations and does not replace an inspection by a state authority."
+        ]
+      },
+      "listings": {
+        "heading": "Listing rules",
+        "items": [
+          "Metal, fineness, weight, stones and price are stated accurately and match the product's hallmark.",
+          "Photos show the actual product for sale; photos created or altered with AI are marked.",
+          "No fake discounts, fake reviews or made-up numbers. If the product and terms have not changed, the buyer is not quoted a higher price than the one shown on Jeparla.",
+          "Other people's trademarks, photos and texts are not used without permission.",
+          "The seller follows the seller code of conduct and confirms it once a year in the dashboard."
+        ]
+      },
+      "buyers": {
+        "heading": "Obligations towards buyers",
+        "items": [
+          "The seller is the party to the sales contract. Consumer protection law on quality, receipts, warranty, exchange and returns applies to the seller, and the seller complies with it.",
+          "The seller gives buyers its correct name, address and contact details.",
+          "The seller uses a buyer's number and messages received on WhatsApp only to answer the buyer and to sell, complies with the Law \"On Personal Data\" and does not add them to advertising lists.",
+          "Jeparla may pass a buyer's complaint on to the seller; the seller answers it within a reasonable time."
+        ]
+      },
+      "fees": {
+        "heading": "Fees",
+        "paragraphs": [
+          "At present Jeparla charges sellers nothing to open a store or list products. If a commission or a paid service is introduced, its terms are set in a separate written agreement and the seller is told at least 30 days before it takes effect. No fees are charged for past periods."
+        ]
+      },
+      "decisions": {
+        "heading": "Moderation decisions",
+        "items": [
+          "Jeparla may reject a listing or a document, return it for changes, hide it, temporarily suspend a store or block it. Every decision is logged and the seller is told the reason.",
+          "If the authenticity of documents is in doubt, the store may be suspended for an additional review; this decision needs the confirmation of two different administrators. When the review ends, the store is either restored or closed by a reasoned decision.",
+          "If you disagree with a decision, send your explanation and any additional documents to support; the request is reviewed and you are told the outcome.",
+          "A Jeparla decision is not a decision of a state authority. The seller's right to go to court is not limited."
+        ]
+      },
+      "authorities": {
+        "heading": "Cooperation with authorities",
+        "paragraphs": [
+          "Where the law requires it (a court decision, a written request of a competent authority), Jeparla may provide information identifying the seller and evidence to the extent requested, and remove information or restrict access to it. In such cases the evidence is kept unchanged until the matter is closed."
+        ]
+      },
+      "license": {
+        "heading": "Content license",
+        "paragraphs": [
+          "The seller confirms that it holds the rights to the photos and texts it uploads and gives Jeparla a free, non-exclusive permission to show them on the site, in search, in share links and in Jeparla's own promotion. When a listing is deleted the permission ends for that listing, except for materials already shared."
+        ]
+      },
+      "liability": {
+        "heading": "Liability",
+        "items": [
+          "The seller is responsible for the accuracy and legality of its listings, the quality of its products and its obligations to buyers. If a claim is brought against Jeparla because of the seller's listing or sale, the seller compensates Jeparla's loss in accordance with the law.",
+          "Jeparla does not compensate lost income caused by a moderation decision taken in good faith under these terms, unless the law provides otherwise.",
+          "This section does not exclude liability for damage caused intentionally or by gross negligence."
+        ]
+      },
+      "termination": {
+        "heading": "End of cooperation",
+        "paragraphs": [
+          "The seller can close its store at any time by writing to support. Jeparla may end the cooperation in case of a serious or repeated breach of these terms. When a store is closed its listings are removed from the site; documents, declarations and audit records are kept for the periods set out in the Privacy policy."
+        ]
+      },
+      "law": {
+        "heading": "Governing law and changes",
+        "paragraphs": [
+          "These terms are governed by the law of the Republic of Azerbaijan; disputes not settled by negotiation are heard by the courts of the Republic of Azerbaijan. When the terms change, the date on this page is updated, and a significant change is announced in the dashboard at least 15 days before it takes effect."
+        ]
+      },
+      "contact": {
+        "heading": "Contact",
+        "paragraphs": ["For seller questions, appeals and closing a store:"]
+      }
+    }
+  },
+  "cookies": {
+    "title": "Cookie notice",
+    "description": "Which cookies and browser storage Jeparla uses, and why there is no consent banner.",
+    "sections": {
+      "cookies": {
+        "heading": "Cookies",
+        "paragraphs": [
+          "Only cookies needed for signing in are used. There are no advertising, analytics or third-party cookies."
+        ],
+        "items": [
+          "jeparla_session: the signed-in user's session. The site's own cookie, for 7 days or until you sign out.",
+          "jeparla_refresh: renews the session. Sent only to the API and not readable by JavaScript (httpOnly), for 30 days or until you sign out."
+        ]
+      },
+      "storage": {
+        "heading": "Browser storage (localStorage)",
+        "paragraphs": ["This data stays only on your device and is not sent to the server:"],
+        "items": [
+          "Favorites and the comparison list.",
+          "Recent searches.",
+          "Dark or light theme and the currency.",
+          "An unfinished draft of the seller form.",
+          "Dismissal of the install-app prompt."
+        ]
+      },
+      "consent": {
+        "heading": "Why there is no consent banner",
+        "paragraphs": [
+          "The cookies above only provide the service you ask for (signing in), and the browser storage never leaves your device, so we do not ask for separate consent. If analytics or another non-essential cookie is ever added, it will start only after your consent, and this page will be updated beforehand."
+        ]
+      },
+      "control": {
+        "heading": "Control",
+        "paragraphs": [
+          "Signing out deletes both cookies. You can also delete cookies and browser storage in your browser settings; you will then have to sign in again and your favorites list will be lost."
+        ]
+      }
+    }
+  }
+}

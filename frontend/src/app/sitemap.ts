@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { LEGAL_DOCS, LEGAL_UPDATED } from "@/content/legal";
 import { SITE_URL } from "@/i18n/alternates";
 import { defaultLocale, locales } from "@/i18n/routing";
 import { api, USING_MOCK } from "@/lib/api";
@@ -39,6 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/size-guide", 0.6),
     entry("/calculator", 0.7),
     entry("/help", 0.5),
+    ...LEGAL_DOCS.map((doc) => entry(`/legal/${doc}`, 0.3, LEGAL_UPDATED)),
     ...categories.map((c) => entry(`/categories/${c.slug}`, 0.7)),
     entry("/guides", 0.6, GUIDES_MODIFIED),
     ...GUIDE_SLUGS.map((s) => entry(guidePath(s), 0.6, GUIDES_MODIFIED)),

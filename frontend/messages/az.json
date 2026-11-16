@@ -81,7 +81,8 @@
     "rights": "© Jeparla. Bütün hüquqlar qorunur.",
     "calculator": "Qızıl kalkulyatoru",
     "cookies": "Cookie qaydası",
-    "howWeVerify": "Necə yoxlayırıq"
+    "howWeVerify": "Necə yoxlayırıq",
+    "sellerTerms": "Satıcı şərtləri"
   },
   "Errors": {
     "notFoundTitle": "Səhifə tapılmadı",
@@ -857,7 +858,8 @@
       "submit": "Hesab yarat",
       "haveAccount": "Artıq hesabınız var?",
       "seller": "Zərgərlik mağazanız var?",
-      "sellerLink": "Satıcı kimi qoşulun"
+      "sellerLink": "Satıcı kimi qoşulun",
+      "legalNotice": "Hesab yaratmaqla 18 yaşınız olduğunu təsdiq edir, <terms>İstifadə şərtlərini</terms> qəbul edir və <privacy>Məxfilik siyasəti</privacy> ilə, o cümlədən məlumatların Almaniyadakı serverdə saxlanması ilə razılaşırsınız."
     },
     "forgot": {
       "title": "Şifrəni bərpa et",
@@ -979,7 +981,7 @@
       "fineness": "Əyar",
       "weight": "Çəki (qram)",
       "price": "Qiymət (AZN)",
-      "codeAccepted": "<link>Satıcı davranış kodeksini</link> oxudum və qəbul edirəm."
+      "codeAccepted": "<link>Satıcı davranış kodeksini</link> və <terms>Satıcı şərtlərini</terms> oxudum və qəbul edirəm."
     },
     "hints": {
       "phone": "Məsələn 050 123 45 67. SMS təsdiqi sonra əlavə olunacaq.",
@@ -2571,9 +2573,16 @@
     "banner": "Bu saytdakı mağazalar, məhsullar və qiymətlər nümunədir, real deyil."
   },
   "Legal": {
-    "draftTitle": "Qaralama.",
-    "draftText": "Bu mətn hələ sahib və hüquqşünas tərəfindən təsdiqlənməyib və qüvvədə deyil. Qeyd olunan yerlər doldurulacaq.",
-    "reviewLabel": "Təsdiq gözlənilir:"
+    "updated": "Son yenilənmə: <time>{date}</time>",
+    "operatorName": "Hüquqi ad",
+    "operatorTaxId": "VÖEN",
+    "operatorAddress": "Qeydiyyat ünvanı",
+    "ownerField": "[sahibin məlumatı]",
+    "contactEmail": "E-poçt",
+    "contactUrl": "Əlaqə səhifəsi",
+    "contactHelp": "Dəstək ünvanı kömək səhifəsindədir:",
+    "helpLink": "Kömək və dəstək",
+    "nav": "Hüquqi sənədlər"
   },
   "PricesPage": {
     "title": "Bu gün qızıl və gümüşün qram qiyməti",

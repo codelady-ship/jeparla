@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import az.jeparla.common.persistence.DatabaseRoleCheck;
 import az.jeparla.support.PostgresContainerConfig;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
@@ -213,6 +214,129 @@ class EvidenceTablesTests {
         // The flag the function sets does not open the table to a direct DELETE of a recent row.
         assertThatThrownBy(() -> owner.execute("SET jeparla.audit_purge = 'on'; DELETE FROM audit_logs WHERE id = "
                 + f.audit())).rootCause().hasMessageContaining("append-only");
+    }
+
+    // ------------------------------------------------------------------ pseudonymisation (V56, #138)
+
+    private static final String HASH = "hmac-sha256:" + "ab".repeat(32);
+
+    /** A store that ended its relationship 8 years ago, with one 8-year-old declaration and its two audit rows. */
+    private record OldEvidence(long store, long declaration, long declarationAudit, long uploadAudit) {
+    }
+
+    private static OldEvidence oldEvidence(String status) {
+        int n = SEQ.incrementAndGet();
+        long storeOwner = user("old-owner" + n);
+        long store = app.queryForObject("""
+                INSERT INTO stores (owner_id, slug, name, city, address, whatsapp, legal_type, tax_id, status)
+                VALUES (?, ?, 'Old store', 'Baku', 'Nizami 1', '+994501234567', 'COMPANY', '1234567890', ?)
+                RETURNING id
+                """, Long.class, storeOwner, "old-store-" + n, status);
+        long declaration = app.queryForObject("""
+                INSERT INTO seller_declarations (user_id, user_label, store_id, text_version, language, text,
+                                                 ip_address, confirmed_at)
+                VALUES (?, 'Old Signer <old@jeparla.test>', ?, 'test-1', 'en', 'I confirm', '203.0.113.9',
+                        now() - INTERVAL '8 years')
+                RETURNING id
+                """, Long.class, storeOwner, store);
+        String details = "{\"declarationId\":" + declaration + "}";
+        long declarationAudit = app.queryForObject("""
+                INSERT INTO audit_logs (actor_id, actor_label, actor_role, action, target_type, target_id, details,
+                                        ip_address, created_at)
+                VALUES (?, 'Old Signer <old@jeparla.test>', 'MERCHANT', 'DECLARATION_CONFIRMED', 'STORE', ?,
+                        ?::jsonb, '203.0.113.9', now() - INTERVAL '8 years')
+                RETURNING id
+                """, Long.class, storeOwner, String.valueOf(store), details);
+        long uploadAudit = app.queryForObject("""
+                INSERT INTO audit_logs (actor_id, actor_label, actor_role, action, target_type, target_id, details,
+                                        ip_address, created_at)
+                VALUES (?, 'Old Signer <old@jeparla.test>', 'MERCHANT', 'DOCUMENT_UPLOADED', 'DOCUMENT', 'x',
+                        ?::jsonb, '203.0.113.9', now() - INTERVAL '8 years')
+                RETURNING id
+                """, Long.class, storeOwner, details);
+        app.update("UPDATE stores SET updated_at = now() - INTERVAL '8 years' WHERE id = ?", store);
+        return new OldEvidence(store, declaration, declarationAudit, uploadAudit);
+    }
+
+    private static int pseudonymise(long declaration, String hash, int years) {
+        return app.queryForObject("SELECT jeparla_pseudonymise_declaration(?, ?, ?)", Integer.class, declaration,
+                hash, years);
+    }
+
+    @Test
+    void aDueDeclarationLosesOnlyItsIpAndLabel() {
+        OldEvidence e = oldEvidence("BLOCKED");
+
+        assertThat(pseudonymise(e.declaration(), HASH, 7)).isEqualTo(3);
+
+        assertThat(app.queryForMap("SELECT user_label, host(ip_address) AS ip, text, pseudonymised_at IS NOT NULL"
+                + " AS done FROM seller_declarations WHERE id = ?", e.declaration()))
+                .containsEntry("user_label", HASH).containsEntry("ip", null).containsEntry("text", "I confirm")
+                .containsEntry("done", true);
+        for (long audit : List.of(e.declarationAudit(), e.uploadAudit())) {
+            assertThat(app.queryForMap("SELECT actor_label, host(ip_address) AS ip, details ->> 'declarationId' AS d"
+                    + " FROM audit_logs WHERE id = ?", audit))
+                    .containsEntry("actor_label", HASH).containsEntry("ip", null)
+                    .containsEntry("d", String.valueOf(e.declaration()));
+        }
+        // Idempotent.
+        assertThat(pseudonymise(e.declaration(), HASH, 7)).isZero();
+    }
+
+    @Test
+    void declarationsThatAreNotDueStayAsTheyAre() {
+        // The store is still selling.
+        OldEvidence approved = oldEvidence("APPROVED");
+        assertThat(pseudonymise(approved.declaration(), HASH, 7)).isZero();
+        // Legal hold.
+        OldEvidence held = oldEvidence("BLOCKED");
+        app.update("UPDATE stores SET legal_hold_at = now(), legal_hold_reason = 'Request no. 12 of the court',"
+                + " updated_at = now() - INTERVAL '8 years' WHERE id = ?", held.store());
+        assertThat(pseudonymise(held.declaration(), HASH, 7)).isZero();
+        // The store's relationship ended recently.
+        OldEvidence recentlyBlocked = oldEvidence("BLOCKED");
+        app.update("UPDATE stores SET updated_at = now() - INTERVAL '1 year' WHERE id = ?", recentlyBlocked.store());
+        assertThat(pseudonymise(recentlyBlocked.declaration(), HASH, 7)).isZero();
+        // A longer configured period.
+        OldEvidence longer = oldEvidence("BLOCKED");
+        assertThat(pseudonymise(longer.declaration(), HASH, 10)).isZero();
+
+        for (OldEvidence e : List.of(approved, held, recentlyBlocked, longer)) {
+            assertThat(app.queryForObject("SELECT host(ip_address) FROM seller_declarations WHERE id = ?",
+                    String.class, e.declaration())).isEqualTo("203.0.113.9");
+            assertThat(app.queryForObject("SELECT host(ip_address) FROM audit_logs WHERE id = ?", String.class,
+                    e.declarationAudit())).isEqualTo("203.0.113.9");
+        }
+    }
+
+    @Test
+    void theFunctionRefusesAShortPeriodAndAnythingButAHash() {
+        OldEvidence e = oldEvidence("BLOCKED");
+        assertThatThrownBy(() -> pseudonymise(e.declaration(), HASH, 6)).rootCause()
+                .hasMessageContaining("at least 7 years");
+        assertThatThrownBy(() -> pseudonymise(e.declaration(), "Someone else <x@y.z>", 7)).rootCause()
+                .hasMessageContaining("hmac-sha256");
+    }
+
+    @Test
+    void theFlagDoesNotOpenTheTablesToADirectChange() {
+        Fixture f = fixture();
+        // The application still has no UPDATE on the evidence tables.
+        assertThatThrownBy(() -> app.execute("SET jeparla.pseudonymise = 'on'; UPDATE seller_declarations SET"
+                + " ip_address = NULL, user_label = '" + HASH + "', pseudonymised_at = now() WHERE id = "
+                + f.declaration())).rootCause().hasMessageContaining("permission denied");
+        // The owner is stopped by the trigger for a recent row.
+        assertThatThrownBy(() -> owner.execute("SET jeparla.pseudonymise = 'on'; UPDATE seller_declarations SET"
+                + " ip_address = NULL, user_label = '" + HASH + "', pseudonymised_at = now() WHERE id = "
+                + f.declaration())).rootCause().hasMessageContaining("append-only");
+        assertThatThrownBy(() -> owner.execute("SET jeparla.pseudonymise = 'on'; UPDATE audit_logs SET"
+                + " ip_address = NULL, actor_label = '" + HASH + "' WHERE id = " + f.audit())).rootCause()
+                .hasMessageContaining("append-only");
+        // And for an old row, any change beyond the pseudonymisation.
+        OldEvidence e = oldEvidence("BLOCKED");
+        assertThatThrownBy(() -> owner.execute("SET jeparla.pseudonymise = 'on'; UPDATE seller_declarations SET"
+                + " ip_address = NULL, user_label = '" + HASH + "', pseudonymised_at = now(), text = 'changed'"
+                + " WHERE id = " + e.declaration())).rootCause().hasMessageContaining("append-only");
     }
 
     @Test

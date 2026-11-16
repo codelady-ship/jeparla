@@ -367,6 +367,16 @@ export function SellerWizard({
                         {chunks}
                       </Link>
                     ),
+                    terms: (chunks) => (
+                      <Link
+                        href="/legal/sellers"
+                        target="_blank"
+                        rel="noopener"
+                        className="link-underline font-medium"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
                   })}
                 </span>
               </label>

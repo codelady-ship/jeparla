@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
  * of the Republic of Azerbaijan, including the Criminal Code. The wording is
  * docs/legal/sellers-liability.md, section 2b, kept in the message files ({@value #KEY}) in az, en and ru.
  *
- * <p><b>Draft:</b> the text is not approved by a lawyer yet (#57). A new wording needs a new
- * {@link #VERSION}; a seller who confirmed an older version is asked again (409
- * {@code verification.declaration_outdated}).
+ * <p>Final text of 2026-11-16 (#57, docs/legal/analysis.md; drafted without a licensed lawyer, a review is
+ * recommended before a commission-based launch). A new wording needs a new {@link #VERSION}; a seller who
+ * confirmed an older version is asked again (409 {@code verification.declaration_outdated}).
  */
 @Component
 public class DeclarationText {
 
     /** Version of the wording in the message files; the declarations table keeps it with every confirmation. */
-    public static final String VERSION = "precious-2026-11-10-draft";
+    public static final String VERSION = "precious-2026-11-16";
 
-    /** True until a lawyer approves the wording (#57). */
-    public static final boolean DRAFT = true;
+    /** The wording is final (#57, 2026-11-16); the API field {@code draft} stays for existing clients. */
+    public static final boolean DRAFT = false;
 
     static final String KEY = "seller.precious.declaration";
 
