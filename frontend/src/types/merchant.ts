@@ -29,6 +29,8 @@ export type MerchantStore = {
   description: string;
   /** schema.org openingHours, e.g. "Mo-Fr 10:00-19:00; Sa 11:00-17:00". */
   openingHours: string;
+  /** The store's map point for "near me" (#116); null or absent until the seller sets it. */
+  geo?: { lat: Decimal; lng: Decimal } | null;
   sellerStatus: SellerStatus;
   /** Backend only (absent in the sample data): the application and the documents check. */
   status?: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";

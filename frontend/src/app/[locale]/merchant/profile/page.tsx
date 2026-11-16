@@ -32,7 +32,9 @@ async function Profile() {
             social: store.social,
             description: store.description,
             openingHours: store.openingHours,
+            mapLink: "",
           }}
+          geo={store.geo ?? null}
         />
       </MerchantIntl>
     </div>

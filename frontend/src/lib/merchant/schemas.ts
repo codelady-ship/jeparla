@@ -189,6 +189,8 @@ export const profileSchema = z.object({
     .refine((v) => v === "" || /^(@[\w.]{2,30}|https:\/\/\S+)$/.test(v), "socialInvalid"),
   description: z.string().trim().max(1000, "descriptionLong"),
   openingHours: z.string().max(200),
+  /** Google Maps / Yandex Maps link or "lat, lng" (#116); the backend reads the point, empty keeps it. */
+  mapLink: z.string().trim().max(2000, "descriptionLong").optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;

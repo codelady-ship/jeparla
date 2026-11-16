@@ -404,6 +404,7 @@
     "sellerVerified": "Seller verified",
     "visit": "Visit",
     "openMap": "Open in maps",
+    "openMapOf": "Open in maps: {store}",
     "whatsapp": "Message on WhatsApp",
     "whatsappMessage": "Hello! I found your store {store} on Jeparla.",
     "products": "Products from this store",
@@ -1420,6 +1421,15 @@
       },
       "save": "Save",
       "saved": "Profile updated.",
+      "location": {
+        "title": "Location on the map",
+        "intro": "Buyers sort stores by distance with “Near me” and see an “Open in maps” link on the store card.",
+        "link": "Map link or coordinates",
+        "hint": "Open the store in Google Maps or Yandex Maps and copy the full link from the address bar, or type the coordinates: 40.4093, 49.8671. Short links (maps.app.goo.gl) carry no coordinates. Left empty, the saved location stays.",
+        "saved": "Saved location: {lat}, {lng}",
+        "none": "No location yet: the store is shown at the end of “Near me” and its card has no map link.",
+        "open": "Check on the map"
+      },
       "status": "Seller status",
       "sellerStatus": {
         "NONE": "Not checked",
@@ -1749,7 +1759,10 @@
       "count": "{count, plural, =0 {No stores} one {# store} other {# stores}}",
       "colStore": "Store",
       "colOwner": "Owner",
-      "products": "{count, plural, =0 {no products} one {# product} other {# products}}"
+      "products": "{count, plural, =0 {no products} one {# product} other {# products}}",
+      "mapCheck": "Check on the map: {store}",
+      "mapCheckShort": "Check on the map",
+      "noMap": "No map location set"
     },
     "storeStatus": {
       "ALL": "All",

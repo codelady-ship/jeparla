@@ -1,11 +1,12 @@
 "use client";
 
-import { Copy, Loader2 } from "lucide-react";
+import { Copy, Loader2, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { SelectField, TextField } from "@/components/sell/fields";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { mapHref, type StoreGeo } from "@/lib/geo/map-link";
 import { sendJson } from "@/lib/merchant/client";
 import { formatWeek, invalidDays, parseWeek, WEEK, type WeekHours } from "@/lib/merchant/hours";
 import { pathErrors, profileSchema, type ProfileInput } from "@/lib/merchant/schemas";
@@ -14,12 +15,21 @@ import { CITIES } from "@/lib/seller/cities";
 import { isMessage } from "@/lib/api/problem";
 
 /** Store profile and weekly opening hours (PLAN 5.7 "profile"). */
-export function ProfileForm({ initial }: { initial: ProfileInput }) {
+export function ProfileForm({
+  initial,
+  geo: initialGeo = null,
+}: {
+  initial: ProfileInput;
+  /** The saved map point (#116), or null. */
+  geo?: StoreGeo | null;
+}) {
   const t = useTranslations("Merchant.profile");
   const tm = useTranslations("Merchant");
   const ts = useTranslations("Sell");
   const ta = useTranslations("Auth");
   const [form, setForm] = useState(initial);
+  const [geo, setGeo] = useState(initialGeo);
+  const savedMap = mapHref(geo);
   const [week, setWeek] = useState<WeekHours>(() => parseWeek(initial.openingHours));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
@@ -59,12 +69,18 @@ export function ProfileForm({ initial }: { initial: ProfileInput }) {
     if (!r.success) return fail(pathErrors(r.error));
     if (badDays.length) return fail({ form: "hoursInvalid" });
     setPending(true);
-    const result = await sendJson<{ profile: ProfileInput }>("PUT", "/api/merchant/profile", body);
+    const result = await sendJson<{ profile: ProfileInput & { geo?: StoreGeo | null } }>(
+      "PUT",
+      "/api/merchant/profile",
+      body,
+    );
     setPending(false);
     if (!result.ok)
       return fail(result.errors.form ? result.errors : { ...result.errors, form: "check" });
     setErrors({});
-    setForm(result.data.profile);
+    const { geo: savedGeo, ...profile } = result.data.profile;
+    setForm({ ...profile, mapLink: "" });
+    if (savedGeo !== undefined) setGeo(savedGeo);
     notices.show(t("saved"));
   }
 
@@ -150,6 +166,46 @@ export function ProfileForm({ initial }: { initial: ProfileInput }) {
           )}
         </div>
       </div>
+
+      <fieldset className="flex min-w-0 flex-col gap-4 rounded-lg border bg-card p-4 sm:p-6">
+        <legend className="float-left mb-1 w-full font-heading text-xl">
+          {t("location.title")}
+        </legend>
+        <p className="clear-both text-sm text-muted-foreground">{t("location.intro")}</p>
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm" aria-live="polite">
+          <MapPin aria-hidden className="size-4 shrink-0 text-gold-text" />
+          {geo ? (
+            <>
+              <span className="tabular-nums">
+                {t("location.saved", { lat: geo.lat, lng: geo.lng })}
+              </span>
+              {savedMap && (
+                <a
+                  href={savedMap}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-underline font-medium"
+                >
+                  {t("location.open")}
+                </a>
+              )}
+            </>
+          ) : (
+            <span className="text-muted-foreground">{t("location.none")}</span>
+          )}
+        </p>
+        <TextField
+          id="pr-map-link"
+          label={t("location.link")}
+          optional={ts("optional")}
+          inputMode="url"
+          placeholder="https://www.google.com/maps/@40.4093,49.8671,17z"
+          value={form.mapLink ?? ""}
+          onChange={(e) => set({ mapLink: e.target.value })}
+          error={err(errors.mapLink)}
+          hint={t("location.hint")}
+        />
+      </fieldset>
 
       <fieldset className="flex min-w-0 flex-col gap-4 rounded-lg border bg-card p-4 sm:p-6">
         <legend className="float-left mb-1 w-full font-heading text-xl">{t("hours.title")}</legend>
