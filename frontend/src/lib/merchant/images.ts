@@ -2,15 +2,17 @@ export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 export const IMAGE_MAX_BYTES = 15 * 1024 * 1024;
 /** Longest side after downscaling; enough for the catalog and small for the draft. */
 const MAX_SIDE = 960;
+/** Hallmark and label photos (#106): the engraved digits need more detail. */
+export const EVIDENCE_MAX_SIDE = 1600;
 
 /**
  * Phone photos are large; this shrinks one to a JPEG data URL so the draft fits
  * in localStorage. The backend upload (R2, PLAN 5.13) replaces it on Day 6 and
  * checks MIME type and size again on the server.
  */
-export async function downscale(file: File): Promise<string> {
+export async function downscale(file: File, maxSide = MAX_SIDE): Promise<string> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const w = Math.round(bitmap.width * scale);
   const h = Math.round(bitmap.height * scale);
   const canvas = document.createElement("canvas");

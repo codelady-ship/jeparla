@@ -32,6 +32,7 @@ import {
   type StoneInput,
   type VariantInput,
 } from "@/types/merchant";
+import { EvidenceUpload } from "./evidence-upload";
 import { ImageUpload } from "./image-upload";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
@@ -289,6 +290,13 @@ export function ProductForm({
                 {err(errors.images)}
               </p>
             )}
+            <div className="mt-4 border-t pt-5">
+              <EvidenceUpload
+                value={p.evidence ?? {}}
+                materialKind={p.materialKind ?? "PRECIOUS"}
+                onChange={(evidence) => set({ evidence })}
+              />
+            </div>
           </div>
         )}
 

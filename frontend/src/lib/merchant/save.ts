@@ -2,7 +2,7 @@ import { api } from "@/lib/api";
 import { ApiError } from "@/lib/api/http";
 import { userFetch } from "@/lib/auth/backend";
 import type { ProductStatus } from "@/types/api";
-import type { ProductInput } from "@/types/merchant";
+import { EVIDENCE_KINDS, type ProductInput } from "@/types/merchant";
 import {
   backendImageId,
   dataUrlBytes,
@@ -38,6 +38,22 @@ export async function saveProduct(
         })
       : await call<BackendProduct>(`/merchant/products/${id}`, { method: "PUT", body });
 
+  /** Presigned upload into private staging, then the file itself; returns the upload key. */
+  const putFile = async (path: string, file: { type: string; bytes: Uint8Array }) => {
+    const upload = await call<ImageUpload>(path, {
+      method: "POST",
+      body: { contentType: file.type, sizeBytes: file.bytes.byteLength },
+    });
+    const put = await fetch(upload.url, {
+      method: upload.method || "PUT",
+      headers: upload.headers,
+      body: new Blob([file.bytes as Uint8Array<ArrayBuffer>], { type: file.type }),
+      signal: AbortSignal.timeout(30_000),
+    }).catch(() => null);
+    if (!put?.ok) throw new ApiError(502, "PUT image upload", "storage.upload_failed");
+    return upload;
+  };
+
   // Photos.
   const keep = new Set(input.images.map((img) => backendImageId(img.id)).filter((v) => v !== null));
   for (const img of saved.images) {
@@ -53,17 +69,7 @@ export async function saveProduct(
     }
     const file = dataUrlBytes(img.url);
     if (!file) continue;
-    const upload = await call<ImageUpload>(`/merchant/products/${saved.id}/images/uploads`, {
-      method: "POST",
-      body: { contentType: file.type, sizeBytes: file.bytes.byteLength },
-    });
-    const put = await fetch(upload.url, {
-      method: upload.method || "PUT",
-      headers: upload.headers,
-      body: new Blob([file.bytes as Uint8Array<ArrayBuffer>], { type: file.type }),
-      signal: AbortSignal.timeout(30_000),
-    }).catch(() => null);
-    if (!put?.ok) throw new ApiError(502, "PUT image upload", "storage.upload_failed");
+    const upload = await putFile(`/merchant/products/${saved.id}/images/uploads`, file);
     const attached = await call<{ id: number }>(`/merchant/products/${saved.id}/images`, {
       method: "POST",
       body: { key: upload.key, altAz: input.name.trim().slice(0, 200) },
@@ -75,6 +81,26 @@ export async function saveProduct(
       method: "PUT",
       body: { imageIds: order },
     });
+
+  // Hallmark and label photos (#106): a new one replaces the stored one and waits for the
+  // admin check; a removed one is deleted. Bijouterie has no hallmark (the API refuses it).
+  const stored = new Map((saved.evidencePhotos ?? []).map((e) => [e.kind, e]));
+  for (const kind of EVIDENCE_KINDS) {
+    const wanted =
+      kind === "HALLMARK" && saved.materialKind === "FASHION" ? undefined : input.evidence?.[kind];
+    if (!wanted) {
+      if (stored.has(kind))
+        await call(`/merchant/products/${saved.id}/evidence/${kind}`, { method: "DELETE" });
+      continue;
+    }
+    const file = dataUrlBytes(wanted.url);
+    if (!file) continue;
+    const upload = await putFile(`/merchant/products/${saved.id}/evidence/${kind}/uploads`, file);
+    await call(`/merchant/products/${saved.id}/evidence/${kind}`, {
+      method: "PUT",
+      body: { key: upload.key },
+    });
+  }
 
   if (intent === "REVIEW" && saved.status !== "IN_REVIEW" && saved.status !== "APPROVED") {
     const changed = await call<BackendProduct>(`/merchant/products/${saved.id}/status`, {

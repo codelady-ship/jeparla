@@ -50,7 +50,10 @@ export function DecisionButtons<S extends string>({
   reasonLabel,
   codes,
   reasonAlways = false,
+  templates = [],
 }: {
+  /** Ready reasons the admin can put into the reason field with one click (still editable). */
+  templates?: readonly { label: string; text: string }[];
   endpoint: string;
   /** Who reads the reason; the default label says the seller does. */
   reasonLabel?: string;
@@ -184,6 +187,21 @@ export function DecisionButtons<S extends string>({
                   <label htmlFor={reasonId} className="text-sm font-medium">
                     {reasonLabel ?? t("reason.label")}
                   </label>
+                  {templates.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {templates.map((tpl) => (
+                        <Button
+                          key={tpl.label}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setReason(tpl.text)}
+                        >
+                          {tpl.label}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                   <textarea
                     id={reasonId}
                     rows={4}
