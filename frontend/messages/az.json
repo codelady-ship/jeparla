@@ -1241,7 +1241,21 @@
       "bulkSent": "{total} məhsuldan {done} yoxlamaya göndərildi.",
       "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin.",
       "aiStudio": "AI Studio",
-      "aiStudioNamed": "{name}: AI Studio"
+      "aiStudioNamed": "{name}: AI Studio",
+      "bulkPricing": {
+        "title": "Qaralamaların qiyməti: {count, plural, one {# qaralama} other {# qaralama}}",
+        "mode": "Qiymət rejimi",
+        "keep": "Dəyişməsin",
+        "FIXED": "Sabit qiymət",
+        "METAL_LINKED": "Metala bağlı",
+        "labor": "İşçilik, 1 qram üçün (AZN)",
+        "apply": "Görünən qaralamalara tətbiq et",
+        "hint": "Sabit qiymətə keçəndə hər variant indiki qiymətini saxlayır. Metala bağlıya keçəndə 1 qram işçilik yazılır, qalan qaydalar (sabit işçilik, daş, əlavə faiz) 0 olur və ya əvvəlki qayda qalır; redaktorda dəyişə bilərsiniz. Yalnız işçilik yazsanız, ancaq metala bağlı variantlar dəyişir. Yeni qiymətlər səhifəni yeniləyəndə görünür.",
+        "done": "{total} qaralamadan {done} dəyişdi. Yeni qiymətlər səhifəni yeniləyəndə görünür.",
+        "pricingEmpty": "Qiymət rejimini seçin və ya işçilik dəyərini yazın.",
+        "laborInvalid": "İşçilik dəyərini rəqəmlə yazın, ən çox 2 onluq: məsələn 12,50.",
+        "laborRequired": "Metala bağlı qiymət üçün 1 qram işçilik dəyərini yazın."
+      }
     },
     "form": {
       "newTitle": "Yeni məhsul",
@@ -1489,7 +1503,9 @@
         "thicknessMm": "Qalınlıq",
         "lengthMm": "Uzunluq (zəncir, qolbaq)",
         "diameterMm": "Diametr (sırğa, asma)"
-      }
+      },
+      "fromDraft": "Forma qaralamanın şəkli ilə başlayır. Qalan sahələri doldurun: şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir.",
+      "fromDraftSuggested": "Forma qaralamanın şəkli və kataloq səhifəsindən oxunan ad, qiymət və çəki ilə başlayır. Bunlar yalnız təklifdir: hər sahəni yoxlayın. Şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir."
     },
     "profile": {
       "title": "Mağaza profili",
@@ -1706,7 +1722,8 @@
         "pdfSize": "PDF ən çox 20 MB ola bilər.",
         "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
       },
-      "xlsxTemplate": "Excel şablonu ({lang})"
+      "xlsxTemplate": "Excel şablonu ({lang})",
+      "makeProductNamed": "Məhsul yarat: {name}"
     },
     "ai": {
       "title": "AI Studio",

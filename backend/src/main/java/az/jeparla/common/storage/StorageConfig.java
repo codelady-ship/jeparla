@@ -95,5 +95,10 @@ public class StorageConfig {
         public void publishPrivate(String privateKey, String publicKey) {
             throw unavailable();
         }
+
+        @Override
+        public Optional<StoredObject> headPrivate(String key) {
+            throw unavailable();
+        }
     }
 }

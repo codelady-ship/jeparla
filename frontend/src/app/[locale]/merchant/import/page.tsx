@@ -82,7 +82,8 @@ async function Drafts() {
               )}
               <div className="mt-auto flex flex-wrap items-start gap-2 pt-2">
                 <Link
-                  href="/merchant/products/new"
+                  href={{ pathname: "/merchant/products/new", query: { draft: String(d.id) } }}
+                  aria-label={t("makeProductNamed", { name: label })}
                   className="inline-flex h-10 items-center rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground outline-none hover:bg-primary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   {t("makeProduct")}

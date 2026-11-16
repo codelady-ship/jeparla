@@ -102,6 +102,9 @@ public interface ObjectStorage {
     /** Removes a private object (not a staged one); nothing happens when it does not exist. */
     void deletePrivate(String key);
 
+    /** Size, type and ETag of a private object (a draft photo becoming a product photo, #109), or empty. */
+    Optional<StoredObject> headPrivate(String key);
+
     /** A presigned upload: the browser sends {@code method} to {@code url} with {@code headers}. */
     record PresignedUpload(String url, String method, Map<String, String> headers, Instant expiresAt) {
     }

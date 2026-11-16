@@ -3,6 +3,7 @@ package az.jeparla.merchant;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.common.ratelimit.RateLimitPolicy;
 import az.jeparla.common.ratelimit.RateLimitService;
+import az.jeparla.merchant.dto.DraftImageRequest;
 import az.jeparla.merchant.dto.EvidenceAttachRequest;
 import az.jeparla.merchant.dto.ImageAttachRequest;
 import az.jeparla.merchant.dto.MerchantEvidencePhotoDto;
@@ -136,6 +137,16 @@ public class MerchantProductController {
     public ResponseEntity<MerchantImageDto> attach(@PathVariable long id, @Valid @RequestBody ImageAttachRequest request) {
         Created<MerchantImageDto> result = images.attach(id, request);
         return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(result.body());
+    }
+
+    @PostMapping("/{id}/images/from-draft")
+    @Operation(summary = "Make the photo of one of the store's drafts a photo of the product (#109)",
+            description = "201 attached; the draft is removed. 403 for another store's draft, 404 when it is gone,"
+                    + " 409 merchant.image_limit at 8 photos.")
+    public ResponseEntity<MerchantImageDto> attachDraft(@PathVariable long id,
+            @Valid @RequestBody DraftImageRequest request) {
+        Created<MerchantImageDto> result = images.attachDraft(id, request.draftId(), request.altAz());
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.body());
     }
 
     @PutMapping("/{id}/images/order")
