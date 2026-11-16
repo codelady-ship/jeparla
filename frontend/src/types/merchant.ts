@@ -47,6 +47,8 @@ export type MerchantStore = {
   returnPolicy?: string;
   /** Backend only (#108): made to order as the store declares it; null when not declared. */
   madeToOrder?: MadeToOrder | null;
+  /** Backend only (#249): the registered name for the store page; empty when not provided. */
+  legalName?: string;
   /** Backend only: seller code of conduct version to accept (#107) and the last acceptance. */
   codeVersion?: number;
   codeAcceptedAt?: string | null;

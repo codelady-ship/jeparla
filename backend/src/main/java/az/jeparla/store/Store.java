@@ -126,6 +126,10 @@ public class Store extends TimestampedEntity {
     @Column(name = "tax_id", nullable = false)
     private String taxId;
 
+    /** Registered name of the seller for the store page (ET 5.3, V59), or null when not provided. */
+    @Column(name = "legal_name")
+    private String legalName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StoreStatus status = StoreStatus.PENDING;
@@ -443,6 +447,16 @@ public class Store extends TimestampedEntity {
 
     public void setTaxId(String taxId) {
         this.taxId = taxId;
+    }
+
+    public String getLegalName() {
+        return legalName;
+    }
+
+    /** Stripped; empty clears it. */
+    public void setLegalName(String legalName) {
+        String value = legalName == null ? null : legalName.strip();
+        this.legalName = value == null || value.isEmpty() ? null : value;
     }
 
     public StoreStatus getStatus() {

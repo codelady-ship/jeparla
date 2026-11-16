@@ -99,6 +99,14 @@ export type Store = StoreSummary & {
   returnPolicy?: string;
   /** Made to order as the store declares it (#108); absent when not declared. */
   madeToOrder?: MadeToOrder | null;
+  /** Who sells (#249, ET 5.3), as the seller states it; absent until the seller gives the registered name. */
+  seller?: SellerIdentity;
+};
+
+export type SellerIdentity = {
+  legalName: string;
+  legalType: "COMPANY" | "SOLE_TRADER";
+  taxId: string;
 };
 
 /** The store's own answer (#108): days only with offered = true. */

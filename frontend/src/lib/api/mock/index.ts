@@ -243,6 +243,7 @@ export const mockApi: JeparlaApi = {
         services: _s,
         returnPolicy: _r,
         madeToOrder: _m,
+        seller: _sl,
         ...summary
       }) => summary,
     );

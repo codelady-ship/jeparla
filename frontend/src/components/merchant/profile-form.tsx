@@ -147,6 +147,18 @@ export function ProfileForm({
           hint={ts("hints.social")}
           className="sm:col-span-2"
         />
+        <TextField
+          id="pr-legal-name"
+          label={t("fields.legalName")}
+          optional={ts("optional")}
+          autoComplete="organization"
+          maxLength={200}
+          value={form.legalName ?? ""}
+          onChange={(e) => set({ legalName: e.target.value })}
+          error={err(errors.legalName)}
+          hint={t("legalNameHint")}
+          className="sm:col-span-2"
+        />
         <div className="sm:col-span-2">
           <RadioGroupField
             id="pr-seller-kind"

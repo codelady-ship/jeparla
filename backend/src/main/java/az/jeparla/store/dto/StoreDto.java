@@ -3,6 +3,7 @@ package az.jeparla.store.dto;
 import az.jeparla.common.dto.LocalizedTextDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import az.jeparla.verification.dto.VerificationDto;
+import az.jeparla.store.LegalType;
 import az.jeparla.store.StoreServiceKind;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -39,7 +40,17 @@ public record StoreDto(
         @JsonInclude(JsonInclude.Include.NON_EMPTY) String returnPolicy,
         @Schema(description = "Made to order as the store declares it (#108); left out when not declared",
                 nullable = true)
-        @JsonInclude(JsonInclude.Include.NON_NULL) MadeToOrderDto madeToOrder) {
+        @JsonInclude(JsonInclude.Include.NON_NULL) MadeToOrderDto madeToOrder,
+        @Schema(description = "The seller's legal identity (ET 5.3, #249): registered name, legal form and VOEN, "
+                + "as the seller gave them; left out when the seller has not provided the registered name",
+                nullable = true)
+        @JsonInclude(JsonInclude.Include.NON_NULL) SellerIdentityDto seller) {
+
+    /** Who sells: the registered name the seller wrote, the legal form and the VOEN of the store (V3, V59). */
+    @Schema(name = "SellerIdentity", requiredProperties = {"legalName", "legalType", "taxId"})
+    public record SellerIdentityDto(String legalName, LegalType legalType,
+            @Schema(example = "1234567890") String taxId) {
+    }
 
     /** Coordinates as decimal strings. */
     @Schema(name = "Geo", requiredProperties = {"lat", "lng"})

@@ -37,6 +37,7 @@ async function Profile() {
             splitLaborMarkup: store.splitLaborMarkup ?? false,
             services: store.services ?? [],
             returnPolicy: store.returnPolicy ?? "",
+            legalName: store.legalName ?? "",
             madeToOrder: {
               offered: store.madeToOrder?.offered ?? null,
               days: store.madeToOrder?.days ?? null,

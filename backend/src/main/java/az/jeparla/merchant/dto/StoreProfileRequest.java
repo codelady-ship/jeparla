@@ -30,6 +30,9 @@ import java.util.Set;
  * absent keeps the saved ones, an empty set or text clears them.
  *
  * <p>{@code madeToOrder} (#108): absent keeps the saved answer, {@code offered: null} clears it.
+ *
+ * <p>{@code legalName} (#249, ET 5.3): the seller's registered name; when set, the store page shows it with the
+ * legal form and the VOEN. Absent keeps it, empty clears it.
  */
 public record StoreProfileRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -47,7 +50,11 @@ public record StoreProfileRequest(
         Boolean splitLaborMarkup,
         Set<StoreServiceKind> services,
         @Size(max = 500) String returnPolicy,
-        @Valid MadeToOrderDto madeToOrder) {
+        @Valid MadeToOrderDto madeToOrder,
+        @Size(max = 200) @Pattern(regexp = LEGAL_NAME) String legalName) {
+
+    /** Empty (clears it) or 2 to 200 characters that are not all spaces (V59). */
+    public static final String LEGAL_NAME = "^$|^\\s*\\S.*\\S\\s*$";
 
     /** An Instagram-style handle or an https link, or empty (frontend {@code social}). */
     public static final String SOCIAL = "^$|^@[\\w.]{2,30}$|^https://\\S+$";

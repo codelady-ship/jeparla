@@ -523,6 +523,12 @@
       "madeToOrderYes": "Sifarişlə hazırlayır",
       "madeToOrderDays": "Sifarişlə hazırlayır, adətən {days} günə",
       "madeToOrderNo": "Sifarişlə hazırlamır"
+    },
+    "seller": {
+      "title": "Satıcı",
+      "legalForm": "Hüquqi forma",
+      "taxId": "VÖEN",
+      "note": "Satıcının özünün yazdığı məlumat."
     }
   },
   "About": {
@@ -1583,7 +1589,8 @@
         "city": "Şəhər",
         "address": "Ünvan",
         "social": "Sosial şəbəkə",
-        "description": "Mağaza haqqında"
+        "description": "Mağaza haqqında",
+        "legalName": "Qeydiyyatdakı ad"
       },
       "hours": {
         "title": "İş saatları",
@@ -1642,7 +1649,8 @@
         "yes": "Hazırlayırıq",
         "no": "Hazırlamırıq",
         "days": "Adətən neçə günə hazırlanır"
-      }
+      },
+      "legalNameHint": "Vergi qeydiyyatındakı kimi: şirkətin adı və ya fərdi sahibkarın adı və soyadı. Yazsanız, mağaza səhifəsində hüquqi forma və VÖEN ilə birlikdə görünür (\"Elektron ticarət haqqında\" Qanun, 5.3). Boş qoysanız, heç biri görünmür."
     },
     "errors": {
       "imagesRequired": "Ən azı bir şəkil əlavə edin.",
@@ -1670,7 +1678,9 @@
       "keyFeatureLong": "Bir xüsusiyyət 120 simvoldan uzun ola bilməz.",
       "keyFeaturesTooMany": "Ən çox 5 xüsusiyyət yazın.",
       "returnPolicyLong": "Qaytarma şərtləri ən çox 500 simvol olar.",
-      "daysInvalid": "1 ilə 365 arasında tam gün sayı yazın."
+      "daysInvalid": "1 ilə 365 arasında tam gün sayı yazın.",
+      "legalNameShort": "Qeydiyyatdakı ad ən az 2 simvol olar.",
+      "legalNameLong": "Qeydiyyatdakı ad ən çox 200 simvol olar."
     },
     "sampleOnly": "Bu bölmə yalnız real serverlə işləyir. Nümunə data rejimində sənəd yüklənmir və bildiriş yoxdur.",
     "documents": {
