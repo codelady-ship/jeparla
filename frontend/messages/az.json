@@ -1721,10 +1721,28 @@
         "photoSize": "şəkil ən çox 15 MB ola bilər.",
         "pdfType": "PDF faylı seçin.",
         "pdfSize": "PDF ən çox 20 MB ola bilər.",
-        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin."
+        "upload": "Fayl yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin.",
+        "photoRead": "şəkli oxumaq olmadı."
       },
       "xlsxTemplate": "Excel şablonu ({lang})",
-      "makeProductNamed": "Məhsul yarat: {name}"
+      "makeProductNamed": "Məhsul yarat: {name}",
+      "queueTitle": "Yükləməyə hazır şəkillər ({count})",
+      "queueHint": "Lazım olsa şəkli fırladın və ya kəsin (orijinal, kvadrat, 4:5), sonra yükləyin. Dəyişiklik brauzerdə edilir və yalnız yüklənən nüsxəyə tətbiq olunur. Yüklənməyən şəkil səbəbi ilə burada qalır.",
+      "queueClear": "Növbəni təmizlə",
+      "queueLimit": "Bir dəfəyə ən çox {max} şəkil; qalanları götürülmədi.",
+      "uploadAll": "{count, plural, other {Hamısını yüklə (#)}}",
+      "retryFailed": "{count, plural, other {Alınmayanları yenidən göndər (#)}}",
+      "retry": "Yenidən cəhd et",
+      "failedStay": "{count, plural, other {# şəkil yüklənmədi və növbədə qaldı.}}",
+      "rotateLeft": "{name}: sola fırlat",
+      "rotateRight": "{name}: sağa fırlat",
+      "cropLabel": "{name}: kəsmə",
+      "cropOriginal": "Orijinal",
+      "cropSquare": "Kvadrat",
+      "cropPortrait": "4:5",
+      "previewAlt": "{name}: önizləmə",
+      "remove": "Çıxar",
+      "removeFromQueue": "{name}: növbədən çıxar"
     },
     "ai": {
       "title": "AI Studio",

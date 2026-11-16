@@ -1721,10 +1721,28 @@
         "photoSize": "a photo can be at most 15 MB.",
         "pdfType": "Choose a PDF file.",
         "pdfSize": "The PDF can be at most 20 MB.",
-        "upload": "The file was not uploaded. Check the connection and try again."
+        "upload": "The file was not uploaded. Check the connection and try again.",
+        "photoRead": "the photo could not be read."
       },
       "xlsxTemplate": "Excel template ({lang})",
-      "makeProductNamed": "Create product: {name}"
+      "makeProductNamed": "Create product: {name}",
+      "queueTitle": "Photos ready to upload ({count})",
+      "queueHint": "Rotate or crop a photo if needed (original, square, 4:5), then upload. Edits are made in the browser and apply only to the uploaded copy. A photo that fails stays here with the reason.",
+      "queueClear": "Clear the queue",
+      "queueLimit": "At most {max} photos at once; the rest were not taken.",
+      "uploadAll": "{count, plural, one {Upload (#)} other {Upload all (#)}}",
+      "retryFailed": "{count, plural, one {Send the failed one again (#)} other {Send the failed ones again (#)}}",
+      "retry": "Try again",
+      "failedStay": "{count, plural, one {# photo was not uploaded and stays in the queue.} other {# photos were not uploaded and stay in the queue.}}",
+      "rotateLeft": "{name}: rotate left",
+      "rotateRight": "{name}: rotate right",
+      "cropLabel": "{name}: crop",
+      "cropOriginal": "Original",
+      "cropSquare": "Square",
+      "cropPortrait": "4:5",
+      "previewAlt": "{name}: preview",
+      "remove": "Remove",
+      "removeFromQueue": "{name}: remove from the queue"
     },
     "ai": {
       "title": "AI Studio",
