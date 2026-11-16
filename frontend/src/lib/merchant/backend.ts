@@ -1,18 +1,21 @@
 import type {
   Category,
   CheckStatus,
+  Dimensions,
   FashionMaterial,
   Money,
   ProductStatus,
   StockStatus,
   Stone,
 } from "@/types/api";
-import type {
-  EvidenceKind,
-  EvidenceInput,
-  MerchantProduct,
-  ProductAudience,
-  ProductInput,
+import {
+  DIMENSION_KEYS,
+  type DimensionsInput,
+  type EvidenceKind,
+  type EvidenceInput,
+  type MerchantProduct,
+  type ProductAudience,
+  type ProductInput,
 } from "@/types/merchant";
 import { suggestAudience } from "./audience";
 import { EMPTY_PRICING } from "./draft";
@@ -64,6 +67,9 @@ export type BackendProduct = {
   audience?: ProductAudience | null;
   /** Hallmark and label photos (#106), with the admin check. */
   evidencePhotos?: BackendEvidencePhoto[];
+  /** Sizes in mm and key features (#174). */
+  dimensions?: Dimensions | null;
+  keyFeatures?: string[];
 };
 
 export type BackendEvidencePhoto = {
@@ -130,6 +136,10 @@ export function toProductInput(p: BackendProduct, categories: Category[]): Produ
     })),
     // Expertise documents are separate, private uploads (lib/api/merchant documents).
     docs: [],
+    dimensions: Object.fromEntries(
+      DIMENSION_KEYS.map((k) => [k, p.dimensions?.[k] ?? ""]),
+    ) as DimensionsInput,
+    keyFeatures: p.keyFeatures ?? [],
     materialKind: p.materialKind,
     material: p.material ?? "",
     notPreciousConfirmed: p.materialKind === "FASHION" && Boolean(p.notPreciousConfirmedAt),
@@ -149,6 +159,14 @@ export const toMerchantProduct = (p: BackendProduct, categories: Category[]): Me
 });
 
 const blank = (v: string) => (v.trim() === "" ? null : v.trim());
+
+/** Sizes as decimal strings, or null when the seller entered none (#174). */
+function dimensionsRequest(d: DimensionsInput | undefined) {
+  const out = Object.fromEntries(
+    DIMENSION_KEYS.map((k) => [k, blank((d?.[k] ?? "").replace(",", "."))]),
+  ) as Record<(typeof DIMENSION_KEYS)[number], string | null>;
+  return Object.values(out).some((v) => v !== null) ? out : null;
+}
 
 /**
  * Body of POST/PUT /merchant/products. Translations the form does not edit (name and
@@ -177,6 +195,8 @@ export function toProductRequest(
     metal: fashion ? null : input.metal || null,
     material: fashion ? input.material || null : null,
     notPreciousConfirmed: fashion ? input.notPreciousConfirmed === true : null,
+    dimensions: dimensionsRequest(input.dimensions),
+    keyFeatures: (input.keyFeatures ?? []).map((f) => f.trim()).filter((f) => f !== ""),
     variants: input.variants.map((v) => {
       const id = /^v(\d+)$/.exec(v.key) ? Number(v.key.slice(1)) : null;
       const stored = id !== null ? known.get(id) : undefined;

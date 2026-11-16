@@ -6,6 +6,7 @@ import az.jeparla.product.FashionMaterial;
 import az.jeparla.product.MaterialKind;
 import az.jeparla.product.Metal;
 import az.jeparla.product.ProductStatus;
+import az.jeparla.product.dto.DimensionsDto;
 import az.jeparla.product.dto.StoneDto;
 import az.jeparla.verification.CheckStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,5 +43,7 @@ public record MerchantProductDto(
         List<MerchantVariantDto> variants,
         List<StoneDto> stones,
         @Schema(description = "Hallmark and label photos (#106), at most one of each kind")
-        List<MerchantEvidencePhotoDto> evidencePhotos) {
+        List<MerchantEvidencePhotoDto> evidencePhotos,
+        @Schema(nullable = true, description = "Sizes in mm (#174); null when none") DimensionsDto dimensions,
+        @Schema(description = "Up to 5 key features (#174)") List<String> keyFeatures) {
 }

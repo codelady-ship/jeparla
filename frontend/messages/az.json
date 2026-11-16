@@ -270,7 +270,11 @@
       "city": "Şəhər",
       "material": "Material",
       "kind": "Növ",
-      "hallmarkPhoto": "Damğa şəkli"
+      "hallmarkPhoto": "Damğa şəkli",
+      "widthMm": "En",
+      "thicknessMm": "Qalınlıq",
+      "lengthMm": "Uzunluq",
+      "diameterMm": "Diametr"
     },
     "pricing": {
       "FIXED": "Sabit",
@@ -389,6 +393,17 @@
       "added": "Satıcı damğa və ya etiket şəklini əlavə edib.",
       "checked": "Jeparla administratoru şəkli məhsulun məlumatı ilə müqayisə edib.",
       "notAssay": "Damğa şəkli əyarın laborator yoxlaması deyil."
+    },
+    "keyFeatures": "Əsas xüsusiyyətlər",
+    "services": {
+      "title": "Mağazanın xidmətləri",
+      "RESIZE": "Ölçü dəyişmə",
+      "ENGRAVING": "Qravüra",
+      "GIFT_WRAP": "Hədiyyə qablaşdırması",
+      "DELIVERY": "Çatdırılma",
+      "RETURNS": "Qaytarma",
+      "returnPolicy": "Qaytarma şərtləri",
+      "note": "Mağazanın öz bəyanatıdır; Jeparla bu xidmətləri yoxlamır. Dəqiq şərtləri WhatsApp ilə soruşun."
     }
   },
   "Stores": {
@@ -1280,7 +1295,8 @@
         "certificateNumber": "Sertifikat nömrəsi",
         "audience": "Kimin üçündür",
         "material": "Material",
-        "notPrecious": "Təsdiq edirəm: bu məhsul qiymətli metal deyil və adında, təsvirində qızıl, gümüş, brilyant və ya əyar (məsələn 585) yazılmayıb."
+        "notPrecious": "Təsdiq edirəm: bu məhsul qiymətli metal deyil və adında, təsvirində qızıl, gümüş, brilyant və ya əyar (məsələn 585) yazılmayıb.",
+        "keyFeatures": "Əsas xüsusiyyətlər"
       },
       "hints": {
         "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
@@ -1290,7 +1306,8 @@
         "fineness": "Əvvəl metalı seçin.",
         "audience": "Model üzərində AI şəklində uyğun modeli seçir. Kişi və uşaq kateqoriyalarında avtomatik seçilir, dəyişə bilərsiniz.",
         "material": "Əsas materialı seçin; örtük varsa \"Gümüş suyu\" və ya \"Qızıl suyu\".",
-        "fashionPrice": "Bijuteriyada qiymət sabitdir: metal məzənnəsinə bağlanmır."
+        "fashionPrice": "Bijuteriyada qiymət sabitdir: metal məzənnəsinə bağlanmır.",
+        "keyFeatures": "Hər sətirdə bir xüsusiyyət, ən çox {max} sətir, hər biri {length} simvola qədər. Məsələn: Əl işi, Hər gün taxmaq üçün."
       },
       "images": {
         "drop": "Şəkilləri bura atın və ya seçin",
@@ -1456,6 +1473,14 @@
         "PRECIOUSHint": "Metal, əyar və çəki göstərilir.",
         "FASHION": "Bijuteriya və ya əl işi",
         "FASHIONHint": "Material göstərilir, qiymət sabitdir. Sonra dəyişmək olmur."
+      },
+      "dimensions": {
+        "title": "Ölçülər, mm",
+        "hint": "Yalnız ölçdüyünüzü yazın; boş qalan ölçü məhsul səhifəsində görünmür.",
+        "widthMm": "En",
+        "thicknessMm": "Qalınlıq",
+        "lengthMm": "Uzunluq (zəncir, qolbaq)",
+        "diameterMm": "Diametr (sırğa, asma)"
       }
     },
     "profile": {
@@ -1499,7 +1524,18 @@
       },
       "sellerKindNote": "Mağazada bu növə uyğun olmayan aktiv məhsullar və ya yoxlanılmış sənədlər varsa, dəyişiklik qəbul edilmir.",
       "splitLaborMarkup": "Qiymət cədvəlində işçiliyi və mağaza payını ayrıca sətirlərdə göstər",
-      "splitLaborMarkupHint": "Metala bağlı qiymətli məhsulların səhifəsində \"Qiymət necə hesablanıb\" blokuna aiddir. Seçilməyibsə, ikisi bir sətirdə \"İşçilik və mağaza payı\" kimi göstərilir."
+      "splitLaborMarkupHint": "Metala bağlı qiymətli məhsulların səhifəsində \"Qiymət necə hesablanıb\" blokuna aiddir. Seçilməyibsə, ikisi bir sətirdə \"İşçilik və mağaza payı\" kimi göstərilir.",
+      "services": {
+        "title": "Mağazanın xidmətləri",
+        "hint": "Yalnız həqiqətən göstərdiyiniz xidmətləri seçin. Məhsul səhifəsində mağazanın öz bəyanatı kimi görünür.",
+        "RESIZE": "Ölçü dəyişmə",
+        "ENGRAVING": "Qravüra",
+        "GIFT_WRAP": "Hədiyyə qablaşdırması",
+        "DELIVERY": "Çatdırılma",
+        "RETURNS": "Qaytarma",
+        "returnPolicy": "Qaytarma şərtləri",
+        "returnPolicyHint": "Öz sözlərinizlə, ən çox 500 simvol. Məsələn: 14 gün ərzində, çek və qablaşdırma ilə."
+      }
     },
     "errors": {
       "imagesRequired": "Ən azı bir şəkil əlavə edin.",
@@ -1523,7 +1559,10 @@
       "server": "Nəsə alınmadı. Yenidən cəhd edin.",
       "rateLimited": "Qısa müddətdə çox cəhd edilib. Bir az sonra yenidən cəhd edin.",
       "notPreciousRequired": "Məhsulun qiymətli metal olmadığını təsdiq edin.",
-      "fashionFixedOnly": "Bijuteriyada yalnız sabit qiymət olur."
+      "fashionFixedOnly": "Bijuteriyada yalnız sabit qiymət olur.",
+      "keyFeatureLong": "Bir xüsusiyyət 120 simvoldan uzun ola bilməz.",
+      "keyFeaturesTooMany": "Ən çox 5 xüsusiyyət yazın.",
+      "returnPolicyLong": "Qaytarma şərtləri ən çox 500 simvol olar."
     },
     "sampleOnly": "Bu bölmə yalnız real serverlə işləyir. Nümunə data rejimində sənəd yüklənmir və bildiriş yoxdur.",
     "documents": {

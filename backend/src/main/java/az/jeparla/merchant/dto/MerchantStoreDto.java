@@ -4,10 +4,12 @@ import az.jeparla.store.LegalType;
 import az.jeparla.store.SellerCode;
 import az.jeparla.store.SellerKind;
 import az.jeparla.store.Store;
+import az.jeparla.store.StoreServiceKind;
 import az.jeparla.store.StoreStatus;
 import az.jeparla.verification.CheckStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * The seller's own store ({@code MerchantStore} in frontend/src/types/merchant.ts, plus status fields the
@@ -44,7 +46,9 @@ public record MerchantStoreDto(
         int codeVersion,
         @Schema(nullable = true, format = "date-time") String codeAcceptedAt,
         @Schema(nullable = true, format = "date-time") String codeValidUntil,
-        boolean splitLaborMarkup) {
+        boolean splitLaborMarkup,
+        List<StoreServiceKind> services,
+        String returnPolicy) {
 
     public static MerchantStoreDto of(Store store) {
         Instant validUntil = SellerCode.validUntil(store);
@@ -54,7 +58,7 @@ public record MerchantStoreDto(
                 nullToEmpty(store.getOpeningHours()), store.getLegalType(), store.getTaxId(), store.getSellerKind(),
                 store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
                 SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString(),
-                store.isSplitLaborMarkup());
+                store.isSplitLaborMarkup(), store.getServices(), nullToEmpty(store.getReturnPolicy()));
     }
 
     private static String acceptedAt(Store store) {

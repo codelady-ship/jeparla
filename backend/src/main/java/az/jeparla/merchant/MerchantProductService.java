@@ -134,6 +134,7 @@ public class MerchantProductService {
                 : new Product(store, checked.category(), slug, request.name().toText(), request.metal());
         product.setDescription(request.description() == null ? null : request.description().toText());
         product.setIdempotencyKey(idempotencyKey);
+        applyDetails(product, request);
         product.setAudience(request.audience() != null ? request.audience()
                 : AudienceRules.suggest(checked.category()));
         replaceStones(product, request.stonesOrEmpty());
@@ -145,6 +146,31 @@ public class MerchantProductService {
         audit.record("PRODUCT_CREATED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"materialKind\":\"" + product.getMaterialKind() + "\"}");
         return new Created<>(views.product(product), true);
+    }
+
+    /**
+     * Sizes and key features (#174) from the request; true when they changed (a live product then goes
+     * back to review, like any other claim about the piece).
+     */
+    private static boolean applyDetails(Product product, ProductRequest request) {
+        ProductRequest.DimensionsRequest d = request.dimensions();
+        BigDecimal width = d == null ? null : d.widthMm();
+        BigDecimal thickness = d == null ? null : d.thicknessMm();
+        BigDecimal length = d == null ? null : d.lengthMm();
+        BigDecimal diameter = d == null ? null : d.diameterMm();
+        List<String> features = request.keyFeaturesOrEmpty();
+        boolean changed = !sameNumber(product.getWidthMm(), width)
+                || !sameNumber(product.getThicknessMm(), thickness)
+                || !sameNumber(product.getLengthMm(), length)
+                || !sameNumber(product.getDiameterMm(), diameter)
+                || !product.getKeyFeatures().equals(features);
+        product.setDimensions(width, thickness, length, diameter);
+        product.setKeyFeatures(features);
+        return changed;
+    }
+
+    private static boolean sameNumber(BigDecimal a, BigDecimal b) {
+        return a == null ? b == null : b != null && a.compareTo(b) == 0;
     }
 
     /**
@@ -177,6 +203,7 @@ public class MerchantProductService {
                         request.description() == null ? null : request.description().toText())
                 || product.getMetal() != request.metal()
                 || product.getMaterial() != request.material();
+        content |= applyDetails(product, request);
         product.setCategory(checked.category());
         product.setName(request.name().toText());
         product.setDescription(request.description() == null ? null : request.description().toText());

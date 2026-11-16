@@ -5,6 +5,7 @@ import az.jeparla.common.dto.LocalizedTextDto;
 import az.jeparla.common.dto.MoneyDto;
 import az.jeparla.common.storage.ImageUrls;
 import az.jeparla.product.dto.CompareItemDto;
+import az.jeparla.product.dto.DimensionsDto;
 import az.jeparla.product.dto.EvidencePhotoDto;
 import az.jeparla.product.dto.ProductDto;
 import az.jeparla.product.dto.ProductImageDto;
@@ -65,7 +66,7 @@ public class CatalogMapper {
     public ProductDto detail(Product product) {
         return ProductDto.of(summary(product), LocalizedTextDto.of(product.getDescription()),
                 product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus(),
-                evidencePhotos(product));
+                evidencePhotos(product), DimensionsDto.of(product), product.getKeyFeatures());
     }
 
     /** Hallmark and label photos of a listed product (#106); rejected ones are not shown. */

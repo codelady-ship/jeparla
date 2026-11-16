@@ -150,6 +150,12 @@ public class MerchantStoreService {
         if (request.splitLaborMarkup() != null) {
             store.setSplitLaborMarkup(request.splitLaborMarkup());
         }
+        if (request.services() != null) {
+            store.setServices(request.services());
+        }
+        if (request.returnPolicy() != null) {
+            store.setReturnPolicy(request.returnPolicy());
+        }
         GeoPoint location = location(request);
         if (location != null) {
             store.setGeo(location.latitude(), location.longitude());

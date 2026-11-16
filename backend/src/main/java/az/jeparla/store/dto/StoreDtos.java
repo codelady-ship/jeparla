@@ -40,7 +40,8 @@ public final class StoreDtos {
         return new StoreDto(store.getId(), store.getSlug(), store.getName(), store.getCity(), logoUrl,
                 verification(store), productCount, LocalizedTextDto.of(store.getDescription()), store.getAddress(),
                 store.getWhatsapp(), orEmpty(store.getPhone()), orEmpty(store.getOpeningHours()), geo,
-                store.getCreatedAt().toString(), codeAcceptedOn(store));
+                store.getCreatedAt().toString(), codeAcceptedOn(store), store.getServices(),
+                store.getReturnPolicy());
     }
 
     /** The acceptance day in Baku while it is valid (#107), else null. */

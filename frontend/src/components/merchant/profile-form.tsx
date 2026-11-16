@@ -4,6 +4,7 @@ import { Copy, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { RadioGroupField, SelectField, TextField } from "@/components/sell/fields";
+import { STORE_SERVICES } from "@/types/api";
 import { SELLER_KINDS, type SellerKind } from "@/types/merchant";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -144,6 +145,53 @@ export function ProfileForm({ initial }: { initial: ProfileInput }) {
           />
           <p className="mt-2 text-xs text-muted-foreground">{t("sellerKindNote")}</p>
         </div>
+        <fieldset className="flex min-w-0 flex-col gap-3 sm:col-span-2">
+          <legend className="mb-1 text-sm font-medium">{t("services.title")}</legend>
+          <p className="text-xs text-muted-foreground">{t("services.hint")}</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {STORE_SERVICES.map((s) => (
+              <label
+                key={s}
+                htmlFor={`pr-service-${s}`}
+                className="flex items-center gap-3 text-sm"
+              >
+                <input
+                  id={`pr-service-${s}`}
+                  type="checkbox"
+                  checked={(form.services ?? []).includes(s)}
+                  onChange={(e) =>
+                    set({
+                      services: e.target.checked
+                        ? [...(form.services ?? []), s]
+                        : (form.services ?? []).filter((x) => x !== s),
+                    })
+                  }
+                  className="size-5 shrink-0 accent-primary"
+                />
+                {t(`services.${s}`)}
+              </label>
+            ))}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="pr-return-policy">
+              {t("services.returnPolicy")}
+              <span className="font-normal text-muted-foreground">({ts("optional")})</span>
+            </Label>
+            <textarea
+              id="pr-return-policy"
+              rows={3}
+              maxLength={500}
+              value={form.returnPolicy ?? ""}
+              onChange={(e) => set({ returnPolicy: e.target.value })}
+              aria-invalid={errors.returnPolicy ? true : undefined}
+              aria-describedby="pr-return-policy-hint"
+              className="rounded-lg border border-input bg-background px-2.5 py-2 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm"
+            />
+            <p id="pr-return-policy-hint" className="text-xs text-muted-foreground">
+              {errors.returnPolicy ? err(errors.returnPolicy) : t("services.returnPolicyHint")}
+            </p>
+          </div>
+        </fieldset>
         {form.sellerKind !== "FASHION" && (
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label htmlFor="pr-split" className="flex items-start gap-3 text-sm">
