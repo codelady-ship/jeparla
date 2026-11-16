@@ -27,15 +27,31 @@ const METAL_NAME: Record<NonNullable<Product["metal"]>, string> = {
 };
 
 /** Bijouterie (#128) has a material instead of a metal and a fineness, and maybe no weight. */
+const DIMENSION_NAME = {
+  widthMm: "width",
+  thicknessMm: "thickness",
+  lengthMm: "length",
+  diameterMm: "diameter",
+} as const;
+
 function materialFacts(p: Product) {
   const weight = p.weightGrams
     ? {
         weight: { "@type": "QuantitativeValue", value: p.weightGrams, unitCode: "GRM" },
       }
     : {};
-  const weightProp = p.weightGrams
-    ? [{ "@type": "PropertyValue", name: "weight_grams", value: p.weightGrams }]
-    : [];
+  const weightProp = [
+    ...(p.weightGrams
+      ? [{ "@type": "PropertyValue", name: "weight_grams", value: p.weightGrams }]
+      : []),
+    // Sizes in mm (#174): only what the seller entered; MMT is the UN/CEFACT code for millimetre.
+    ...(["widthMm", "thicknessMm", "lengthMm", "diameterMm"] as const).flatMap((k) => {
+      const v = p.dimensions?.[k];
+      return v
+        ? [{ "@type": "PropertyValue", name: DIMENSION_NAME[k], value: v, unitCode: "MMT" }]
+        : [];
+    }),
+  ];
   if (p.metal === null) {
     const material = (p.material ?? "OTHER").toLowerCase().replaceAll("_", " ");
     return {

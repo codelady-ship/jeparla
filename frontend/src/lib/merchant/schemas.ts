@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { compareDecimal } from "@/lib/pricing";
 import { normalizePhone } from "@/lib/seller/schemas";
+import { STORE_SERVICES } from "@/types/api";
 import { FASHION_MATERIALS, PRODUCT_AUDIENCES, SELLER_KINDS } from "@/types/merchant";
 
 /**
@@ -24,7 +25,34 @@ export const imagesStep = z.object({
     .max(MAX_IMAGES, "imagesTooMany"),
 });
 
+export const MAX_KEY_FEATURES = 5;
+export const KEY_FEATURE_LENGTH = 120;
+
+/** A size in mm as typed (#174): empty, or > 0 with up to 4 digits and 2 decimals. */
+const dimension = z
+  .string()
+  .trim()
+  .transform((v) => v.replace(",", "."))
+  .refine((v) => v === "" || (/^\d{1,4}(\.\d{1,2})?$/.test(v) && Number(v) > 0), "decimalInvalid")
+  .optional();
+
 export const basicsStep = z.object({
+  dimensions: z
+    .object({
+      widthMm: dimension,
+      thicknessMm: dimension,
+      lengthMm: dimension,
+      diameterMm: dimension,
+    })
+    .optional(),
+  /** One feature per line as typed; blank lines are dropped when saving. */
+  keyFeatures: z
+    .array(z.string().max(KEY_FEATURE_LENGTH, "keyFeatureLong"))
+    .optional()
+    .refine(
+      (v) => (v ?? []).filter((f) => f.trim() !== "").length <= MAX_KEY_FEATURES,
+      "keyFeaturesTooMany",
+    ),
   name: z.string().trim().min(3, "productNameShort").max(120, "nameLong"),
   category: z.string().min(1, "required"),
   audience: z.enum(PRODUCT_AUDIENCES).default("UNISEX"),
@@ -234,6 +262,9 @@ export const profileSchema = z.object({
   sellerKind: z.enum(SELLER_KINDS).optional(),
   /** Product page price breakdown (#104): labor and store share as two lines; absent keeps it. */
   splitLaborMarkup: z.boolean().optional(),
+  /** The store's own services and return terms (#174); absent keeps them. */
+  services: z.array(z.enum(STORE_SERVICES)).optional(),
+  returnPolicy: z.string().trim().max(500, "returnPolicyLong").optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;

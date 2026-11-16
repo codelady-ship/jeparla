@@ -79,3 +79,11 @@ export function formatGrams(grams: Decimal, locale: string): string {
   // CLDR uses a plain space before unit symbols (unlike currencies).
   return `${formatDecimal(grams, l, { max: 3 })} ${GRAM[l]}`;
 }
+
+const MM: Record<Locale, string> = { az: "mm", en: "mm", ru: "мм" };
+
+/** "2,5 mm" (az), "2.5 mm" (en), "2,5 мм" (ru), up to 2 decimals (#174). */
+export function formatMm(mm: Decimal, locale: string): string {
+  const l = (locale in MM ? locale : "en") as Locale;
+  return `${formatDecimal(mm, l, { max: 2 })} ${MM[l]}`;
+}

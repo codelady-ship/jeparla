@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,6 +94,23 @@ public class Product extends TimestampedEntity {
     private Instant notPreciousConfirmedAt;
 
     /** The seller hid this APPROVED product; only then may the seller show it again without a review. */
+    /** Optional sizes in millimetres (#174, V46). */
+    @Column(name = "width_mm", precision = 6, scale = 2)
+    private BigDecimal widthMm;
+
+    @Column(name = "thickness_mm", precision = 6, scale = 2)
+    private BigDecimal thicknessMm;
+
+    @Column(name = "length_mm", precision = 6, scale = 2)
+    private BigDecimal lengthMm;
+
+    @Column(name = "diameter_mm", precision = 6, scale = 2)
+    private BigDecimal diameterMm;
+
+    /** Up to 5 key features (#174, V46), one per line; null when none. */
+    @Column(name = "key_features")
+    private String keyFeatures;
+
     @Column(name = "hidden_by_seller", nullable = false)
     private boolean hiddenBySeller;
 
@@ -332,6 +350,40 @@ public class Product extends TimestampedEntity {
     }
 
     // ------------------------------------------------------------------ accessors
+
+    public BigDecimal getWidthMm() {
+        return widthMm;
+    }
+
+    public BigDecimal getThicknessMm() {
+        return thicknessMm;
+    }
+
+    public BigDecimal getLengthMm() {
+        return lengthMm;
+    }
+
+    public BigDecimal getDiameterMm() {
+        return diameterMm;
+    }
+
+    /** Sizes in mm (#174); a null value clears it. */
+    public void setDimensions(BigDecimal widthMm, BigDecimal thicknessMm, BigDecimal lengthMm,
+            BigDecimal diameterMm) {
+        this.widthMm = widthMm;
+        this.thicknessMm = thicknessMm;
+        this.lengthMm = lengthMm;
+        this.diameterMm = diameterMm;
+    }
+
+    /** Key features (#174), in the seller's order; empty when none. */
+    public List<String> getKeyFeatures() {
+        return keyFeatures == null || keyFeatures.isBlank() ? List.of() : List.of(keyFeatures.split("\n"));
+    }
+
+    public void setKeyFeatures(List<String> features) {
+        this.keyFeatures = features == null || features.isEmpty() ? null : String.join("\n", features);
+    }
 
     public Store getStore() {
         return store;
