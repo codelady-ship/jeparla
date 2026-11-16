@@ -74,7 +74,8 @@ public class AdminModerationController {
 
     @PostMapping("/products/{id}/decision")
     @Operation(summary = "APPROVE or RETURN (reason) a product in review, DEACTIVATE (reason) a published one",
-            description = "409 admin.declaration_missing: a precious product needs the seller's declaration (#138).")
+            description = "409 admin.declaration_missing: a precious product needs the seller's declaration (#138); "
+                    + "409 admin.expertise_rejected: its certificate did not pass, a new one has to be reviewed first.")
     public AdminProductDto decideProduct(@PathVariable long id, @Valid @RequestBody ProductDecisionRequest request) {
         return moderation.decideProduct(id, request);
     }

@@ -462,6 +462,53 @@ class DocumentApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void aProductWhoseCertificateIsRejectedLeavesEveryPublicEndpoint() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, true);
+        long adminId = newAdmin();
+        ensureQuote(Metal.GOLD);
+        long product = createProduct(seller, goldProduct(category(), fineness(Metal.GOLD), "450.00"));
+        attachPng(seller, product);
+        mvc.perform(json(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/v1/merchant/products/" + product + "/status"), "{\"status\": \"IN_REVIEW\"}")
+                        .with(seller.token()))
+                .andExpect(status().isOk());
+        uploadDocument(seller, taxIdUpload(PDF.length));
+        String decision = "/api/v1/admin/products/" + product + "/decision";
+        mvc.perform(json(post(decision), "{\"decision\": \"APPROVE\"}").with(admin(adminId)))
+                .andExpect(status().isOk());
+        String slug = jdbc.queryForObject("SELECT slug FROM products WHERE id = ?", String.class, product);
+        String storeSlug = jdbc.queryForObject("SELECT slug FROM stores WHERE id = ?", String.class, seller.storeId());
+        mvc.perform(get("/api/v1/products/" + slug)).andExpect(status().isOk());
+
+        String certificate = uploadDocument(seller, """
+                {"checkKind": "EXPERTISE", "kind": "ASSAY_CERTIFICATE", "productId": %d, "fileName": "eyar.pdf",
+                 "contentType": "application/pdf", "sizeBytes": %d}
+                """.formatted(product, PDF.length));
+        decide(adminId, certificate, "{\"decision\": \"REJECT\", \"reason\": \"UNREADABLE\"}");
+
+        assertThat(jdbc.queryForObject("SELECT status FROM products WHERE id = ?", String.class, product))
+                .isEqualTo("RETURNED");
+        mvc.perform(get("/api/v1/products/" + slug)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/v1/products").param("ids", String.valueOf(product))).andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].id", Matchers.not(Matchers.hasItem((int) product))));
+        mvc.perform(get("/api/v1/stores/" + storeSlug + "/products")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].id", Matchers.not(Matchers.hasItem((int) product))));
+        mvc.perform(get("/api/v1/products")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].id", Matchers.not(Matchers.hasItem((int) product))));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM audit_logs WHERE action = 'PRODUCT_RETURNED'"
+                + " AND target_id = ?", Integer.class, String.valueOf(product))).isEqualTo(1);
+
+        // Sent back to review without a new certificate: the admin cannot publish it.
+        mvc.perform(json(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/v1/merchant/products/" + product + "/status"), "{\"status\": \"IN_REVIEW\"}")
+                        .with(seller.token()))
+                .andExpect(status().isOk());
+        mvc.perform(json(post(decision), "{\"decision\": \"APPROVE\"}").with(admin(adminId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("admin.expertise_rejected"));
+    }
+
+    @Test
     void storeDecisionsNeedAReasonAndNotifyTheSeller() throws Exception {
         Seller seller = seller(SellerKind.FASHION, false);
         long adminId = newAdmin();

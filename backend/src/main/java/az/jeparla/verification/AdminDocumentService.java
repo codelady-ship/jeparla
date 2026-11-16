@@ -13,12 +13,14 @@ import az.jeparla.common.storage.ObjectStorage.PresignedDownload;
 import az.jeparla.notification.NotificationKind;
 import az.jeparla.notification.NotificationService;
 import az.jeparla.product.Product;
+import az.jeparla.product.ProductStatus;
 import az.jeparla.store.Store;
 import az.jeparla.verification.dto.AdminDocumentDto;
 import az.jeparla.verification.dto.DocumentDecisionRequest;
 import az.jeparla.verification.dto.DocumentViewDto;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
@@ -148,6 +150,17 @@ public class AdminDocumentService {
             default -> NotificationKind.DOCUMENT_CHANGES_REQUESTED;
         };
         RejectReason reason = request.reason();
+        if (product != null && product.getStatus() == ProductStatus.APPROVED
+                && product.getExpertiseStatus() == CheckStatus.REJECTED) {
+            // #138: a product whose certificate did not pass is not public until a new one is uploaded and
+            // reviewed. The document notification already tells the seller why, so no second notification.
+            Locale sellerLocale = Locale.forLanguageTag(store.getOwner().getPreferredLocale().code());
+            String returnNote = messages.getMessage("verification.product_returned_note", new Object[] {
+                messages.getMessage("verification.reason." + reason.name(), null, sellerLocale)}, sellerLocale);
+            product.returnToSeller(returnNote);
+            audit.record("PRODUCT_RETURNED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(),
+                    returnNote, "{\"documentId\":\"" + document.getId() + "\"}");
+        }
         if (decision == DocumentStatus.REJECTED && reason == RejectReason.AUTHENTICITY) {
             // Suspected forgery: a second admin decides whether the store is suspended (four eyes, #138).
             suspensions.open(document, admin, note);
