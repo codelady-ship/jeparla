@@ -1,11 +1,13 @@
 import { Search, Store } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { FilterForm } from "@/components/catalog/filter-form";
 import { Reveal } from "@/components/motion/reveal";
+import { IntlProvider } from "@/components/i18n/intl-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { itemList } from "@/lib/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import type { SearchParams } from "@/lib/catalog/filters";
 import { normalizeNear } from "@/lib/geo/near";
@@ -22,9 +24,10 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
   const q = one(sp.q)?.slice(0, 80);
   const city = one(sp.city)?.slice(0, 60);
   const near = normalizeNear(one(sp.near)) ?? undefined;
-  const [t, locale, all, stores] = await Promise.all([
+  const [t, locale, messages, all, stores] = await Promise.all([
     getTranslations("Stores"),
     getLocale(),
+    getMessages(),
     api.listStores(),
     api.listStores({ q, city, near }),
   ]);
@@ -68,7 +71,17 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
         </Button>
       </FilterForm>
 
-      <NearMeButton q={q} city={city} near={near} />
+      {/* A Client Component: only the near* labels go to the browser (the layout sends none). */}
+      <IntlProvider
+        locale={locale as Locale}
+        messages={{
+          Stores: Object.fromEntries(
+            Object.entries(messages.Stores).filter(([k]) => k.startsWith("near")),
+          ),
+        }}
+      >
+        <NearMeButton q={q} city={city} near={near} />
+      </IntlProvider>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {t("count", { count: stores.length })}
