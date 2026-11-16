@@ -112,6 +112,35 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theRegisteredNameShowsTheSellerIdentityOnTheStorePage() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        jdbc.update("UPDATE stores SET status = 'APPROVED', approved_at = now() WHERE id = ?", seller.storeId());
+        String slug = jdbc.queryForObject("SELECT slug FROM stores WHERE id = ?", String.class, seller.storeId());
+        // Not provided: the page shows no identity (ET 5.3, #249).
+        mvc.perform(get("/api/v1/stores/" + slug)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.seller").doesNotExist());
+
+        String named = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",
+                "\"legalName\": \" Test Zərgər MMC \", \"sellerKind\"");
+        mvc.perform(json(put("/api/v1/merchant/store"), named).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.legalName").value("Test Zərgər MMC"));
+        mvc.perform(get("/api/v1/stores/" + slug)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.seller.legalName").value("Test Zərgər MMC"))
+                .andExpect(jsonPath("$.seller.legalType").isString())
+                .andExpect(jsonPath("$.seller.taxId").value(Matchers.matchesPattern("\\d{10}")));
+
+        // Absent keeps it, empty clears it, one character is refused.
+        mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Test Zərgər", SellerKind.PRECIOUS))
+                .with(seller.token())).andExpect(jsonPath("$.legalName").value("Test Zərgər MMC"));
+        mvc.perform(json(put("/api/v1/merchant/store"), named.replace(" Test Zərgər MMC ", "X"))
+                .with(seller.token())).andExpect(status().isBadRequest());
+        mvc.perform(json(put("/api/v1/merchant/store"), named.replace(" Test Zərgər MMC ", ""))
+                .with(seller.token())).andExpect(status().isOk()).andExpect(jsonPath("$.legalName").value(""));
+        mvc.perform(get("/api/v1/stores/" + slug)).andExpect(jsonPath("$.seller").doesNotExist());
+    }
+
+    @Test
     void theOwnerSetsTheStoreServicesAndReturnTerms() throws Exception {
         Seller seller = seller(SellerKind.PRECIOUS, false);
         String body = profileJson("Test Zərgər", SellerKind.PRECIOUS).replace("\"sellerKind\"",

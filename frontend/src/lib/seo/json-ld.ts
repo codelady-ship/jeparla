@@ -230,6 +230,8 @@ export function jewelryStore(s: Store, locale: Locale): Thing {
     name: s.name,
     ...(description && { description }),
     url,
+    // The seller's registered identity (#249), only when the seller gave it.
+    ...(s.seller && { legalName: s.seller.legalName, taxID: s.seller.taxId }),
     ...(s.logoUrl && { image: abs(s.logoUrl), logo: abs(s.logoUrl) }),
     ...(phone && { telephone: phone }),
     ...((street || city) && {

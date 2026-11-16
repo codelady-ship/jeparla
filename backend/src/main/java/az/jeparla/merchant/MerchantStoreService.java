@@ -158,6 +158,9 @@ public class MerchantStoreService {
         if (request.returnPolicy() != null) {
             store.setReturnPolicy(request.returnPolicy());
         }
+        if (request.legalName() != null) {
+            store.setLegalName(request.legalName());
+        }
         if (request.madeToOrder() != null) {
             store.declareMadeToOrder(request.madeToOrder().offered(), request.madeToOrder().days());
         }

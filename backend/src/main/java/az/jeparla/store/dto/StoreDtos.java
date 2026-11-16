@@ -40,7 +40,13 @@ public final class StoreDtos {
                 verification(store), productCount, LocalizedTextDto.of(store.getDescription()), store.getAddress(),
                 store.getWhatsapp(), orEmpty(store.getPhone()), orEmpty(store.getOpeningHours()), geo(store),
                 store.getCreatedAt().toString(), codeAcceptedOn(store), store.getServices(),
-                store.getReturnPolicy(), MadeToOrderDto.of(store));
+                store.getReturnPolicy(), MadeToOrderDto.of(store), seller(store));
+    }
+
+    /** The seller's legal identity (ET 5.3, #249), only when the seller gave the registered name. */
+    static StoreDto.SellerIdentityDto seller(Store store) {
+        return store.getLegalName() == null ? null
+                : new StoreDto.SellerIdentityDto(store.getLegalName(), store.getLegalType(), store.getTaxId());
     }
 
     /** The store's public map point (#116), or null while the seller has not set it. */

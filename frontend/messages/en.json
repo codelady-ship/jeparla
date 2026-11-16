@@ -523,6 +523,12 @@
       "madeToOrderYes": "Makes pieces to order",
       "madeToOrderDays": "Makes pieces to order, usually in {days, plural, one {# day} other {# days}}",
       "madeToOrderNo": "Does not make pieces to order"
+    },
+    "seller": {
+      "title": "Seller",
+      "legalForm": "Legal form",
+      "taxId": "VOEN (tax ID)",
+      "note": "As the seller states it."
     }
   },
   "About": {
@@ -1583,7 +1589,8 @@
         "city": "City",
         "address": "Address",
         "social": "Social media",
-        "description": "About the store"
+        "description": "About the store",
+        "legalName": "Registered name"
       },
       "hours": {
         "title": "Opening hours",
@@ -1642,7 +1649,8 @@
         "yes": "We make to order",
         "no": "We do not make to order",
         "days": "Usual days to make a piece"
-      }
+      },
+      "legalNameHint": "As in the tax registration: the company name, or the sole trader's full name. If you fill it in, the store page shows it with the legal form and the VOEN (Law on Electronic Commerce, art. 5.3). Left empty, none of them is shown."
     },
     "errors": {
       "imagesRequired": "Add at least one photo.",
@@ -1670,7 +1678,9 @@
       "keyFeatureLong": "A feature can be at most 120 characters.",
       "keyFeaturesTooMany": "Write at most 5 features.",
       "returnPolicyLong": "Return terms can be at most 500 characters.",
-      "daysInvalid": "Enter a whole number of days from 1 to 365."
+      "daysInvalid": "Enter a whole number of days from 1 to 365.",
+      "legalNameShort": "The registered name needs at least 2 characters.",
+      "legalNameLong": "The registered name can be at most 200 characters."
     },
     "sampleOnly": "This section works with the real server only. In sample data mode no documents are uploaded and there are no notifications.",
     "documents": {

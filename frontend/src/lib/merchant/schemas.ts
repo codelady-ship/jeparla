@@ -265,6 +265,13 @@ export const profileSchema = z.object({
   /** The store's own services and return terms (#174); absent keeps them. */
   services: z.array(z.enum(STORE_SERVICES)).optional(),
   returnPolicy: z.string().trim().max(500, "returnPolicyLong").optional(),
+  /** Registered name for the store page (#249, ET 5.3); empty clears it, absent keeps it. */
+  legalName: z
+    .string()
+    .trim()
+    .max(200, "legalNameLong")
+    .refine((v) => v === "" || v.length >= 2, "legalNameShort")
+    .optional(),
   /** Made to order (#108): offered null = not declared; absent keeps the saved answer. */
   madeToOrder: z
     .object({

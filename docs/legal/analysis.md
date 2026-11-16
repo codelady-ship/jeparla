@@ -40,7 +40,7 @@ Oxunmayan aktlar (mətnlərdə maddə nömrəsi ilə istinad edilmir): Mülki M�
 | Təhlükəsizlik, audit jurnalı | FMQ 5.8, 9.12 | HTTPS, BCrypt, məxfi bucket, minimal DB rolu, dəyişməz audit, şifrəli backup |
 | Transsərhəd ötürmə | FMQ 14.2.2, 14.3 | Server Almaniyada; siyasətdə və qeydiyyat bildirişində razılıq |
 | İnformasiya sisteminin qeydiyyatı | FMQ 15 | Edilməyib, sahib yoxlatmalıdır |
-| Satıcı identifikasiyası | ET 5.3 | Satıcı şərtlərində öhdəlik; VÖEN mağaza səhifəsində hələ yoxdur |
+| Satıcı identifikasiyası | ET 5.3 | Satıcı şərtlərində öhdəlik; kabinetdə "Qeydiyyatdakı ad" yazılanda mağaza səhifəsində ad, hüquqi forma və VÖEN (və JSON-LD `legalName`, `taxID`) görünür (V59, #249) |
 | Silmə, orqanla əməkdaşlıq | ET 5.5, 12.4, 12.6; İXM 459 | Şərtlər, satıcı şərtləri, legal hold |
 | İstehlakçı hüquqlarını məhdudlaşdıran şərt etibarsızdır | İHMQ 16 | Ayrıca bölmə; qəsd/kobud ehtiyatsızlıq istisna edilmir |
 | Damğasız qiymətli metal satılmır | QMQD 10.3 | Kodeks, satıcı şərtləri, bəyanat |

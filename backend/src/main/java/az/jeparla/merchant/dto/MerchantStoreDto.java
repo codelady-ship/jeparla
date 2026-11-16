@@ -28,6 +28,7 @@ import java.util.List;
  * @param geo             the saved map point for "near me" (#116), or null; set from a map link or coordinates
  * @param splitLaborMarkup the product page shows labor and markup as two lines (#104); false: one line
  * @param madeToOrder     made to order as the store declares it (#108), or null when not declared
+ * @param legalName       the registered name for the store page (ET 5.3, #249), empty when not provided
  */
 @Schema(name = "MerchantStore")
 public record MerchantStoreDto(
@@ -55,7 +56,8 @@ public record MerchantStoreDto(
         boolean splitLaborMarkup,
         List<StoreServiceKind> services,
         String returnPolicy,
-        @Schema(nullable = true) MadeToOrderDto madeToOrder) {
+        @Schema(nullable = true) MadeToOrderDto madeToOrder,
+        String legalName) {
 
     public static MerchantStoreDto of(Store store) {
         Instant validUntil = SellerCode.validUntil(store);
@@ -66,7 +68,7 @@ public record MerchantStoreDto(
                 store.getStatus(), store.getStatusNote(), store.getSellerStatus(), store.getDocumentsStatus(),
                 SellerCode.CURRENT_VERSION, acceptedAt(store), validUntil == null ? null : validUntil.toString(),
                 StoreDtos.geo(store), store.isSplitLaborMarkup(), store.getServices(),
-                nullToEmpty(store.getReturnPolicy()), MadeToOrderDto.of(store));
+                nullToEmpty(store.getReturnPolicy()), MadeToOrderDto.of(store), nullToEmpty(store.getLegalName()));
     }
 
     private static String acceptedAt(Store store) {

@@ -156,6 +156,21 @@ describe("JSON-LD offers", () => {
 });
 
 describe("JSON-LD store, lists and pages", () => {
+  it("a store names the seller's registered identity only when the seller gave it (#249)", () => {
+    const none = jewelryStore({ ...STORES[0], seller: undefined }, "az") as Record<string, unknown>;
+    expect(none).not.toHaveProperty("legalName");
+    expect(none).not.toHaveProperty("taxID");
+    const named = jewelryStore(
+      {
+        ...STORES[0],
+        seller: { legalName: "Nümunə MMC", legalType: "COMPANY", taxId: "1234567890" },
+      },
+      "az",
+    ) as Record<string, unknown>;
+    expect(named.legalName).toBe("Nümunə MMC");
+    expect(named.taxID).toBe("1234567890");
+  });
+
   it("a store carries only the fields it has", () => {
     const full = jewelryStore(STORES[0], "az") as Record<string, unknown>;
     expect(full.telephone).toBe(STORES[0].phone);
