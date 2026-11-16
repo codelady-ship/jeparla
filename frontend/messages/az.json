@@ -2576,6 +2576,7 @@
     "updated": "Son yenilənmə: <time>{date}</time>",
     "operatorName": "Hüquqi ad",
     "operatorTaxId": "VÖEN",
+    "operatorTaxIdPending": "Hələ yoxdur: layihə fiziki şəxs tərəfindən idarə olunur, sahibkarlıq qeydiyyatı kommersiya fəaliyyəti başlamazdan əvvəl ediləcək",
     "operatorAddress": "Qeydiyyat ünvanı",
     "ownerField": "[sahibin məlumatı]",
     "contactEmail": "E-poçt",
