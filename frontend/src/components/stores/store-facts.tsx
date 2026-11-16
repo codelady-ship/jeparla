@@ -72,21 +72,24 @@ export async function StoreFacts({ facts }: { facts: Facts }) {
       </div>
       <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map(({ key, icon: Icon, value, dateTime }) => (
-          <div key={key} className="flex items-start gap-3 rounded-lg border bg-card p-3">
-            <Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <dt className="text-sm text-muted-foreground">
-                {t(`${key}.label`)}
-                <TermHint
-                  term={t(`${key}.label`)}
-                  label={t("how", { fact: t(`${key}.label`) })}
-                  text={t(`${key}.how`)}
-                />
-              </dt>
-              <dd className="font-medium">
-                {dateTime ? <time dateTime={dateTime}>{value}</time> : value}
-              </dd>
-            </div>
+          // dt and dd sit directly in the div (a dl allows no deeper wrapper); the icon is
+          // placed inside dt and positioned against the card.
+          <div
+            key={key}
+            className="relative flex min-w-0 flex-col gap-0.5 rounded-lg border bg-card p-3 pl-10"
+          >
+            <dt className="text-sm text-muted-foreground">
+              <Icon aria-hidden className="absolute top-3.5 left-3 size-4 text-gold-text" />
+              {t(`${key}.label`)}
+              <TermHint
+                term={t(`${key}.label`)}
+                label={t("how", { fact: t(`${key}.label`) })}
+                text={t(`${key}.how`)}
+              />
+            </dt>
+            <dd className="font-medium">
+              {dateTime ? <time dateTime={dateTime}>{value}</time> : value}
+            </dd>
           </div>
         ))}
       </dl>
