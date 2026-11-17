@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { HERO_SCENES } from "./hero-media";
 import { HeroMotion } from "./hero-motion";
 
 const delay = (d: number) => ({ "--d": d }) as CSSProperties;
@@ -13,7 +14,8 @@ const delay = (d: number) => ({ "--d": d }) as CSSProperties;
  * AI clip, cut out frame by frame) and stop in the center under a shadow-like
  * "Jeparla" that is part of the footage; on scroll a gold light sweep turns each
  * of them into a model wearing diamond, gold or silver jewelry, and the brand line
- * appears above the headline. One slogan and two calls to action are real HTML in
+ * appears above the headline. Then the camera visits each model in turn (scene 1, 2,
+ * 3, named by the rail at the bottom) and pulls back to the group. One slogan and two calls to action are real HTML in
  * three languages. Media and scroll logic: <HeroMotion>; layout: globals.css
  * under .hero.
  */
@@ -57,6 +59,20 @@ export function CinematicHero() {
         {t("scrollHint")}
         <ChevronDown className="size-4" />
       </span>
+
+      {/* Scene rail: names the three models left to right; on scroll the camera visits
+          each in turn and its line fills. Without motion it stays as a quiet legend. */}
+      <ol data-hero-scenes aria-label={t("scenesLabel")} className="hero-scenes">
+        {HERO_SCENES.map((key, i) => (
+          <li key={key}>
+            <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+            {t(`scenes.${key}`)}
+            <span aria-hidden className="hero-scene-bar">
+              <span data-scene-bar />
+            </span>
+          </li>
+        ))}
+      </ol>
     </HeroMotion>
   );
 }

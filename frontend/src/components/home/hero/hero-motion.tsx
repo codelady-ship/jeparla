@@ -5,11 +5,15 @@ import { FramePlayer } from "@/lib/motion/frames";
 import { trackProgress } from "@/lib/motion/scrub";
 import {
   HERO_DESKTOP_QUERY,
+  HERO_FIGURES,
   HERO_FRAMES,
   HERO_MEDIA,
+  HERO_MODELS,
   HERO_POSTER,
   HERO_PHASES,
+  HERO_ZOOM,
   frameUrl,
+  heroCamera,
   phase,
 } from "./hero-media";
 
@@ -56,6 +60,12 @@ export function HeroMotion({
     const media = desktop ? HERO_MEDIA.desktop : HERO_MEDIA.mobile;
     const hint = stage.querySelector<HTMLElement>("[data-hero-hint]");
     const brand = stage.querySelector<HTMLElement>("[data-hero-brand]");
+    const lens = frames.parentElement!;
+    const copy = stage.querySelector<HTMLElement>(".hero-copy");
+    const rail = stage.querySelector<HTMLElement>("[data-hero-scenes]");
+    const steps = rail ? [...rail.querySelectorAll<HTMLElement>("li")] : [];
+    const bars = rail ? [...rail.querySelectorAll<HTMLElement>("[data-scene-bar]")] : [];
+    const cut = desktop ? "desktop" : "mobile";
     const player = new FramePlayer(frames, {
       count: HERO_FRAMES,
       url: (i) => frameUrl(media.frames, i),
@@ -64,6 +74,63 @@ export function HeroMotion({
     let started = false;
     let landed = false;
     let frame = 0;
+    let active = -1;
+    // Camera geometry in the media box's own pixels, measured without the camera applied.
+    let geo: { w: number; x0: number; fw: number; bottom: number; max: number } | null = null;
+
+    const measure = () => {
+      lens.style.transform = "";
+      const box = lens.getBoundingClientRect();
+      const r = frames.getBoundingClientRect();
+      const nw = desktop ? 1920 : 1080;
+      const nh = desktop ? 1080 : 1920;
+      const scale = (desktop ? Math.max : Math.min)(r.width / nw, r.height / nh);
+      const fw = nw * scale;
+      const fh = nh * scale;
+      const x0 = r.left + (r.width - fw) / 2 - box.left;
+      const hero = stage.getBoundingClientRect();
+      const bottom = Math.min(r.bottom, hero.bottom) - box.top;
+      const figTop = r.bottom - fh * (1 - HERO_FIGURES[cut].top) - box.top;
+      // Heads may rise only to just under the header (desktop) or the copy (phone).
+      const limit =
+        (desktop ? hero.top + 80 : (copy?.getBoundingClientRect().bottom ?? 0) + 8) - box.top;
+      const max = Math.max(
+        1,
+        Math.min(HERO_ZOOM[cut], (bottom - limit) / Math.max(bottom - figTop, 1)),
+      );
+      geo = { w: box.width, x0, fw, bottom, max };
+    };
+
+    /** Zooms toward a model's feet so heads grow up into the empty backdrop. Transform only. */
+    const camera = (p: number) => {
+      if (!geo) measure();
+      const g = geo!;
+      const { zoom, focus } = heroCamera(p, HERO_MODELS[cut]);
+      const s = 1 + (g.max - 1) * zoom;
+      if (s === 1) {
+        lens.style.transform = "";
+        return;
+      }
+      const ox = g.x0 + g.fw * focus;
+      lens.style.transform = `translate(${(ox * (1 - s)).toFixed(1)}px, ${(g.bottom * (1 - s)).toFixed(1)}px) scale(${s.toFixed(4)})`;
+    };
+
+    const scenes = (p: number) => {
+      if (!rail) return;
+      rail.style.opacity = String(phase(p, HERO_PHASES.scenesIn));
+      let now = -1;
+      HERO_PHASES.scenes.forEach((range, i) => {
+        const f = phase(p, range);
+        bars[i]?.style.setProperty("transform", `scaleX(${f.toFixed(3)})`);
+        if (p >= range[0]) now = i;
+      });
+      if (now !== active) {
+        steps.forEach((li, i) =>
+          i === now ? li.setAttribute("aria-current", "step") : li.removeAttribute("aria-current"),
+        );
+        active = now;
+      }
+    };
 
     const sampleBackdrop = () => {
       try {
@@ -110,9 +177,15 @@ export function HeroMotion({
       const tf = phase(p, HERO_PHASES.transform);
       frames.style.opacity = p > 0.005 ? "1" : "0";
       player.show(tf);
+      camera(p);
+      scenes(p);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(render);
+    };
+    const onResize = () => {
+      geo = null;
+      onScroll();
     };
 
     video.addEventListener("loadeddata", sampleBackdrop);
@@ -135,7 +208,7 @@ export function HeroMotion({
       video.play()?.catch(land);
       timer = window.setTimeout(land, REVEAL_TIMEOUT);
       window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onScroll);
+      window.addEventListener("resize", onResize);
       render();
     }
 
@@ -145,7 +218,7 @@ export function HeroMotion({
       video.removeEventListener("ended", land);
       video.removeEventListener("error", land);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (frame) cancelAnimationFrame(frame);
       player.stop();
     };
