@@ -6,6 +6,7 @@ import { CategoryTiles } from "@/components/categories/category-tiles";
 import { AmbientVideo } from "@/components/media/ambient-video";
 import { ATELIER_VIDEO, RING_VIDEO, VITRINE_HOME } from "@/components/media/stock-media";
 import { Reveal } from "@/components/motion/reveal";
+import { TiltRing } from "@/components/motion/tilt-ring";
 import { StoreCard } from "@/components/stores/store-card";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -64,22 +65,32 @@ export async function BudgetPicks() {
   const budgets = BUDGETS.filter((_, i) => pages[i].totalElements > 0);
   if (budgets.length === 0) return null;
   return (
-    <section aria-labelledby="home-budget" className={cn(WRAP, "pb-16")}>
-      <SectionHead id="home-budget" title={t("budget.title")} />
-      <ul className="flex flex-wrap gap-2">
-        {budgets.map((max) => (
-          <li key={max}>
-            <Link
-              href={`/products?maxPrice=${max}`}
-              prefetch={false}
-              className="inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium tabular-nums transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:h-11"
-            >
-              {t("budget.upTo", { amount: max })}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-3 text-sm text-muted-foreground">{t("budget.note")}</p>
+    <section
+      aria-labelledby="home-budget"
+      className={cn(
+        WRAP,
+        "grid gap-8 pb-16 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] md:items-center md:gap-12",
+      )}
+    >
+      <div>
+        <SectionHead id="home-budget" title={t("budget.title")} />
+        <ul className="flex flex-wrap gap-2">
+          {budgets.map((max) => (
+            <li key={max}>
+              <Link
+                href={`/products?maxPrice=${max}`}
+                prefetch={false}
+                className="inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium tabular-nums transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:h-11"
+              >
+                {t("budget.upTo", { amount: max })}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-sm text-muted-foreground">{t("budget.note")}</p>
+      </div>
+      {/* Decorative: a drawn ring that turns toward the pointer (our own SVG, #260). */}
+      <TiltRing className="aspect-[16/9] rounded-xl md:aspect-[4/3]" />
     </section>
   );
 }
