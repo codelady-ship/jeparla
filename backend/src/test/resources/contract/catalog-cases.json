@@ -10328,6 +10328,12 @@
           "label": "375 (9K)"
         },
         {
+          "id": 7,
+          "metal": "GOLD",
+          "value": 583,
+          "label": "583 (14K)"
+        },
+        {
           "id": 2,
           "metal": "GOLD",
           "value": 585,
@@ -10340,16 +10346,34 @@
           "label": "750 (18K)"
         },
         {
+          "id": 8,
+          "metal": "GOLD",
+          "value": 916,
+          "label": "916 (22K)"
+        },
+        {
           "id": 4,
           "metal": "GOLD",
           "value": 999,
           "label": "999 (24K)"
         },
         {
+          "id": 9,
+          "metal": "SILVER",
+          "value": 875,
+          "label": "875"
+        },
+        {
           "id": 5,
           "metal": "SILVER",
           "value": 925,
           "label": "925"
+        },
+        {
+          "id": 10,
+          "metal": "SILVER",
+          "value": 999,
+          "label": "999"
         },
         {
           "id": 6,

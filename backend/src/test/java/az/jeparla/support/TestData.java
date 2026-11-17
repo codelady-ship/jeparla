@@ -80,10 +80,20 @@ public class TestData {
 
     public Fineness fineness(Metal metal) {
         int n = next();
-        // Values far above real finenesses but within 1..1000, unique per test run.
+        // A value within 1..1000 that no row of the metal has yet: the reference finenesses of V61
+        // (375, 585, 925 ...) are in every database, so the counter skips them.
+        while (taken(metal, 1 + n % 999)) {
+            n = next();
+        }
         Fineness fineness = new Fineness(metal, 1 + n % 999, "test " + n, n);
         em.persist(fineness);
         return fineness;
+    }
+
+    private boolean taken(Metal metal, int value) {
+        return em.createQuery("select count(f) from Fineness f where f.metal = :metal and f.value = :value", Long.class)
+                .setParameter("metal", metal).setParameter("value", (short) value)
+                .getSingleResult() > 0;
     }
 
     /** An APPROVED product with one image and one variant priced {@code price}. */

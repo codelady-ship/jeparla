@@ -25,14 +25,24 @@ const SELLER_ONLY: Verification = { seller: "VERIFIED", documents: "PENDING", ex
 const NEW_STORE: Verification = { seller: "PENDING", documents: "NONE", expertise: "NONE" };
 
 // ---------------------------------------------------------------- finenesses
+/**
+ * The reference finenesses of backend migration V61, in the API order (sort_order). Ids 1..6 are
+ * the ones the demo products use; 7..10 came with V61.
+ */
 export const FINENESSES: Fineness[] = [
   { id: 1, metal: "GOLD", value: 375, label: "375 (9K)" },
+  { id: 7, metal: "GOLD", value: 583, label: "583 (14K)" },
   { id: 2, metal: "GOLD", value: 585, label: "585 (14K)" },
   { id: 3, metal: "GOLD", value: 750, label: "750 (18K)" },
+  { id: 8, metal: "GOLD", value: 916, label: "916 (22K)" },
   { id: 4, metal: "GOLD", value: 999, label: "999 (24K)" },
+  { id: 9, metal: "SILVER", value: 875, label: "875" },
   { id: 5, metal: "SILVER", value: 925, label: "925" },
+  { id: 10, metal: "SILVER", value: 999, label: "999" },
   { id: 6, metal: "PLATINUM", value: 950, label: "950" },
 ];
+
+const finenessById = (id: number): Fineness => FINENESSES.find((f) => f.id === id)!;
 
 // ---------------------------------------------------------------- metal prices
 /** Demo CBAR-style quotes, AZN per troy ounce, for the last business day. */
@@ -220,9 +230,9 @@ const RULE: PricingRule = {
 };
 
 function metalFor(i: number): { metal: MetalType; fineness: Fineness } {
-  if (i % 20 === 7) return { metal: "PLATINUM", fineness: FINENESSES[5] };
-  if (i % 4 === 1) return { metal: "SILVER", fineness: FINENESSES[4] };
-  const gold = [FINENESSES[1], FINENESSES[2], FINENESSES[1], FINENESSES[0], FINENESSES[3]];
+  if (i % 20 === 7) return { metal: "PLATINUM", fineness: finenessById(6) };
+  if (i % 4 === 1) return { metal: "SILVER", fineness: finenessById(5) };
+  const gold = [2, 3, 2, 1, 4].map(finenessById);
   return { metal: "GOLD", fineness: gold[i % gold.length] };
 }
 

@@ -1,6 +1,7 @@
--- Jeparla demo catalog (#33): the same stores, categories, finenesses and 60 products as the
--- frontend demo fixtures (frontend/src/lib/api/mock/fixtures.ts), with the same ids, slugs,
--- names and prices.
+-- Jeparla demo catalog (#33): the same stores and 60 products as the frontend demo fixtures
+-- (frontend/src/lib/api/mock/fixtures.ts), with the same ids, slugs, names and prices. The
+-- categories and finenesses are not demo data: the versioned migration V61__reference_taxonomy.sql
+-- creates them in every environment, and this seed finds them by slug and by (metal, value).
 --
 -- DEMO DATA ONLY. Loaded only with the `demo` Spring profile (application-demo.yml adds
 -- classpath:db/demo to the Flyway locations); production never reads this folder.
@@ -8,12 +9,14 @@
 -- (000000000X) and metal prices are not real. Demo merchants cannot sign in.
 --
 -- Deterministic: no random values, fixed timestamps. Runs once on an empty catalog; when any
--- store, category, fineness, product or quote already exists it does nothing (recreate the
--- database to load a changed seed). A repeatable migration, so new versioned migrations
--- still apply in order before it.
+-- store, product or quote already exists it does nothing (recreate the database to load a changed
+-- seed). Categories and finenesses do not count: V61 always creates them first. A repeatable
+-- migration, so new versioned migrations still apply in order before it.
 --
 -- Rules mirrored from fixtures.ts, for product index i = 0..59 (id = i + 1):
 --   category  = leaf[i % 10] of (2, 3, 4, 6, 7, 8, 9, 10, 11, 12); store = i % 6 + 1
+--               (category and fineness numbers are fixture ids, mapped to database rows through
+--               demo_category and demo_fineness)
 --   metal     = PLATINUM 950 if i % 20 = 7, SILVER 925 if i % 4 = 1,
 --               else GOLD (585, 750, 585, 375, 999)[i % 5]
 --   weight    = 1.2 + ((i * 37) % 90) / 10 grams
@@ -33,10 +36,30 @@
 DO
 $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM stores) OR EXISTS (SELECT 1 FROM categories) OR EXISTS (SELECT 1 FROM finenesses)
-        OR EXISTS (SELECT 1 FROM products) OR EXISTS (SELECT 1 FROM metal_price_snapshots) THEN
+    IF EXISTS (SELECT 1 FROM stores) OR EXISTS (SELECT 1 FROM products) OR EXISTS (SELECT 1 FROM metal_price_snapshots)
+    THEN
         RAISE NOTICE 'Jeparla demo seed skipped: the catalog is not empty';
         RETURN;
+    END IF;
+
+    -- ------------------------------------------------------------ reference taxonomy (V61)
+    -- Fixture id -> database row. On an empty database the ids are the same (V61 inserts in the
+    -- fixture order), but the seed does not rely on it.
+    CREATE TEMP TABLE demo_category ON COMMIT DROP AS
+    SELECT fx.fx_id, c.id, c.slug
+    FROM (VALUES (1, 'uzukler'), (2, 'nisan-uzukleri'), (3, 'toy-uzukleri'), (4, 'sirgalar'),
+                 (5, 'boyunbagilar'), (6, 'zencirler'), (7, 'asqilar'), (8, 'qolbaqlar'), (9, 'destler'),
+                 (10, 'broslar'), (11, 'kisi-zergerliyi'), (12, 'usaq-zergerliyi')) AS fx (fx_id, slug)
+             JOIN categories c ON c.slug = fx.slug;
+
+    CREATE TEMP TABLE demo_fineness ON COMMIT DROP AS
+    SELECT fx.fx_id, f.id
+    FROM (VALUES (1, 'GOLD', 375), (2, 'GOLD', 585), (3, 'GOLD', 750), (4, 'GOLD', 999), (5, 'SILVER', 925),
+                 (6, 'PLATINUM', 950)) AS fx (fx_id, metal, value)
+             JOIN finenesses f ON f.metal = fx.metal AND f.value = fx.value;
+
+    IF (SELECT count(*) FROM demo_category) <> 12 OR (SELECT count(*) FROM demo_fineness) <> 6 THEN
+        RAISE EXCEPTION 'Jeparla demo seed: reference categories or finenesses of V61 are missing';
     END IF;
 
     -- ------------------------------------------------------------ demo merchants
@@ -53,16 +76,6 @@ BEGIN
              JOIN roles r ON r.name = 'MERCHANT'
     WHERE u.email LIKE 'demo-merchant-%@jeparla.test'
     ON CONFLICT DO NOTHING;
-
-    -- ------------------------------------------------------------ finenesses
-    INSERT INTO finenesses (id, metal, value, label, sort_order, created_at, updated_at)
-    SELECT id, metal, value, label, id, TIMESTAMPTZ '2026-09-01 09:00:00+04', TIMESTAMPTZ '2026-09-01 09:00:00+04'
-    FROM (VALUES (1, 'GOLD', 375, '375 (9K)'),
-                 (2, 'GOLD', 585, '585 (14K)'),
-                 (3, 'GOLD', 750, '750 (18K)'),
-                 (4, 'GOLD', 999, '999 (24K)'),
-                 (5, 'SILVER', 925, '925'),
-                 (6, 'PLATINUM', 950, '950')) AS f (id, metal, value, label);
 
     -- ------------------------------------------------------------ metal quotes
     -- Demo CBAR-style quotes for the last business day of the fixtures (AZN per troy ounce).
@@ -117,24 +130,6 @@ BEGIN
         made_to_order_days = 10
     WHERE id = 1;
 
-    -- ------------------------------------------------------------ categories
-    INSERT INTO categories (id, parent_id, slug, name_az, name_en, name_ru, sort_order, created_at, updated_at)
-    SELECT id, parent_id, slug, az, en, ru, id, TIMESTAMPTZ '2026-09-01 09:00:00+04',
-           TIMESTAMPTZ '2026-09-01 09:00:00+04'
-    FROM (VALUES (1, NULL, 'uzukler', 'Üzüklər', 'Rings', 'Кольца'),
-                 (2, 1, 'nisan-uzukleri', 'Nişan üzükləri', 'Engagement rings', 'Помолвочные кольца'),
-                 (3, 1, 'toy-uzukleri', 'Toy üzükləri', 'Wedding rings', 'Обручальные кольца'),
-                 (4, NULL, 'sirgalar', 'Sırğalar', 'Earrings', 'Серьги'),
-                 (5, NULL, 'boyunbagilar', 'Boyunbağılar', 'Necklaces', 'Колье'),
-                 (6, 5, 'zencirler', 'Zəncirlər', 'Chains', 'Цепочки'),
-                 (7, 5, 'asqilar', 'Asqılar', 'Pendants', 'Подвески'),
-                 (8, NULL, 'qolbaqlar', 'Qolbaqlar', 'Bracelets', 'Браслеты'),
-                 (9, NULL, 'destler', 'Dəstlər', 'Sets', 'Комплекты'),
-                 (10, NULL, 'broslar', 'Broşlar', 'Brooches', 'Броши'),
-                 (11, NULL, 'kisi-zergerliyi', 'Kişi zərgərliyi', 'Men''s jewelry', 'Мужские украшения'),
-                 (12, NULL, 'usaq-zergerliyi', 'Uşaq zərgərliyi', 'Kids'' jewelry', 'Детские украшения'))
-             AS c (id, parent_id, slug, az, en, ru);
-
     -- ------------------------------------------------------------ products (computed once)
     CREATE TEMP TABLE demo_product ON COMMIT DROP AS
     WITH base AS (SELECT i,
@@ -148,12 +143,16 @@ BEGIN
                          round(1.2 + ((i * 37) % 90) / 10.0, 3)                   AS weight
                   FROM generate_series(0, 59) AS i),
          alloy AS (SELECT b.*,
+                          dc.id                                                                AS db_category_id,
+                          f.id                                                                 AS db_fineness_id,
                           f.metal,
                           f.value                                                              AS fineness_value,
                           f.metal <> 'SILVER' AND (b.category_id IN (2, 9) OR b.i % 6 = 0)    AS with_stone,
                           CASE WHEN b.i % 3 = 2 THEN 'FIXED' ELSE 'METAL_LINKED' END            AS pricing_mode
                    FROM base b
-                            JOIN finenesses f ON f.id = b.fineness_id),
+                            JOIN demo_category dc ON dc.fx_id = b.category_id
+                            JOIN demo_fineness df ON df.fx_id = b.fineness_id
+                            JOIN finenesses f ON f.id = df.id),
          stone AS (SELECT m.*,
                           CASE WHEN m.with_stone THEN (ARRAY [250.00, 650.00, 1400.00])[m.i % 3 + 1] ELSE 0.00 END
                               AS stone_price
@@ -213,7 +212,7 @@ BEGIN
     INSERT INTO products (id, store_id, category_id, slug, name_az, name_en, name_ru, description_az, description_en,
                           description_ru, metal, status, expertise_status, submitted_at, published_at, created_at,
                           updated_at)
-    SELECT p.id, p.store_id, p.category_id,
+    SELECT p.id, p.store_id, p.db_category_id,
            c.slug || '-' || lower(p.metal) || '-' || p.fineness_value || '-' || p.id,
            nm.name_az, nm.name_en, nm.name_ru,
            nm.name_az || '. Nümunə məhsul, real deyil.',
@@ -222,14 +221,14 @@ BEGIN
            p.metal, 'APPROVED', 'NONE', p.published_at, p.published_at, p.published_at, p.published_at
     FROM demo_product p
              JOIN demo_product_name nm ON nm.id = p.id
-             JOIN categories c ON c.id = p.category_id;
+             JOIN categories c ON c.id = p.db_category_id;
 
     INSERT INTO product_variants (id, product_id, store_id, sku, fineness_id, weight_grams, size, price, currency,
                                   pricing_mode, labor_per_gram, labor_fixed, stone_price, markup_percent, stock_status,
                                   price_updated_at, metal_snapshot_id, created_at, updated_at)
     SELECT p.id * 10, p.id, p.store_id,
            'JP-' || lpad(p.id::text, 4, '0'),
-           p.fineness_id, p.weight,
+           p.db_fineness_id, p.weight,
            CASE WHEN p.category_id IN (2, 3, 11) THEN '17' END,
            p.price, 'AZN', p.pricing_mode,
            -- METAL_LINKED inputs; zero for FIXED variants (V5).
@@ -307,10 +306,9 @@ BEGIN
     ORDER BY shot.id, shot.sort_order;
 
     -- ------------------------------------------------------------ identity sequences
-    -- Ids were given explicitly (the same as the fixtures): new rows continue after them.
+    -- Store and product ids were given explicitly (the same as the fixtures): new rows continue after
+    -- them. Categories and finenesses got theirs from the identity columns (V61).
     PERFORM setval(pg_get_serial_sequence('stores', 'id'), (SELECT max(id) FROM stores));
-    PERFORM setval(pg_get_serial_sequence('categories', 'id'), (SELECT max(id) FROM categories));
-    PERFORM setval(pg_get_serial_sequence('finenesses', 'id'), (SELECT max(id) FROM finenesses));
     PERFORM setval(pg_get_serial_sequence('products', 'id'), (SELECT max(id) FROM products));
     PERFORM setval(pg_get_serial_sequence('product_variants', 'id'), (SELECT max(id) FROM product_variants));
 END
