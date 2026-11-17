@@ -108,6 +108,15 @@ BEGIN
                   'Недавно открытый магазин.'))
              AS s (id, slug, name, city, seller, documents, az, en, ru);
 
+    -- One demo store declares its own terms (#108, #174), as in fixtures.ts; the others have none.
+    UPDATE stores
+    SET service_resize     = TRUE,
+        service_returns    = TRUE,
+        return_policy      = '14 gün ərzində, çek və qablaşdırma ilə dəyişdirmə.',
+        made_to_order      = TRUE,
+        made_to_order_days = 10
+    WHERE id = 1;
+
     -- ------------------------------------------------------------ categories
     INSERT INTO categories (id, parent_id, slug, name_az, name_en, name_ru, sort_order, created_at, updated_at)
     SELECT id, parent_id, slug, az, en, ru, id, TIMESTAMPTZ '2026-09-01 09:00:00+04',
