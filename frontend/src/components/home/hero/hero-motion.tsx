@@ -65,11 +65,30 @@ export function HeroMotion({
     let landed = false;
     let frame = 0;
 
+    // One pixel of the video, read after the visitor first scrolls, touches or types, when
+    // the main thread is idle. Reading a video frame back costs 100-300 ms of blocking time
+    // on a throttled phone, so it stays out of the page load (#160). The token cream and the
+    // decoded footage differ by one unit in Chrome (247 243 234 vs 235), so nothing visible
+    // waits for it; it corrects engines that shift video colours more.
+    let idle = 0;
+    let sampled = false;
     const sampleBackdrop = () => {
+      if (sampled) return;
+      sampled = true;
+      const run = () => {
+        idle = 0;
+        readBackdrop();
+      };
+      idle =
+        typeof requestIdleCallback === "function"
+          ? requestIdleCallback(run, { timeout: 2000 })
+          : window.setTimeout(run, 200);
+    };
+    const readBackdrop = () => {
       try {
         const c = document.createElement("canvas");
         c.width = c.height = 1;
-        const ctx = c.getContext("2d", { willReadFrequently: true });
+        const ctx = c.getContext("2d");
         if (!ctx || !video.videoWidth) return;
         ctx.drawImage(video, video.videoWidth * 0.04, video.videoHeight * 0.06, 1, 1, 0, 0, 1, 1);
         const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
@@ -115,8 +134,10 @@ export function HeroMotion({
       if (!frame) frame = requestAnimationFrame(render);
     };
 
-    video.addEventListener("loadeddata", sampleBackdrop);
-    if (video.readyState >= 2) sampleBackdrop();
+    const FIRST_INPUT = ["scroll", "pointerdown", "keydown"] as const;
+    for (const type of FIRST_INPUT) {
+      window.addEventListener(type, sampleBackdrop, { once: true, passive: true });
+    }
 
     let timer = 0;
     if (reduce) {
@@ -141,7 +162,11 @@ export function HeroMotion({
 
     return () => {
       window.clearTimeout(timer);
-      video.removeEventListener("loadeddata", sampleBackdrop);
+      if (idle) {
+        if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+        else window.clearTimeout(idle);
+      }
+      for (const type of FIRST_INPUT) window.removeEventListener(type, sampleBackdrop);
       video.removeEventListener("ended", land);
       video.removeEventListener("error", land);
       window.removeEventListener("scroll", onScroll);

@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatMm, formatPrice } from "@/lib/money";
-import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getMessages, getTranslations } from "next-intl/server";
+import { IntlProvider } from "@/components/i18n/intl-provider";
+import type { Locale } from "@/i18n/routing";
 import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -216,15 +218,21 @@ export async function ProductDetails({
         ]}
       />
       <nav aria-label={t("breadcrumb")} className="mb-6 text-sm text-muted-foreground">
+        {/* Breadcrumb and store links: no viewport prefetch. Each prefetch also loads the
+            target route's client chunks, which took this page past the script budget (#269). */}
         <ol className="flex flex-wrap items-center gap-1">
           <li>
-            <Link href="/products" className="hover:text-foreground">
+            <Link href="/products" prefetch={false} className="hover:text-foreground">
               {t("catalog")}
             </Link>
           </li>
           {[parent, category].filter(Boolean).map((c) => (
             <li key={c!.id} className="before:mr-1 before:content-['/']">
-              <Link href={`/categories/${c!.slug}`} className="hover:text-foreground">
+              <Link
+                href={`/categories/${c!.slug}`}
+                prefetch={false}
+                className="hover:text-foreground"
+              >
                 {c!.name[locale]}
               </Link>
             </li>
@@ -271,6 +279,7 @@ export async function ProductDetails({
             <div className="min-w-0">
               <Link
                 href={`/stores/${p.store.slug}`}
+                prefetch={false}
                 className="link-underline text-sm font-medium text-muted-foreground"
               >
                 {p.store.name}
@@ -525,6 +534,7 @@ export async function ProductDetails({
                 <StoreIcon aria-hidden className="size-4 text-gold-text" />
                 <Link
                   href={`/stores/${store.slug}`}
+                  prefetch={false}
                   className="touch-target relative link-underline"
                 >
                   {store.name}
@@ -577,7 +587,17 @@ export async function ProductDetails({
         </section>
       )}
 
-      <RecentlyViewed productId={p.id} title={t("recentlyViewed")} />
+      {/* Its cards render in the browser: they need the Product messages, which the layout
+          does not send to every page. */}
+      <IntlProvider locale={locale} messages={await recentlyViewedMessages(locale)}>
+        <RecentlyViewed productId={p.id} title={t("recentlyViewed")} />
+      </IntlProvider>
     </article>
   );
+}
+
+/** Messages for the client-rendered "recently viewed" cards (a provider replaces, not merges). */
+async function recentlyViewedMessages(locale: Locale) {
+  const m = await getMessages({ locale });
+  return { Common: m.Common, Errors: m.Errors, Product: m.Product };
 }

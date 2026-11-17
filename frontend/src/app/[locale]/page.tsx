@@ -22,7 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { openGraph: openGraph(locale) };
 }
 
-// Home page: cinematic hero (#27), then the catalog sections.
+// Home page: cinematic hero (#27), then the catalog sections. The picture-led blocks
+// (stores banner, ring close-up, seller film) are kept apart by text sections, and the
+// seller call to action closes the page as a full-width film.
 export default function Home() {
   return (
     <>
@@ -30,11 +32,11 @@ export default function Home() {
       <HomeCategories />
       <BudgetPicks />
       <NewArrivals />
+      <FeaturedStores />
       <MetalPrices />
       <VerifiedExplainer />
-      <FeaturedStores />
-      <BecomeSeller />
       <AboutJeparla />
+      <BecomeSeller />
     </>
   );
 }

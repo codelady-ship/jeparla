@@ -40,14 +40,20 @@
         "text": "Müstəqil ekspert məhsulu yoxlayıbsa, bu ayrıca qeyd olunur."
       }
     },
-    "sellerTitle": "Zərgərlik mağazanız var?",
+    "sellerTitle": "Mağazanız var? Onu Jeparla-da açın.",
     "sellerText": "Məhsullarınızı Jeparla-da göstərin: alıcılar sizə birbaşa WhatsApp ilə yazır.",
     "sellerCta": "Mağaza aç",
     "budget": {
       "title": "Büdcəyə görə",
       "upTo": "{amount, number} manata qədər",
       "note": "Qiymət bu gün göstərilən qiymətdir; metala bağlı məhsullarda hər gün AMB məzənnəsi ilə dəyişir."
-    }
+    },
+    "storesBanner": {
+      "title": "Vitrinlər bir ünvanda",
+      "text": "Azərbaycanın zərgərlik mağazaları bir yerdə; hər birinin yoxlama statusu ayrıca göstərilir.",
+      "cta": "Bütün mağazalar"
+    },
+    "decorNote": "Dekorativ stok görüntü: Jeparla-dakı mağaza və ya məhsul deyil."
   },
   "Nav": {
     "home": "Ana səhifə",
@@ -529,7 +535,8 @@
       "legalForm": "Hüquqi forma",
       "taxId": "VÖEN",
       "note": "Satıcının özünün yazdığı məlumat."
-    }
+    },
+    "decorNote": "Dekorativ stok görüntü: Jeparla-dakı mağaza və ya məhsul deyil."
   },
   "About": {
     "title": "Jeparla nədir?",

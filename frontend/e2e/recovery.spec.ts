@@ -11,7 +11,9 @@ test.describe("account recovery", () => {
     await page.goto("/en/login");
     await page.getByRole("link", { name: "Forgot your password?" }).click();
     await expect(page).toHaveURL(/\/en\/forgot-password$/);
-    const email = page.getByLabel("E-mail");
+    // Exact: the sign-in page stays mounted (hidden) after the client navigation, and its
+    // "E-mail or phone" field would match too.
+    const email = page.getByLabel("E-mail", { exact: true });
     await waitForHydration(email);
     await email.fill("nobody@example.com");
     await page.getByRole("button", { name: "Continue" }).click();
