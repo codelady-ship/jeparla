@@ -530,6 +530,71 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Tilt ring (<TiltRing>, #260): our own SVG ring on cream under a gold light,
+   turned in 3D toward the pointer. JS writes transform and opacity only; without
+   JS or with reduced motion it is a still drawing.
+   --------------------------------------------------------------------------- */
+.tilt-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  perspective: 900px;
+  /* The glow ends on cream at the nearest edge, so the panel melts into a cream page. */
+  background: radial-gradient(
+    closest-side circle at 50% 50%,
+    color-mix(in oklab, var(--scene-gold-light) 55%, var(--scene-ivory)) 0%,
+    var(--scene-ivory) 100%
+  );
+  /* A sideways drag tilts the ring; a vertical one still scrolls the page. */
+  touch-action: pan-y;
+  user-select: none;
+}
+.tilt-ring {
+  position: relative;
+  /* Sized by the panel's height, so a wide, short panel never clips it. */
+  height: min(92%, 17rem);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+}
+.tilt-band,
+.tilt-stone {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.tilt-stone {
+  transform: translateZ(28px);
+}
+.tilt-shine {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in oklab, var(--scene-diamond) 85%, transparent) 0%,
+    transparent 55%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  pointer-events: none;
+  transform: translateZ(48px);
+}
+.tilt-shadow {
+  position: absolute;
+  bottom: 14%;
+  width: 46%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--scene-deep) 28%, transparent),
+    transparent
+  );
+}
+
+/* ---------------------------------------------------------------------------
    Install offer (<InstallPrompt>, #136): rises 16px and fades in once, leaves
    faster and shorter. Reduced motion: a plain fade.
    --------------------------------------------------------------------------- */
