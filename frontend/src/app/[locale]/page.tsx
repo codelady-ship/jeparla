@@ -22,21 +22,23 @@ export async function generateMetadata(): Promise<Metadata> {
   return { openGraph: openGraph(locale) };
 }
 
-// Home page: cinematic hero (#27), then the catalog sections. The picture-led blocks
-// (stores banner, ring close-up, seller film) are kept apart by text sections, and the
-// seller call to action closes the page as a full-width film.
+// Home page in an editorial rhythm: full-bleed film, then a split band, alternating.
+// Hero (model scenes, film) -> categories (deep green: links + close-ups) -> new
+// arrivals (pieces | hand close-up) -> ring film (checks) -> budgets (deep green:
+// links + tilt ring) -> stores banner and cards -> metal prices -> seller film
+// ("open your store") -> about and FAQ.
 export default function Home() {
   return (
     <>
       <CinematicHero />
       <HomeCategories />
-      <BudgetPicks />
       <NewArrivals />
+      <VerifiedExplainer />
+      <BudgetPicks />
       <FeaturedStores />
       <MetalPrices />
-      <VerifiedExplainer />
-      <AboutJeparla />
       <BecomeSeller />
+      <AboutJeparla />
     </>
   );
 }

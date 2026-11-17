@@ -111,6 +111,43 @@ describe("AmbientVideo", () => {
     expect(sources(container)).toEqual([]);
   });
 
+  it("offers a pause button that keeps the film paused when it scrolls back in", () => {
+    mockReducedMotion(false);
+    const observers = mockObserver();
+    const labels = { pause: "Pause", play: "Play" };
+    const { container, getByRole } = render(
+      <AmbientVideo desktop={desktop} mobile={mobile} controls={labels} />,
+    );
+    act(() => observers[0].cb([{ isIntersecting: true }]));
+    const button = getByRole("button", { name: "Pause" });
+    expect(button).toHaveAttribute("aria-pressed", "false");
+    expect(container.querySelector(".ambient-video")!.contains(button)).toBe(false);
+
+    act(() => button.click());
+    expect(pause).toHaveBeenCalled();
+    expect(getByRole("button", { name: "Play" })).toHaveAttribute("aria-pressed", "true");
+
+    play.mockClear();
+    act(() => observers[1].cb([{ isIntersecting: true }]));
+    expect(play).not.toHaveBeenCalled();
+
+    act(() => getByRole("button", { name: "Play" }).click());
+    expect(play).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows no pause button where the film never plays (reduced motion)", () => {
+    mockReducedMotion(true);
+    mockObserver();
+    const { queryByRole } = render(
+      <AmbientVideo
+        desktop={desktop}
+        mobile={mobile}
+        controls={{ pause: "Pause", play: "Play" }}
+      />,
+    );
+    expect(queryByRole("button")).toBeNull();
+  });
+
   it("is decorative for assistive technology", () => {
     mockReducedMotion(false);
     mockObserver();

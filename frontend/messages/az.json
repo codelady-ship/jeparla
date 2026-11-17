@@ -53,7 +53,23 @@
       "text": "Azərbaycanın zərgərlik mağazaları bir yerdə; hər birinin yoxlama statusu ayrıca göstərilir.",
       "cta": "Bütün mağazalar"
     },
-    "decorNote": "Dekorativ stok görüntü: Jeparla-dakı mağaza və ya məhsul deyil."
+    "decorNote": "Dekorativ stok görüntü: Jeparla-dakı mağaza və ya məhsul deyil.",
+    "video": {
+      "pause": "Videonu dayandırın",
+      "play": "Videonu oynadın"
+    },
+    "ringBand": {
+      "title": "Hər daşa yaxından baxın",
+      "cta": "Kataloqa keçin"
+    },
+    "categoryFallback": {
+      "uzukler": "Üzüklər",
+      "sirgalar": "Sırğalar",
+      "boyunbagilar": "Boyunbağılar",
+      "qolbaqlar": "Qolbaqlar",
+      "asqilar": "Asqılar",
+      "destler": "Dəstlər"
+    }
   },
   "Nav": {
     "home": "Ana səhifə",

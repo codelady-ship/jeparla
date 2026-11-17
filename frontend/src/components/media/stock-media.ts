@@ -21,6 +21,12 @@ export const ATELIER_VIDEO = {
 /** Close-up of a diamond ring held between the fingers: the "how we check" block. */
 export const RING_VIDEO = { desktop: cut("ring", "desktop"), mobile: cut("ring", "mobile") };
 
+/** Gold earrings in a showcase, a hand reaching toward them: the categories band. */
+export const SHOWCASE_VIDEO = {
+  desktop: cut("showcase", "desktop"),
+  mobile: cut("showcase", "mobile"),
+};
+
 /**
  * A lit showcase of gold bracelets (slow pan): the stores banner on the home page and
  * the /stores header. The posters are stills of a store interior (a design
