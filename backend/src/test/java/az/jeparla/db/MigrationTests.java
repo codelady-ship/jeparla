@@ -86,6 +86,9 @@ class MigrationTests {
 
     @Test
     void noFloatingPointColumns() {
+        // The ban (CLAUDE.md) is about money and weight. The one exemption is the image search vector
+        // (product_image_embeddings.embedding, float4[]): neither money nor weight, and a similarity score
+        // is approximate by nature. Every other column stays NUMERIC.
         List<Map<String, Object>> floats = jdbc.queryForList("""
                 SELECT c.table_name, c.column_name, c.data_type, c.udt_name
                 FROM information_schema.columns c
@@ -95,6 +98,7 @@ class MigrationTests {
                   AND t.table_name <> 'flyway_schema_history'
                   AND (c.data_type IN ('real', 'double precision')
                        OR c.udt_name IN ('float4', 'float8', '_float4', '_float8'))
+                  AND NOT (c.table_name = 'product_image_embeddings' AND c.column_name = 'embedding')
                 """);
         assertThat(floats).as("float/double columns are forbidden (CLAUDE.md)").isEmpty();
     }
