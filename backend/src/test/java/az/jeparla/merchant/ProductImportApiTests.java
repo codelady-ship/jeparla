@@ -34,7 +34,9 @@ class ProductImportApiTests extends MerchantApiTestBase {
                 + categoryId + ";Qızıl üzük Lalə;qızıl;" + goldValue + ";4,20;1 250,50;\n"
                 + categoryId + ";Qızıl sırğa;GOLD;" + goldValue + ";abc;300;\n"
                 + categoryId + ";Muncuqlu bilərzik;;;;25.00;beads\n"
-                + "999999;Gümüş üzük;SILVER;925;3.1;90;\n";
+                // Only the category is wrong: the test database has no SILVER 925 fineness, and the fineness is
+                // checked before the category, so a silver row would report the fineness instead.
+                + "999999;Qızıl qolbaq;GOLD;" + goldValue + ";3.1;90;\n";
     }
 
     private short goldValue(long finenessId) {

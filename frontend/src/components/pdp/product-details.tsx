@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatMm, formatPrice } from "@/lib/money";
-import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getMessages, getTranslations } from "next-intl/server";
+import { IntlProvider } from "@/components/i18n/intl-provider";
+import type { Locale } from "@/i18n/routing";
 import { Reveal } from "@/components/motion/reveal";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { ProductGrid } from "@/components/product/product-grid";
@@ -577,7 +579,17 @@ export async function ProductDetails({
         </section>
       )}
 
-      <RecentlyViewed productId={p.id} title={t("recentlyViewed")} />
+      {/* Its cards render in the browser: they need the Product messages, which the layout
+          does not send to every page. */}
+      <IntlProvider locale={locale} messages={await recentlyViewedMessages(locale)}>
+        <RecentlyViewed productId={p.id} title={t("recentlyViewed")} />
+      </IntlProvider>
     </article>
   );
+}
+
+/** Messages for the client-rendered "recently viewed" cards (a provider replaces, not merges). */
+async function recentlyViewedMessages(locale: Locale) {
+  const m = await getMessages({ locale });
+  return { Common: m.Common, Errors: m.Errors, Product: m.Product };
 }

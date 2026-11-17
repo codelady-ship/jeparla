@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
-import { defaultLocale } from "./src/i18n/routing";
+import { USING_MOCK } from "./src/lib/api/mode";
+import { defaultLocale, routing } from "./src/i18n/routing";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -26,10 +27,17 @@ const nextConfig: NextConfig = {
   partialPrefetching: false,
   // Pages opened from a link with a one-time token (#131): the URL never leaves in a Referer.
   async headers() {
-    return ["reset-password", "verify-email"].map((page) => ({
+    const tokenPages = ["reset-password", "verify-email"].map((page) => ({
       source: `/:locale(az|en|ru)/${page}`,
       headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
     }));
+    // Sample data is invented: a build on it is never indexed as real stores, products or
+    // prices. A response header, not a robots meta tag: a tag from the layout would sit next
+    // to the one Next.js writes on every 404 page and to the ones pages set themselves.
+    const sampleData = USING_MOCK
+      ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }] }]
+      : [];
+    return [...tokenPages, ...sampleData];
   },
   async rewrites() {
     return {
@@ -44,7 +52,16 @@ const nextConfig: NextConfig = {
           destination: `/${defaultLocale}/:first/:rest*`,
         },
       ],
-      fallback: [],
+      // A path under a language that no route matches gets the prerendered 404 page of
+      // that language (app/[locale]/404), like a missing product does in the proxy. A
+      // catch-all page calling notFound() at request time made Next.js add a second
+      // robots tag and fall back to client rendering.
+      fallback: [
+        {
+          source: `/:locale(${routing.locales.join("|")})/:path*`,
+          destination: "/:locale/404",
+        },
+      ],
     };
   },
   turbopack: {

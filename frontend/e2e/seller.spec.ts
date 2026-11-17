@@ -34,6 +34,8 @@ test.describe("seller sign-up wizard", () => {
     await page.getByLabel("Şəhər").selectOption({ label: "Gəncə" });
     await page.getByLabel("Ünvan").fill("Nizami küçəsi 12");
     await page.getByLabel("VÖEN").fill("1234567890");
+    // The seller code of conduct and the seller terms are accepted here (#107, #249).
+    await page.getByRole("checkbox", { name: /Satıcı davranış kodeksini/ }).check();
     await next(page);
 
     await expect(page.getByText("Addım 3 / 4", { exact: true })).toBeVisible();

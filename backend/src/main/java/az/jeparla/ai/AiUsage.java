@@ -38,6 +38,14 @@ class AiUsage {
         if (cost.signum() == 0) {
             return;
         }
+        if (cost.signum() < 0) {
+            // A correction (actual cost below the estimate) is a plain UPDATE: PostgreSQL checks ai_usage_values
+            // on the proposed INSERT row before ON CONFLICT, so an upsert with a negative cost always failed.
+            // When the estimate was booked on another day, there is nothing to lower on this one.
+            jdbc.update("UPDATE ai_usage SET cost = GREATEST(cost + ?, 0) WHERE store_id = ? AND usage_date = ?",
+                    cost, storeId, day);
+            return;
+        }
         jdbc.update("INSERT INTO ai_usage (store_id, usage_date, attempts, cost, currency) VALUES (?, ?, 0, ?, ?)"
                 + " ON CONFLICT (store_id, usage_date) DO UPDATE SET cost = GREATEST(ai_usage.cost + EXCLUDED.cost, 0)",
                 storeId, day, cost, currency);

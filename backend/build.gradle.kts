@@ -21,9 +21,9 @@ repositories {
 // springdoc-openapi 3.x targets Spring Boot 4; 3.2.0 is built against Boot 4.1.2.
 val springdocVersion = "3.2.0"
 // ShedLock 7.x targets Spring Framework 7 / Boot 4.
-val shedlockVersion = "7.10.1"
+val shedlockVersion = "7.11.0"
 // AWS SDK v2 for S3-compatible storage (Cloudflare R2, MinIO locally): presigned uploads and object checks (#39).
-val awsSdkVersion = "2.56.0"
+val awsSdkVersion = "2.59.1"
 // QR code of the store share link as SVG (#100): Nayuki's encoder, MIT, one 38 KB jar without dependencies.
 val qrcodegenVersion = "1.8.0"
 
@@ -59,14 +59,14 @@ dependencies {
     // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // Error tracking (#56): Sentry Free. Off unless SENTRY_DSN is set (env only); no personal data is sent.
-    implementation("io.sentry:sentry-spring-boot-4-starter:8.60.0")
+    implementation("io.sentry:sentry-spring-boot-4-starter:8.64.0")
     // Store share link QR code, rendered as SVG on the server so the frontend ships no QR library (#100).
     implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
     // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
-    implementation("org.apache.pdfbox:pdfbox:3.0.4")
+    implementation("org.apache.pdfbox:pdfbox:3.0.8")
     // Excel (.xlsx) product import and template (#109): Apache POI, Apache-2.0. Only cell values are read; formulas
     // are not evaluated, macros and external links are ignored, and zip bombs are refused (XlsxTable).
-    implementation("org.apache.poi:poi-ooxml:5.4.1")
+    implementation("org.apache.poi:poi-ooxml:6.0.0")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

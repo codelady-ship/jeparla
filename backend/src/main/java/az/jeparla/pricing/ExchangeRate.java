@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -37,7 +38,8 @@ public class ExchangeRate extends CreatedEntity {
     public ExchangeRate(String currency, LocalDate rateDate, BigDecimal aznPerUnit, Instant fetchedAt) {
         this.currency = currency;
         this.rateDate = rateDate;
-        this.aznPerUnit = aznPerUnit;
+        // The column's scale (NUMERIC(12, 6)): the API shows the same digits before and after a reload.
+        this.aznPerUnit = aznPerUnit.setScale(6, RoundingMode.HALF_UP);
         this.fetchedAt = fetchedAt;
     }
 

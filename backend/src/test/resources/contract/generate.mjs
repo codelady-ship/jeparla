@@ -5,9 +5,9 @@
 //
 // Run from the repository root after changing the frontend types, the mock or the demo data:
 //
-//   node backend/src/test/resources/contract/generate.mjs
+//   node --experimental-transform-types backend/src/test/resources/contract/generate.mjs
 //
-// Needs Node 23.6+ (TypeScript type stripping) and frontend/node_modules (npm ci in frontend/; only
+// Needs Node 23.6+ (TypeScript type stripping; the flag is for the parameter properties in http.ts) and frontend/node_modules (npm ci in frontend/; only
 // big.js is loaded). In a git worktree without node_modules, point to another checkout:
 //   JEPARLA_FRONTEND_NODE_MODULES=/path/to/jeparla/frontend/node_modules node .../generate.mjs
 //
