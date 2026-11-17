@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
 import { JsonLd } from "@/components/seo/json-ld";
 import { faqPage, organization, website } from "@/lib/seo/json-ld";
+import { FaqList } from "@/components/faq-list";
 
 const FAQ_KEYS = ["what", "buy", "price", "verified", "sell"] as const;
 
@@ -32,14 +33,7 @@ export async function AboutJeparla() {
         </Reveal>
         <Reveal index={1}>
           <h2 className="mb-4 text-2xl sm:text-3xl">{t("faqTitle")}</h2>
-          <dl className="flex flex-col divide-y">
-            {faq.map((item) => (
-              <div key={item.q} className="py-4 first:pt-0">
-                <dt className="font-semibold">{item.q}</dt>
-                <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
-              </div>
-            ))}
-          </dl>
+          <FaqList items={faq} />
         </Reveal>
       </div>
     </section>

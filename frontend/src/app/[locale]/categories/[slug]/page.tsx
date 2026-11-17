@@ -18,6 +18,7 @@ import { routing } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import { slugParams } from "@/lib/api/static-params";
 import { breadcrumbs, faqPage } from "@/lib/seo/json-ld";
+import { FaqList } from "@/components/faq-list";
 
 const FAQ_KEYS = ["fineness", "price", "contact"] as const;
 
@@ -132,14 +133,7 @@ export default async function CategoryPage({
         <h2 id="category-faq" className="mb-4 text-2xl">
           {t("faqTitle", { name })}
         </h2>
-        <dl className="flex flex-col divide-y">
-          {faq.map((item) => (
-            <div key={item.q} className="py-4">
-              <dt className="font-semibold">{item.q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+        <FaqList items={faq} />
       </Reveal>
     </div>
   );
