@@ -197,13 +197,18 @@ class EvidencePhotoApiTests extends MerchantApiTestBase {
                 .isEqualTo("IN_REVIEW");
         long label = attachEvidence(seller, productId, "TAG");
         long adminId = newBuyer();
+        // The test fineness has a generated value (TestData.fineness), not a real one such as 585.
+        int fineness = jdbc.queryForObject("""
+                SELECT f.value FROM product_variants v JOIN finenesses f ON f.id = v.fineness_id
+                WHERE v.product_id = ? AND v.deleted_at IS NULL
+                """, Integer.class, productId);
 
         mvc.perform(get("/api/v1/admin/evidence-photos?size=100").with(admin(adminId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[?(@.id == %d)].productId".formatted(hallmark))
                         .value(Matchers.contains((int) productId)))
                 .andExpect(jsonPath("$.content[?(@.id == %d)].finenesses[0]".formatted(hallmark))
-                        .value(Matchers.contains(585)))
+                        .value(Matchers.contains(fineness)))
                 .andExpect(jsonPath("$.content[?(@.id == %d)].weightsGrams[0]".formatted(hallmark))
                         .value(Matchers.contains("3.250")));
         mvc.perform(get("/api/v1/admin/products/" + productId + "/evidence-photos").with(admin(adminId)))

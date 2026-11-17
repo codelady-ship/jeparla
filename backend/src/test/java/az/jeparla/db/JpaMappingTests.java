@@ -35,6 +35,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @JpaTest
 class JpaMappingTests {
 
+    /**
+     * Tables read and written with plain SQL on purpose (no entity): counters changed by upserts
+     * (ai_usage, product_contact_question_clicks), the image search vectors (product_image_embeddings)
+     * and the versioned seller code and terms with their acceptances (SellerCode, MerchantStoreService).
+     */
+    private static final Set<String> JDBC_ONLY = Set.of("ai_usage", "product_contact_question_clicks",
+            "product_image_embeddings", "seller_code_versions", "store_code_acceptances", "seller_terms_versions");
+
     @Autowired
     private EntityManagerFactory emf;
 
@@ -66,8 +74,10 @@ class JpaMappingTests {
                   AND table_name NOT IN ('flyway_schema_history', 'shedlock')
                 """, String.class);
         // shedlock (V12) is the job lock table of ShedLock, used through JDBC only (no entity).
-        assertThat(tables).hasSize(26);
-        assertThat(mapped).containsExactlyInAnyOrderElementsOf(tables);
+        assertThat(tables).hasSize(42);
+        assertThat(tables).containsAll(JDBC_ONLY);
+        assertThat(mapped).containsExactlyInAnyOrderElementsOf(
+                tables.stream().filter(table -> !JDBC_ONLY.contains(table)).toList());
     }
 
     @Test

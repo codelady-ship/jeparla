@@ -68,8 +68,12 @@ class DocumentApiTests extends MerchantApiTestBase {
 
     /** Presign, the browser's PUT and the confirmation with the declaration. Returns the document id. */
     private String uploadDocument(Seller seller, String json) throws Exception {
+        return uploadDocument(seller, json, PDF);
+    }
+
+    private String uploadDocument(Seller seller, String json, byte[] file) throws Exception {
         String key = presign(seller, json);
-        storage.put(key, PDF, "application/pdf");
+        storage.put(key, file, "application/pdf");
         MvcResult result = mvc.perform(json(post(DOCUMENTS), confirmJson(key, true, DeclarationText.VERSION))
                 .with(seller.token())).andExpect(status().isCreated()).andReturn();
         return JsonPath.read(body(result), "$.id");
@@ -178,7 +182,8 @@ class DocumentApiTests extends MerchantApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.version").value(DeclarationText.VERSION))
                 .andExpect(jsonPath("$.language").value("en"))
-                .andExpect(jsonPath("$.draft").value(true))
+                // Final wording since 2026-11-16 (DeclarationText.DRAFT).
+                .andExpect(jsonPath("$.draft").value(false))
                 .andExpect(jsonPath("$.text").value(Matchers.containsString("including the Criminal Code")));
         mvc.perform(get(DOCUMENTS + "/declaration").with(seller.token()))
                 .andExpect(jsonPath("$.language").value("az"))
@@ -480,10 +485,12 @@ class DocumentApiTests extends MerchantApiTestBase {
         String storeSlug = jdbc.queryForObject("SELECT slug FROM stores WHERE id = ?", String.class, seller.storeId());
         mvc.perform(get("/api/v1/products/" + slug)).andExpect(status().isOk());
 
+        // Another file than the tax id document: the same bytes twice are refused as a duplicate (409).
+        byte[] assay = (new String(PDF, StandardCharsets.US_ASCII) + "% assay\n").getBytes(StandardCharsets.US_ASCII);
         String certificate = uploadDocument(seller, """
                 {"checkKind": "EXPERTISE", "kind": "ASSAY_CERTIFICATE", "productId": %d, "fileName": "eyar.pdf",
                  "contentType": "application/pdf", "sizeBytes": %d}
-                """.formatted(product, PDF.length));
+                """.formatted(product, assay.length), assay);
         decide(adminId, certificate, "{\"decision\": \"REJECT\", \"reason\": \"UNREADABLE\"}");
 
         assertThat(jdbc.queryForObject("SELECT status FROM products WHERE id = ?", String.class, product))
