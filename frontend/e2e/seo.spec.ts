@@ -53,7 +53,7 @@ test.describe("SEO metadata and structured data", () => {
 
   for (const { path, canonical, types } of PAGES) {
     test(`${path}: canonical, hreflang, social tags and JSON-LD`, async ({ page }) => {
-      await page.goto(path);
+      const response = await page.goto(path);
       await expect(page).toHaveTitle(/\S/);
       const head = page.locator("head");
       await expect(head.locator('meta[name="description"]')).toHaveAttribute("content", /\S.{9,}/);
@@ -85,8 +85,9 @@ test.describe("SEO metadata and structured data", () => {
       for (const type of types) expect(found, `JSON-LD @type ${type}`).toContain(type);
 
       if (SAMPLE_DATA) {
-        // Sample data is invented: no page built from it may be indexed.
-        await expect(head.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+        // Sample data is invented: no page built from it may be indexed (one response
+        // header for every page, see next.config.ts).
+        expect(response?.headers()["x-robots-tag"]).toMatch(/noindex/);
       }
     });
   }

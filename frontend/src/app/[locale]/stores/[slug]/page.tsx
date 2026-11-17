@@ -22,7 +22,7 @@ import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
-import { api, USING_MOCK } from "@/lib/api";
+import { api } from "@/lib/api";
 import { slugParams } from "@/lib/api/static-params";
 import { mapHref } from "@/lib/geo/map-link";
 import { formatOpeningHours } from "@/lib/opening-hours";
@@ -62,8 +62,6 @@ export async function generateMetadata({
       images: [image],
     }),
     twitter: { card: "summary_large_image", images: [image.url] },
-    // Demo data is invented and must not be indexed as real stores or products.
-    ...(USING_MOCK && { robots: { index: false, follow: true } }),
   };
 }
 
@@ -118,7 +116,7 @@ export default async function StorePage({
                 <Link
                   href="/verified"
                   prefetch={false}
-                  className="link-underline text-muted-foreground"
+                  className="touch-target relative link-underline text-muted-foreground"
                 >
                   {tv("title")}
                 </Link>
