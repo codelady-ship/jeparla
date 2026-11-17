@@ -218,15 +218,21 @@ export async function ProductDetails({
         ]}
       />
       <nav aria-label={t("breadcrumb")} className="mb-6 text-sm text-muted-foreground">
+        {/* Breadcrumb and store links: no viewport prefetch. Each prefetch also loads the
+            target route's client chunks, which took this page past the script budget (#269). */}
         <ol className="flex flex-wrap items-center gap-1">
           <li>
-            <Link href="/products" className="hover:text-foreground">
+            <Link href="/products" prefetch={false} className="hover:text-foreground">
               {t("catalog")}
             </Link>
           </li>
           {[parent, category].filter(Boolean).map((c) => (
             <li key={c!.id} className="before:mr-1 before:content-['/']">
-              <Link href={`/categories/${c!.slug}`} className="hover:text-foreground">
+              <Link
+                href={`/categories/${c!.slug}`}
+                prefetch={false}
+                className="hover:text-foreground"
+              >
                 {c!.name[locale]}
               </Link>
             </li>
@@ -273,6 +279,7 @@ export async function ProductDetails({
             <div className="min-w-0">
               <Link
                 href={`/stores/${p.store.slug}`}
+                prefetch={false}
                 className="link-underline text-sm font-medium text-muted-foreground"
               >
                 {p.store.name}
@@ -527,6 +534,7 @@ export async function ProductDetails({
                 <StoreIcon aria-hidden className="size-4 text-gold-text" />
                 <Link
                   href={`/stores/${store.slug}`}
+                  prefetch={false}
                   className="touch-target relative link-underline"
                 >
                   {store.name}
