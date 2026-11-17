@@ -117,9 +117,10 @@ for (const width of [360, 390, 430]) {
       expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
     });
 
-    test("home: logo, Hamısına bax, metal price table", async ({ page }) => {
+    test("home: logo, Hamısına bax, stores banner, metal price table", async ({ page }) => {
       await expectTouchSized(page.getByRole("link", { name: "Jeparla", exact: true }), 1);
-      await expectTouchSized(page.getByRole("link", { name: "Hamısına bax" }), 3);
+      await expectTouchSized(page.getByRole("link", { name: "Hamısına bax" }), 2);
+      await expectTouchSized(page.getByRole("link", { name: "Bütün mağazalar" }), 1);
       await expectTouchSized(page.locator("summary", { hasText: "Cədvəl kimi göstər" }), 1);
       expect(await sweep(page), "small controls on the home page").toEqual([]);
     });

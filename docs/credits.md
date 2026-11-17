@@ -23,6 +23,32 @@ qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.
   təsvir etmir. Məhsul şəkilləri üçün AI işarəsi qaydası (`CLAUDE.md`) qüvvədədir.
 - Modellər real insan deyil; sahibin öz çəkilişi (model razılığı ilə) gələndə dəyişdirilə bilər.
 
+## Stok video və interyer şəkilləri (`frontend/public/media/`)
+
+Hamısı [Pexels Lisenziyası](https://www.pexels.com/license/) ilə pulsuzdur (2026-11-16 oxunub):
+kommersiya saytında istifadə və redaktə icazəlidir, istinad tələb olunmur. Qadağandır: görünən şəxsləri
+pis işıqda göstərmək, şəxs və ya brendin bizi dəstəklədiyini iddia etmək, faylı dəyişmədən satmaq
+və ya başqa stok saytında yaymaq, əmtəə nişanı kimi istifadə. Fayllar yalnız pexels.com və onun
+CDN-indən (`videos.pexels.com`, `images.pexels.com`) endirilib.
+
+Dürüstlük: bunlar dekorativ görüntüdür. Heç biri Jeparla-dakı mağazanın və ya məhsulun özü deyil,
+mağaza adı ilə yanaşı göstərilmir; altında "Dekorativ stok görüntü" qeydi var. Kadrlarda üz, loqo və
+yazı yoxdur.
+
+| Fayl | Harada | Müəllif | Mənbə |
+|---|---|---|---|
+| `atelier/*` (8 san. dövrə, səssiz) | Ana səhifə: "Mağazanız var?" bölməsinin fonu | Tima Miroshnichenko | https://www.pexels.com/video/close-up-shot-of-a-person-making-jewelry-6262806/ |
+| `ring/*` (8 san. dövrə, səssiz) | Ana səhifə: "Jeparla yoxlaması" bölməsi | Tima Miroshnichenko | https://www.pexels.com/video/video-of-a-peron-holding-a-ring-6263177/ |
+| `vitrine/*` (8 san. dövrə, səssiz, yavaşladılmış) | Ana səhifə: mağazalar banneri; `/stores` başlığı | Sururi Ballıdağ | https://www.pexels.com/video/elegant-display-of-gold-jewelry-in-store-36353836/ |
+| `showroom/wide.avif`, `showroom/phone.avif` (poster) | Ana səhifə: mağazalar banneri, video başlamazdan əvvəl və reduced motion-da | Rana Matloob Hussain | https://www.pexels.com/photo/luxurious-modern-jewelry-store-interior-design-33257665/ |
+| `showroom/counter*.avif` (poster) | `/stores` başlığı, video başlamazdan əvvəl və reduced motion-da | Rana Matloob Hussain | https://www.pexels.com/photo/luxurious-jewelry-store-interior-with-elegant-display-33257668/ |
+
+İşlənmə: videolardan qısa parça kəsilib, irəli və geri birləşdirilib (8 san. tikişsiz dövrə), səs
+yolu silinib, telefon və masaüstü üçün ayrıca kəsilib; H.264 MP4 və AV1 WebM (Remotion-un ffmpeg-i),
+AVIF poster. `vitrine` klipi 50 fps-dən 25 fps-ə yavaşladılıb (2 san. -> 4 san.). İnteryer şəkilləri
+(dizayn vizualizasiyası kimi görünür) yalnız poster kimi istifadə olunur; `counter*` kəsimi
+pəncərədəki küçə yazılarını və ekranı kənarda qoyur. `vitrine` kadrlarında oxunan yazı yoxdur.
+
 ## Köhnə hero (silinib, 2026-11-08)
 
 Unsplash fotoları (Tommaso Ubezio, Wildlife by Irina, Lambert Huang) artıq istifadə olunmur.
