@@ -38,8 +38,10 @@ export function FilterSlot({ action, children }: { action: string; children: Rea
   const { open, setOpen, node } = useFilters();
   if (open && node) {
     return createPortal(
-      // Portal events bubble through the React tree, so the sheet closes from here.
-      <div onSubmitCapture={() => setOpen(false)}>
+      // Portal events bubble through the React tree, so the sheet closes from here. In the
+      // bubble phase, after the form has navigated: closing in the capture phase unmounted
+      // the form before its own onSubmit ran, and the browser dropped the submission.
+      <div onSubmit={() => setOpen(false)}>
         <FilterForm action={action}>{children}</FilterForm>
       </div>,
       node,
