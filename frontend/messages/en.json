@@ -2559,7 +2559,13 @@
     "text": "Azerbaijan’s jewelry stores and their gold, silver and diamond collections.",
     "ctaCollection": "Explore the collection",
     "ctaStores": "Browse stores",
-    "scrollHint": "Scroll down"
+    "scrollHint": "Scroll down",
+    "scenesLabel": "Scenes",
+    "scenes": {
+      "diamond": "Diamond",
+      "gold": "Gold",
+      "silver": "Silver"
+    }
   },
   "Pwa": {
     "installTitle": "Jeparla on your phone",

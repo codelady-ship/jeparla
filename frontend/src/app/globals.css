@@ -483,6 +483,80 @@
   }
 }
 
+/* Scene rail (#259): names the three models left to right. A cream pill keeps the
+   labels AA over any frame; the gold line fills while the camera is on that model. */
+.hero-scenes {
+  position: absolute;
+  z-index: 2;
+  bottom: 1rem;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--scene-ivory) 92%, transparent);
+  color: var(--scene-green);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.hero-scenes li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem 0.5rem;
+  border-radius: 999px;
+}
+.hero-scenes li > span:first-child {
+  font-weight: 600;
+}
+.hero-scenes li[aria-current] {
+  background: color-mix(in oklab, var(--scene-green) 9%, transparent);
+}
+.hero-scene-bar {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  display: none;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--scene-green) 15%, transparent);
+}
+.hero-scene-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--scene-gold-deep);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+@media (max-width: 24rem) {
+  .hero-scenes {
+    font-size: 0.75rem;
+  }
+  .hero-scenes li {
+    gap: 0.25rem;
+    padding-inline: 0.5rem;
+  }
+  .hero-scene-bar {
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+}
+@media (min-aspect-ratio: 4/5) {
+  /* Landscape: under the copy column, on the page container's left edge. */
+  .hero-scenes {
+    bottom: 2rem;
+    left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
+    translate: none;
+  }
+}
+
 @keyframes hero-title-in {
   from {
     /* Starts visible (soft and low), not transparent: the headline is the first screen's
@@ -496,9 +570,21 @@
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   /* Tall track, sticky stage: the pin is pure CSS; JS only maps scroll to frames. */
   .hero-track:not([data-mode="static"]) {
-    height: 260svh;
+    /* Walk-in and transformation, then one beat per model (scene 1, 2, 3), then back. */
+    height: 420svh;
     .hero {
       position: sticky;
+    }
+    /* The camera (HeroMotion) scales the stage from its top-left corner. */
+    .hero-media {
+      transform-origin: 0 0;
+    }
+    .hero-scenes {
+      opacity: 0;
+      will-change: opacity;
+    }
+    .hero-scene-bar {
+      display: block;
     }
     .hero-brand {
       opacity: 0;

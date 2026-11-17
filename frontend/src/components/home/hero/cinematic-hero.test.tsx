@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import az from "../../../../messages/az.json";
 import en from "../../../../messages/en.json";
 import { CinematicHero } from "./cinematic-hero";
-import { phase } from "./hero-media";
+import { HERO_PHASES, heroCamera, phase } from "./hero-media";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...rest }: Omit<ComponentProps<"a">, "href"> & { href: string }) => (
@@ -101,6 +101,46 @@ describe("CinematicHero", () => {
     expect(stage).not.toHaveClass("is-revealed");
     container.querySelector("video")!.dispatchEvent(new Event("ended"));
     expect(stage).toHaveClass("is-revealed");
+  });
+});
+
+describe("scene rail", () => {
+  it("names the three models as scenes 1, 2 and 3 in every language", () => {
+    mockMedia(true);
+    for (const [locale, messages] of [
+      ["az", az],
+      ["en", en],
+    ] as const) {
+      const { unmount } = renderIn(locale, messages);
+      const rail = screen.getByRole("list", { name: messages.Hero.scenesLabel });
+      const items = [...rail.querySelectorAll("li")].map((li) => li.textContent);
+      expect(items).toEqual([
+        `01${messages.Hero.scenes.diamond}`,
+        `02${messages.Hero.scenes.gold}`,
+        `03${messages.Hero.scenes.silver}`,
+      ]);
+      unmount();
+    }
+  });
+});
+
+describe("heroCamera", () => {
+  const models = [0.2, 0.5, 0.8];
+  it("stays wide while the tigers turn and pulls back at the end", () => {
+    expect(heroCamera(0.3, models).zoom).toBe(0);
+    expect(heroCamera(1, models).zoom).toBe(0);
+  });
+
+  it("rests on model 1, 2 and 3 in turn", () => {
+    expect(heroCamera(0.55, models)).toEqual({ zoom: 1, focus: 0.2 });
+    expect(heroCamera(0.72, models)).toEqual({ zoom: 1, focus: 0.5 });
+    expect(heroCamera(0.88, models)).toEqual({ zoom: 1, focus: 0.8 });
+  });
+
+  it("scenes follow each other without gaps", () => {
+    const [s1, s2, s3] = HERO_PHASES.scenes;
+    expect(s1[1]).toBe(s2[0]);
+    expect(s2[1]).toBe(s3[0]);
   });
 });
 

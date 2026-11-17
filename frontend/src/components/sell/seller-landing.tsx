@@ -17,6 +17,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { faqPage } from "@/lib/seo/json-ld";
 import { cn } from "cn";
+import { FaqList } from "@/components/faq-list";
 
 const VALUES = [
   ["catalog", Link2],
@@ -193,14 +194,7 @@ export async function SellerLanding({
         <h2 id="seller-faq" className="mb-4 text-2xl sm:text-3xl">
           {t("faqTitle")}
         </h2>
-        <dl className="flex max-w-3xl flex-col divide-y">
-          {faq.map((item) => (
-            <div key={item.q} className="py-4 first:pt-0">
-              <dt className="font-semibold">{item.q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+        <FaqList items={faq} className="max-w-3xl" />
       </section>
     </div>
   );
