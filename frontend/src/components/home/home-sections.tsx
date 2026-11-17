@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { CategoryTiles } from "@/components/categories/category-tiles";
+import { AmbientVideo } from "@/components/media/ambient-video";
+import { ATELIER_VIDEO, RING_VIDEO, VITRINE_HOME } from "@/components/media/stock-media";
 import { Reveal } from "@/components/motion/reveal";
 import { StoreCard } from "@/components/stores/store-card";
 import { buttonVariants } from "@/components/ui/button";
@@ -91,11 +93,29 @@ export async function FeaturedStores() {
   if (featured.length === 0) return null;
   return (
     <section aria-labelledby="home-stores" className={cn(WRAP, "pb-16")}>
-      <SectionHead
-        id="home-stores"
-        title={t("stores")}
-        link={<SeeAll href="/stores">{t("seeAll")}</SeeAll>}
-      />
+      {/* Decorative interior (stock), never one of the listed stores: see the note below it. */}
+      <figure className="mb-6">
+        <div className="relative isolate flex min-h-[28rem] items-end overflow-hidden rounded-xl bg-scene-green md:aspect-[12/5] md:min-h-0">
+          <AmbientVideo desktop={VITRINE_HOME.desktop} mobile={VITRINE_HOME.mobile} />
+          <div aria-hidden className="scene-scrim absolute inset-0" />
+          <div className="relative flex flex-col gap-3 p-5 text-scene-ivory sm:p-8 md:max-w-xl md:p-10">
+            <h2 id="home-stores" className="text-3xl text-balance sm:text-4xl md:text-5xl">
+              {t("storesBanner.title")}
+            </h2>
+            <p className="max-w-md text-sm text-pretty sm:text-base">{t("storesBanner.text")}</p>
+            <Link
+              href="/stores"
+              className={cn(
+                buttonVariants({ variant: "gold", size: "lg" }),
+                "mt-2 h-11 self-start px-5",
+              )}
+            >
+              {t("storesBanner.cta")}
+            </Link>
+          </div>
+        </div>
+        <figcaption className="mt-2 text-xs text-muted-foreground">{t("decorNote")}</figcaption>
+      </figure>
       <ul className="grid gap-4 md:grid-cols-3">
         {featured.map((s, i) => (
           <Reveal key={s.id} as="li" index={i}>
@@ -116,22 +136,40 @@ export async function VerifiedExplainer() {
   ] as const;
   return (
     <section aria-labelledby="home-verified" className="mb-16 border-y bg-card">
-      <div className={cn(WRAP, "py-16")}>
-        <h2 id="home-verified" className="mb-2 text-2xl sm:text-3xl">
-          {t("verifiedTitle")}
-        </h2>
-        <p className="mb-10 max-w-2xl text-muted-foreground">{t("verifiedText")}</p>
-        <ul className="grid gap-8 md:grid-cols-3">
-          {items.map(({ key, Icon }, i) => (
-            <Reveal key={key} as="li" index={i} className="flex flex-col gap-2">
-              <Icon aria-hidden className="size-7 text-gold-text" />
-              <h3 className="font-sans text-lg font-semibold">{t(`verified.${key}.title`)}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {t(`verified.${key}.text`)}
-              </p>
-            </Reveal>
-          ))}
-        </ul>
+      <div
+        className={cn(
+          WRAP,
+          "grid gap-10 py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:items-center lg:gap-16",
+        )}
+      >
+        <div>
+          <h2 id="home-verified" className="mb-2 text-2xl sm:text-3xl">
+            {t("verifiedTitle")}
+          </h2>
+          <p className="mb-10 max-w-2xl text-muted-foreground">{t("verifiedText")}</p>
+          <ul className="grid gap-8 md:grid-cols-3 lg:grid-cols-1 lg:gap-6">
+            {items.map(({ key, Icon }, i) => (
+              <Reveal key={key} as="li" index={i} className="flex flex-col gap-2">
+                <Icon aria-hidden className="size-7 text-gold-text" />
+                <h3 className="font-sans text-lg font-semibold">{t(`verified.${key}.title`)}</h3>
+                <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  {t(`verified.${key}.text`)}
+                </p>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+        {/* A close look is what an expert check is about; the clip is stock, not a listed item. */}
+        <figure>
+          <div className="relative isolate aspect-square overflow-hidden rounded-xl bg-scene-green sm:aspect-[4/5]">
+            <AmbientVideo
+              desktop={RING_VIDEO.desktop}
+              mobile={RING_VIDEO.mobile}
+              desktopQuery="(min-width: 64rem)"
+            />
+          </div>
+          <figcaption className="mt-2 text-xs text-muted-foreground">{t("decorNote")}</figcaption>
+        </figure>
       </div>
     </section>
   );
@@ -149,25 +187,33 @@ export function MetalPrices() {
 export async function BecomeSeller() {
   const t = await getTranslations("Home");
   return (
-    <section aria-labelledby="home-seller" className={cn(WRAP, "pb-20")}>
-      <Reveal className="flex flex-col items-start gap-4 rounded-lg border p-8 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-start gap-4">
-          <Store aria-hidden className="mt-1 size-8 shrink-0 text-gold-text" />
-          <div>
-            <h2 id="home-seller" className="text-2xl">
-              {t("sellerTitle")}
-            </h2>
-            <p className="mt-1 max-w-xl text-muted-foreground">{t("sellerText")}</p>
-          </div>
-        </div>
-        <Link
-          href="/sell"
-          prefetch={false}
-          className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-11")}
-        >
-          {t("sellerCta")}
-        </Link>
-      </Reveal>
+    <section
+      aria-labelledby="home-seller"
+      className="relative isolate overflow-hidden bg-scene-deep text-scene-ivory"
+    >
+      <AmbientVideo desktop={ATELIER_VIDEO.desktop} mobile={ATELIER_VIDEO.mobile} />
+      <div aria-hidden className="scene-scrim scene-scrim--end absolute inset-0" />
+      <div
+        className={cn(
+          WRAP,
+          "relative flex min-h-[34rem] flex-col justify-end py-12 md:min-h-[38rem] md:justify-center md:py-20",
+        )}
+      >
+        <Reveal className="flex max-w-xl flex-col items-start gap-4 md:ml-auto md:max-w-md lg:max-w-lg">
+          <Store aria-hidden className="size-8 text-scene-gold" />
+          <h2 id="home-seller" className="text-4xl text-balance sm:text-5xl lg:text-6xl">
+            {t("sellerTitle")}
+          </h2>
+          <p className="max-w-md text-pretty sm:text-lg">{t("sellerText")}</p>
+          <Link
+            href="/sell"
+            prefetch={false}
+            className={cn(buttonVariants({ variant: "gold", size: "lg" }), "mt-2 h-11 px-5")}
+          >
+            {t("sellerCta")}
+          </Link>
+        </Reveal>
+      </div>
     </section>
   );
 }

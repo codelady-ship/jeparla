@@ -3,6 +3,8 @@ import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { AmbientVideo } from "@/components/media/ambient-video";
+import { VITRINE_STORES } from "@/components/media/stock-media";
 import { StoreList } from "@/components/stores/store-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { alternates } from "@/i18n/alternates";
@@ -26,8 +28,18 @@ export default async function StoresPage({ searchParams }: PageProps<"/[locale]/
   const t = await getTranslations("Stores");
   return (
     <div className="container-page py-8 sm:py-12">
-      <h1 className="mb-2 text-3xl sm:text-4xl">{t("title")}</h1>
-      <p className="mb-8 max-w-2xl text-muted-foreground">{t("intro")}</p>
+      {/* Decorative showcase film (stock), never a listed store: the note below says so. */}
+      <header className="mb-10">
+        <div className="relative isolate flex min-h-[20rem] items-end overflow-hidden rounded-xl bg-scene-green text-scene-ivory sm:min-h-[24rem]">
+          <AmbientVideo desktop={VITRINE_STORES.desktop} mobile={VITRINE_STORES.mobile} eager />
+          <div aria-hidden className="scene-scrim absolute inset-0" />
+          <div className="relative p-5 sm:p-8 md:max-w-2xl md:p-10">
+            <h1 className="mb-3 text-4xl text-balance sm:text-5xl lg:text-6xl">{t("title")}</h1>
+            <p className="max-w-xl text-pretty sm:text-lg">{t("intro")}</p>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">{t("decorNote")}</p>
+      </header>
       <Suspense
         fallback={
           <ul

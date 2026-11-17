@@ -60,7 +60,7 @@ test.describe("catalog filter -> product page -> WhatsApp", () => {
     allowNotFound();
     await page.goto("/az/products/movcud-olmayan-mehsul");
     await expect(page.getByRole("heading", { level: 1, name: "Səhifə tapılmadı" })).toBeVisible();
-    await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 
   test("catalog and product page have no axe violations", async ({ page }) => {

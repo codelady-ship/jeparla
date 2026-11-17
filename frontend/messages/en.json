@@ -40,14 +40,20 @@
         "text": "If an independent expert inspected the piece, it is noted separately."
       }
     },
-    "sellerTitle": "Do you run a jewelry store?",
+    "sellerTitle": "Have a store? Open it on Jeparla.",
     "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",
     "sellerCta": "Open a store",
     "budget": {
       "title": "By budget",
       "upTo": "Up to {amount, number} AZN",
       "note": "Prices are as shown today; metal-linked prices follow the Central Bank rate every day."
-    }
+    },
+    "storesBanner": {
+      "title": "Every showcase, one address",
+      "text": "Azerbaijan’s jewelry stores in one place, with each store’s checks shown separately.",
+      "cta": "All stores"
+    },
+    "decorNote": "Decorative stock imagery, not a store or product on Jeparla."
   },
   "Nav": {
     "home": "Home",
@@ -529,7 +535,8 @@
       "legalForm": "Legal form",
       "taxId": "VOEN (tax ID)",
       "note": "As the seller states it."
-    }
+    },
+    "decorNote": "Decorative stock imagery, not a store or product on Jeparla."
   },
   "About": {
     "title": "What is Jeparla?",

@@ -36,8 +36,11 @@ export function CinematicHero() {
           {t("text")}
         </p>
         <div className="hero-rv hero-ctas mt-6" style={delay(1)}>
+          {/* No viewport prefetch: handling the two RSC prefetches blocked the phone main
+              thread during load (#160, about 600 ms throttled); the pages load on click. */}
           <Link
             href="/products"
+            prefetch={false}
             className={cn(buttonVariants({ variant: "gold", size: "lg" }), "h-11 px-5 text-sm")}
           >
             {t("ctaCollection")}
@@ -45,6 +48,7 @@ export function CinematicHero() {
           </Link>
           <Link
             href="/stores"
+            prefetch={false}
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
               "h-11 border-scene-green/40 bg-transparent px-5 text-sm text-scene-green hover:bg-scene-green/5 hover:text-scene-green dark:bg-transparent",

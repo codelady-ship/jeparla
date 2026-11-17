@@ -1,52 +1,41 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { useState } from "react";
-import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Link } from "@/i18n/navigation";
+import { lazy, Suspense, useState } from "react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "cn";
+import type { MobileNavProps } from "./mobile-nav-sheet";
 
-type Props = {
-  items: { href: string; label: string }[];
-  labels: { menu: string; close: string; home: string };
-};
+const load = () => import("./mobile-nav-sheet");
+const MobileNavSheet = lazy(load);
 
-// Labels come translated from the server component, so no messages ship for this.
-export function MobileNav({ items, labels }: Props) {
-  const [open, setOpen] = useState(false);
+/**
+ * Phone menu button. The sheet (dialog, focus trap, portal) is a separate chunk that
+ * loads when the button is touched, pointed at or focused, so it is not part of the
+ * first page load (#160, mobile blocking time). Labels come translated from the server.
+ */
+export function MobileNav({ items, labels }: MobileNavProps) {
+  const [armed, setArmed] = useState(false);
 
+  const button = (
+    <button
+      type="button"
+      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "md:hidden")}
+      aria-label={labels.menu}
+      aria-haspopup="dialog"
+      onPointerDown={() => void load()}
+      onPointerEnter={() => void load()}
+      onFocus={() => void load()}
+      onClick={() => setArmed(true)}
+    >
+      <Menu aria-hidden />
+    </button>
+  );
+
+  if (!armed) return button;
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
-        render={
-          <Button variant="ghost" size="icon" className="md:hidden" aria-label={labels.menu} />
-        }
-      >
-        <Menu aria-hidden />
-      </SheetTrigger>
-      <SheetContent side="left" closeLabel={labels.close} className="w-72">
-        <SheetHeader>
-          <SheetTitle translate="no" className="font-heading text-2xl">
-            Jeparla
-          </SheetTitle>
-        </SheetHeader>
-        <nav aria-label={labels.menu} className="flex flex-col px-4">
-          {[{ href: "/", label: labels.home }, ...items].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="border-b py-3 text-base font-medium"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-auto p-4">
-          <LocaleSwitcher />
-        </div>
-      </SheetContent>
-    </Sheet>
+    <Suspense fallback={button}>
+      <MobileNavSheet items={items} labels={labels} defaultOpen />
+    </Suspense>
   );
 }
