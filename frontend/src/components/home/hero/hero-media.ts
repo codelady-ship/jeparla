@@ -31,11 +31,57 @@ export const frameUrl = (dir: string, i: number) => `${dir}/${String(i).padStart
  * is part of the entrance video and is gone by its last frame.)
  */
 export const HERO_PHASES = {
-  hintOut: [0, 0.18],
-  transform: [0.06, 0.82],
+  hintOut: [0, 0.1],
+  transform: [0.03, 0.42],
   /** The brand line above the headline arrives with the models. */
-  brandIn: [0.42, 0.78],
+  brandIn: [0.22, 0.4],
+  /** The scene rail (01, 02, 03) fades in once the models stand. */
+  scenesIn: [0.4, 0.46],
+  /** Scene 1, 2, 3: the camera rests on one model each; the rail fills per scene. */
+  scenes: [
+    [0.46, 0.62],
+    [0.62, 0.78],
+    [0.78, 0.94],
+  ],
 } as const;
+
+/** The three models, left to right in both cuts. Keys name the jewelry each one wears. */
+export const HERO_SCENES = ["diamond", "gold", "silver"] as const;
+
+/**
+ * Horizontal centre of each model, as a fraction of the footage width (measured on
+ * the last transformation frame of each cut), in HERO_SCENES order.
+ */
+export const HERO_MODELS = {
+  mobile: [0.24, 0.5, 0.76],
+  desktop: [0.51, 0.64, 0.77],
+} as const;
+
+/** Largest camera zoom per cut; the measured space above the heads may lower it. */
+export const HERO_ZOOM = { mobile: 1.6, desktop: 1.35 } as const;
+
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
+/**
+ * Camera over the scrubbed track: wide while the tigers turn, then it pushes in on
+ * model 1, pans to 2 and 3 and pulls back to the group at the end. Returns the zoom
+ * amount (0 = wide, 1 = full) and the focus point as a fraction of footage width.
+ */
+export function heroCamera(p: number, models: readonly number[]) {
+  const [a, b, c] = models;
+  const zoom =
+    p < 0.44
+      ? 0
+      : p < 0.52
+        ? smooth(phase(p, [0.44, 0.52]))
+        : p < 0.92
+          ? 1
+          : 1 - smooth(phase(p, [0.92, 1]));
+  let focus = a;
+  if (p >= 0.6) focus = a + (b - a) * smooth(phase(p, [0.6, 0.68]));
+  if (p >= 0.76) focus = b + (c - b) * smooth(phase(p, [0.76, 0.84]));
+  return { zoom, focus };
+}
 
 /**
  * Where the figures stand in each cut, as fractions of the footage (measured on the
