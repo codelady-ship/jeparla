@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import az.jeparla.support.PostgresContainerConfig;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,6 +82,34 @@ class MigrationTests {
                 .containsExactly("ADMIN", "MERCHANT", "USER");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM pg_extension WHERE extname = 'pg_trgm'", Integer.class))
                 .isOne();
+    }
+
+    @Test
+    void referenceTaxonomyIsInEveryDatabaseAndIdempotent() throws Exception {
+        String byParent = """
+                SELECT coalesce(p.slug, '-') || '/' || c.slug FROM categories c LEFT JOIN categories p ON p.id = c.parent_id
+                WHERE c.slug IN ('uzukler', 'nisan-uzukleri', 'toy-uzukleri', 'sirgalar', 'boyunbagilar', 'zencirler',
+                                 'asqilar', 'qolbaqlar', 'destler', 'broslar', 'kisi-zergerliyi', 'usaq-zergerliyi')
+                ORDER BY c.sort_order
+                """;
+        String finenesses = "SELECT metal || ' ' || value FROM finenesses WHERE label NOT LIKE 'test %' ORDER BY sort_order";
+        List<String> tree = List.of("-/uzukler", "uzukler/nisan-uzukleri", "uzukler/toy-uzukleri", "-/sirgalar",
+                "-/boyunbagilar", "boyunbagilar/zencirler", "boyunbagilar/asqilar", "-/qolbaqlar", "-/destler",
+                "-/broslar", "-/kisi-zergerliyi", "-/usaq-zergerliyi");
+        List<String> metals = List.of("GOLD 375", "GOLD 583", "GOLD 585", "GOLD 750", "GOLD 916", "GOLD 999",
+                "SILVER 875", "SILVER 925", "SILVER 999", "PLATINUM 950");
+        assertThat(jdbc.queryForList(byParent, String.class)).containsExactlyElementsOf(tree);
+        assertThat(jdbc.queryForList(finenesses, String.class)).containsExactlyElementsOf(metals);
+
+        // A second run (as on a database where the rows already exist) changes nothing.
+        String script = new ClassPathResource("db/migration/V61__reference_taxonomy.sql")
+                .getContentAsString(StandardCharsets.UTF_8);
+        long categories = jdbc.queryForObject("SELECT count(*) FROM categories", Long.class);
+        long allFinenesses = jdbc.queryForObject("SELECT count(*) FROM finenesses", Long.class);
+        jdbc.execute(script);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM categories", Long.class)).isEqualTo(categories);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM finenesses", Long.class)).isEqualTo(allFinenesses);
+        assertThat(jdbc.queryForList(byParent, String.class)).containsExactlyElementsOf(tree);
     }
 
     // ------------------------------------------------------------------ column types

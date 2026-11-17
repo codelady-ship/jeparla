@@ -5,10 +5,17 @@ PostgreSQL 16 məcburidir: tətbiq başlayanda Flyway `src/main/resources/db/mig
 sonra Hibernate JPA entity-lərini sxemə qarşı yoxlayır (`ddl-auto: validate`; sxemi yalnız Flyway dəyişir).
 Lokal baza üçün kökdəki README-yə baxın (`docker compose up -d postgres`).
 
+## İstinad taksonomiyası
+
+Kateqoriya ağacı (12 kateqoriya: 7 üst qrup, 5 alt) və standart əyarlar (qızıl 375, 583, 585, 750, 916, 999;
+gümüş 875, 925, 999; platin 950) demo deyil: `V61__reference_taxonomy.sql` onları hər mühitdə, prod daxil,
+yaradır. Admin-in artıq yaratdığı sətirlərə toxunmur (`ON CONFLICT` slug və `(metal, value)` üzrə), heç nə silmir.
+
 ## Demo məlumat
 
 `demo` profili boş bazaya frontend fixture-ları ilə eyni nümunə kataloqu yükləyir
-(`frontend/src/lib/api/mock/fixtures.ts`: 6 mağaza, 12 kateqoriya, 6 əyar, 60 məhsul, eyni id, slug və qiymətlər):
+(`frontend/src/lib/api/mock/fixtures.ts`: 6 mağaza, 60 məhsul, eyni id, slug və qiymətlər; kateqoriya və
+əyarlar V61-dəndir):
 
 ```bash
 SPRING_PROFILES_ACTIVE=demo ./gradlew bootRun
@@ -16,7 +23,7 @@ SPRING_PROFILES_ACTIVE=demo ./gradlew bootRun
 
 Seed `src/main/resources/db/demo/R__demo_seed.sql`-dir və yalnız `demo` profilində Flyway-ə qoşulur
 (`application-demo.yml`); prod-da heç vaxt işə düşmür. Bütün məlumat uydurmadır (telefonlar `+994 50 000 00 0X`,
-VÖEN `000000000X`), demo satıcılar daxil ola bilmir. Kataloq boş deyilsə seed heç nə etmir; dəyişmiş seed-i
+VÖEN `000000000X`), demo satıcılar daxil ola bilmir. Mağaza, məhsul və ya kotirovka varsa seed heç nə etmir; dəyişmiş seed-i
 yükləmək üçün bazanı yenidən yaradın (`docker compose down -v`).
 
 ## Qaldırma

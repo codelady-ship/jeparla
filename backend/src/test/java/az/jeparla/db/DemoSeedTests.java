@@ -68,7 +68,7 @@ class DemoSeedTests {
     void seedHasTheFixtureCounts() {
         assertThat(count("stores")).isEqualTo(6);
         assertThat(count("categories")).isEqualTo(12);
-        assertThat(count("finenesses")).isEqualTo(6);
+        assertThat(count("finenesses")).as("the 10 reference finenesses of V61").isEqualTo(10);
         assertThat(count("products")).isEqualTo(60);
         assertThat(count("product_variants")).isEqualTo(60);
         assertThat(count("product_images")).isEqualTo(73);
@@ -209,7 +209,7 @@ class DemoSeedTests {
         assertThat(count("products")).isEqualTo(60);
         assertThat(count("product_images")).isEqualTo(73);
 
-        // Identity sequences continue after the explicit fixture ids.
+        // Identity sequences continue after the fixture ids (V61 created categories 1..12).
         Long next = jdbc.queryForObject("""
                 INSERT INTO categories (slug, name_az, name_en, name_ru) VALUES ('seed-test', 'Test', 'Test', 'Тест')
                 RETURNING id
