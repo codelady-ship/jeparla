@@ -9,6 +9,7 @@ import { alternates, SITE_URL } from "@/i18n/alternates";
 import { routing, type Locale } from "@/i18n/routing";
 import { faqPage, ORG_ID } from "@/lib/seo/json-ld";
 import { openGraph } from "@/lib/seo/open-graph";
+import { FaqList } from "@/components/faq-list";
 
 const PATH = "/calculator";
 const FAQ_KEYS = ["price", "fineness", "source"] as const;
@@ -73,14 +74,7 @@ export default async function CalculatorPage({ searchParams }: PageProps<"/[loca
         <h2 id="calc-faq" className="mb-4 text-2xl">
           {t("faqTitle")}
         </h2>
-        <dl className="flex flex-col divide-y">
-          {faq.map((item) => (
-            <div key={item.q} className="py-4">
-              <dt className="font-semibold">{item.q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+        <FaqList items={faq} />
       </section>
     </div>
   );

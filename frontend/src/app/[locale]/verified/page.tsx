@@ -8,6 +8,7 @@ import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import { faqPage } from "@/lib/seo/json-ld";
 import { openGraph } from "@/lib/seo/open-graph";
+import { FaqList } from "@/components/faq-list";
 
 const CHECKS = [
   ["seller", BadgeCheck],
@@ -131,14 +132,7 @@ export default async function VerifiedPage() {
         <h2 id="verified-faq" className="mb-4 text-2xl sm:text-3xl">
           {t("faqTitle")}
         </h2>
-        <dl className="flex flex-col divide-y">
-          {faq.map((item) => (
-            <div key={item.q} className="py-4 first:pt-0">
-              <dt className="font-semibold">{item.q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+        <FaqList items={faq} />
       </section>
     </article>
   );
