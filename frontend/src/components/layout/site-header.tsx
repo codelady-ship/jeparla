@@ -42,7 +42,9 @@ export function SiteHeader() {
           <ul className="flex items-center gap-6 text-sm font-medium">
             {items.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="link-underline py-1">
+                {/* No prefetch, like the other header links (#160): prefetching a route also
+                    loads its client chunks, which pushed product pages past the script budget. */}
+                <Link href={item.href} prefetch={false} className="link-underline py-1">
                   {item.label}
                 </Link>
               </li>

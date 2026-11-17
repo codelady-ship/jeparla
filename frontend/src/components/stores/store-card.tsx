@@ -37,6 +37,9 @@ export function StoreCard({ store }: { store: StoreSummary }) {
         <h2 className="truncate font-sans text-base font-semibold">
           <Link
             href={`/stores/${store.slug}`}
+            // No viewport prefetch, like product cards: a list of stores fetched every
+            // store page during load, a long main-thread task on phones (#269).
+            prefetch={false}
             className="outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-[3px] focus-visible:after:ring-ring/50"
           >
             {store.name}
