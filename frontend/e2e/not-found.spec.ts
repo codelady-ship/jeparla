@@ -18,7 +18,7 @@ test.describe("localized 404", () => {
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
       await expect(page.getByRole("banner")).toBeVisible();
       await expect(page.getByRole("contentinfo")).toBeVisible();
-      await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
       await expectNoA11yViolations(page);
     });
   }

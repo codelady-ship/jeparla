@@ -6,7 +6,7 @@ import { ProductDetails } from "@/components/pdp/product-details";
 import { alternates } from "@/i18n/alternates";
 import { openGraph } from "@/lib/seo/open-graph";
 import { routing } from "@/i18n/routing";
-import { api, USING_MOCK } from "@/lib/api";
+import { api } from "@/lib/api";
 import { slugParams } from "@/lib/api/static-params";
 
 // Known products are prerendered; new ones render on first request.
@@ -30,8 +30,6 @@ export async function generateMetadata({
     title: name,
     description: p.description[locale],
     alternates: alternates(locale, `/products/${p.slug}`),
-    // Demo data is invented and must not be indexed as real stores or products.
-    ...(USING_MOCK && { robots: { index: false, follow: true } }),
     openGraph: openGraph(locale, `/products/${p.slug}`, {
       title: name,
       ...(p.images[0] && { images: [{ url: p.images[0].url, alt: p.images[0].alt[locale] }] }),
