@@ -14,8 +14,8 @@ import {
  * - "up" (default): rises 24px and fades in.
  * - "left" / "right": slides in 40px from that side on wide screens (the two halves of a
  *   split section meet in the middle); rises on phones.
- * - "film": nothing fades; a film band's picture widens (<VideoBand>) where the browser
- *   cannot tie that to the scroll itself.
+ * - "film": nothing fades; a pinned film settles from 106% (<StickyVideoSection>) where
+ *   the browser cannot tie that to the scroll itself.
  * A `.reveal-frame` inside any of them (a picture panel) opens from a slightly smaller
  * window while the picture in it settles.
  */

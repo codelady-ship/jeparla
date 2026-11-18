@@ -15,8 +15,8 @@ import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 import { revealStep } from "@/lib/motion/reveal-step";
 import { cn } from "cn";
-import { GHOST_PILL_DARK, PRIMARY_PILL } from "./pills";
-import { VideoBand } from "./video-band";
+import { GHOST_PILL_DARK } from "./pills";
+import { StickyVideoSection } from "./sticky-video-section";
 
 /*
  * Home sections below the hero. Rhythm: full-bleed film bands alternate with
@@ -24,7 +24,8 @@ import { VideoBand } from "./video-band";
  * apart. One gold pill per section for the main action, ghost pills for the rest.
  * Motion (<Reveal>, none under reduced motion): in a split the copy comes in from the
  * left line by line and the picture from the right, opening like a window; cards rise
- * one after another; film bands widen as they scroll in.
+ * one after another. Film sections (<StickyVideoSection>: checks, stores, seller) pin
+ * their film behind the content, which scrolls over it; the next section covers it.
  */
 
 /**
@@ -160,55 +161,34 @@ export async function BudgetPicks() {
 }
 
 export async function FeaturedStores() {
-  const [t, tv, stores] = await Promise.all([
-    getTranslations("Home"),
-    getTranslations("Home.video"),
-    api.listStores(),
-  ]);
+  const [t, stores] = await Promise.all([getTranslations("Home"), api.listStores()]);
   // Checked stores first; no paid placement exists, so the order says nothing else.
   const rank = (s: (typeof stores)[number]) =>
     Number(s.verification.seller === "VERIFIED") + Number(s.verification.documents === "VERIFIED");
   const featured = [...stores].sort((a, b) => rank(b) - rank(a)).slice(0, 3);
   if (featured.length === 0) return null;
+  // A decorative interior (stock) pinned behind the copy and the cards; never one of
+  // the listed stores (the note says so).
   return (
-    <section aria-labelledby="home-stores" className="home-wrap home-pad">
-      {/* Decorative interior (stock), never one of the listed stores: see the note below it. */}
-      <Reveal as="figure" stagger className="mb-8">
-        <div className="video-panel reveal-frame relative isolate flex min-h-[28rem] items-end overflow-hidden rounded-xl bg-scene-green md:aspect-[12/5] md:min-h-0">
-          <AmbientVideo
-            desktop={VITRINE_HOME.desktop}
-            mobile={VITRINE_HOME.mobile}
-            controls={{ pause: tv("pause"), play: tv("play") }}
-          />
-          <div aria-hidden className="scene-scrim absolute inset-0" />
-          <div className="relative flex flex-col gap-4 p-8 text-scene-ivory md:max-w-xl md:p-10">
-            <h2
-              id="home-stores"
-              className="home-head text-3xl text-balance sm:text-4xl md:text-5xl"
-              {...revealStep(2)}
-            >
-              {t("storesBanner.title")}
-            </h2>
-            <p className="max-w-md text-sm text-pretty sm:text-base" {...revealStep(3)}>
-              {t("storesBanner.text")}
-            </p>
-            <div className="mt-2 self-start" {...revealStep(4)}>
-              <Link href="/stores" className={PRIMARY_PILL}>
-                {t("storesBanner.cta")}
-              </Link>
-            </div>
-          </div>
-        </div>
-        <figcaption className="mt-2 text-xs text-muted-foreground">{t("decorNote")}</figcaption>
-      </Reveal>
-      <Reveal as="ul" stagger className="grid gap-4 md:grid-cols-3">
-        {featured.map((s) => (
-          <li key={s.id} data-reveal-item="">
-            <StoreCard store={s} />
-          </li>
-        ))}
-      </Reveal>
-    </section>
+    <StickyVideoSection
+      id="home-stores"
+      title={t("storesBanner.title")}
+      text={t("storesBanner.text")}
+      cta={{ href: "/stores", label: t("storesBanner.cta") }}
+      video={VITRINE_HOME}
+      note={t("decorNote")}
+      after={
+        <Reveal as="ul" stagger data-store-cards="" className="home-wrap grid gap-4 md:grid-cols-3">
+          {featured.map((s) => (
+            // A solid ground under the card: its hover tint is translucent, and here the
+            // film is behind it, not the page.
+            <li key={s.id} data-reveal-item="" className="rounded-lg bg-card">
+              <StoreCard store={s} />
+            </li>
+          ))}
+        </Reveal>
+      }
+    />
   );
 }
 
@@ -221,7 +201,7 @@ export async function VerifiedExplainer() {
   ] as const;
   // A close look is what an expert check is about; the clip is stock, not a listed item.
   return (
-    <VideoBand
+    <StickyVideoSection
       id="home-verified"
       title={t("ringBand.title")}
       text={t("verifiedText")}
@@ -230,12 +210,7 @@ export async function VerifiedExplainer() {
       note={t("decorNote")}
       after={
         // The three checks side by side from tablet width up, stacked on phones (#287).
-        <Reveal
-          as="ul"
-          stagger
-          data-checks=""
-          className="home-wrap home-pad grid gap-4 md:grid-cols-3"
-        >
+        <Reveal as="ul" stagger data-checks="" className="home-wrap grid gap-4 md:grid-cols-3">
           {items.map(({ key, Icon }) => (
             <li key={key} data-reveal-item="" className="home-card flex flex-col gap-3">
               <Icon aria-hidden className="size-7 text-gold-text" />
@@ -251,19 +226,24 @@ export async function VerifiedExplainer() {
   );
 }
 
-/** Daily CBAR gram prices and the 30-day chart (PLAN 5.10). */
+/**
+ * Daily CBAR gram prices and the 30-day chart (PLAN 5.10). Full width on the page
+ * ground: it scrolls over the pinned stores film before it and covers it.
+ */
 export function MetalPrices() {
   return (
-    <Reveal className="home-wrap pb-12 md:pb-[4.5rem]">
-      <MetalPriceWidget />
-    </Reveal>
+    <div className="bg-background">
+      <Reveal className="home-wrap home-pad">
+        <MetalPriceWidget />
+      </Reveal>
+    </div>
   );
 }
 
 export async function BecomeSeller() {
   const t = await getTranslations("Home");
   return (
-    <VideoBand
+    <StickyVideoSection
       id="home-seller"
       title={t("sellerTitle")}
       text={t("sellerText")}
