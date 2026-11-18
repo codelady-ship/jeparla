@@ -65,6 +65,26 @@ SELECT u.id,
 FROM users u
 WHERE u.email ~ '^e2e-(reset|verify)-';
 
+-- Metal price history: the demo profile has one quote day (2026-11-03), and the price chart with its
+-- "show as table" toggle needs a series. 30 earlier business days with a gentle swing; the latest
+-- quote (the one products are priced from) stays as the demo seed set it.
+INSERT INTO metal_price_snapshots (metal, quote_date, price_per_ounce, price_per_gram, currency, source, status,
+                                   fetched_at, created_at)
+SELECT q.metal, d.day,
+       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0)), 4),
+       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0)) / 31.1034768, 4),
+       'AZN', 'CBAR', 'APPLIED', d.day + TIME '10:05', d.day + TIME '10:05'
+FROM metal_price_snapshots q
+CROSS JOIN LATERAL (
+    SELECT day::date, row_number() OVER (ORDER BY day DESC) AS n
+    FROM generate_series(DATE '2026-11-03' - 45, DATE '2026-11-02', INTERVAL '1 day') AS day
+    WHERE extract(isodow FROM day) < 6
+    ORDER BY day DESC
+    LIMIT 30
+) d
+WHERE q.quote_date = DATE '2026-11-03' AND q.source = 'CBAR'
+ON CONFLICT DO NOTHING;
+
 COMMIT;
 SQL
 
