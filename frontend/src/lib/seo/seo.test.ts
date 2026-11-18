@@ -16,6 +16,7 @@ import {
   website,
 } from "./json-ld";
 import { buildLlmsFullTxt, buildLlmsTxt } from "./llms";
+import { formatPrice } from "@/lib/money";
 
 describe("robots", () => {
   const r = robots();
@@ -32,6 +33,64 @@ describe("robots", () => {
       expect(rule.disallow).toEqual(expect.arrayContaining(["/api/", "/*/admin", "/*/merchant"]));
     }
     expect(r.sitemap).toMatch(/\/sitemap\.xml$/);
+  });
+
+  it("names every AI crawler PLAN 5.18 lists (#61), none of them blocked", () => {
+    const named = rules.flatMap((x) => (Array.isArray(x.userAgent) ? x.userAgent : [x.userAgent]));
+    for (const bot of [
+      "OAI-SearchBot",
+      "ChatGPT-User",
+      "GPTBot",
+      "ClaudeBot",
+      "Claude-SearchBot",
+      "PerplexityBot",
+      "Google-Extended",
+      "Applebot-Extended",
+      "Bingbot",
+    ])
+      expect(named).toContain(bot);
+    for (const rule of rules) expect(rule.disallow).not.toContain("/");
+  });
+
+  it("closes the seller, admin and design areas and the API, but not the share images", () => {
+    for (const rule of rules) {
+      expect(rule.disallow).toEqual(
+        expect.arrayContaining(["/api/", "/*/admin", "/*/merchant", "/*/design"]),
+      );
+      expect(rule.allow).toContain("/api/og/");
+    }
+    expect(r.sitemap).toMatch(/^https?:\/\/[^/]+\/sitemap\.xml$/);
+  });
+});
+
+describe("facts table and JSON-LD agree on the price (#61)", () => {
+  type Offer = { "@type": string; price: string; priceCurrency: string };
+  type Agg = { "@type": string; lowPrice: string; priceCurrency: string };
+
+  /** The amount a formatted price shows: every price has exactly two decimals. */
+  const shownAmount = (text: string) => Number(text.replace(/\D/g, "")) / 100;
+
+  it("the price in the facts table is the Offer price, in every language", () => {
+    const priced = PRODUCTS.filter((p) => isRealPrice(p.priceFrom));
+    expect(priced.length).toBeGreaterThan(0);
+    for (const p of priced) {
+      for (const locale of ["az", "en", "ru"] as const) {
+        // product-details.tsx: facts.price row = formatPrice(p.priceFrom.amount, locale).
+        const facts = formatPrice(p.priceFrom.amount, locale);
+        const offers = (product(p, locale) as { offers: Offer | Agg }).offers;
+        const offerPrice =
+          offers["@type"] === "AggregateOffer" ? (offers as Agg).lowPrice : (offers as Offer).price;
+        expect(shownAmount(facts)).toBe(Number(offerPrice));
+        expect(offers.priceCurrency).toBe("AZN");
+        expect(facts).toMatch(locale === "az" ? /₼$/ : /AZN/);
+      }
+    }
+  });
+
+  it("a product without a real price has neither a price row nor an offer", () => {
+    for (const p of PRODUCTS.filter((x) => !isRealPrice(x.priceFrom))) {
+      expect((product(p, "az") as { offers?: unknown }).offers).toBeUndefined();
+    }
   });
 });
 
@@ -269,6 +328,19 @@ describe("llms.txt", () => {
       stores: STORES,
     });
     expect(live).toContain(`https://example.test/en/stores/${STORES[0].slug}`);
+  });
+
+  it("links no private area: no seller cabinet, admin, design page or API (#61)", () => {
+    const all =
+      buildLlmsTxt("https://e.test") +
+      buildLlmsFullTxt("https://e.test", { categories: CATEGORIES, stores: STORES });
+    const links = all.match(/https:\/\/e\.test\/[^\s)>\]]*/g) ?? [];
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      const path = link.slice("https://e.test".length);
+      expect(path).not.toMatch(/^\/api\//);
+      expect(path).not.toMatch(/^\/[a-z]{2}\/(merchant|admin|design|account)(\/|$)/);
+    }
   });
 
   it("contains no emoji", () => {

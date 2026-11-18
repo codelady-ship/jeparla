@@ -47,6 +47,12 @@ const nextConfig: NextConfig = {
       // Real files and app routes (sitemap.xml, robots.txt, sw.js) are matched before
       // afterFiles, so only unknown paths move under the default language (#186).
       afterFiles: [
+        // IndexNow key file /<key>.txt (#62): the route answers only for the key in
+        // JEPARLA_INDEXNOW_KEY (read per request), 404 otherwise. Real files come first.
+        {
+          source: "/:key([A-Za-z0-9-]{8,128})\\.txt",
+          destination: "/api/indexnow-key/:key",
+        },
         {
           source: "/:first([^/]*\\.[^/]*)/:rest*",
           destination: `/${defaultLocale}/:first/:rest*`,

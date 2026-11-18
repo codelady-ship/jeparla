@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { USING_MOCK } from "./lib/api/mode";
 import { detailExists, type DetailKind } from "./lib/api/exists";
@@ -19,6 +19,7 @@ import {
   relayHeaders,
 } from "./lib/auth/tokens";
 import { routing } from "./i18n/routing";
+import { aiSource, aiVisitUrl, landingPage } from "./lib/ai-referrer";
 import {
   DEMO_SHARE_CODE,
   DEMO_SHARE_SLUG,
@@ -44,7 +45,7 @@ function decodeSlug(raw: string): string {
  * Locale routing, plus a UX-only gate for /merchant and /admin: guests go to the
  * login page, wrong roles go home. Real access control is in the backend.
  */
-export default async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest, event?: NextFetchEvent) {
   const { pathname, search } = request.nextUrl;
   const share = pathname.match(SHARE_PATH);
   if (share) return shareRedirect(request, share[1].toLowerCase());
@@ -60,6 +61,7 @@ export default async function proxy(request: NextRequest) {
     // The site 404 page in this language (app/[locale]/404), with a real 404 status.
     return NextResponse.rewrite(new URL(`/${locale}/404`, request.url), { status: 404 });
   }
+  if (locale && isDocument) countAiVisit(request, rest, event);
   const area = PROTECTED.find((p) => rest === p.prefix || rest.startsWith(`${p.prefix}/`));
 
   if (area) {
@@ -185,3 +187,28 @@ export const config = {
   // Everything except API routes, Next internals and files with an extension.
   matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
 };
+
+/**
+ * A page load that came from an AI assistant's answer (#62): reported to the backend's
+ * counter from the server, with the visitor's user agent and address (relayHeaders), so it
+ * can leave out bots and reloads. Never awaited by the page and never fails it.
+ */
+function countAiVisit(request: NextRequest, rest: string, event?: NextFetchEvent) {
+  if (USING_MOCK || request.method !== "GET") return;
+  const purpose = request.headers.get("sec-purpose") ?? request.headers.get("purpose");
+  if (purpose?.toLowerCase().includes("prefetch")) return;
+  const source = aiSource(request.headers.get("referer"), request.nextUrl.searchParams);
+  if (!source) return;
+  const sent = fetch(aiVisitUrl(API_BASE, source, landingPage(rest)), {
+    method: "POST",
+    headers: {
+      "User-Agent": request.headers.get("user-agent") ?? "",
+      ...relayHeaders((name) => request.headers.get(name)),
+    },
+    signal: AbortSignal.timeout(3_000),
+  }).then(
+    () => undefined,
+    () => undefined,
+  );
+  event?.waitUntil(sent);
+}
