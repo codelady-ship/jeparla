@@ -44,6 +44,63 @@ test.describe("v1 pages: axe and 390px", () => {
     });
   }
 
+  // Sample states (demo data, mock and API alike): bijouterie product 60 (#128), hallmark and label
+  // photos of product 13 (#106).
+  test("bijouterie product page and catalog section", async ({ page }) => {
+    await check(page, "/az/products/qolbaqlar-polad-60");
+    await expect(page.getByText(/Bu məhsul qiymətli metal deyil/)).toBeVisible();
+
+    await check(page, "/az/products?kind=FASHION");
+    await expect(page.getByRole("link", { name: "Paslanmaz polad qolbaq" }).first()).toBeVisible();
+    await expect(page.getByText("Bijuteriya").first()).toBeVisible();
+  });
+
+  test("product page with hallmark and label photos, and the catalog filter", async ({ page }) => {
+    await check(page, "/az/products/sirgalar-gold-585-13");
+    const evidence = page.getByRole("region", { name: "Damğa və etiket" });
+    await expect(evidence).toBeVisible();
+    await expect(evidence.getByText(/administratoru şəkli/)).toBeVisible();
+    await expect(
+      page.getByRole("img", { name: /əyar damğasının yaxın planda şəkli/ }),
+    ).toBeAttached();
+    await expect(page.getByRole("img", { name: /etiketin şəkli/ })).toBeAttached();
+
+    await check(page, "/az/products?hallmarkPhoto=true");
+    await expect(page.getByRole("link", { name: "Səma — qızıl sırğa 585" }).first()).toBeVisible();
+  });
+
+  test("favorites whose price changed since they were added", async ({ page }) => {
+    await page.goto("/az/products");
+    const add = page
+      .getByRole("article")
+      .first()
+      .getByRole("button", { name: "Seçilmişlərə əlavə et" });
+    await waitForHydration(add);
+    await add.click();
+    // As if the favourite was added when the price was lower: the saved price goes back, and the
+    // header's hourly price check is forgotten so it asks again.
+    await page.evaluate(() => {
+      const key = "jeparla-favorite-prices";
+      const saved = JSON.parse(localStorage.getItem(key) ?? "{}") as Record<string, object>;
+      for (const id of Object.keys(saved)) saved[id] = { ...saved[id], amount: "1.00" };
+      localStorage.setItem(key, JSON.stringify(saved));
+      sessionStorage.removeItem("jeparla-favorite-prices-check");
+    });
+
+    // The quiet header note (a dot, read out after the link label) on any page.
+    await check(page, "/az/stores");
+    await expect(page.getByText(": 1 məhsulun qiyməti dəyişib").first()).toBeAttached({
+      timeout: 15_000,
+    });
+    await expectNoA11yViolations(page);
+
+    await check(page, "/az/favorites");
+    const changes = page.getByRole("region", { name: "Əlavə etdiyinizdən bəri qiymət dəyişib" });
+    await expect(changes).toBeVisible();
+    await expect(changes.getByText(/bahalaşıb/)).toBeVisible();
+    await expect(changes.getByText(/^Səbəb: /).first()).toBeVisible();
+  });
+
   test("favorites with a saved product", async ({ page }) => {
     await page.goto("/az/products");
     await page
@@ -72,4 +129,10 @@ test.describe("v1 pages: axe and 390px", () => {
       await check(page, path);
     });
   }
+
+  test("admin evidence queue with a photo waiting for the check", async ({ page }) => {
+    await signIn(page, "admin");
+    await check(page, "/az/admin/evidence");
+    await expect(page.getByText("Səma — qızıl sırğa 585").first()).toBeVisible();
+  });
 });
