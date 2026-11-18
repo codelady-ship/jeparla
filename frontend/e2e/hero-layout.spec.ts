@@ -2,9 +2,10 @@ import { HERO_DESKTOP_QUERY, HERO_FIGURES } from "../src/components/home/hero/he
 import { expect, test } from "./fixtures";
 
 /**
- * Home hero layout on phones, tablets and landscape phones (#160, owner feedback):
- * the headline and both calls to action never lie over the figures, the calls to
- * action are at least 44px tall, and the page never scrolls sideways. The figure box
+ * Home hero layout on phones, tablets, laptops and landscape phones (#160, #287, owner
+ * feedback): the headline and both calls to action never lie over the figures nor under
+ * the scene rail (01, 02, 03), the calls to action are at least 44px tall, and the page
+ * never scrolls sideways. The figure box
  * is computed from the rendered frame (object-fit and object-position) and the
  * measured figure area of the footage (HERO_FIGURES).
  */
@@ -18,7 +19,12 @@ const SIZES = [
   [834, 1112],
   [844, 390],
   [1024, 768],
+  [1280, 720],
+  [1280, 800],
+  [1366, 650],
   [1440, 900],
+  [1920, 910],
+  [1920, 1080],
 ] as const;
 
 type Box = { left: number; top: number; right: number; bottom: number };
@@ -67,6 +73,7 @@ test("hero copy and calls to action stay clear of the figures", async ({ page },
         return {
           figure,
           copy,
+          rail: box(document.querySelector("[data-hero-scenes]")!),
           ctaHeights: [...document.querySelectorAll(".hero-ctas a")].map(
             (a) => a.getBoundingClientRect().height,
           ),
@@ -88,6 +95,17 @@ test("hero copy and calls to action stay clear of the figures", async ({ page },
     expect(
       hits.map((c) => c.name),
       `copy over the figures at ${at}`,
+    ).toEqual([]);
+    const underRail = result.copy.filter(
+      (c) =>
+        c.left < result.rail.right &&
+        c.right > result.rail.left &&
+        c.top < result.rail.bottom &&
+        c.bottom > result.rail.top,
+    );
+    expect(
+      underRail.map((c) => c.name),
+      `scene rail over the copy at ${at}`,
     ).toEqual([]);
     for (const c of result.copy)
       expect(c.bottom, `"${c.name}" inside the hero at ${at}`).toBeLessThanOrEqual(

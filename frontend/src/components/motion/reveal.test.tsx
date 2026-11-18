@@ -45,6 +45,23 @@ describe("Reveal", () => {
     expect(screen.getByText("Kolleksiya")).toHaveAttribute("data-reveal", "shown");
   });
 
+  it("marks the direction and a staggered group", () => {
+    mockReducedMotion(false);
+    mockObserver();
+    render(
+      <>
+        <Reveal>Yuxarı</Reveal>
+        <Reveal from="right" stagger>
+          Sağ
+        </Reveal>
+      </>,
+    );
+    expect(screen.getByText("Yuxarı")).not.toHaveAttribute("data-reveal-from");
+    expect(screen.getByText("Yuxarı")).not.toHaveAttribute("data-reveal-stagger");
+    expect(screen.getByText("Sağ")).toHaveAttribute("data-reveal-from", "right");
+    expect(screen.getByText("Sağ")).toHaveAttribute("data-reveal-stagger", "");
+  });
+
   it("passes the stagger index as a CSS variable", () => {
     mockReducedMotion(false);
     mockObserver();
