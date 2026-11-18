@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, expectNoA11yViolations, test, testPassword, waitForHydration } from "./fixtures";
+import { account, expect, expectNoA11yViolations, test, waitForHydration } from "./fixtures";
 
 /**
  * v1 acceptance (#47): axe (WCAG 2.1 AA) and no sideways scroll at 390px and 1440px on the
@@ -19,12 +19,13 @@ async function check(page: Page, path: string) {
   await expectNoA11yViolations(page);
 }
 
-async function signIn(page: Page, email: string) {
+async function signIn(page: Page, role: "merchant" | "admin") {
+  const { email, password } = account(role);
   await page.goto("/en/login");
   const field = page.getByLabel("E-mail");
   await waitForHydration(field);
   await field.fill(email);
-  await page.getByLabel("Password", { exact: true }).fill(testPassword());
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).not.toHaveURL(/\/login/);
 }
@@ -60,14 +61,14 @@ test.describe("v1 pages: axe and 390px", () => {
     "/az/merchant/products",
   ]) {
     test(`merchant ${path}`, async ({ page }) => {
-      await signIn(page, "merchant@example.com");
+      await signIn(page, "merchant");
       await check(page, path);
     });
   }
 
   for (const path of ["/az/admin/evidence", "/az/admin/stores"]) {
     test(`admin ${path}`, async ({ page }) => {
-      await signIn(page, "admin@example.com");
+      await signIn(page, "admin");
       await check(page, path);
     });
   }
