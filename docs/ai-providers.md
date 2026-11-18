@@ -58,15 +58,16 @@ Orijinal şəkil heç vaxt dəyişmir; AI şəkildən yeni AI şəkil yaratmaq o
 5. Deploy: `JEPARLA_AI_IMAGE_PROVIDER=higgsfield`, `JEPARLA_AI_MONTHLY_COST_LIMIT=<büdcə>` və provayderin
    açarları. Səhv id ilə tətbiq başlamır (səssizcə sönmür).
 
-Namizədlər (#54 pilotu seçir): Higgsfield (məhsul şəkli və "product on model"), Gemini (Google AI Studio,
-şəkil redaktəsi). Seçim meyarı: əşyanın forması, rəngi və daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir.
-Xərc və lisenziya seçiləndə bu sənədə yazılır.
+Namizədlər və pilot: aşağıda "Provayder müqayisəsi və pilot (#54)". Seçim meyarı: əşyanın forması, rəngi və
+daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir. Xərc və lisenziya seçiləndə bu sənədə yazılır.
 
 ### AI model kitabxanası (#130)
 
-- Admin `/api/v1/admin/ai-models` ilə model əlavə edir (ad, auditoriya WOMEN/MEN/KIDS, dəri tonu, üslub,
-  mənşə), istinad şəkillərini poza ilə yükləyir (məhsul şəkilləri ilə eyni yoxlanılmış yükləmə, public
-  bucket `ai-models/<id>/`), sıralayır, auditoriya üzrə "əsas" seçir, deaktiv edir. Model silinmir.
+- Admin `/admin/ai-models` səhifəsində (API: `/api/v1/admin/ai-models`) model əlavə edir və dəyişir (ad,
+  auditoriya WOMEN/MEN/KIDS, dəri tonu, üslub, mənşə, sıra), istinad şəkillərini poza ilə yükləyir (məhsul
+  şəkilləri ilə eyni yoxlanılmış yükləmə: presigned URL, sonra fayl yoxlanılır; public bucket
+  `ai-models/<id>/`), şəkli silir, auditoriya üzrə "əsas" seçir, deaktiv edir və geri aktiv edir. Model
+  silinmir. Hər dəyişiklik audit jurnalına düşür; yalnız ADMIN (backend yoxlayır).
 - Satıcı `GET /api/v1/merchant/ai/models?audience=` ilə yalnız aktiv və şəkli olan modelləri görür;
   `VIRTUAL_TRY_ON` tapşırığında `modelId` göndərir. Deaktiv model yeni tapşırıqda qəbul olunmur
   (`ai.model_inactive`), əvvəl təsdiqlənmiş şəkillər məhsulda qalır.
@@ -112,3 +113,48 @@ Xərc və lisenziya seçiləndə bu sənədə yazılır.
 - Hər təsdiqlənmiş AI şəkil `aiGenerated=true` ilə saxlanılır və kataloqda, məhsul səhifəsində "AI ilə yaradılıb"
   nişanı ilə görünür; JSON-LD-də orijinal şəkil birincidir.
 - Modellər real şəxs deyil; real insan şəkli yüklənmir.
+
+## Provayder müqayisəsi və pilot (#54)
+
+Bu bölmə qərar sənədinin layihəsidir: hansı provayder və hansı məhsul növü ilə başlanır. **Qərarı sahib verir**,
+pilot real generasiya tələb etdiyi üçün yalnız sahibin təsdiqi və büdcəsi ilə keçirilir (sahibin qərarı,
+2026-11-14: ödənişli generasiya və ödənişli xidmət yoxdur). Pilot #282-də sahibin bəndi kimi izlənilir.
+
+### Namizədlər
+
+**Diqqət: qiymətlər, pulsuz limitlər və lisenziya şərtləri tez dəyişir. Cədvəldəki hər rəqəm ümumi ictimai
+məlumata əsaslanan təxmindir, 2026-11-18-də yoxlanılmayıb: istifadədən əvvəl provayderin rəsmi qiymət və
+şərtlər səhifəsində yoxlayın** və yoxlama tarixini bura yazın.
+
+| Provayder (növ) | Nə üçün | Qiymət (təxmini, yoxlanmalıdır) | Pulsuz limit (yoxlanmalıdır) | Qeyd |
+| --- | --- | --- | --- | --- |
+| Google Gemini şəkil modeli (API, Google AI Studio açarı) | AI fotosessiya, şəkil redaktəsi, model üzərində (istinad şəkilləri ilə) | şəkil başına təxminən 0.04 USD səviyyəsində | Veb interfeysdə sınaq var; API-də şəkil generasiyasının pulsuz kvotası məhdud və ya yoxdur | Pulsuz səviyyədə göndərilən məlumat modelin təkmilləşdirilməsində istifadə oluna bilər: real satıcı şəkilləri yalnız ödənişli səviyyədə |
+| OpenAI şəkil modeli (API) | AI fotosessiya, redaktə | keyfiyyətdən asılı, şəkil başına təxminən 0.01-0.20 USD | Adətən yoxdur | Kiçik detallarda (daş sayı, damğa) dəyişiklik riski pilotda ölçülməlidir |
+| Higgsfield (abunə, kredit) | Məhsul şəkli, "product on model", video | aylıq plan + kredit; şəkil başına qiymət plana bağlıdır | Sınaq krediti ola bilər | API şərtləri və kommersiya lisenziyası ayrıca yoxlanmalıdır |
+| fal.ai / Replicate (açıq modellərin hostinqi, məs. FLUX Kontext) | Redaktə, fon dəyişmə, "product on model" | şəkil və ya GPU saniyəsi başına; təxminən 0.03-0.08 USD | Kiçik başlanğıc krediti ola bilər | Hər modelin öz lisenziyası var (bəziləri kommersiya üçün ayrıca icazə tələb edir) |
+| Geyim try-on xidmətləri (məs. FASHN) | Virtual try-on | şəkil başına təxminən 0.05-0.10 USD | Sınaq krediti ola bilər | Geyim üçün qurulub; zərgərlikdə (kiçik əşya, daş) nəticə zəif ola bilər |
+| Lokal, generativ olmayan fon silmə (açıq model, ONNX, VM CPU) | Yalnız `STUDIO_LOOK` (#119) | 0 (VM-in CPU-su) | Yoxdur (lazım deyil) | Model lisenziyası kommersiya istifadəsinə icazə verməlidir; bəzi tanınmış fon silmə modelləri yalnız qeyri-kommersiyadır. Generativ deyil: nişan qoyulmur |
+
+### Pilot protokolu
+
+1. **Dəst:** 20-30 real məhsul şəkli, satıcının yazılı icazəsi ilə (növlər üzrə: üzük, sırğa, boyunbağı/asqı,
+   qolbaq; qızıl, gümüş, daşlı və daşsız). Şəkillər yalnız pilot üçündür və pilotdan sonra provayderdə silinir.
+2. **Hər provayderdə eyni giriş:** repodakı promptlar (`backend/src/main/resources/ai/prompts/`), 4:5, eyni
+   istinad şəkilləri. Hər məhsul üçün 1-2 nəticə.
+3. **Ölçülən:**
+   - əşyanın qorunması: forma, rəng, daşların sayı və yeri, ölçü nisbəti. İki nəfər ayrıca qiymətləndirir:
+     "keçdi" yalnız hər ikisi razıdırsa. Biri "dəyişib" deyirsə nəticə rədd edilir;
+   - şəkil başına real xərc (provayder hesabından, `ai_job_attempts.cost` ilə müqayisə);
+   - cavab müddəti (median və ən uzun);
+   - uğursuzluq və imtina faizi;
+   - lisenziya: nəticəni kommersiya məqsədilə istifadə etmək olarmı, məlumat təlimdə istifadə olunurmu.
+4. **Hesabat:** provayder x məhsul növü cədvəli (keçid faizi, orta xərc, median müddət). Saxta və ya seçilmiş
+   nəticə yoxdur: bütün nəticələr, rədd edilənlər də, sayılır.
+5. **Qərar:** keçid faizi ən yüksək və xərci büdcəyə sığan provayder, ilk olaraq ən yaxşı nəticə verən məhsul
+   növü ilə (PLAN 5.12: əvvəl boyunbağı və sırğa). Qərar bu bölməyə tarix və sahibin adı ilə yazılır, sonra
+   provayder `ImageGenerationProvider` kimi qoşulur (yuxarıda "Provayder necə əlavə olunur").
+
+### Qərar
+
+Hələ yoxdur. Pilotdan sonra: provayder, məhsul növü, aylıq büdcə (`JEPARLA_AI_MONTHLY_COST_LIMIT`), yoxlama
+tarixi.
