@@ -1350,6 +1350,70 @@
       "mock": {
         "content": [
           {
+            "id": 22,
+            "slug": "toy-uzukleri-silver-925-22",
+            "name": {
+              "az": "Nur — gümüş toy üzüyü 925",
+              "en": "Nur — silver wedding ring 925",
+              "ru": "Нур — обручальное кольцо из серебра 925"
+            },
+            "categoryId": 3,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "138.28",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 220,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 925,
+            "weightGrams": "6.900",
+            "images": [
+              {
+                "url": "/demo/ring-silver-3.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/ring-silver-1.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "OUT_OF_STOCK",
+            "publishedAt": "2026-10-22T09:00:00.000Z"
+          },
+          {
             "id": 10,
             "slug": "usaq-zergerliyi-silver-925-10",
             "name": {
@@ -1858,59 +1922,6 @@
             },
             "stockStatus": "IN_STOCK",
             "publishedAt": "2026-10-10T09:00:00.000Z"
-          },
-          {
-            "id": 9,
-            "slug": "kisi-zergerliyi-gold-375-9",
-            "name": {
-              "az": "Xəzər — qızıl kişi üzüyü 375",
-              "en": "Khazar — gold men's ring 375",
-              "ru": "Хазар — мужское кольцо из золота 375"
-            },
-            "categoryId": 11,
-            "store": {
-              "id": 3,
-              "slug": "nergiz-gold",
-              "name": "Nərgiz Gold",
-              "city": "Gəncə",
-              "verification": {
-                "seller": "VERIFIED",
-                "documents": "PENDING",
-                "expertise": "NONE"
-              }
-            },
-            "materialKind": "PRECIOUS",
-            "material": null,
-            "metal": "GOLD",
-            "priceFrom": {
-              "amount": "440.00",
-              "currency": "AZN"
-            },
-            "defaultVariantId": 90,
-            "pricingMode": "FIXED",
-            "fineness": 375,
-            "weightGrams": "3.800",
-            "images": [
-              {
-                "url": "/demo/ring-gold-1.jpg",
-                "alt": {
-                  "az": "Xəzər — qızıl kişi üzüyü 375",
-                  "en": "Khazar — gold men's ring 375",
-                  "ru": "Хазар — мужское кольцо из золота 375"
-                },
-                "width": 800,
-                "height": 1000,
-                "aiGenerated": false
-              }
-            ],
-            "hasStones": false,
-            "verification": {
-              "seller": "VERIFIED",
-              "documents": "PENDING",
-              "expertise": "NONE"
-            },
-            "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-09T09:00:00.000Z"
           }
         ],
         "page": 1,
@@ -3294,13 +3305,13 @@
         "content": [
           {
             "id": 60,
-            "slug": "usaq-zergerliyi-gold-999-60",
+            "slug": "qolbaqlar-polad-60",
             "name": {
-              "az": "Ay işığı — qızıl uşaq sırğası 999",
-              "en": "Moonlight — gold kids' earrings 999",
-              "ru": "Лунный свет — детские серьги из золота 999"
+              "az": "Paslanmaz polad qolbaq",
+              "en": "Stainless steel bracelet",
+              "ru": "Браслет из нержавеющей стали"
             },
-            "categoryId": 12,
+            "categoryId": 8,
             "store": {
               "id": 6,
               "slug": "yeni-ulduz",
@@ -3312,24 +3323,24 @@
                 "expertise": "NONE"
               }
             },
-            "materialKind": "PRECIOUS",
-            "material": null,
-            "metal": "GOLD",
+            "materialKind": "FASHION",
+            "material": "STAINLESS_STEEL",
+            "metal": null,
             "priceFrom": {
-              "amount": "980.00",
+              "amount": "45.00",
               "currency": "AZN"
             },
             "defaultVariantId": 600,
             "pricingMode": "FIXED",
-            "fineness": 999,
+            "fineness": null,
             "weightGrams": "3.500",
             "images": [
               {
-                "url": "/demo/earrings-gold-3.jpg",
+                "url": "/demo/bracelet-silver-1.jpg",
                 "alt": {
-                  "az": "Ay işığı — qızıl uşaq sırğası 999",
-                  "en": "Moonlight — gold kids' earrings 999",
-                  "ru": "Лунный свет — детские серьги из золота 999"
+                  "az": "Paslanmaz polad qolbaq",
+                  "en": "Stainless steel bracelet",
+                  "ru": "Браслет из нержавеющей стали"
                 },
                 "width": 800,
                 "height": 1000,
@@ -3339,7 +3350,7 @@
             "hasStones": false,
             "verification": {
               "seller": "PENDING",
-              "documents": "PENDING",
+              "documents": "NONE",
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
@@ -4593,13 +4604,13 @@
           },
           {
             "id": 60,
-            "slug": "usaq-zergerliyi-gold-999-60",
+            "slug": "qolbaqlar-polad-60",
             "name": {
-              "az": "Ay işığı — qızıl uşaq sırğası 999",
-              "en": "Moonlight — gold kids' earrings 999",
-              "ru": "Лунный свет — детские серьги из золота 999"
+              "az": "Paslanmaz polad qolbaq",
+              "en": "Stainless steel bracelet",
+              "ru": "Браслет из нержавеющей стали"
             },
-            "categoryId": 12,
+            "categoryId": 8,
             "store": {
               "id": 6,
               "slug": "yeni-ulduz",
@@ -4611,24 +4622,24 @@
                 "expertise": "NONE"
               }
             },
-            "materialKind": "PRECIOUS",
-            "material": null,
-            "metal": "GOLD",
+            "materialKind": "FASHION",
+            "material": "STAINLESS_STEEL",
+            "metal": null,
             "priceFrom": {
-              "amount": "980.00",
+              "amount": "45.00",
               "currency": "AZN"
             },
             "defaultVariantId": 600,
             "pricingMode": "FIXED",
-            "fineness": 999,
+            "fineness": null,
             "weightGrams": "3.500",
             "images": [
               {
-                "url": "/demo/earrings-gold-3.jpg",
+                "url": "/demo/bracelet-silver-1.jpg",
                 "alt": {
-                  "az": "Ay işığı — qızıl uşaq sırğası 999",
-                  "en": "Moonlight — gold kids' earrings 999",
-                  "ru": "Лунный свет — детские серьги из золота 999"
+                  "az": "Paslanmaz polad qolbaq",
+                  "en": "Stainless steel bracelet",
+                  "ru": "Браслет из нержавеющей стали"
                 },
                 "width": 800,
                 "height": 1000,
@@ -4638,7 +4649,7 @@
             "hasStones": false,
             "verification": {
               "seller": "PENDING",
-              "documents": "PENDING",
+              "documents": "NONE",
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
@@ -6327,59 +6338,6 @@
             "publishedAt": "2026-10-13T09:00:00.000Z"
           },
           {
-            "id": 60,
-            "slug": "usaq-zergerliyi-gold-999-60",
-            "name": {
-              "az": "Ay işığı — qızıl uşaq sırğası 999",
-              "en": "Moonlight — gold kids' earrings 999",
-              "ru": "Лунный свет — детские серьги из золота 999"
-            },
-            "categoryId": 12,
-            "store": {
-              "id": 6,
-              "slug": "yeni-ulduz",
-              "name": "Yeni Ulduz",
-              "city": "Lənkəran",
-              "verification": {
-                "seller": "PENDING",
-                "documents": "NONE",
-                "expertise": "NONE"
-              }
-            },
-            "materialKind": "PRECIOUS",
-            "material": null,
-            "metal": "GOLD",
-            "priceFrom": {
-              "amount": "980.00",
-              "currency": "AZN"
-            },
-            "defaultVariantId": 600,
-            "pricingMode": "FIXED",
-            "fineness": 999,
-            "weightGrams": "3.500",
-            "images": [
-              {
-                "url": "/demo/earrings-gold-3.jpg",
-                "alt": {
-                  "az": "Ay işığı — qızıl uşaq sırğası 999",
-                  "en": "Moonlight — gold kids' earrings 999",
-                  "ru": "Лунный свет — детские серьги из золота 999"
-                },
-                "width": 800,
-                "height": 1000,
-                "aiGenerated": false
-              }
-            ],
-            "hasStones": false,
-            "verification": {
-              "seller": "PENDING",
-              "documents": "PENDING",
-              "expertise": "NONE"
-            },
-            "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-30T09:00:00.000Z"
-          },
-          {
             "id": 31,
             "slug": "nisan-uzukleri-gold-585-31",
             "name": {
@@ -6616,7 +6574,7 @@
         ],
         "page": 0,
         "size": 50,
-        "totalElements": 14,
+        "totalElements": 13,
         "totalPages": 1
       }
     },
@@ -10529,7 +10487,7 @@
             "en": "Bracelets",
             "ru": "Браслеты"
           },
-          "productCount": 6
+          "productCount": 7
         },
         {
           "id": 9,
@@ -10573,7 +10531,7 @@
             "en": "Kids' jewelry",
             "ru": "Детские украшения"
           },
-          "productCount": 6
+          "productCount": 5
         }
       ]
     },
@@ -12679,64 +12637,11 @@
               },
               "stockStatus": "IN_STOCK",
               "publishedAt": "2026-10-23T09:00:00.000Z"
-            },
-            {
-              "id": 60,
-              "slug": "usaq-zergerliyi-gold-999-60",
-              "name": {
-                "az": "Ay işığı — qızıl uşaq sırğası 999",
-                "en": "Moonlight — gold kids' earrings 999",
-                "ru": "Лунный свет — детские серьги из золота 999"
-              },
-              "categoryId": 12,
-              "store": {
-                "id": 6,
-                "slug": "yeni-ulduz",
-                "name": "Yeni Ulduz",
-                "city": "Lənkəran",
-                "verification": {
-                  "seller": "PENDING",
-                  "documents": "NONE",
-                  "expertise": "NONE"
-                }
-              },
-              "materialKind": "PRECIOUS",
-              "material": null,
-              "metal": "GOLD",
-              "priceFrom": {
-                "amount": "980.00",
-                "currency": "AZN"
-              },
-              "defaultVariantId": 600,
-              "pricingMode": "FIXED",
-              "fineness": 999,
-              "weightGrams": "3.500",
-              "images": [
-                {
-                  "url": "/demo/earrings-gold-3.jpg",
-                  "alt": {
-                    "az": "Ay işığı — qızıl uşaq sırğası 999",
-                    "en": "Moonlight — gold kids' earrings 999",
-                    "ru": "Лунный свет — детские серьги из золота 999"
-                  },
-                  "width": 800,
-                  "height": 1000,
-                  "aiGenerated": false
-                }
-              ],
-              "hasStones": false,
-              "verification": {
-                "seller": "PENDING",
-                "documents": "PENDING",
-                "expertise": "NONE"
-              },
-              "stockStatus": "IN_STOCK",
-              "publishedAt": "2026-10-30T09:00:00.000Z"
             }
           ],
           "page": 0,
           "size": 24,
-          "totalElements": 12,
+          "totalElements": 11,
           "totalPages": 1
         },
         "stores": [],
@@ -14762,7 +14667,7 @@
               "en": "Bracelets",
               "ru": "Браслеты"
             },
-            "productCount": 6
+            "productCount": 7
           },
           {
             "id": 9,
@@ -14806,7 +14711,7 @@
               "en": "Kids' jewelry",
               "ru": "Детские украшения"
             },
-            "productCount": 6
+            "productCount": 5
           }
         ]
       }

@@ -83,6 +83,11 @@ məhsul təsviri "nümunə məhsul, real deyil" deyir. Real mağaza şəkilləri
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
+Damğa və etiket nümunələri (#106, 2026-11-18): `hallmark-gold-585.jpg` və `tag-gold-585.jpg` foto deyil,
+AI deyil: Jeparla üçün SVG ilə çəkilib (sharp ilə JPEG-ə çevrilib), 800x800. Demo məhsul 13-ün qalereyasında
+"Damğa" və "Etiket" kadrlarının və admin növbəsinin görünməsi üçündür; real damğanın şəkli deyil, etiketdə
+"NÜMUNƏ" yazılıb.
+
 ## AI model kitabxanası (#130)
 
 Model üzərində şəkillər üçün AI modellər (real şəxs deyil). Hər model admin paneldə yüklənir və burada
