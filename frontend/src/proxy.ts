@@ -30,7 +30,7 @@ import {
 
 const intl = createMiddleware(routing);
 const LOCALE_PREFIX = new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`);
-const DETAIL = /^\/(products|stores|categories)\/([^/]+)\/?$/;
+const DETAIL = /^\/(products|stores|categories|collections)\/([^/]+)\/?$/;
 
 function decodeSlug(raw: string): string {
   try {

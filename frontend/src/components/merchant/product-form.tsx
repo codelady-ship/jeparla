@@ -74,7 +74,10 @@ export function ProductForm({
   quotes,
   requireDocs = true,
   sellerKind = "PRECIOUS",
+  occasions = [],
 }: {
+  /** Shown occasion collections (#115) the seller can tag the product with; value = id. */
+  occasions?: Option[];
   /** What the store sells (#128): FASHION stores add bijouterie, MIXED stores choose per new product. */
   sellerKind?: SellerKind;
   /** "new" or the product id. */
@@ -430,6 +433,46 @@ export function ProductForm({
                 </p>
               )}
             </div>
+            {occasions.length > 0 && (
+              <fieldset
+                className="flex min-w-0 flex-col gap-3 sm:col-span-2"
+                aria-describedby="p-occasions-hint"
+              >
+                <legend className="mb-1 text-sm font-medium">
+                  {t("fields.occasions")}{" "}
+                  <span className="font-normal text-muted-foreground">({t("optional")})</span>
+                </legend>
+                <p id="p-occasions-hint" className="text-xs text-muted-foreground">
+                  {t("hints.occasions")}
+                </p>
+                <ul className="flex flex-wrap gap-2">
+                  {occasions.map((o) => {
+                    const id = Number(o.value);
+                    const checked = (p.collectionIds ?? []).includes(id);
+                    return (
+                      <li key={o.value}>
+                        <label
+                          htmlFor={`p-occasion-${o.value}`}
+                          className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border bg-card px-4 text-sm transition-colors hover:bg-muted has-checked:border-primary has-checked:bg-muted has-focus-visible:ring-3 has-focus-visible:ring-ring/50"
+                        >
+                          <input
+                            id={`p-occasion-${o.value}`}
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => {
+                              const rest = (p.collectionIds ?? []).filter((x) => x !== id);
+                              set({ collectionIds: e.target.checked ? [...rest, id] : rest });
+                            }}
+                            className="size-4 accent-primary"
+                          />
+                          {o.label}
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </fieldset>
+            )}
             <fieldset className="flex min-w-0 flex-col gap-3 rounded-lg border p-4 sm:col-span-2">
               <legend className="px-1 text-sm font-semibold">
                 {t("dimensions.title")}{" "}

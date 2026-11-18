@@ -7,10 +7,12 @@ import { GUIDE_SLUGS, GUIDES_MODIFIED, guidePath } from "@/lib/guides";
 
 /** Every public page in all three languages, each entry listing its translations. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, stores, categories] = await Promise.all([
+  const [products, stores, categories, collections] = await Promise.all([
     api.listProducts({ size: 96 }),
     api.listStores(),
     api.listCategories(),
+    // Optional section (#115): the sitemap never fails because of it.
+    api.listCollections().catch(() => []),
   ]);
 
   const entry = (
@@ -42,6 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/help", 0.5),
     ...LEGAL_DOCS.map((doc) => entry(`/legal/${doc}`, 0.3, LEGAL_UPDATED)),
     ...categories.map((c) => entry(`/categories/${c.slug}`, 0.7)),
+    // Occasion collections (#115): an empty one is an honest empty page, not listed.
+    entry("/collections", 0.7),
+    ...collections
+      .filter((c) => c.productCount > 0)
+      .map((c) => entry(`/collections/${c.slug}`, 0.7)),
     entry("/guides", 0.6, GUIDES_MODIFIED),
     ...GUIDE_SLUGS.map((s) => entry(guidePath(s), 0.6, GUIDES_MODIFIED)),
   ];

@@ -11,7 +11,9 @@ import {
   EXCHANGE_RATES,
   LATEST_METAL_PRICES,
   METAL_PRICE_HISTORY,
+  OCCASIONS,
   PRICE_DATE,
+  PRODUCT_OCCASIONS,
   PRODUCTS,
   STORES,
 } from "./fixtures";
@@ -135,6 +137,7 @@ function filterProducts(f: ProductFilters): Product[] {
   return PRODUCTS.filter((p) => {
     if (p.status !== "APPROVED") return false;
     if (cats && !cats.has(p.categoryId)) return false;
+    if (f.collection && !PRODUCT_OCCASIONS.get(p.id)?.includes(f.collection)) return false;
     if (f.store?.length && !f.store.includes(p.store.slug)) return false;
     if (f.kind && p.materialKind !== f.kind) return false;
     // The demo catalog is UNISEX throughout, as in the backend seed (V42 default).
@@ -224,6 +227,9 @@ export const mockApi: JeparlaApi = {
   },
   async listCategories() {
     return CATEGORIES;
+  },
+  async listCollections() {
+    return OCCASIONS;
   },
   async listFinenesses() {
     return FINENESSES;

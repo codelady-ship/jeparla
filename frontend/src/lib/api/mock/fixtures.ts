@@ -14,6 +14,7 @@ import type {
   MetalPrice,
   MetalType,
   Money,
+  OccasionCollection,
   PricingMode,
   PricingRule,
   Product,
@@ -475,4 +476,44 @@ export const CATEGORIES: Category[] = CAT_SEEDS.map(([id, slug, parentId, az, en
   name: { az, en, ru },
   productCount: PRODUCTS.filter((p) => p.categoryId === id || CAT_SEEDS[p.categoryId - 1][2] === id)
     .length,
+}));
+
+// ---------------------------------------------------------------- occasion collections (#115)
+/** The first six (owner, 2026-11-18), as V63 creates them: ids 1..6 in this order. */
+const OCCASION_SEEDS: [slug: string, az: string, en: string, ru: string][] = [
+  ["nisan", "Nişan", "Engagement", "Помолвка"],
+  ["toy", "Toy", "Wedding", "Свадьба"],
+  ["hediyye", "Hədiyyə", "Gift", "Подарок"],
+  ["gundelik", "Gündəlik", "Everyday", "На каждый день"],
+  ["kisi-ucun", "Kişi üçün", "For him", "Для него"],
+  ["usaq-ucun", "Uşaq üçün", "For kids", "Для детей"],
+];
+
+/**
+ * The seller's occasion tags of a demo product (index i, leaf category c), the same rule as
+ * the demo seed (backend/src/main/resources/db/demo/R__demo_seed.sql).
+ */
+function occasionsOf(i: number, c: number): string[] {
+  const out: string[] = [];
+  if (c === 2) out.push("nisan");
+  if (c === 3 || c === 9) out.push("toy");
+  if ([4, 7, 8, 9, 10].includes(c) && i % 3 !== 1) out.push("hediyye");
+  if ([4, 6, 8].includes(c) && i % 3 !== 0) out.push("gundelik");
+  if (c === 11) out.push("kisi-ucun");
+  if (c === 12) out.push("usaq-ucun");
+  return out;
+}
+
+/** Product id -> occasion collection slugs. */
+export const PRODUCT_OCCASIONS: ReadonlyMap<number, readonly string[]> = new Map(
+  PRODUCTS.map((p, i) => [p.id, occasionsOf(i, p.categoryId)]),
+);
+
+export const OCCASIONS: OccasionCollection[] = OCCASION_SEEDS.map(([slug, az, en, ru], i) => ({
+  id: i + 1,
+  slug,
+  name: { az, en, ru },
+  productCount: PRODUCTS.filter(
+    (p) => p.status === "APPROVED" && PRODUCT_OCCASIONS.get(p.id)?.includes(slug),
+  ).length,
 }));

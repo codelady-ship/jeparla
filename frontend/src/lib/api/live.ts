@@ -58,6 +58,7 @@ export const liveApi: JeparlaApi = {
     ids.length ? cached("/variants", { ids: ids.join(",") }, "catalog") : [],
   getProduct: (slug) => cachedOrNull(`/products/${enc(slug)}`),
   listCategories: () => cached("/categories", undefined, "catalog"),
+  listCollections: () => cached("/collections", undefined, "catalog"),
   listFinenesses: () => cached("/finenesses", undefined, "catalog"),
   listStores: (params = {}) => cached("/stores", params, "catalog"),
   getStore: (slug) => cachedOrNull(`/stores/${enc(slug)}`),
