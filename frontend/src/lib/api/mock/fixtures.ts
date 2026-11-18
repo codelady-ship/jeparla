@@ -18,6 +18,7 @@ import type {
   PricingMode,
   PricingRule,
   Product,
+  ProductImage,
   Stone,
   Store,
   VariantPriceBreakdown,
@@ -624,11 +625,36 @@ export const PRODUCT_OCCASIONS: ReadonlyMap<number, readonly string[]> = new Map
   PRODUCTS.map((p, i) => [p.id, occasionsOf(i, p.categoryId)]),
 );
 
-export const OCCASIONS: OccasionCollection[] = OCCASION_SEEDS.map(([slug, az, en, ru], i) => ({
-  id: i + 1,
-  slug,
-  name: { az, en, ru },
-  productCount: PRODUCTS.filter(
-    (p) => p.status === "APPROVED" && PRODUCT_OCCASIONS.get(p.id)?.includes(slug),
-  ).length,
-}));
+/** How many of a collection's newest products are looked at for its cover (as the backend). */
+const COVER_CANDIDATES = 12;
+
+const photoFile = (url: string) => url.split("#")[0];
+
+/**
+ * Collections with counts and covers, the rule of backend CollectionService.shown(): the main
+ * photo of one of the 12 newest listed products, never an AI image, preferring a photo file no
+ * earlier collection uses yet. Real product photos only, no stock pictures.
+ */
+function withCovers(): OccasionCollection[] {
+  const used = new Set<string>();
+  return OCCASION_SEEDS.map(([slug, az, en, ru], i) => {
+    const listed = PRODUCTS.filter(
+      (p) => p.status === "APPROVED" && PRODUCT_OCCASIONS.get(p.id)?.includes(slug),
+    );
+    const newest = [...listed]
+      .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id - a.id)
+      .slice(0, COVER_CANDIDATES);
+    const real = (img: ProductImage | undefined): img is ProductImage => !!img && !img.aiGenerated;
+    const main = newest.map((p) => p.images[0]).filter(real);
+    const fresh = (img: ProductImage) => !used.has(photoFile(img.url));
+    const cover =
+      main.find(fresh) ??
+      newest.flatMap((p) => p.images.filter(real)).find(fresh) ??
+      main[0] ??
+      null;
+    if (cover) used.add(photoFile(cover.url));
+    return { id: i + 1, slug, name: { az, en, ru }, productCount: listed.length, cover };
+  });
+}
+
+export const OCCASIONS: OccasionCollection[] = withCovers();

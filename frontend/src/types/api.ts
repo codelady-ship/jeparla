@@ -78,6 +78,11 @@ export type OccasionCollection = {
   name: LocalizedText;
   /** Listed products tagged with it; 0 = an honest empty page, left out of the sitemap. */
   productCount: number;
+  /**
+   * Card photo: the main photo of one of its newest listed products, never an AI image (the
+   * first not used by an earlier collection, else the first); null without one.
+   */
+  cover: ProductImage | null;
 };
 
 export type StoreSummary = {

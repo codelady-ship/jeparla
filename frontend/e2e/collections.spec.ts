@@ -34,6 +34,17 @@ test.describe("occasion collections", () => {
       "/az/collections/nisan",
     );
     await expect(list.getByRole("link")).toHaveCount(6);
+    // Photo cards: a product photo each, lazily loaded, two a row on phones and three on desktop.
+    const photos = list.getByRole("img");
+    await expect(photos).toHaveCount(6);
+    for (const loading of await photos.evaluateAll((imgs) =>
+      imgs.map((i) => i.getAttribute("loading")),
+    ))
+      expect(loading).toBe("lazy");
+    const lefts = await list
+      .getByRole("listitem")
+      .evaluateAll((items) => items.map((i) => Math.round(i.getBoundingClientRect().left)));
+    expect(new Set(lefts).size).toBe(isPhone(page) ? 2 : 3);
     await expectNoSidewaysScroll(page);
     await expectNoA11yViolations(page);
   });

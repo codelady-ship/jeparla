@@ -39,6 +39,19 @@ describe("occasion collections", () => {
     }
   });
 
+  it("covers each card with a real photo of one of its own products, never an AI image", async () => {
+    const files = new Set<string>();
+    for (const c of await mockApi.listCollections()) {
+      expect(c.cover).not.toBeNull();
+      expect(c.cover!.aiGenerated).toBe(false);
+      const own = PRODUCTS.filter((p) => PRODUCT_OCCASIONS.get(p.id)?.includes(c.slug));
+      expect(own.some((p) => p.images.some((i) => i.url === c.cover!.url))).toBe(true);
+      files.add(c.cover!.url);
+    }
+    // The demo set has one photo of gold rings, shared by Nişan and Kişi üçün.
+    expect(files.size).toBeGreaterThanOrEqual(5);
+  });
+
   it("tags engagement rings as Nişan and leaves untagged pieces out", async () => {
     const nisan = await mockApi.listProducts({ collection: "nisan", size: 96 });
     const ids = new Set(nisan.content.map((p) => p.id));
