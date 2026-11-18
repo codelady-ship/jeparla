@@ -26,6 +26,8 @@ export type PhotoSearchLabels = {
   empty: string;
   notConfigured: string;
   aiBadge: string;
+  /** Bijouterie (#128) is marked apart from precious jewelry in the results. */
+  fashionBadge: string;
   errors: Record<ImageSearchError | "generic", string>;
 };
 
@@ -243,6 +245,9 @@ export default function ImageSearchPanel({
                       <span className="text-xs text-muted-foreground tabular-nums">
                         {formatPrice(p.priceFrom.amount, locale)}
                       </span>
+                      {p.materialKind === "FASHION" && (
+                        <span className="text-xs text-muted-foreground">{labels.fashionBadge}</span>
+                      )}
                     </Link>
                   </li>
                 );

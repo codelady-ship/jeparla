@@ -35,6 +35,8 @@ export type AiJob = {
   productId: number;
   sourceImageId: number | null;
   kind: AiJobKind;
+  /** AI model of the library for VIRTUAL_TRY_ON (#130), else null. */
+  modelId?: number | null;
   status: AiJobStatus;
   attempts: number;
   maxAttempts: number;
