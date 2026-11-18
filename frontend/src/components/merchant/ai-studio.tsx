@@ -3,9 +3,10 @@
 import { Check, Loader2, RotateCcw, Sparkles, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { isMessage } from "@/lib/api/problem";
 import { sendJson } from "@/lib/merchant/client";
 import { aiErrorCode, isRunning, quotaLeft } from "@/lib/merchant/ai";
 import { notices } from "@/lib/notice";
@@ -19,6 +20,8 @@ import {
 } from "@/types/ai";
 
 export type AiSourceImage = { id: string; url: string };
+
+const POLL_MS = 10_000;
 
 const STATUS_VARIANT: Record<
   AiJob["status"],
@@ -64,13 +67,33 @@ export function AiStudio({
   const [jobs, setJobs] = useState(initialJobs);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const left = quotaLeft(status.dailyLimit, status.usedToday);
+  // Jobs and retries queued on this page count against today's quota too.
+  const [queuedHere, setQueuedHere] = useState(0);
+  const left = quotaLeft(status.dailyLimit, status.usedToday + queuedHere);
   const anyAvailable = kinds.some((k) => kindAvailable(status, k));
   const disabled = !kindAvailable(status, kind) || left === 0 || images.length === 0;
+  const running = jobs.some((j) => isRunning(j.status));
 
+  // While a job is queued or running, ask again every 10 s; the worker picks jobs
+  // up every 15 s and the provider may take minutes. Stops when nothing runs.
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => {
+      void fetch(`/api/merchant/ai/jobs?productId=${productId}`)
+        .then((r) => (r.ok ? (r.json() as Promise<AiJob[]>) : null))
+        .then((fresh) => {
+          if (fresh) setJobs(fresh);
+        })
+        .catch(() => undefined);
+    }, POLL_MS);
+    return () => window.clearInterval(timer);
+  }, [running, productId]);
+
+  /** A known AI code in the seller's words, the backend's own sentence, or a generic failure. */
   function message(code: string | undefined) {
     const known = aiErrorCode(code);
-    return known ? t(`errors.${known}`) : t("errors.generic");
+    if (known) return t(`errors.${known}`);
+    return code && isMessage(code) ? code : t("errors.generic");
   }
 
   async function create(event: React.FormEvent) {
@@ -91,6 +114,7 @@ export function AiStudio({
       return;
     }
     setJobs((all) => [result.data, ...all]);
+    setQueuedHere((n) => n + 1);
     notices.show(t("queued"));
   }
 
@@ -111,6 +135,7 @@ export function AiStudio({
     }
     if (action === "delete") setJobs((all) => all.filter((j) => j.id !== job.id));
     else setJobs((all) => all.map((j) => (j.id === job.id ? result.data : j)));
+    if (action === "retry") setQueuedHere((n) => n + 1);
     notices.show(t(`done.${action}`));
   }
 
