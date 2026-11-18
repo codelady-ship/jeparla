@@ -7,9 +7,11 @@ import static az.jeparla.common.persistence.Decimals.weight;
 import az.jeparla.common.Currencies;
 import az.jeparla.common.persistence.Decimals;
 import az.jeparla.common.persistence.TimestampedEntity;
+import az.jeparla.indexnow.CatalogChangeListener;
 import az.jeparla.pricing.MetalPriceSnapshot;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -34,6 +36,7 @@ import org.hibernate.type.SqlTypes;
  * ({@code deleted_at}) for the price history.
  */
 @Entity
+@EntityListeners(CatalogChangeListener.class)
 @Table(name = "product_variants")
 public class ProductVariant extends TimestampedEntity {
 

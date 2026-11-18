@@ -4,18 +4,22 @@ import az.jeparla.auth.User;
 import az.jeparla.common.i18n.LocalizedText;
 import az.jeparla.common.persistence.Decimals;
 import az.jeparla.common.persistence.TimestampedEntity;
+import az.jeparla.indexnow.CatalogChangeListener;
 import az.jeparla.verification.CheckStatus;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,6 +34,7 @@ import org.hibernate.type.SqlTypes;
  * Ownership checks (#34, #39) compare {@code owner.id} with the signed-in user.
  */
 @Entity
+@EntityListeners(CatalogChangeListener.class)
 @Table(name = "stores")
 public class Store extends TimestampedEntity {
 
@@ -133,6 +138,10 @@ public class Store extends TimestampedEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StoreStatus status = StoreStatus.PENDING;
+
+    /** Public when this persistence context loaded it (#62): a store page that just went away is announced too. */
+    @Transient
+    private boolean publicWhenLoaded;
 
     @Column(name = "status_note")
     private String statusNote;
@@ -457,6 +466,21 @@ public class Store extends TimestampedEntity {
     public void setLegalName(String legalName) {
         String value = legalName == null ? null : legalName.strip();
         this.legalName = value == null || value.isEmpty() ? null : value;
+    }
+
+    /** Visible to everyone: only APPROVED stores are public. */
+    public boolean isPublic() {
+        return status == StoreStatus.APPROVED;
+    }
+
+    @PostLoad
+    void rememberVisibility() {
+        publicWhenLoaded = isPublic();
+    }
+
+    /** Whether it was public when loaded (false for a store created in this transaction). */
+    public boolean wasPublicWhenLoaded() {
+        return publicWhenLoaded;
     }
 
     public StoreStatus getStatus() {

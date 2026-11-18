@@ -164,6 +164,8 @@ services:
       JEPARLA_PSEUDONYM_KEY: ${JEPARLA_PSEUDONYM_KEY:-}
       JEPARLA_DECLARATION_RETENTION_YEARS: ${JEPARLA_DECLARATION_RETENTION_YEARS:-7}
       JEPARLA_PUBLIC_SITE_URL: https://${SITE_DOMAIN}
+      # IndexNow key (#62); the web service serves it at /<key>.txt. Empty: off.
+      JEPARLA_INDEXNOW_KEY: ${JEPARLA_INDEXNOW_KEY:-}
       JEPARLA_SMTP_HOST: ${JEPARLA_SMTP_HOST:-}
       JEPARLA_SMTP_PORT: ${JEPARLA_SMTP_PORT:-587}
       JEPARLA_SMTP_USERNAME: ${JEPARLA_SMTP_USERNAME:-}
@@ -234,6 +236,8 @@ services:
       JEPARLA_FRONTEND_TOKEN: ${JEPARLA_FRONTEND_TOKEN:-}
       GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
       BING_SITE_VERIFICATION: ${BING_SITE_VERIFICATION:-}
+      # Served at /<key>.txt at request time (no rebuild needed), the same key the API submits with (#62).
+      JEPARLA_INDEXNOW_KEY: ${JEPARLA_INDEXNOW_KEY:-}
       NODE_OPTIONS: --max-old-space-size=768
     # Server-side API calls go straight to Caddy inside the network (valid certificate, no hairpin NAT).
     extra_hosts:
