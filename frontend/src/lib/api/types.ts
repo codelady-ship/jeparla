@@ -57,7 +57,7 @@ export interface JeparlaApi {
   /** GET /api/v1/search/image/status (#163) */
   imageSearchStatus(): Promise<ImageSearchStatus>;
   /** POST /api/v1/search/image (#163): the photo is never stored. */
-  searchByImage(image: Blob): Promise<ImageSearchResult>;
+  searchByImage(image: Blob, filters?: [string, string][]): Promise<ImageSearchResult>;
   /** GET /api/v1/metal-prices/latest */
   latestMetalPrices(): Promise<MetalPrice[]>;
   /** GET /api/v1/metal-prices/history */

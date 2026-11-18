@@ -137,9 +137,12 @@ const enc = encodeURIComponent;
 export async function postImageSearch(
   image: Blob,
   headers: Record<string, string> = {},
+  filters: [string, string][] = [],
 ): Promise<ImageSearchResult> {
   const body = new FormData();
   body.append("image", image, "photo.jpg");
+  // Result filters (#163): category, metal, fineness, price, store, city.
+  for (const [key, value] of filters) body.append(key, value);
   const res = await fetch(`${API_BASE}/api/v1/search/image`, {
     method: "POST",
     body,
@@ -172,7 +175,7 @@ export const httpApi: JeparlaApi = {
   search: (q, type = "all", page = 0) => get("/search", { q, type, page }),
   suggest: (q) => get("/search/suggest", { q }),
   imageSearchStatus: () => get("/search/image/status"),
-  searchByImage: (image) => postImageSearch(image),
+  searchByImage: (image, filters) => postImageSearch(image, {}, filters),
   latestMetalPrices: () => get("/metal-prices/latest"),
   latestExchangeRates: () => get("/exchange-rates/latest"),
   metalPriceHistory: (metal, days = 30) => get("/metal-prices/history", { metal, days }),

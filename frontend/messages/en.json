@@ -828,6 +828,14 @@
       "empty": "No similar piece found. Try a photo from another angle.",
       "notConfigured": "Search by photo is not available yet. Search with words for now.",
       "aiBadge": "Made with AI",
+      "crop": {
+        "title": "Frame the item",
+        "hint": "Drag the frame and resize it by its corner. Keyboard: arrows move it, Shift and arrows resize it.",
+        "frame": "Frame of the part to search",
+        "search": "Search this part",
+        "whole": "Whole photo"
+      },
+      "filtersEmpty": "No similar models with these filters. Clear the filters.",
       "errors": {
         "size": "The photo is too large or empty.",
         "type": "The photo could not be read: choose a JPEG, PNG or WebP.",
