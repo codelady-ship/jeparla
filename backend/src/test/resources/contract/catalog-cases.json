@@ -9669,7 +9669,55 @@
               "maxPrice": null
             },
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "104.86",
+                "currency": "AZN"
+              },
+              "metal": {
+                "value": {
+                  "amount": "12.39",
+                  "currency": "AZN"
+                },
+                "weightGrams": "4.900",
+                "fineness": 925,
+                "gramPrice": {
+                  "amount": "2.7328",
+                  "currency": "AZN"
+                },
+                "quoteDate": "2026-11-03",
+                "source": "CBAR"
+              },
+              "labor": {
+                "amount": {
+                  "amount": "78.80",
+                  "currency": "AZN"
+                },
+                "perGram": {
+                  "amount": "12.00",
+                  "currency": "AZN"
+                },
+                "fixed": {
+                  "amount": "20.00",
+                  "currency": "AZN"
+                }
+              },
+              "stone": null,
+              "markup": {
+                "percent": "15.00",
+                "amount": {
+                  "amount": "13.68",
+                  "currency": "AZN"
+                }
+              },
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "21.40",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           },
           "stones": []
         },
@@ -9752,7 +9800,58 @@
               "maxPrice": null
             },
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "508.75",
+                "currency": "AZN"
+              },
+              "metal": {
+                "value": {
+                  "amount": "157.99",
+                  "currency": "AZN"
+                },
+                "weightGrams": "1.200",
+                "fineness": 585,
+                "gramPrice": {
+                  "amount": "225.0552",
+                  "currency": "AZN"
+                },
+                "quoteDate": "2026-11-03",
+                "source": "CBAR"
+              },
+              "labor": {
+                "amount": {
+                  "amount": "34.40",
+                  "currency": "AZN"
+                },
+                "perGram": {
+                  "amount": "12.00",
+                  "currency": "AZN"
+                },
+                "fixed": {
+                  "amount": "20.00",
+                  "currency": "AZN"
+                }
+              },
+              "stone": {
+                "amount": "250.00",
+                "currency": "AZN"
+              },
+              "markup": {
+                "percent": "15.00",
+                "amount": {
+                  "amount": "66.36",
+                  "currency": "AZN"
+                }
+              },
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "423.96",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           },
           "stones": [
             {
@@ -9859,7 +9958,58 @@
               "maxPrice": null
             },
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "508.75",
+                "currency": "AZN"
+              },
+              "metal": {
+                "value": {
+                  "amount": "157.99",
+                  "currency": "AZN"
+                },
+                "weightGrams": "1.200",
+                "fineness": 585,
+                "gramPrice": {
+                  "amount": "225.0552",
+                  "currency": "AZN"
+                },
+                "quoteDate": "2026-11-03",
+                "source": "CBAR"
+              },
+              "labor": {
+                "amount": {
+                  "amount": "34.40",
+                  "currency": "AZN"
+                },
+                "perGram": {
+                  "amount": "12.00",
+                  "currency": "AZN"
+                },
+                "fixed": {
+                  "amount": "20.00",
+                  "currency": "AZN"
+                }
+              },
+              "stone": {
+                "amount": "250.00",
+                "currency": "AZN"
+              },
+              "markup": {
+                "percent": "15.00",
+                "amount": {
+                  "amount": "66.36",
+                  "currency": "AZN"
+                }
+              },
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "423.96",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           }
         ],
         "stones": [
@@ -9960,7 +10110,23 @@
             "pricingMode": "FIXED",
             "pricing": null,
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "1440.00",
+                "currency": "AZN"
+              },
+              "metal": null,
+              "labor": null,
+              "stone": null,
+              "markup": null,
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "167.44",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           }
         ],
         "stones": [],
@@ -10066,7 +10232,55 @@
               "maxPrice": null
             },
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "388.82",
+                "currency": "AZN"
+              },
+              "metal": {
+                "value": {
+                  "amount": "278.51",
+                  "currency": "AZN"
+                },
+                "weightGrams": "3.300",
+                "fineness": 375,
+                "gramPrice": {
+                  "amount": "225.0552",
+                  "currency": "AZN"
+                },
+                "quoteDate": "2026-11-03",
+                "source": "CBAR"
+              },
+              "labor": {
+                "amount": {
+                  "amount": "59.60",
+                  "currency": "AZN"
+                },
+                "perGram": {
+                  "amount": "12.00",
+                  "currency": "AZN"
+                },
+                "fixed": {
+                  "amount": "20.00",
+                  "currency": "AZN"
+                }
+              },
+              "stone": null,
+              "markup": {
+                "percent": "15.00",
+                "amount": {
+                  "amount": "50.72",
+                  "currency": "AZN"
+                }
+              },
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "117.82",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           }
         ],
         "stones": [],
@@ -10161,7 +10375,55 @@
               "maxPrice": null
             },
             "stockStatus": "IN_STOCK",
-            "priceUpdatedAt": "2026-11-03T10:05:00+04:00"
+            "priceUpdatedAt": "2026-11-03T10:05:00+04:00",
+            "priceBreakdown": {
+              "total": {
+                "amount": "104.86",
+                "currency": "AZN"
+              },
+              "metal": {
+                "value": {
+                  "amount": "12.39",
+                  "currency": "AZN"
+                },
+                "weightGrams": "4.900",
+                "fineness": 925,
+                "gramPrice": {
+                  "amount": "2.7328",
+                  "currency": "AZN"
+                },
+                "quoteDate": "2026-11-03",
+                "source": "CBAR"
+              },
+              "labor": {
+                "amount": {
+                  "amount": "78.80",
+                  "currency": "AZN"
+                },
+                "perGram": {
+                  "amount": "12.00",
+                  "currency": "AZN"
+                },
+                "fixed": {
+                  "amount": "20.00",
+                  "currency": "AZN"
+                }
+              },
+              "stone": null,
+              "markup": {
+                "percent": "15.00",
+                "amount": {
+                  "amount": "13.68",
+                  "currency": "AZN"
+                }
+              },
+              "clamped": null,
+              "pricePerGram": {
+                "amount": "21.40",
+                "currency": "AZN"
+              },
+              "laborSeparate": false
+            }
           }
         ],
         "stones": [],

@@ -90,6 +90,9 @@ async function sweep(page: Page) {
       const r = el.getBoundingClientRect();
       if (r.width <= 1 || r.height <= 1 || style.visibility === "hidden") return false;
       if (el.closest("[aria-hidden=true], [inert], .pwa-card")) return false;
+      // The content of a closed <details> is not shown (only its summary can be tapped).
+      const closed = el.closest("details:not([open])");
+      if (closed && !(el.tagName === "SUMMARY" && el.parentElement === closed)) return false;
       // Links inside running text keep the text's line height (WCAG exception).
       if (el.tagName === "A" && style.display === "inline") return false;
       // Radios and checkboxes are sized by their label.
@@ -148,6 +151,12 @@ for (const width of [360, 390, 430]) {
       await expectTouchSized(page.getByRole("button", { name: "Şəkli böyüt" }), 1);
       await expectTouchSized(page.locator("summary", { hasText: "Cədvəl kimi göstər" }), 1);
       expect(await sweep(page), "small controls on the product page").toEqual([]);
+      // "How the price is calculated" (#104): its summary and, once open, the CBAR bulletin link.
+      const breakdown = page.getByTestId("price-breakdown");
+      await expectTouchSized(breakdown.locator("summary"), 1);
+      await breakdown.locator("summary").click();
+      await expectTouchSized(breakdown.getByRole("link", { name: "AMB bülletenini aç" }), 1);
+      expect(await sweep(page), "small controls with the price breakdown open").toEqual([]);
     });
   });
 }

@@ -170,8 +170,9 @@ export type Variant = {
   stockStatus: StockStatus;
   priceUpdatedAt: IsoDate;
   /**
-   * How the price is made up (#104), from the backend PricingEngine. The demo mock does not send it
-   * (the contract keeps it in BACKEND_AHEAD), so the product page treats it as optional.
+   * How the price is made up (#104), from the backend PricingEngine. The API and the demo mock always
+   * send it (the contract compares them); it stays optional for variants built on the client (seller
+   * preview), and the product page shows the block without it.
    */
   priceBreakdown?: VariantPriceBreakdown;
 };

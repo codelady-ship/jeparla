@@ -63,6 +63,34 @@ test.describe("catalog filter -> product page -> WhatsApp", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 
+  test("product page explains a metal-linked price with the seller's parts only (#104)", async ({
+    page,
+  }) => {
+    await page.goto("/az/products/nisan-uzukleri-gold-585-1");
+    const block = page.getByTestId("price-breakdown");
+    const row = (label: string) => block.getByRole("row", { name: new RegExp(`^${label}`) });
+    // A click before hydration can be undone by it on a slow runner: open until it stays open.
+    await expect(async () => {
+      if ((await block.getAttribute("open")) === null) await block.locator("summary").click();
+      await expect(row("Metal dəyəri")).toBeVisible({ timeout: 1_000 });
+    }).toPass();
+    await expect(row("Metal dəyəri")).toContainText("585/1000");
+    await expect(row("İşçilik və mağaza payı")).toBeVisible();
+    await expect(row("Daş")).toContainText("satıcıdan");
+    await expect(block.getByRole("link", { name: "AMB bülletenini aç" })).toHaveAttribute(
+      "href",
+      "https://www.cbar.az/currencies/03.11.2026.xml",
+    );
+    // The total is the variant price from the JSON-LD offer, never a recomputed sum.
+    const text = await page.locator('script[type="application/ld+json"]').first().textContent();
+    const graph = (JSON.parse(text!) as { "@graph": Record<string, unknown>[] })["@graph"];
+    const offer = (graph.find((n) => n["@type"] === "Product") as { offers: { price: string } })
+      .offers.price;
+    const digits = (s: string) => s.replace(/\D/g, "");
+    expect(digits((await row("Cəmi").locator("td").textContent())!)).toBe(digits(offer));
+    await expectNoA11yViolations(page);
+  });
+
   test("catalog and product page have no axe violations", async ({ page }) => {
     await page.goto("/az/products");
     await expect(page.getByText(/^\d+ məhsul$/)).toBeVisible();
