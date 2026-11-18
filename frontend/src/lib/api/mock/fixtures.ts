@@ -5,7 +5,7 @@
  * Generated deterministically (no Math.random, no Date.now) so builds are reproducible.
  */
 import Big from "big.js";
-import { gramPrice, metalLinkedPrice } from "@/lib/pricing";
+import { gramPrice, metalLinkedBreakdown, type PriceBreakdown } from "@/lib/pricing";
 import type {
   Category,
   ExchangeRate,
@@ -13,10 +13,13 @@ import type {
   LocalizedText,
   MetalPrice,
   MetalType,
+  Money,
+  PricingMode,
   PricingRule,
   Product,
   Stone,
   Store,
+  VariantPriceBreakdown,
   Verification,
 } from "@/types/api";
 
@@ -296,6 +299,67 @@ function demoPhotos(i: number, categoryId: number, metal: MetalType, alt: Locali
   return i % 3 === 0 && pool.length > 1 ? [pick(i), pick(i + 1)] : [pick(i)];
 }
 
+const azn = (amount: string): Money => ({ amount, currency: "AZN" });
+/** A rule input the seller left at 0 is null in the breakdown, never a "0.00" line. */
+const positive = (amount: string): Money | null => (new Big(amount).gt(0) ? azn(amount) : null);
+
+/**
+ * `Variant.priceBreakdown` (#104) exactly as the backend PriceBreakdownDto builds it on the demo seed
+ * (the contract test compares them): METAL_LINKED parts from the same metalLinkedBreakdown as the price,
+ * at the demo CBAR quote; FIXED has the total and the price per gram only, never an invented split. No
+ * demo store shows labor and markup as two lines (the V45 default).
+ */
+function demoPriceBreakdown(input: {
+  amount: string;
+  weight: string;
+  fineness: Fineness;
+  metal: MetalType;
+  rule: PricingRule;
+  pricingMode: PricingMode;
+  parts: PriceBreakdown;
+}): VariantPriceBreakdown {
+  const { amount, weight, fineness, metal, rule, pricingMode, parts } = input;
+  const total = azn(amount);
+  const pricePerGram = azn(new Big(amount).div(weight).round(2, Big.roundHalfUp).toFixed(2));
+  if (pricingMode !== "METAL_LINKED")
+    return {
+      total,
+      metal: null,
+      labor: null,
+      stone: null,
+      markup: null,
+      clamped: null,
+      pricePerGram,
+      laborSeparate: false,
+    };
+  const anyLabor = new Big(rule.laborPerGram).gt(0) || new Big(rule.laborFixed).gt(0);
+  return {
+    total,
+    metal: {
+      value: azn(parts.metal),
+      weightGrams: weight,
+      fineness: fineness.value,
+      gramPrice: azn(pureGram(metal)),
+      quoteDate: PRICE_DATE,
+      source: "CBAR",
+    },
+    labor: anyLabor
+      ? {
+          amount: azn(parts.labor),
+          perGram: positive(rule.laborPerGram),
+          fixed: positive(rule.laborFixed),
+        }
+      : null,
+    stone: positive(rule.stonePrice),
+    markup: new Big(rule.markupPercent).gt(0)
+      ? { percent: rule.markupPercent, amount: azn(parts.markup) }
+      : null,
+    clamped: parts.clamped,
+    pricePerGram,
+    laborSeparate: false,
+  };
+}
+
 function buildProduct(i: number): Product {
   const id = i + 1;
   const categoryId = LEAVES[i % LEAVES.length];
@@ -308,13 +372,14 @@ function buildProduct(i: number): Product {
     ...RULE,
     stonePrice: withStone ? ["250.00", "650.00", "1400.00"][i % 3] : "0.00",
   };
-  const pricingMode = i % 3 === 2 ? "FIXED" : "METAL_LINKED";
-  const linked = metalLinkedPrice({
+  const pricingMode: PricingMode = i % 3 === 2 ? "FIXED" : "METAL_LINKED";
+  const parts = metalLinkedBreakdown({
     weightGrams: weight,
     fineness: fineness.value,
     pureGramPrice: pureGram(metal),
     rule,
   });
+  const linked = parts.total;
   // FIXED prices are what the seller typed: the linked value rounded to tens.
   const amount =
     pricingMode === "FIXED" ? new Big(linked).div(10).round(0).times(10).toFixed(2) : linked;
@@ -376,6 +441,15 @@ function buildProduct(i: number): Product {
         pricing: pricingMode === "METAL_LINKED" ? rule : null,
         stockStatus,
         priceUpdatedAt: `${PRICE_DATE}T10:05:00+04:00`,
+        priceBreakdown: demoPriceBreakdown({
+          amount,
+          weight,
+          fineness,
+          metal,
+          rule,
+          pricingMode,
+          parts,
+        }),
       },
     ],
     stones,

@@ -1,3 +1,4 @@
+import Big from "big.js";
 import { describe, expect, it } from "vitest";
 import { compareDecimal, gramPrice } from "@/lib/pricing";
 import { toSearchParams } from "../http";
@@ -34,6 +35,82 @@ describe("fixtures", () => {
 
   it("derives gram prices from ounce prices", () => {
     for (const m of LATEST_METAL_PRICES) expect(m.pricePerGram).toBe(gramPrice(m.pricePerOunce));
+  });
+});
+
+describe("fixtures priceBreakdown (#104)", () => {
+  const variants = PRODUCTS.flatMap((p) => p.variants);
+  const sum = (...amounts: (string | undefined)[]) =>
+    amounts.reduce((acc, a) => acc.plus(a ?? "0"), new Big(0));
+
+  it("is on every demo variant and its total is the variant price", () => {
+    for (const v of variants) {
+      expect(v.priceBreakdown).toBeDefined();
+      expect(v.priceBreakdown!.total).toEqual(v.price);
+      expect(v.priceBreakdown!.laborSeparate).toBe(false);
+    }
+  });
+
+  it("METAL_LINKED: parts at the demo CBAR quote add up to the price (no clamp)", () => {
+    const linked = variants.filter((v) => v.pricingMode === "METAL_LINKED");
+    expect(linked.length).toBeGreaterThan(0);
+    for (const v of linked) {
+      const b = v.priceBreakdown!;
+      const quote = LATEST_METAL_PRICES.find((m) => m.metal === v.fineness!.metal)!;
+      expect(b.metal).toMatchObject({
+        weightGrams: v.weightGrams,
+        fineness: v.fineness!.value,
+        gramPrice: { amount: quote.pricePerGram, currency: "AZN" },
+        quoteDate: quote.date,
+        source: "CBAR",
+      });
+      expect(b.labor).toMatchObject({
+        perGram: { amount: "12.00" },
+        fixed: { amount: "20.00" },
+      });
+      expect(b.markup?.percent).toBe("15.00");
+      expect(b.clamped).toBeNull();
+      const total = sum(
+        b.metal!.value.amount,
+        b.labor!.amount.amount,
+        b.stone?.amount,
+        b.markup!.amount.amount,
+      );
+      // Each part is rounded to cents on its own: the sum is within a few cents of the price.
+      expect(total.minus(v.price.amount).abs().lte("0.03")).toBe(true);
+    }
+  });
+
+  it("METAL_LINKED without a stone has no stone line, never 0.00", () => {
+    const plain = PRODUCTS.find(
+      (p) => p.stones.length === 0 && p.variants[0].pricingMode === "METAL_LINKED",
+    )!;
+    expect(plain.variants[0].priceBreakdown!.stone).toBeNull();
+  });
+
+  it("FIXED: total and price per gram only, no invented split", () => {
+    const fixed = variants.filter((v) => v.pricingMode === "FIXED");
+    expect(fixed.length).toBeGreaterThan(0);
+    for (const v of fixed) {
+      const b = v.priceBreakdown!;
+      expect([b.metal, b.labor, b.stone, b.markup, b.clamped]).toEqual([
+        null,
+        null,
+        null,
+        null,
+        null,
+      ]);
+      expect(b.pricePerGram?.amount).toBe(
+        new Big(v.price.amount).div(v.weightGrams!).round(2, Big.roundHalfUp).toFixed(2),
+      );
+    }
+  });
+
+  it("reaches the product page and compare through the mock API", async () => {
+    const product = await mockApi.getProduct(PRODUCTS[0].slug);
+    expect(product?.variants[0].priceBreakdown?.metal).not.toBeNull();
+    const [item] = await mockApi.getCompareItems([PRODUCTS[0].variants[0].id]);
+    expect(item.variant.priceBreakdown).toEqual(PRODUCTS[0].variants[0].priceBreakdown);
   });
 });
 
