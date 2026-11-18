@@ -54,19 +54,19 @@ function intervals(value: string): Interval[] {
   return out;
 }
 
+/**
+ * Baku is UTC+4 all year (no daylight saving since 2016). Plain arithmetic instead of
+ * Intl.DateTimeFormat with timeZone "Asia/Baku": loading the time zone data cost 50-80 ms
+ * of main thread on a phone while the home page hydrated its store cards (#62).
+ */
+const BAKU_OFFSET_MS = 4 * 60 * 60_000;
+
 /** Day of week (0 = Monday) and minutes since midnight in Baku. */
 export function bakuClock(now: Date): { day: number; minutes: number } {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Baku",
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(now);
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  const baku = new Date(now.getTime() + BAKU_OFFSET_MS);
   return {
-    day: DAYS.indexOf(get("weekday").slice(0, 2) as (typeof DAYS)[number]),
-    minutes: Number(get("hour")) * 60 + Number(get("minute")),
+    day: (baku.getUTCDay() + 6) % 7,
+    minutes: baku.getUTCHours() * 60 + baku.getUTCMinutes(),
   };
 }
 

@@ -13,6 +13,11 @@ const IMAGES = ".card-deferred img";
  * (same CSS as <Reveal>), and deferred card images fade in when loaded. Only elements
  * that start off screen are touched, so nothing visible at load hides or moves (LCP,
  * CLS). Without JS or with reduced motion nothing is hidden at all.
+ *
+ * Where a heading is comes from an IntersectionObserver, not getBoundingClientRect():
+ * reading positions while the page hydrates forced a layout of the whole page, including
+ * the sections the browser was skipping (content-visibility), on the phone's main
+ * thread (#62). The observer reports after the next frame, from the layout it has.
  */
 export function ScrollReveal() {
   const pathname = usePathname();
@@ -24,22 +29,30 @@ export function ScrollReveal() {
     ) {
       return;
     }
-    const io = new IntersectionObserver(
+    const reveal = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
           e.target.setAttribute("data-reveal", "shown");
-          io.unobserve(e.target);
+          reveal.unobserve(e.target);
         }
       },
       { rootMargin: "0px 0px -10% 0px" },
     );
-    const fold = window.innerHeight;
+    // First report per heading: on screen or already scrolled past -> left alone;
+    // below the fold (or not rendered yet) -> hidden until it scrolls in.
+    const probe = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        probe.unobserve(e.target);
+        const r = e.boundingClientRect;
+        if (e.isIntersecting || (r.height > 0 && r.bottom <= 0)) continue;
+        e.target.setAttribute("data-reveal", "hidden");
+        reveal.observe(e.target);
+      }
+    });
     for (const h of document.querySelectorAll<HTMLElement>(HEADINGS)) {
-      // Already animated by a <Reveal> parent, or on screen now: leave it alone.
-      if (h.closest("[data-reveal]") || h.getBoundingClientRect().top < fold) continue;
-      h.setAttribute("data-reveal", "hidden");
-      io.observe(h);
+      // Already animated by a <Reveal> parent: leave it alone.
+      if (!h.closest("[data-reveal]")) probe.observe(h);
     }
 
     const loaded = (img: HTMLImageElement) => img.setAttribute("data-loaded", "");
@@ -54,7 +67,8 @@ export function ScrollReveal() {
       else img.setAttribute("data-fade", "");
     }
     return () => {
-      io.disconnect();
+      probe.disconnect();
+      reveal.disconnect();
       document.removeEventListener("load", onLoad, true);
       document.removeEventListener("error", onLoad, true);
     };

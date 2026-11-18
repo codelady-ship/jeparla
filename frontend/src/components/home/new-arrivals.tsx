@@ -34,6 +34,7 @@ export async function NewArrivals() {
         </div>
         <ProductGrid
           products={page.content}
+          belowFold
           className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6"
         />
       </Reveal>
