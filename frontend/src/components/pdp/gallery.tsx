@@ -100,12 +100,19 @@ export function Gallery({
   const current = images[index];
   const position = fill(labels.position, index + 1, total);
 
-  const aiBadge = (img: GalleryImage) =>
-    (img.badge || img.aiGenerated) && (
-      <Badge variant="secondary" className="absolute top-3 left-3 z-10">
-        {img.badge ?? labels.ai}
-      </Badge>
+  /** The label on a shot: hallmark or tag (#106), else the AI mark; none for a plain photo. */
+  const badgeText = (img: GalleryImage) => img.badge || (img.aiGenerated ? labels.ai : null);
+
+  const aiBadge = (img: GalleryImage) => {
+    const text = badgeText(img);
+    return (
+      text && (
+        <Badge variant="secondary" className="absolute top-3 left-3 z-10">
+          {text}
+        </Badge>
+      )
     );
+  };
 
   const morph = (node: ReactNode) => (
     <ViewTransition name={`product-${productId}`} share="morph" default="none">
@@ -237,7 +244,14 @@ export function Gallery({
                     `${((e.clientY - r.top) / r.height) * 100}%`,
                   );
                 }}
-                aria-label={`${labels.zoom}: ${fill(labels.position, i + 1, total)}`}
+                // The badge is visible text inside the button, so the name starts with it (WCAG
+                // 2.5.3, axe label-content-name-mismatch).
+                aria-label={[
+                  badgeText(img),
+                  `${labels.zoom}: ${fill(labels.position, i + 1, total)}`,
+                ]
+                  .filter(Boolean)
+                  .join(". ")}
                 className="group/lens relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-lg bg-muted outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 {i === 0 ? morph(image) : image}
