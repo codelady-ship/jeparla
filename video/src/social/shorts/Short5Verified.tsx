@@ -5,7 +5,7 @@ import { Backdrop, Body, ClipCard, EndCard, Gold, Heading, Kicker, Phone, Rise, 
 /** Short 5, "What the Jeparla Verified badge means" (20 s). Wording follows /verified (Verified copy). */
 export const SHORT5 = { duration: 600 };
 
-const T = { checks: 104, c: [150, 196, 242], rule: 300, phone: 388, tip: 440, end: 492 };
+const T = { checks: 104, c: [136, 176, 216], rule: 262, phone: 388, tip: 440, end: 492 };
 
 export function Short5Verified({ platform }: ShortProps) {
   return (
@@ -27,9 +27,14 @@ export function Short5Verified({ platform }: ShortProps) {
         <Backdrop />
         <Safe top={290}>
           <Rise at={T.checks + 4} dy={20}>
-            <Kicker>Üç ayrı yoxlama</Kicker>
+            <Kicker>Jeparla Verified</Kicker>
           </Rise>
-          <div style={{ display: "flex", flexDirection: "column", gap: 50, marginTop: 50 }}>
+          <Rise at={T.checks + 10}>
+            <Heading size={104} style={{ marginTop: 18 }}>
+              Bir nişan, <Gold>üç ayrı</Gold> yoxlama.
+            </Heading>
+          </Rise>
+          <div style={{ display: "flex", flexDirection: "column", gap: 60, marginTop: 70 }}>
             <Step at={T.c[0]} n="1" title="Satıcı" text="Mağazanın real olması: ad, ünvan, telefon, VÖEN." />
             <Step at={T.c[1]} n="2" title="Sənədlər" text="Komanda əl ilə yoxlayır; sənədlər ictimai göstərilmir." />
             <Step at={T.c[2]} n="3" title="Fiziki ekspertiza" text="Müstəqil mütəxəssis baxır; yalnız “Yoxlanılıb” yazılan məhsulda." />
