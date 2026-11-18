@@ -87,8 +87,14 @@ Naxışlar:
   gəlir (`revealStep(n)`); `.reveal-frame` şəkil paneli 94%-dən açılır, içindəki şəkil 108%-dən
   yerinə oturur. Bir dəfə işləyir. Gizlətmə yalnız layout-dakı inline skript `<html data-motion>`
   qoyandan sonra: JS olmadıqda crawler və AI hər şeyi görür.
-- **Film zolaqları:** `<VideoBand>` filmi scroll ilə kiçik pəncərədən tam enə açılır
-  (`animation-timeline: view()`, linear); dəstəkləməyən brauzerdə bir dəfəlik keçid.
+- **Film bölmələri (#292):** `<StickyVideoSection>` (yoxlama, mağazalar, satıcı). Film bir ekran
+  hündürlüyündə `position: sticky; top: 0` ilə arxada sabit qalır; mətn (aşağı solda, bir ekran),
+  sonra kartlar (öz səthlərində) onun üstündən yuxarı keçir; sonda növbəti bölmə filmin üstünə
+  gəlib onu örtür (bölmənin sonunda bir boş ekran + mənfi `margin-bottom`). Yalnız CSS, scroll
+  listener yoxdur. Scrim `--scene-deep`: telefonda hər yerdə >= 66%, genişdə mətn sütununda
+  > = 84%. Film bölməyə girərkən 106%-dən yerinə oturur, məzmun keçəndə scrim bir az tündləşir
+  > (`animation-timeline: view()`, linear); dəstəkləməyən brauzerdə bir dəfəlik keçid.
+  > Reduced motion və Save-Data: yalnız poster, miqyas yoxdur. Pauza düyməsi (WCAG 2.2.2) qalır.
 - **Məhsul şəkli:** `group` + `overflow-hidden` daxilində `img-zoom` (1.05, 1200 ms) və ikinci şəkil
   üçün `img-swap` (crossfade). Yalnız `hover: hover` cihazlarda.
 - **Link:** `link-underline`, xətt soldan sağa çəkilir.
