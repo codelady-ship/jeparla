@@ -67,6 +67,12 @@ dependencies {
     // Excel (.xlsx) product import and template (#109): Apache POI, Apache-2.0. Only cell values are read; formulas
     // are not evaluated, macros and external links are ignored, and zip bombs are refused (XlsxTable).
     implementation("org.apache.poi:poi-ooxml:6.0.0")
+    // Local image models on the API's CPU (#119 studio look, #163 search by photo): ONNX Runtime, MIT. The jar
+    // carries the native CPU library for linux-aarch64 (the Oracle ARM VM) and x64. Model files are not in the
+    // repository: they are downloaded on first start from a pinned URL and checked by SHA-256 (OnnxModelFile).
+    implementation("com.microsoft.onnxruntime:onnxruntime:1.22.0")
+    // WebP decoding for ImageIO (seller photos may be WebP): TwelveMonkeys, BSD-3-Clause, pure Java.
+    implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -93,6 +99,15 @@ tasks.test {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
+}
+
+// The studio look pipeline (#119) on local files, e.g. the demo photos: StudioLookCli explains the arguments.
+tasks.register<JavaExec>("studioLook") {
+    group = "application"
+    description = "Runs the STUDIO_LOOK processor (#119) on local photos"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "az.jeparla.ai.studio.StudioLookCli"
+    maxHeapSize = "2g"
 }
 
 tasks.bootJar {

@@ -113,6 +113,42 @@ class AiProviderSelectionTests {
     }
 
     @Test
+    void aGeneratorCannotBeTheStudioLookAndACleanUpCannotGenerate() {
+        ImageGenerationProvider generator = stub("higgsfield", true);
+        // The studio look is published without the AI label, so a generative service must never run it.
+        assertThatThrownBy(() -> new ImageGenerationProviders(List.of(generator), "none", "higgsfield"))
+                .isInstanceOf(IllegalStateException.class).hasMessageContaining("generative");
+        ImageGenerationProvider cleanup = new ImageGenerationProvider() {
+            @Override
+            public String id() {
+                return "local";
+            }
+
+            @Override
+            public boolean configured() {
+                return true;
+            }
+
+            @Override
+            public BigDecimal estimatedCost(GenerationRequest request) {
+                return BigDecimal.ZERO;
+            }
+
+            @Override
+            public GenerationResult generate(GenerationRequest request) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean generative() {
+                return false;
+            }
+        };
+        assertThatThrownBy(() -> new ImageGenerationProviders(List.of(cleanup), "local", "none"))
+                .isInstanceOf(IllegalStateException.class).hasMessageContaining("studio-processor");
+    }
+
+    @Test
     void anUnknownIdStopsTheStartup() {
         assertThatThrownBy(() -> new ImageGenerationProviders(List.of(), "higgsfeld"))
                 .isInstanceOf(IllegalStateException.class).hasMessageContaining("higgsfeld");

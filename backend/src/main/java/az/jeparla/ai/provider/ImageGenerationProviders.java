@@ -40,6 +40,16 @@ public class ImageGenerationProviders {
     ImageGenerationProviders(List<ImageGenerationProvider> candidates, String selected, String studioProcessor) {
         this.active = select(candidates, selected);
         this.studio = select(candidates, studioProcessor);
+        // A clean-up processor publishes without the AI label, so it must never stand in for a generator, and a
+        // generator must never run as the studio look (#119).
+        if (!(active instanceof DisabledImageGenerationProvider) && !active.generative()) {
+            throw new IllegalStateException("jeparla.ai.image-provider=" + active.id()
+                    + " is a non-generative studio look processor; use jeparla.ai.studio-processor");
+        }
+        if (!(studio instanceof DisabledImageGenerationProvider) && studio.generative()) {
+            throw new IllegalStateException("jeparla.ai.studio-processor=" + studio.id()
+                    + " is generative; the studio look must not generate (docs/DESIGN.md)");
+        }
     }
 
     static ImageGenerationProvider select(List<ImageGenerationProvider> candidates, String selected) {
