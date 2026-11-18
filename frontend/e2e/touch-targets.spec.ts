@@ -90,6 +90,9 @@ async function sweep(page: Page) {
       const r = el.getBoundingClientRect();
       if (r.width <= 1 || r.height <= 1 || style.visibility === "hidden") return false;
       if (el.closest("[aria-hidden=true], [inert], .pwa-card")) return false;
+      // The content of a closed <details> is not shown (only its summary can be tapped).
+      const closed = el.closest("details:not([open])");
+      if (closed && !(el.tagName === "SUMMARY" && el.parentElement === closed)) return false;
       // Links inside running text keep the text's line height (WCAG exception).
       if (el.tagName === "A" && style.display === "inline") return false;
       // Radios and checkboxes are sized by their label.

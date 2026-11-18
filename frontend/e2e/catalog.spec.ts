@@ -68,8 +68,12 @@ test.describe("catalog filter -> product page -> WhatsApp", () => {
   }) => {
     await page.goto("/az/products/nisan-uzukleri-gold-585-1");
     const block = page.getByTestId("price-breakdown");
-    await block.locator("summary").click();
     const row = (label: string) => block.getByRole("row", { name: new RegExp(`^${label}`) });
+    // A click before hydration can be undone by it on a slow runner: open until it stays open.
+    await expect(async () => {
+      if ((await block.getAttribute("open")) === null) await block.locator("summary").click();
+      await expect(row("Metal dəyəri")).toBeVisible({ timeout: 1_000 });
+    }).toPass();
     await expect(row("Metal dəyəri")).toContainText("585/1000");
     await expect(row("İşçilik və mağaza payı")).toBeVisible();
     await expect(row("Daş")).toContainText("satıcıdan");
