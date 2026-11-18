@@ -29,6 +29,26 @@ describe("bakuClock", () => {
     // 22:30 UTC on Sunday is already 02:30 on Monday in Baku.
     expect(bakuClock(new Date("2026-11-15T22:30:00Z"))).toEqual({ day: 0, minutes: 150 });
   });
+
+  it("matches the Asia/Baku time zone through the whole year", () => {
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Baku",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    });
+    const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+    // Every 7 h 13 min across 2026: all weekdays, hours and both DST seasons elsewhere.
+    for (let t = Date.UTC(2026, 0, 1); t < Date.UTC(2027, 0, 1); t += 433 * 60_000) {
+      const parts = fmt.formatToParts(new Date(t));
+      const get = (type: string) => parts.find((p) => p.type === type)!.value;
+      expect(bakuClock(new Date(t))).toEqual({
+        day: days.indexOf(get("weekday").slice(0, 2)),
+        minutes: Number(get("hour")) * 60 + Number(get("minute")),
+      });
+    }
+  });
 });
 
 describe("openState", () => {
