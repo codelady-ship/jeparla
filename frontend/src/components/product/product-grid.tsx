@@ -15,16 +15,21 @@ type Props = {
   empty?: ReactNode;
   /** Replaces the column classes (for example two columns in a half-width split). */
   className?: string;
+  /**
+   * The grid starts below the first screen (home page under the hero, related pieces on
+   * a product page): no image is preloaded, so nothing competes with the first paint.
+   */
+  belowFold?: boolean;
 };
 
-export function ProductGrid({ products, empty, className }: Props) {
+export function ProductGrid({ products, empty, className, belowFold = false }: Props) {
   if (products.length === 0) return <>{empty}</>;
   return (
     <ul className={className ?? GRID}>
       {products.map((p, i) =>
         i < FIRST_ROW ? (
           <li key={p.id} className="flex">
-            <ProductCard product={p} preload={i < 2} />
+            <ProductCard product={p} preload={!belowFold && i < 2} />
           </li>
         ) : (
           <Reveal key={p.id} as="li" index={i % FIRST_ROW} className="flex card-deferred">

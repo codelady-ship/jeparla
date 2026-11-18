@@ -747,6 +747,16 @@
 /* Home sections below the hero: a 1200px measure, 72px vertical rhythm (48px on
    phones), medium-weight display heads with a tight leading and a little air between
    letters, flat cards one step lighter than their ground (no border, no shadow). */
+/* Each section under the hero is rendered only when it comes near the viewport (#62):
+   on a phone the first load then styles and lays out the hero alone, not the whole
+   page. The placeholder height is about one band; the measured height replaces it
+   once seen. Content stays in the DOM and the accessibility tree. */
+.home-below {
+  > * {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 50rem;
+  }
+}
 .home-wrap {
   width: min(100% - 2 * var(--gutter-page), 75rem);
   margin-inline: auto;

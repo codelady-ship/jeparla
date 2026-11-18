@@ -583,7 +583,7 @@ export async function ProductDetails({
           <h2 id="similar" className="mb-6 text-2xl">
             {t("similar")}
           </h2>
-          <ProductGrid products={related} />
+          <ProductGrid products={related} belowFold />
         </section>
       )}
 
