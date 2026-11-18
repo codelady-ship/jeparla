@@ -15,6 +15,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
+import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
@@ -84,6 +88,100 @@ class CatalogPdfTests {
         assertThat(suggestions.name()).isEqualTo("Lale ring");
         assertThat(suggestions.price()).isEqualByComparingTo("1250.50");
         assertThat(suggestions.weight()).isEqualByComparingTo("4.200");
+    }
+
+    /**
+     * A catalog like a seller's (#129 acceptance: "20 pages"): every page has its own product photo, the shop
+     * logo and a caption with name, weight and price. Synthetic: a real seller's PDF is still to be tried.
+     */
+    static byte[] twentyPageCatalog() throws Exception {
+        try (PDDocument document = new PDDocument()) {
+            PDImageXObject logo = LosslessFactory.createFromImage(document, photo(80, 80, Color.BLACK));
+            for (int i = 0; i < 20; i++) {
+                PDImageXObject product = LosslessFactory.createFromImage(document,
+                        photo(500 + i * 10, 640, new Color(150 + i * 5, 110, 40)));
+                PDPage page = new PDPage(PDRectangle.A4);
+                document.addPage(page);
+                try (PDPageContentStream content = new PDPageContentStream(document, page)) {
+                    content.drawImage(logo, 20, 760, 40, 40);
+                    content.drawImage(product, 60, 280, 250, 320);
+                    content.beginText();
+                    content.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 14);
+                    content.newLineAtOffset(60, 240);
+                    content.showText("Ring model " + (i + 1));
+                    content.newLineAtOffset(0, -20);
+                    content.showText((i + 2) + ",50 gr");
+                    content.newLineAtOffset(0, -20);
+                    content.showText((300 + i * 25) + " AZN");
+                    content.endText();
+                }
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            return out.toByteArray();
+        }
+    }
+
+    @Test
+    void aTwentyPageCatalogGivesOneDraftPhotoPerPageWithItsSuggestions() throws Exception {
+        List<CatalogPdf.Photo> photos = CatalogPdf.photos(twentyPageCatalog());
+
+        assertThat(photos).hasSize(20);
+        for (int i = 0; i < 20; i++) {
+            CatalogPdf.Photo photo = photos.get(i);
+            assertThat(photo.page()).isEqualTo(i + 1);
+            assertThat(photo.width()).isEqualTo(500 + i * 10);
+            assertThat(photo.height()).isEqualTo(640);
+            assertThat(photo.onlyOneOnPage()).isTrue();
+            assertThat(photo.jpeg()).startsWith((byte) 0xFF, (byte) 0xD8);
+            DraftSuggestions suggestions = DraftSuggestions.of(photo.pageText());
+            assertThat(suggestions.name()).isEqualTo("Ring model " + (i + 1));
+            assertThat(suggestions.weight()).isEqualByComparingTo((i + 2) + ".5");
+            assertThat(suggestions.price()).isEqualByComparingTo(String.valueOf(300 + i * 25));
+        }
+    }
+
+    @Test
+    void javaScriptInThePdfIsIgnoredAndOnlyThePhotosAreRead() throws Exception {
+        byte[] withScripts;
+        try (PDDocument document = new PDDocument()) {
+            PDImageXObject product = LosslessFactory.createFromImage(document, photo(600, 400, Color.ORANGE));
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            try (PDPageContentStream content = new PDPageContentStream(document, page)) {
+                content.drawImage(product, 50, 300, 300, 200);
+            }
+            // Scripts a hostile catalog may carry: on open of the file and on open of the page.
+            document.getDocumentCatalog().setOpenAction(
+                    new PDActionJavaScript("app.launchURL('https://example.invalid/open', true);"));
+            PDPageAdditionalActions pageActions = new PDPageAdditionalActions();
+            pageActions.setO(new PDActionJavaScript("this.submitForm('https://example.invalid/page');"));
+            page.setActions(pageActions);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            withScripts = out.toByteArray();
+        }
+
+        // PDFBox has no JavaScript engine: the actions are plain data that CatalogPdf never reads.
+        List<CatalogPdf.Photo> photos = CatalogPdf.photos(withScripts);
+        assertThat(photos).hasSize(1);
+        assertThat(photos.get(0).width()).isEqualTo(600);
+    }
+
+    @Test
+    void aPasswordProtectedPdfIsRefused() throws Exception {
+        byte[] encrypted;
+        try (PDDocument document = new PDDocument()) {
+            document.addPage(new PDPage(PDRectangle.A4));
+            StandardProtectionPolicy policy = new StandardProtectionPolicy("owner-secret", "", new AccessPermission());
+            policy.setEncryptionKeyLength(128);
+            document.protect(policy);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            encrypted = out.toByteArray();
+        }
+        assertThatThrownBy(() -> CatalogPdf.photos(encrypted))
+                .isInstanceOf(CatalogPdf.Refused.class).hasMessage("merchant.pdf_encrypted");
     }
 
     @Test
