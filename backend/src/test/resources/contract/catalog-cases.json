@@ -10578,6 +10578,1444 @@
       ]
     },
     {
+      "name": "collections",
+      "request": "/api/v1/collections",
+      "status": 200,
+      "compare": "values",
+      "mock": [
+        {
+          "id": 1,
+          "slug": "nisan",
+          "name": {
+            "az": "Nişan",
+            "en": "Engagement",
+            "ru": "Помолвка"
+          },
+          "productCount": 6
+        },
+        {
+          "id": 2,
+          "slug": "toy",
+          "name": {
+            "az": "Toy",
+            "en": "Wedding",
+            "ru": "Свадьба"
+          },
+          "productCount": 12
+        },
+        {
+          "id": 3,
+          "slug": "hediyye",
+          "name": {
+            "az": "Hədiyyə",
+            "en": "Gift",
+            "ru": "Подарок"
+          },
+          "productCount": 20
+        },
+        {
+          "id": 4,
+          "slug": "gundelik",
+          "name": {
+            "az": "Gündəlik",
+            "en": "Everyday",
+            "ru": "На каждый день"
+          },
+          "productCount": 12
+        },
+        {
+          "id": 5,
+          "slug": "kisi-ucun",
+          "name": {
+            "az": "Kişi üçün",
+            "en": "For him",
+            "ru": "Для него"
+          },
+          "productCount": 6
+        },
+        {
+          "id": 6,
+          "slug": "usaq-ucun",
+          "name": {
+            "az": "Uşaq üçün",
+            "en": "For kids",
+            "ru": "Для детей"
+          },
+          "productCount": 6
+        }
+      ]
+    },
+    {
+      "name": "products of a collection",
+      "request": "/api/v1/products?collection=hediyye&size=50",
+      "status": 200,
+      "compare": "values",
+      "mock": {
+        "content": [
+          {
+            "id": 3,
+            "slug": "sirgalar-gold-585-3",
+            "name": {
+              "az": "Səma — qızıl sırğa 585",
+              "en": "Sama — gold earrings 585",
+              "ru": "Сама — серьги из золота 585"
+            },
+            "categoryId": 4,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "1440.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 30,
+            "pricingMode": "FIXED",
+            "fineness": 585,
+            "weightGrams": "8.600",
+            "images": [
+              {
+                "url": "/demo/earrings-gold-3.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-03T09:00:00.000Z"
+          },
+          {
+            "id": 6,
+            "slug": "qolbaqlar-silver-925-6",
+            "name": {
+              "az": "Leyla — gümüş qolbaq 925",
+              "en": "Leyla — silver bracelet 925",
+              "ru": "Лейла — браслет из серебра 925"
+            },
+            "categoryId": 8,
+            "store": {
+              "id": 6,
+              "slug": "yeni-ulduz",
+              "name": "Yeni Ulduz",
+              "city": "Lənkəran",
+              "verification": {
+                "seller": "PENDING",
+                "documents": "NONE",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "50.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 60,
+            "pricingMode": "FIXED",
+            "fineness": 925,
+            "weightGrams": "1.700",
+            "images": [
+              {
+                "url": "/demo/bracelet-silver-1.jpg",
+                "alt": {
+                  "az": "Leyla — gümüş qolbaq 925",
+                  "en": "Leyla — silver bracelet 925",
+                  "ru": "Лейла — браслет из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "PENDING",
+              "documents": "NONE",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-06T09:00:00.000Z"
+          },
+          {
+            "id": 7,
+            "slug": "destler-gold-750-7",
+            "name": {
+              "az": "Nur — qızıl dəst 750",
+              "en": "Nur — gold set 750",
+              "ru": "Нур — комплект из золота 750"
+            },
+            "categoryId": 9,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "1433.21",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 70,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 750,
+            "weightGrams": "5.400",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-1.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-gold-2.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "MADE_TO_ORDER",
+            "publishedAt": "2026-10-07T09:00:00.000Z"
+          },
+          {
+            "id": 13,
+            "slug": "sirgalar-gold-585-13",
+            "name": {
+              "az": "Səma — qızıl sırğa 585",
+              "en": "Sama — gold earrings 585",
+              "ru": "Сама — серьги из золота 585"
+            },
+            "categoryId": 4,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "1896.48",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 130,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 585,
+            "weightGrams": "9.600",
+            "images": [
+              {
+                "url": "/demo/earrings-gold-1.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/earrings-gold-2.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-13T09:00:00.000Z"
+          },
+          {
+            "id": 15,
+            "slug": "asqilar-gold-999-15",
+            "name": {
+              "az": "Ay işığı — qızıl asqı 999",
+              "en": "Moonlight — gold pendant 999",
+              "ru": "Лунный свет — подвеска из золота 999"
+            },
+            "categoryId": 7,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "2200.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 150,
+            "pricingMode": "FIXED",
+            "fineness": 999,
+            "weightGrams": "8.000",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-3.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-15T09:00:00.000Z"
+          },
+          {
+            "id": 16,
+            "slug": "qolbaqlar-gold-585-16",
+            "name": {
+              "az": "Leyla — qızıl qolbaq 585",
+              "en": "Leyla — gold bracelet 585",
+              "ru": "Лейла — браслет из золота 585"
+            },
+            "categoryId": 8,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "469.06",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 160,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 585,
+            "weightGrams": "2.700",
+            "images": [
+              {
+                "url": "/demo/bracelet-gold-3.jpg",
+                "alt": {
+                  "az": "Leyla — qızıl qolbaq 585",
+                  "en": "Leyla — gold bracelet 585",
+                  "ru": "Лейла — браслет из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/bracelet-gold-2.jpg",
+                "alt": {
+                  "az": "Leyla — qızıl qolbaq 585",
+                  "en": "Leyla — gold bracelet 585",
+                  "ru": "Лейла — браслет из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-16T09:00:00.000Z"
+          },
+          {
+            "id": 18,
+            "slug": "broslar-silver-925-18",
+            "name": {
+              "az": "Səma — gümüş broş 925",
+              "en": "Sama — silver brooch 925",
+              "ru": "Сама — брошь из серебра 925"
+            },
+            "categoryId": 10,
+            "store": {
+              "id": 6,
+              "slug": "yeni-ulduz",
+              "name": "Yeni Ulduz",
+              "city": "Lənkəran",
+              "verification": {
+                "seller": "PENDING",
+                "documents": "NONE",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "190.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 180,
+            "pricingMode": "FIXED",
+            "fineness": 925,
+            "weightGrams": "10.100",
+            "images": [
+              {
+                "url": "/demo/necklace-silver-3.jpg",
+                "alt": {
+                  "az": "Səma — gümüş broş 925",
+                  "en": "Sama — silver brooch 925",
+                  "ru": "Сама — брошь из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "PENDING",
+              "documents": "NONE",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-18T09:00:00.000Z"
+          },
+          {
+            "id": 25,
+            "slug": "asqilar-gold-999-25",
+            "name": {
+              "az": "Ay işığı — qızıl asqı 999",
+              "en": "Moonlight — gold pendant 999",
+              "ru": "Лунный свет — подвеска из золота 999"
+            },
+            "categoryId": 7,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "2761.69",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 250,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 999,
+            "weightGrams": "9.000",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-1.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-gold-2.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-25T09:00:00.000Z"
+          },
+          {
+            "id": 27,
+            "slug": "destler-gold-750-27",
+            "name": {
+              "az": "Nur — qızıl dəst 750",
+              "en": "Nur — gold set 750",
+              "ru": "Нур — комплект из золота 750"
+            },
+            "categoryId": 9,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "3170.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 270,
+            "pricingMode": "FIXED",
+            "fineness": 750,
+            "weightGrams": "7.400",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-3.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-27T09:00:00.000Z"
+          },
+          {
+            "id": 28,
+            "slug": "broslar-platinum-950-28",
+            "name": {
+              "az": "Səma — platin broş 950",
+              "en": "Sama — platinum brooch 950",
+              "ru": "Сама — брошь из платины 950"
+            },
+            "categoryId": 10,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "PLATINUM",
+            "priceFrom": {
+              "amount": "265.89",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 280,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 950,
+            "weightGrams": "2.100",
+            "images": [
+              {
+                "url": "/demo/necklace-silver-1.jpg",
+                "alt": {
+                  "az": "Səma — platin broş 950",
+                  "en": "Sama — platinum brooch 950",
+                  "ru": "Сама — брошь из платины 950"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-silver-2.jpg",
+                "alt": {
+                  "az": "Səma — platin broş 950",
+                  "en": "Sama — platinum brooch 950",
+                  "ru": "Сама — брошь из платины 950"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "MADE_TO_ORDER",
+            "publishedAt": "2026-10-28T09:00:00.000Z"
+          },
+          {
+            "id": 33,
+            "slug": "sirgalar-gold-585-33",
+            "name": {
+              "az": "Səma — qızıl sırğa 585",
+              "en": "Sama — gold earrings 585",
+              "ru": "Сама — серьги из золота 585"
+            },
+            "categoryId": 4,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "450.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 330,
+            "pricingMode": "FIXED",
+            "fineness": 585,
+            "weightGrams": "2.600",
+            "images": [
+              {
+                "url": "/demo/earrings-gold-3.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "OUT_OF_STOCK",
+            "publishedAt": "2026-10-03T09:00:00.000Z"
+          },
+          {
+            "id": 36,
+            "slug": "qolbaqlar-gold-585-36",
+            "name": {
+              "az": "Leyla — qızıl qolbaq 585",
+              "en": "Leyla — gold bracelet 585",
+              "ru": "Лейла — браслет из золота 585"
+            },
+            "categoryId": 8,
+            "store": {
+              "id": 6,
+              "slug": "yeni-ulduz",
+              "name": "Yeni Ulduz",
+              "city": "Lənkəran",
+              "verification": {
+                "seller": "PENDING",
+                "documents": "NONE",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "800.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 360,
+            "pricingMode": "FIXED",
+            "fineness": 585,
+            "weightGrams": "4.700",
+            "images": [
+              {
+                "url": "/demo/bracelet-gold-3.jpg",
+                "alt": {
+                  "az": "Leyla — qızıl qolbaq 585",
+                  "en": "Leyla — gold bracelet 585",
+                  "ru": "Лейла — браслет из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "PENDING",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-06T09:00:00.000Z"
+          },
+          {
+            "id": 37,
+            "slug": "destler-gold-750-37",
+            "name": {
+              "az": "Nur — qızıl dəst 750",
+              "en": "Nur — gold set 750",
+              "ru": "Нур — комплект из золота 750"
+            },
+            "categoryId": 9,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "2056.94",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 370,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 750,
+            "weightGrams": "8.400",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-1.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-gold-2.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-07T09:00:00.000Z"
+          },
+          {
+            "id": 43,
+            "slug": "sirgalar-gold-585-43",
+            "name": {
+              "az": "Səma — qızıl sırğa 585",
+              "en": "Sama — gold earrings 585",
+              "ru": "Сама — серьги из золота 585"
+            },
+            "categoryId": 4,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "905.24",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 430,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 585,
+            "weightGrams": "3.600",
+            "images": [
+              {
+                "url": "/demo/earrings-gold-1.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/earrings-gold-2.jpg",
+                "alt": {
+                  "az": "Səma — qızıl sırğa 585",
+                  "en": "Sama — gold earrings 585",
+                  "ru": "Сама — серьги из золота 585"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-13T09:00:00.000Z"
+          },
+          {
+            "id": 45,
+            "slug": "asqilar-gold-999-45",
+            "name": {
+              "az": "Ay işığı — qızıl asqı 999",
+              "en": "Moonlight — gold pendant 999",
+              "ru": "Лунный свет — подвеска из золота 999"
+            },
+            "categoryId": 7,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "570.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 450,
+            "pricingMode": "FIXED",
+            "fineness": 999,
+            "weightGrams": "2.000",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-3.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-15T09:00:00.000Z"
+          },
+          {
+            "id": 46,
+            "slug": "qolbaqlar-silver-925-46",
+            "name": {
+              "az": "Leyla — gümüş qolbaq 925",
+              "en": "Leyla — silver bracelet 925",
+              "ru": "Лейла — браслет из серебра 925"
+            },
+            "categoryId": 8,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "118.23",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 460,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 925,
+            "weightGrams": "5.700",
+            "images": [
+              {
+                "url": "/demo/bracelet-silver-1.jpg",
+                "alt": {
+                  "az": "Leyla — gümüş qolbaq 925",
+                  "en": "Leyla — silver bracelet 925",
+                  "ru": "Лейла — браслет из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-16T09:00:00.000Z"
+          },
+          {
+            "id": 48,
+            "slug": "broslar-platinum-950-48",
+            "name": {
+              "az": "Səma — platin broş 950",
+              "en": "Sama — platinum brooch 950",
+              "ru": "Сама — брошь из платины 950"
+            },
+            "categoryId": 10,
+            "store": {
+              "id": 6,
+              "slug": "yeni-ulduz",
+              "name": "Yeni Ulduz",
+              "city": "Lənkəran",
+              "verification": {
+                "seller": "PENDING",
+                "documents": "NONE",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "PLATINUM",
+            "priceFrom": {
+              "amount": "500.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 480,
+            "pricingMode": "FIXED",
+            "fineness": 950,
+            "weightGrams": "4.100",
+            "images": [
+              {
+                "url": "/demo/necklace-silver-3.jpg",
+                "alt": {
+                  "az": "Səma — platin broş 950",
+                  "en": "Sama — platinum brooch 950",
+                  "ru": "Сама — брошь из платины 950"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "PENDING",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-18T09:00:00.000Z"
+          },
+          {
+            "id": 55,
+            "slug": "asqilar-gold-999-55",
+            "name": {
+              "az": "Ay işığı — qızıl asqı 999",
+              "en": "Moonlight — gold pendant 999",
+              "ru": "Лунный свет — подвеска из золота 999"
+            },
+            "categoryId": 7,
+            "store": {
+              "id": 1,
+              "slug": "ayzer-zerger",
+              "name": "Ayzər Zərgər",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "1127.56",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 550,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 999,
+            "weightGrams": "3.000",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-1.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-gold-2.jpg",
+                "alt": {
+                  "az": "Ay işığı — qızıl asqı 999",
+                  "en": "Moonlight — gold pendant 999",
+                  "ru": "Лунный свет — подвеска из золота 999"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "OUT_OF_STOCK",
+            "publishedAt": "2026-10-25T09:00:00.000Z"
+          },
+          {
+            "id": 57,
+            "slug": "destler-gold-750-57",
+            "name": {
+              "az": "Nur — qızıl dəst 750",
+              "en": "Nur — gold set 750",
+              "ru": "Нур — комплект из золота 750"
+            },
+            "categoryId": 9,
+            "store": {
+              "id": 3,
+              "slug": "nergiz-gold",
+              "name": "Nərgiz Gold",
+              "city": "Gəncə",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "PENDING",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "GOLD",
+            "priceFrom": {
+              "amount": "1920.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 570,
+            "pricingMode": "FIXED",
+            "fineness": 750,
+            "weightGrams": "1.400",
+            "images": [
+              {
+                "url": "/demo/necklace-gold-3.jpg",
+                "alt": {
+                  "az": "Nur — qızıl dəst 750",
+                  "en": "Nur — gold set 750",
+                  "ru": "Нур — комплект из золота 750"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": true,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "PENDING",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-27T09:00:00.000Z"
+          },
+          {
+            "id": 58,
+            "slug": "broslar-silver-925-58",
+            "name": {
+              "az": "Səma — gümüş broş 925",
+              "en": "Sama — silver brooch 925",
+              "ru": "Сама — брошь из серебра 925"
+            },
+            "categoryId": 10,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "108.21",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 580,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 925,
+            "weightGrams": "5.100",
+            "images": [
+              {
+                "url": "/demo/necklace-silver-1.jpg",
+                "alt": {
+                  "az": "Səma — gümüş broş 925",
+                  "en": "Sama — silver brooch 925",
+                  "ru": "Сама — брошь из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/necklace-silver-2.jpg",
+                "alt": {
+                  "az": "Səma — gümüş broş 925",
+                  "en": "Sama — silver brooch 925",
+                  "ru": "Сама — брошь из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-28T09:00:00.000Z"
+          }
+        ],
+        "page": 0,
+        "size": 50,
+        "totalElements": 20,
+        "totalPages": 1
+      }
+    },
+    {
+      "name": "products of a collection up to a budget",
+      "request": "/api/v1/products?collection=toy&maxPrice=1000&sort=price_asc&size=50",
+      "status": 200,
+      "compare": "values",
+      "mock": {
+        "content": [
+          {
+            "id": 2,
+            "slug": "toy-uzukleri-silver-925-2",
+            "name": {
+              "az": "Nur — gümüş toy üzüyü 925",
+              "en": "Nur — silver wedding ring 925",
+              "ru": "Нур — обручальное кольцо из серебра 925"
+            },
+            "categoryId": 3,
+            "store": {
+              "id": 2,
+              "slug": "lale-atelye",
+              "name": "Lalə Atelye",
+              "city": "Bakı",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "104.86",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 20,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 925,
+            "weightGrams": "4.900",
+            "images": [
+              {
+                "url": "/demo/ring-silver-3.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "IN_STOCK",
+            "publishedAt": "2026-10-02T09:00:00.000Z"
+          },
+          {
+            "id": 22,
+            "slug": "toy-uzukleri-silver-925-22",
+            "name": {
+              "az": "Nur — gümüş toy üzüyü 925",
+              "en": "Nur — silver wedding ring 925",
+              "ru": "Нур — обручальное кольцо из серебра 925"
+            },
+            "categoryId": 3,
+            "store": {
+              "id": 4,
+              "slug": "xezer-inci",
+              "name": "Xəzər İnci",
+              "city": "Sumqayıt",
+              "verification": {
+                "seller": "VERIFIED",
+                "documents": "VERIFIED",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "138.28",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 220,
+            "pricingMode": "METAL_LINKED",
+            "fineness": 925,
+            "weightGrams": "6.900",
+            "images": [
+              {
+                "url": "/demo/ring-silver-3.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              },
+              {
+                "url": "/demo/ring-silver-1.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "VERIFIED",
+              "documents": "VERIFIED",
+              "expertise": "NONE"
+            },
+            "stockStatus": "OUT_OF_STOCK",
+            "publishedAt": "2026-10-22T09:00:00.000Z"
+          },
+          {
+            "id": 42,
+            "slug": "toy-uzukleri-silver-925-42",
+            "name": {
+              "az": "Nur — gümüş toy üzüyü 925",
+              "en": "Nur — silver wedding ring 925",
+              "ru": "Нур — обручальное кольцо из серебра 925"
+            },
+            "categoryId": 3,
+            "store": {
+              "id": 6,
+              "slug": "yeni-ulduz",
+              "name": "Yeni Ulduz",
+              "city": "Lənkəran",
+              "verification": {
+                "seller": "PENDING",
+                "documents": "NONE",
+                "expertise": "NONE"
+              }
+            },
+            "materialKind": "PRECIOUS",
+            "material": null,
+            "metal": "SILVER",
+            "priceFrom": {
+              "amount": "170.00",
+              "currency": "AZN"
+            },
+            "defaultVariantId": 420,
+            "pricingMode": "FIXED",
+            "fineness": 925,
+            "weightGrams": "8.900",
+            "images": [
+              {
+                "url": "/demo/ring-silver-3.jpg",
+                "alt": {
+                  "az": "Nur — gümüş toy üzüyü 925",
+                  "en": "Nur — silver wedding ring 925",
+                  "ru": "Нур — обручальное кольцо из серебра 925"
+                },
+                "width": 800,
+                "height": 1000,
+                "aiGenerated": false
+              }
+            ],
+            "hasStones": false,
+            "verification": {
+              "seller": "PENDING",
+              "documents": "NONE",
+              "expertise": "NONE"
+            },
+            "stockStatus": "MADE_TO_ORDER",
+            "publishedAt": "2026-10-12T09:00:00.000Z"
+          }
+        ],
+        "page": 0,
+        "size": 50,
+        "totalElements": 3,
+        "totalPages": 1
+      }
+    },
+    {
+      "name": "products of an unknown collection",
+      "request": "/api/v1/products?collection=no-such-collection",
+      "status": 200,
+      "compare": "values",
+      "mock": {
+        "content": [],
+        "page": 0,
+        "size": 24,
+        "totalElements": 0,
+        "totalPages": 0
+      }
+    },
+    {
       "name": "finenesses",
       "request": "/api/v1/finenesses",
       "status": 200,

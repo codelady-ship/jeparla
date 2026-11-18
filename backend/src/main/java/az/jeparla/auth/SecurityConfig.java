@@ -87,6 +87,8 @@ public class SecurityConfig {
                     "/api/v1/stores", "/api/v1/stores/**", "/api/v1/categories", "/api/v1/categories/**",
                     "/api/v1/finenesses", "/api/v1/search", "/api/v1/search/**", "/api/v1/metal-prices/**",
                     "/api/v1/exchange-rates/**",
+                    // Occasion collections (#115).
+                    "/api/v1/collections",
                     // A store's share link /s/{code} (#100).
                     "/api/v1/share/{code}"),
             // Guests may report a product or a store and are counted when they open WhatsApp (#37, #40) or

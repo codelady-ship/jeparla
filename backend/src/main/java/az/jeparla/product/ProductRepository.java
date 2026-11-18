@@ -70,6 +70,15 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
             + " and p.category.id in :categoryIds group by s.id")
     List<Object[]> countListedByStore(@Param("categoryIds") Collection<Long> categoryIds);
 
+    /** {@code [collectionId, count]} of listed products in the given (visible) categories, per collection (#115). */
+    @Query("select c.id, count(p) from Product p join p.store s join p.collections c where " + PUBLIC + " and "
+            + HAS_LIVE_VARIANT + " and p.category.id in :categoryIds group by c.id")
+    List<Object[]> countListedByCollection(@Param("categoryIds") Collection<Long> categoryIds);
+
+    /** Admin collection list (#115): {@code [collectionId, count]} of tagged products that are not deleted. */
+    @Query("select c.id, count(p) from Product p join p.collections c where p.deletedAt is null group by c.id")
+    List<Object[]> countLiveByCollection();
+
     // ------------------------------------------------------------------ store facts and share preview (#100, #108)
 
     /** JPQL condition: a listed product of store {@code :storeId} in the given (visible) categories. */

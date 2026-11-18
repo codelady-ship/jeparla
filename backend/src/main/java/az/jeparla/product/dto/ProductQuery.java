@@ -27,6 +27,9 @@ public record ProductQuery(
         @Parameter(description = "Category slug; includes its subcategories")
         @Size(max = 160) String category,
 
+        @Parameter(description = "Occasion collection slug (#115), e.g. nisan; unknown or hidden: no products")
+        @Size(max = 80) String collection,
+
         @Parameter(description = "Store slugs") @Size(max = MAX_VALUES) List<@Size(max = 160) String> store,
 
         @Parameter(description = "PRECIOUS (gold, silver, platinum, diamonds) or FASHION (bijouterie and handmade, #128)")
@@ -87,13 +90,13 @@ public record ProductQuery(
 
     /** No filters, first page. */
     public static ProductQuery none() {
-        return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        return new ProductQuery(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null);
     }
 
     /** The same query restricted to one store ({@code /stores/{slug}/products}). */
     public ProductQuery inStore(String storeSlug) {
-        return new ProductQuery(q, category, List.of(storeSlug), kind, audience, metal, fineness, minWeight,
+        return new ProductQuery(q, category, collection, List.of(storeSlug), kind, audience, metal, fineness, minWeight,
                 maxWeight, minPrice, maxPrice, verified, hallmarkPhoto, inStock, city, shape, minCarat, maxCarat,
                 color, clarity, sort, page, size);
     }
