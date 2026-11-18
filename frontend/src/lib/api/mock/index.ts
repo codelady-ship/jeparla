@@ -18,6 +18,9 @@ import {
   STORES,
 } from "./fixtures";
 
+const hasHallmarkPhoto = (p: Product) =>
+  (p.evidencePhotos ?? []).some((e) => e.kind === "HALLMARK");
+
 const share = (count: number, total: number) => ({
   count,
   percent: total === 0 ? null : Math.floor((count * 100) / total),
@@ -31,8 +34,8 @@ export function fullMonths(from: Date, to: Date): number {
 
 /**
  * Same rules as the backend StoreFactsService, counted from the sample products, so the
- * demo never shows a number that does not follow from its own data. Sample products have
- * no hallmark photos: 0 of them.
+ * demo never shows a number that does not follow from its own data. A shown hallmark photo
+ * counts (the sample data has no rejected ones: the API does not list those).
  */
 export function mockStoreFacts(
   slug: string,
@@ -56,7 +59,7 @@ export function mockStoreFacts(
       own.filter((p) => p.variants.some((v) => v.pricingMode === "METAL_LINKED")).length,
       own.length,
     ),
-    hallmarkPhoto: share(0, own.length),
+    hallmarkPhoto: share(own.filter(hasHallmarkPhoto).length, own.length),
     documents: {
       taxId: store.verification.documents === "VERIFIED",
       tradeLicense: store.verification.documents === "VERIFIED",
@@ -93,7 +96,17 @@ const DEFAULT_SIZE = 24;
 const MAX_SIZE = 96;
 
 function toSummary(p: Product): ProductSummary {
-  const { description: _d, variants: _v, stones: _s, status: _st, ...summary } = p;
+  // Lists carry the summary fields only, as the API's ProductSummaryDto (no product-page extras).
+  const {
+    description: _d,
+    variants: _v,
+    stones: _s,
+    status: _st,
+    evidencePhotos: _e,
+    dimensions: _dm,
+    keyFeatures: _k,
+    ...summary
+  } = p;
   return summary;
 }
 
@@ -152,9 +165,8 @@ function filterProducts(f: ProductFilters): Product[] {
     if (f.minPrice && compareDecimal(p.priceFrom.amount, f.minPrice) < 0) return false;
     if (f.maxPrice && compareDecimal(p.priceFrom.amount, f.maxPrice) > 0) return false;
     if (f.verified && p.verification.documents !== "VERIFIED") return false;
-    // Hallmark photos come from sellers; the demo catalog has none, as in the backend seed.
-    if (f.hallmarkPhoto && !(p.evidencePhotos ?? []).some((e) => e.kind === "HALLMARK"))
-      return false;
+    // Hallmark photos come from sellers; the demo catalog has one, as in the backend seed.
+    if (f.hallmarkPhoto && !hasHallmarkPhoto(p)) return false;
     if (f.inStock && p.stockStatus === "OUT_OF_STOCK") return false;
     if (f.city && p.store.city !== f.city) return false;
     if (hasDiamondFilter(f) && !p.stones.some((s) => diamondMatches(s, f))) return false;

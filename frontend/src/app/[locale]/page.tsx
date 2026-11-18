@@ -31,14 +31,18 @@ export default function Home() {
   return (
     <>
       <CinematicHero />
-      <HomeCategories />
-      <NewArrivals />
-      <VerifiedExplainer />
-      <BudgetPicks />
-      <FeaturedStores />
-      <MetalPrices />
-      <BecomeSeller />
-      <AboutJeparla />
+      {/* Everything below starts several screens down (under the pinned hero track): the
+          browser skips its rendering until it comes near the viewport (.home-below). */}
+      <div className="home-below">
+        <HomeCategories />
+        <NewArrivals />
+        <VerifiedExplainer />
+        <BudgetPicks />
+        <FeaturedStores />
+        <MetalPrices />
+        <BecomeSeller />
+        <AboutJeparla />
+      </div>
     </>
   );
 }

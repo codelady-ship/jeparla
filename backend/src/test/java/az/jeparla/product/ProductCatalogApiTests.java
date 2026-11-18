@@ -52,7 +52,8 @@ class ProductCatalogApiTests {
             """;
     private static final String DIAMOND = "EXISTS (SELECT 1 FROM product_stones d WHERE d.product_id = p.id"
             + " AND d.stone_type = 'DIAMOND' AND ";
-    private static final String VARIANT = "EXISTS (SELECT 1 FROM product_variants v JOIN finenesses f ON f.id = v.fineness_id"
+    // LEFT JOIN: a bijouterie variant (demo product 60, #128) has no fineness but a weight and a stock status.
+    private static final String VARIANT = "EXISTS (SELECT 1 FROM product_variants v LEFT JOIN finenesses f ON f.id = v.fineness_id"
             + " WHERE v.product_id = p.id AND v.deleted_at IS NULL AND ";
     private static final String PRICE_FROM =
             "(SELECT min(v.price) FROM product_variants v WHERE v.product_id = p.id AND v.deleted_at IS NULL)";
@@ -103,7 +104,7 @@ class ProductCatalogApiTests {
                 Arguments.of("city=G%C9%99nc%C9%99", "s.city = 'Gəncə'"),
                 Arguments.of("verified=true", "s.documents_status = 'VERIFIED'"),
                 Arguments.of("verified=false", "TRUE"),
-                // #106: the demo seed has no evidence photos, so the hallmark filter lists nothing.
+                // #106: the demo seed has one hallmark photo (product 13, VERIFIED).
                 Arguments.of("hallmarkPhoto=true", "EXISTS (SELECT 1 FROM product_evidence_photos e WHERE e.product_id = p.id "
                         + "AND e.kind = 'HALLMARK' AND e.status <> 'REJECTED')"),
                 Arguments.of("hallmarkPhoto=false", "TRUE"),

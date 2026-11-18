@@ -189,3 +189,33 @@ describe("helpers", () => {
     expect(toSearchParams({ store: ["a", "b"], q: "", page: 0 })).toBe("?store=a&store=b&page=0");
   });
 });
+
+describe("sample states for #106 and #128", () => {
+  it("has one bijouterie product: FIXED, no metal, never in a metal filter", async () => {
+    const fashion = PRODUCTS.filter((p) => p.materialKind === "FASHION");
+    expect(fashion.map((p) => p.slug)).toEqual(["qolbaqlar-polad-60"]);
+    const [p] = fashion;
+    expect(p).toMatchObject({ metal: null, fineness: null, pricingMode: "FIXED" });
+    expect(p.variants[0].priceBreakdown?.metal).toBeNull();
+    expect((await mockApi.listProducts({ kind: "FASHION" })).totalElements).toBe(1);
+    for (const metal of ["GOLD", "SILVER", "PLATINUM"] as const) {
+      const page = await mockApi.listProducts({ metal, size: 96 });
+      expect(page.content.some((x) => x.materialKind === "FASHION")).toBe(false);
+    }
+  });
+
+  it("has a hallmark and a label photo on product 13, on the product page only", async () => {
+    const page = await mockApi.listProducts({ hallmarkPhoto: true });
+    expect(page.content.map((p) => p.id)).toEqual([13]);
+    expect(page.content[0]).not.toHaveProperty("evidencePhotos");
+    const product = await mockApi.getProduct(page.content[0].slug);
+    expect(product?.evidencePhotos?.map((e) => [e.kind, e.checked])).toEqual([
+      ["HALLMARK", true],
+      ["TAG", false],
+    ]);
+    expect((await mockApi.getStoreFacts("ayzer-zerger"))?.hallmarkPhoto).toEqual({
+      count: 1,
+      percent: 10,
+    });
+  });
+});

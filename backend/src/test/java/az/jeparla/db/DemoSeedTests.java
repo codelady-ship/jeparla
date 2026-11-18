@@ -46,7 +46,7 @@ class DemoSeedTests {
             "2160.00", "138.28", "287.33", "610.00", "2761.69", "84.82", "3170.00", "265.89", "665.96", "180.00",
             "1004.36", "1665.49", "450.00", "128.25", "2746.55", "800.00", "2056.94", "74.79", "780.00", "431.53",
             "1629.57", "170.00", "905.24", "832.24", "570.00", "118.23", "2724.86", "500.00", "1175.17", "64.77",
-            "2660.00", "2081.31", "782.95", "160.00", "1127.56", "1129.88", "1920.00", "108.21", "998.52", "980.00");
+            "2660.00", "2081.31", "782.95", "160.00", "1127.56", "1129.88", "1920.00", "108.21", "998.52", "45.00");
 
     @Autowired
     private JdbcTemplate jdbc;
@@ -190,6 +190,34 @@ class DemoSeedTests {
         Category rings = categories.findBySlug("uzukler").orElseThrow();
         assertThat(categories.findByParentIdOrderBySortOrderAscIdAsc(rings.getId()))
                 .extracting(Category::getSlug).containsExactly("nisan-uzukleri", "toy-uzukleri");
+    }
+
+    /** The two exceptions of the rules, as in fixtures.ts: bijouterie product 60 (#128), photos of product 13 (#106). */
+    @Test
+    void bijouterieProductAndHallmarkPhotosLikeTheFixtures() {
+        assertThat(jdbc.queryForMap("""
+                SELECT p.slug, p.material_kind, p.material, p.metal, s.slug AS store, s.seller_kind, c.slug AS category,
+                       v.fineness_id, v.metal AS variant_metal, v.pricing_mode, v.weight_grams
+                FROM products p JOIN stores s ON s.id = p.store_id JOIN categories c ON c.id = p.category_id
+                JOIN product_variants v ON v.product_id = p.id WHERE p.id = 60
+                """))
+                .containsEntry("slug", "qolbaqlar-polad-60")
+                .containsEntry("material_kind", "FASHION")
+                .containsEntry("material", "STAINLESS_STEEL")
+                .containsEntry("metal", null)
+                .containsEntry("store", "yeni-ulduz")
+                .containsEntry("seller_kind", "MIXED")
+                .containsEntry("category", "qolbaqlar")
+                .containsEntry("fineness_id", null)
+                .containsEntry("variant_metal", null)
+                .containsEntry("pricing_mode", "FIXED")
+                .containsEntry("weight_grams", new BigDecimal("3.500"));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM products WHERE material_kind = 'FASHION'", Long.class))
+                .isOne();
+        assertThat(jdbc.queryForList(
+                "SELECT product_id || ' ' || kind || ' ' || status || ' ' || storage_key FROM product_evidence_photos"
+                        + " ORDER BY kind", String.class))
+                .containsExactly("13 HALLMARK VERIFIED demo/hallmark-gold-585.jpg", "13 TAG PENDING demo/tag-gold-585.jpg");
     }
 
     @Test

@@ -1297,8 +1297,17 @@
       "fromPrice": "{price}-dan",
       "adminNote": "Admin qeydi",
       "bulkReview": "Göstərilən qaralamaları yoxlamaya göndər ({count})",
+      "bulkReviewSelected": "Seçilmiş qaralamaları yoxlamaya göndər ({count})",
       "bulkSent": "{total} məhsuldan {done} yoxlamaya göndərildi.",
       "bulkFailed": "Toplu dəyişiklik alınmadı. Yenidən cəhd edin.",
+      "select": {
+        "col": "Seçim",
+        "one": "Seç: {name}",
+        "all": "Göstərilən bütün qaralamaları seç ({count})",
+        "some": "{count, plural, one {# qaralama seçilib} other {# qaralama seçilib}}: toplu əməliyyatlar yalnız onlara aiddir.",
+        "none": "Heç nə seçilməyib: toplu əməliyyatlar göstərilən bütün qaralamalara aiddir.",
+        "clear": "Seçimi sıfırla"
+      },
       "aiStudio": "AI Studio",
       "aiStudioNamed": "{name}: AI Studio",
       "bulkPricing": {
@@ -1309,6 +1318,7 @@
         "METAL_LINKED": "Metala bağlı",
         "labor": "İşçilik, 1 qram üçün (AZN)",
         "apply": "Görünən qaralamalara tətbiq et",
+        "applySelected": "Seçilmiş qaralamalara tətbiq et",
         "hint": "Sabit qiymətə keçəndə hər variant indiki qiymətini saxlayır. Metala bağlıya keçəndə 1 qram işçilik yazılır, qalan qaydalar (sabit işçilik, daş, əlavə faiz) 0 olur və ya əvvəlki qayda qalır; redaktorda dəyişə bilərsiniz. Yalnız işçilik yazsanız, ancaq metala bağlı variantlar dəyişir. Yeni qiymətlər cədvəldə dərhal görünür.",
         "done": "{total} qaralamadan {done} dəyişdi.",
         "pricingEmpty": "Qiymət rejimini seçin və ya işçilik dəyərini yazın.",

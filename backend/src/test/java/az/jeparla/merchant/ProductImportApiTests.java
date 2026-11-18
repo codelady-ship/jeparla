@@ -178,4 +178,25 @@ class ProductImportApiTests extends MerchantApiTestBase {
         assertThat(jdbc.queryForObject("SELECT status FROM products WHERE id = ?", String.class, foreign))
                 .isEqualTo("DRAFT");
     }
+
+    @Test
+    void anUnverifiedSellersBulkReviewLeavesEveryProductADraft() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        long categoryId = category();
+        long finenessId = fineness(Metal.GOLD);
+        long first = createProduct(seller, goldProduct(categoryId, finenessId, "500.00"));
+        attachPng(seller, first);
+        long second = createProduct(seller, goldProduct(categoryId, finenessId, "600.00"));
+        attachPng(seller, second);
+
+        mvc.perform(json(post("/api/v1/merchant/products/bulk-status"),
+                        "{\"ids\": [" + first + ", " + second + "], \"status\": \"IN_REVIEW\"}")
+                        .header("Accept-Language", "ru").with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].ok").value(Matchers.contains(false, false)))
+                .andExpect(jsonPath("$[0].code").value("merchant.seller_not_verified"))
+                .andExpect(jsonPath("$[0].message").value(Matchers.startsWith("Чтобы публиковать товары")));
+        assertThat(jdbc.queryForList("SELECT status FROM products WHERE store_id = ?", String.class,
+                seller.storeId())).containsOnly("DRAFT");
+    }
 }

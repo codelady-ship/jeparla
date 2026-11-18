@@ -256,7 +256,10 @@ export type Product = ProductSummary & {
   variants: Variant[];
   stones: Stone[];
   status: ProductStatus;
-  /** HALLMARK first; the demo mock does not send it (contract BACKEND_AHEAD). */
+  /**
+   * HALLMARK first; photos an admin rejected are not listed. In the demo data only product 13 has
+   * them, which no contract case opens (contract BACKEND_AHEAD).
+   */
   evidencePhotos?: EvidencePhoto[];
   /** Sizes in mm (#174); absent when the seller entered none. */
   dimensions?: Dimensions | null;

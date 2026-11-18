@@ -33,7 +33,7 @@ export function RecentlyViewed({ productId, title }: { productId: number; title:
       <h2 id="recently-viewed" className="mb-6 text-2xl">
         {title}
       </h2>
-      <ProductGrid products={products} />
+      <ProductGrid products={products} belowFold />
     </section>
   );
 }

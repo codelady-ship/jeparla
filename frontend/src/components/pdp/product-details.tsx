@@ -393,7 +393,8 @@ export async function ProductDetails({
               </tbody>
             </table>
             {evidence.length > 0 && (
-              <div
+              // A named region: aria-label on a plain div has no role to name (axe aria-prohibited-attr).
+              <section
                 aria-label={t("evidence.title")}
                 className="mt-3 flex items-start gap-3 rounded-md border p-3 text-sm"
               >
@@ -405,7 +406,7 @@ export async function ProductDetails({
                   )}
                   <p className="text-muted-foreground">{t("evidence.notAssay")}</p>
                 </div>
-              </div>
+              </section>
             )}
           </section>
 
@@ -583,7 +584,7 @@ export async function ProductDetails({
           <h2 id="similar" className="mb-6 text-2xl">
             {t("similar")}
           </h2>
-          <ProductGrid products={related} />
+          <ProductGrid products={related} belowFold />
         </section>
       )}
 

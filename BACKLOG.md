@@ -17,6 +17,23 @@ Ardıcıllıq: 1–4-cü günlər frontend (nümunə məlumat qatı ilə, `NEXT_
 | 7 | 9 noyabr | [#42](https://github.com/codelady-ship/jeparla/issues/42) Gün 7 — Metal qiymətləri və deploy | 6 |
 | — | — | [#48](https://github.com/codelady-ship/jeparla/issues/48) Sonra — v1-dən sonrakı işlər | 10 |
 
+## Vəziyyət (2026-11-18)
+
+Aşağıdakı ilkin plandan sonra işlər GitHub-da davam edir: #61-dən sonrakı issue-lar (rəqib araşdırması, bijuteriya,
+AI şəkillər, video və s.) bu faylda sadalanmır, onların vəziyyəti yalnız
+[GitHub Issues](https://github.com/codelady-ship/jeparla/issues)-dədir. Sahibin qərarı (2026-11-18): kodu bitmiş
+issue bağlanır, yalnız sahibin edə biləcəyi yoxlamalar (390px və 1440px dizayn baxışı, real mağaza və məhsulla
+yoxlama, xarici hesablar, VM-də işlər) bir yerə, [#282](https://github.com/codelady-ship/jeparla/issues/282)-yə
+köçürülür.
+
+| Epic | Bağlanmış sub-issue | Bu tarixdə açıq qalan |
+|---|---|---|
+| Gün 1–6 (#1, #10, #17, #23, #29, #36) | 36 / 37 | [#61](https://github.com/codelady-ship/jeparla/issues/61) GEO strukturu |
+| Gün 7 (#42) | 4 / 6 | [#47](https://github.com/codelady-ship/jeparla/issues/47) preflight (mobil Lighthouse Performance >= 90 hələ keçmir), [#62](https://github.com/codelady-ship/jeparla/issues/62) axtarış sistemlərinə qoşulma |
+| Sonra (#48) | 3 / 10 | #49, #50, #51, #54, #55, #56, #63 |
+
+Bu cədvəl yazıldığı anın şəklidir; dəqiq vəziyyət GitHub-dadır.
+
 ## Detallı backlog
 
 ### Gün 1 — Frontend təməli ([#1](https://github.com/codelady-ship/jeparla/issues/1))

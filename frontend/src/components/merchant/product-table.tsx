@@ -24,6 +24,7 @@ import {
   toggledStatus,
   type StatusFilter,
 } from "@/lib/merchant/filter";
+import { allSelected, bulkTargets, toggled } from "@/lib/merchant/selection";
 import { formatDecimal, formatPrice } from "@/lib/money";
 import { notices } from "@/lib/notice";
 import type { PricingMode, ProductStatus } from "@/types/api";
@@ -71,6 +72,10 @@ export function ProductTable({
   const shown = filterRows(rows, q, status);
   /** Drafts in the current view; the API takes 100 per call. */
   const drafts = shown.filter((r) => r.status === "DRAFT").slice(0, 100);
+  /** Ticked drafts (#109); with none ticked the bulk actions work on every draft in view. */
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  const targets = bulkTargets(drafts, selected);
+  const draftIds = drafts.map((r) => r.id);
 
   function sync(nextQ: string, nextStatus: StatusFilter) {
     const sp = new URLSearchParams();
@@ -99,14 +104,14 @@ export function ProductTable({
 
   /** Sends the drafts in view to review (#109); each one succeeds or fails on its own. */
   async function sendDrafts() {
-    if (drafts.length === 0) return;
+    if (targets.rows.length === 0) return;
     setBulkBusy(true);
     setBulkErrors([]);
     const result = await sendJson<BulkStatusResult[]>(
       "POST",
       "/api/merchant/products/bulk-status",
       {
-        ids: drafts.map((r) => r.id),
+        ids: targets.rows.map((r) => r.id),
         status: "IN_REVIEW",
       },
     );
@@ -131,7 +136,7 @@ export function ProductTable({
   /** Price mode and/or labour per gram of the drafts in view (#109), each on its own. */
   async function applyPricing() {
     const built = bulkPricingBody(
-      drafts.map((r) => r.id),
+      targets.rows.map((r) => r.id),
       pricingMode,
       labor,
     );
@@ -190,6 +195,23 @@ export function ProductTable({
     const [y, m, d] = iso.slice(0, 10).split("-");
     return `${d}.${m}.${y}`;
   };
+
+  /** Tick box of one draft; other rows have none (only drafts take bulk actions). */
+  function pick(row: MerchantProductRow) {
+    if (row.status !== "DRAFT") return null;
+    return (
+      <input
+        type="checkbox"
+        checked={selected.has(row.id)}
+        onChange={(e) => {
+          const on = e.target.checked;
+          setSelected((s) => toggled(s, row.id, on));
+        }}
+        aria-label={t("select.one", { name: row.name[locale] })}
+        className="size-5 shrink-0 accent-primary"
+      />
+    );
+  }
 
   function actions(row: MerchantProductRow) {
     const name = row.name[locale];
@@ -299,11 +321,43 @@ export function ProductTable({
               onClick={() => void sendDrafts()}
             >
               <Send aria-hidden />
-              {t("bulkReview", { count: drafts.length })}
+              {targets.selection
+                ? t("bulkReviewSelected", { count: targets.rows.length })
+                : t("bulkReview", { count: drafts.length })}
             </Button>
           </div>
         )}
       </div>
+      {drafts.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <label className="flex min-h-11 items-center gap-3">
+            <input
+              type="checkbox"
+              checked={allSelected(selected, draftIds)}
+              onChange={(e) =>
+                setSelected(e.target.checked ? new Set(draftIds) : new Set<number>())
+              }
+              className="size-5 shrink-0 accent-primary"
+            />
+            {t("select.all", { count: drafts.length })}
+          </label>
+          <p className="text-muted-foreground" aria-live="polite">
+            {targets.selection
+              ? t("select.some", { count: targets.rows.length })
+              : t("select.none")}
+          </p>
+          {targets.selection && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="lg"
+              onClick={() => setSelected(new Set<number>())}
+            >
+              {t("select.clear")}
+            </Button>
+          )}
+        </div>
+      )}
       {quickOpen && quickOptions && drafts.length > 0 && (
         <section
           id="drafts-quick-edit"
@@ -326,7 +380,7 @@ export function ProductTable({
         <details className="group rounded-lg border bg-card p-4">
           <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
             <Coins aria-hidden className="size-4 text-gold-text" />
-            {t("bulkPricing.title", { count: drafts.length })}
+            {t("bulkPricing.title", { count: targets.rows.length })}
           </summary>
           <form
             noValidate
@@ -361,7 +415,7 @@ export function ProductTable({
               />
             </label>
             <Button type="submit" variant="outline" size="lg" disabled={bulkBusy}>
-              {t("bulkPricing.apply")}
+              {targets.selection ? t("bulkPricing.applySelected") : t("bulkPricing.apply")}
             </Button>
           </form>
           <p id="bulk-pricing-hint" className="mt-2 text-xs text-muted-foreground">
@@ -408,6 +462,11 @@ export function ProductTable({
             {shown.map((row) => (
               <li key={row.id} className="flex flex-col gap-3 rounded-lg border bg-card p-3">
                 <div className="flex gap-3">
+                  {row.status === "DRAFT" && (
+                    <label className="-m-2 flex min-h-11 min-w-11 items-start justify-center p-2">
+                      {pick(row)}
+                    </label>
+                  )}
                   <Thumb row={row} />
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <p className="line-clamp-2 text-sm font-medium">{row.name[locale]}</p>
@@ -431,6 +490,9 @@ export function ProductTable({
             <table className="w-full text-sm">
               <thead className="bg-muted text-left">
                 <tr>
+                  <th scope="col" className="w-10 p-3 font-medium">
+                    <span className="sr-only">{t("select.col")}</span>
+                  </th>
                   <th scope="col" className="p-3 font-medium">
                     {t("colProduct")}
                   </th>
@@ -454,6 +516,7 @@ export function ProductTable({
               <tbody>
                 {shown.map((row) => (
                   <tr key={row.id} className="border-t align-middle">
+                    <td className="p-3">{pick(row)}</td>
                     <th scope="row" className="p-3 text-left font-normal">
                       <div className="flex items-center gap-3">
                         <Thumb row={row} />

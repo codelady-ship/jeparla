@@ -150,13 +150,14 @@ class SearchApiTests {
 
     @Test
     void exactAndPrefixMatchesRankAboveTypos() throws Exception {
-        // "sırğa" is a whole word of the 6 earrings and only the start of "sırğası" (kids' earrings).
+        // "sırğa" is a whole word of the 6 earrings and only the start of "sırğası" (5 kids' earrings; the
+        // sixth demo kids' piece, product 60, is the bijouterie bracelet of #128).
         JsonNode content = search("sırğa").get("products").get("content");
         List<Long> categories = new ArrayList<>();
         content.forEach(card -> categories.add(card.get("categoryId").longValue()));
-        assertThat(categories).hasSize(12);
+        assertThat(categories).hasSize(11);
         assertThat(categories.subList(0, 6)).containsOnly(4L);
-        assertThat(categories.subList(6, 12)).containsOnly(12L);
+        assertThat(categories.subList(6, 11)).containsOnly(12L);
     }
 
     @Test
@@ -309,7 +310,9 @@ class SearchApiTests {
 
     @Test
     void aQueryOfAtMost100CharactersIsAccepted() throws Exception {
-        String longest = "ş".repeat(100);
+        // Two bytes per letter in UTF-8. Not "ş": folded to "sss...", it is a fair trigram match for a word
+        // ending in "ss" ("Stainless", demo product 60).
+        String longest = "ğ".repeat(100);
         assertThat(search(longest).get("products").get("totalElements").longValue()).isZero();
         assertThat(suggest(longest).get("products")).isEmpty();
         // More than 8 words: the rest is ignored, nothing breaks.

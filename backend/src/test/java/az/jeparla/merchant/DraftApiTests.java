@@ -88,4 +88,42 @@ class DraftApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.code").value("merchant.pdf_size"));
         mvc.perform(get(DRAFTS).with(buyer(newBuyer()))).andExpect(status().isForbidden());
     }
+
+    @Test
+    void aTwentyPageCatalogBecomesTwentyPrivateDraftsAndNoProduct() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        byte[] pdf = CatalogPdfTests.twentyPageCatalog();
+        String key = presign(seller, "PDF", "application/pdf", pdf.length);
+        storage.put(key, pdf, "application/pdf");
+
+        mvc.perform(json(post(DRAFTS + "/pdf"), "{\"key\": \"%s\"}".formatted(key)).with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.limited").value(false))
+                .andExpect(jsonPath("$.drafts.length()").value(20))
+                .andExpect(jsonPath("$.drafts[19].pdfPage").value(20))
+                .andExpect(jsonPath("$.drafts[19].suggestedName").value("Ring model 20"));
+        assertThat(storage.isStaged(key)).isFalse();
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM product_drafts WHERE store_id = ?", Integer.class,
+                seller.storeId())).isEqualTo(20);
+        // Suggestions are never published: no product exists until the seller confirms one in the form.
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM products WHERE store_id = ?", Integer.class,
+                seller.storeId())).isZero();
+    }
+
+    @Test
+    void theDailyDraftLimitIsPerStore() throws Exception {
+        Seller full = seller(SellerKind.PRECIOUS, false);
+        Seller other = seller(SellerKind.PRECIOUS, false);
+        jdbc.update("""
+                INSERT INTO product_drafts (store_id, source, image_key, content_type, width, height, created_at)
+                SELECT ?, 'PHOTO', 'drafts/' || ? || '/' || gen_random_uuid() || '.jpg', 'image/jpeg', 900, 900, now()
+                FROM generate_series(1, ?)
+                """, full.storeId(), full.storeId(), MerchantDraftService.DAILY_DRAFTS);
+
+        mvc.perform(json(post(DRAFTS + "/uploads"),
+                        "{\"kind\": \"CAMERA\", \"contentType\": \"image/jpeg\", \"sizeBytes\": 1000}")
+                        .with(full.token()))
+                .andExpect(status().isTooManyRequests());
+        presign(other, "CAMERA", "image/jpeg", 1000);
+    }
 }

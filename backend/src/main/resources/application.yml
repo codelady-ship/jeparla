@@ -194,6 +194,18 @@ jeparla:
     # Public origin of the frontend (no path) for the links in emails, e.g. https://jeparla.az. Also the base of
     # a store's share link <site-url>/s/<code> and its QR code (#100).
     site-url: ${JEPARLA_PUBLIC_SITE_URL:http://localhost:3000}
+  indexnow:
+    # IndexNow (#62): changed product and store pages are announced to Bing, Yandex and the other IndexNow engines.
+    # The key (8-128 letters, digits, dashes) comes only from the environment; the site serves it at
+    # <site-url>/<key>.txt from the same variable (web container). Empty: off.
+    key: ${JEPARLA_INDEXNOW_KEY:}
+    endpoint: https://api.indexnow.org/indexnow
+    # A changed page waits this long (the site caches catalog pages for 5 minutes), also between retries.
+    delay: 10m
+    attempts: 5
+    timeout: 10s
+    # How often due URLs are sent, in one batch.
+    flush-interval: 60s
   notifications:
     # Sends the email outbox (#138) once a provider is configured (#131); "-" turns the schedule off.
     email-cron: ${JEPARLA_EMAIL_OUTBOX_CRON:0 * * * * *}
