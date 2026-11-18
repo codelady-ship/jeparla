@@ -150,6 +150,7 @@ nano deploy/.env                  # aşağıdakı cədvəl üzrə yoxlayın, Ctr
 | `COMPOSE_PROFILES` | `local-s3` (standart, şəkillər VM-də). R2-yə keçid: bölmə 13 |
 | `JEPARLA_SUPPORT_EMAIL` və ya `JEPARLA_SUPPORT_URL` | dəstək ünvanınız (məs. WhatsApp linki); saytın /help səhifəsində də görünür |
 | `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION` | indi boş; bölmə 14 |
+| `JEPARLA_INDEXNOW_KEY` | istəyə bağlı: `openssl rand -hex 16`. Həm API (dəyişən məhsul və mağaza səhifələrini IndexNow-a göndərir), həm sayt (`/<açar>.txt`) oxuyur. Boş: söndürülüb. Addımlar: `docs/geo-check.md` |
 | `JEPARLA_SMTP_*`, `JEPARLA_MAIL_FROM` | istəyə bağlı (domen alınandan sonra). Boşdursa məktublar outbox-da gözləyir |
 | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | istəyə bağlı (docs/operations.md) |
 
