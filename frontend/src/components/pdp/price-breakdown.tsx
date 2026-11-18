@@ -92,7 +92,7 @@ export function PriceBreakdownBlock({
               href={cbarUrl(b.metal.quoteDate)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 link-underline font-medium text-foreground"
+              className="touch-target relative inline-flex items-center gap-1 link-underline font-medium text-foreground"
             >
               {t("cbarLink")}
               <ExternalLink aria-hidden className="size-3" />
