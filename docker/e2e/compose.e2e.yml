@@ -1,0 +1,31 @@
+# CI only (#41): the local stack (docker-compose.yml) as the backend of the frontend e2e suite with
+# NEXT_PUBLIC_USE_MOCK=false. Never used in production (deploy/docker-compose.prod.yml).
+#
+#   docker compose -f docker-compose.yml -f docker/e2e/compose.e2e.yml up -d --build
+#   docker/e2e/seed.sh
+#
+# The `demo` profile loads the invented demo catalog (backend db/demo, the same slugs as the frontend
+# sample data); docker/e2e/seed.sh then adds the test accounts.
+
+services:
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      # The Next.js production server of the e2e run (playwright.config.ts).
+      JEPARLA_FRONTEND_ORIGIN: http://localhost:3200
+      JEPARLA_PUBLIC_SITE_URL: http://localhost:3200
+      # Every browser of the run reaches the API through one address (the Next.js server or the runner):
+      # the sign-in and sign-up limits are raised so parallel tests and retries are not refused with 429.
+      # The limits themselves are covered by the backend tests.
+      SPRING_APPLICATION_JSON: >-
+        {"jeparla":{"rate-limit":{"policies":{
+        "login-ip":{"limit":1000},
+        "login-account-ip":{"limit":1000},
+        "register-ip":{"limit":1000},
+        "register-account":{"limit":1000},
+        "password-forgot-ip":{"limit":1000},
+        "password-forgot-account":{"limit":1000},
+        "password-reset-ip":{"limit":1000},
+        "email-verify-ip":{"limit":1000},
+        "refresh-ip":{"limit":1000},
+        "document-upload-account":{"limit":1000}}}}}

@@ -1,0 +1,114 @@
+name: e2e (real API)
+
+# The frontend e2e suite against the real API (#41): NEXT_PUBLIC_USE_MOCK=false, the backend, PostgreSQL 16,
+# Redis and S3-compatible storage from docker-compose.yml, with the backend demo catalog (`demo` profile,
+# the same slugs as the sample data) and the test accounts of docker/e2e/seed.sh. The sample-data run
+# stays in frontend.yml.
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "docker/**"
+      - "docker-compose.yml"
+      - ".env.example"
+      - ".github/workflows/e2e-real.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "docker/**"
+      - "docker-compose.yml"
+      - ".env.example"
+      - ".github/workflows/e2e-real.yml"
+
+concurrency:
+  group: e2e-real-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: e2e and axe against the API (390px, 1440px)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      COMPOSE_FILE: docker-compose.yml:docker/e2e/compose.e2e.yml
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_USE_MOCK: "false"
+      # 127.0.0.1, not localhost: the API port is published on IPv4 only.
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:8080
+      NEXT_PUBLIC_SITE_URL: http://localhost:3200
+    steps:
+      - uses: actions/checkout@v7
+
+      # Throwaway CI-only values for the variables .env.example leaves empty (as in compose.yml).
+      - name: Create .env and test secrets
+        run: |
+          cp .env.example .env
+          sed -i \
+            -e "s/^JEPARLA_DB_ADMIN_PASSWORD=$/JEPARLA_DB_ADMIN_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_DB_MIGRATION_PASSWORD=$/JEPARLA_DB_MIGRATION_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_DB_PASSWORD=$/JEPARLA_DB_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_REDIS_PASSWORD=$/JEPARLA_REDIS_PASSWORD=ci$(openssl rand -hex 12)/" \
+            -e "s/^JEPARLA_JWT_SECRET=$/JEPARLA_JWT_SECRET=$(openssl rand -hex 32)/" \
+            -e "s/^JEPARLA_S3_ACCESS_KEY=$/JEPARLA_S3_ACCESS_KEY=ci$(openssl rand -hex 6)/" \
+            -e "s/^JEPARLA_S3_SECRET_KEY=$/JEPARLA_S3_SECRET_KEY=ci$(openssl rand -hex 16)/" \
+            .env
+          if grep -E '^[A-Z_]+=$' .env; then echo "unfilled variable in .env"; exit 1; fi
+          # The frontend names each visitor to the API rate limits, as in production.
+          token=$(openssl rand -hex 32)
+          echo "JEPARLA_FRONTEND_TOKEN=$token" >> .env
+          echo "JEPARLA_FRONTEND_TOKEN=$token" >> "$GITHUB_ENV"
+          # Password of the seeded merchant and admin accounts (letters and digits).
+          echo "E2E_PASSWORD=e2e$(openssl rand -hex 10)" >> "$GITHUB_ENV"
+
+      # The image builds while Node and the browser install.
+      - name: Start the stack
+        run: docker compose up -d --build
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+
+      - name: Wait for the API
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8080/actuator/health/readiness; then echo; break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:8080/actuator/health | grep -q '"UP"'
+          docker compose ps -a
+
+      - name: Seed the test accounts
+        run: bash docker/e2e/seed.sh
+
+      # Built after the API is up: static pages and generateStaticParams read the demo catalog.
+      - run: npm run build
+        working-directory: frontend
+      - run: npm run e2e
+        working-directory: frontend
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-traces-real-api
+          path: frontend/test-results/
+          retention-days: 7
+
+      - name: API logs
+        if: always()
+        run: docker compose logs --no-color --tail 300 backend
+
+      - name: Stop
+        if: always()
+        run: docker compose down -v
