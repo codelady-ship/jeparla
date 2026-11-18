@@ -4,7 +4,6 @@ import { audienceMatches } from "@/lib/catalog/filters";
 import { matchesQuery } from "@/lib/search/normalize";
 import type { Category, Page, Product, ProductFilters, ProductSummary, Stone } from "@/types/api";
 import type { StoreFacts, StorePreview } from "@/types/share";
-import type { AdminEvidencePhoto, EvidenceStatus } from "@/lib/admin/evidence";
 import type { JeparlaApi } from "../types";
 import {
   CATEGORIES,
@@ -64,36 +63,6 @@ export function mockStoreFacts(
       tradeLicense: store.verification.documents === "VERIFIED",
     },
   };
-}
-
-/**
- * The admin hallmark and label queue (#106) on the sample data: the evidence photos of the
- * fixtures, a checked one VERIFIED and the others PENDING (the shape of AdminEvidencePhotoDto).
- */
-export function mockEvidenceQueue(status: EvidenceStatus): AdminEvidencePhoto[] {
-  return PRODUCTS.flatMap((p) =>
-    (p.evidencePhotos ?? []).map((e, n) => ({
-      id: p.id * 10 + n + 1,
-      kind: e.kind,
-      url: e.url,
-      width: e.width,
-      height: e.height,
-      status: e.checked ? ("VERIFIED" as const) : ("PENDING" as const),
-      checkNote: null,
-      checkedAt: e.checked ? `${PRICE_DATE}T11:00:00+04:00` : null,
-      createdAt: `${PRICE_DATE}T09:00:00+04:00`,
-      productId: p.id,
-      productSlug: p.slug,
-      productName: p.name.az,
-      productStatus: p.status,
-      materialKind: p.materialKind,
-      metal: p.metal,
-      finenesses: p.fineness === null ? [] : [p.fineness],
-      weightsGrams: p.weightGrams === null ? [] : [p.weightGrams],
-      storeId: p.store.id,
-      storeName: p.store.name,
-    })),
-  ).filter((e) => e.status === status);
 }
 
 export function mockStorePreview(slug: string): StorePreview | null {

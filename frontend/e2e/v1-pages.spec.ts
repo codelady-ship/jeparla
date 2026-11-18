@@ -1,5 +1,12 @@
 import type { Page } from "@playwright/test";
-import { account, expect, expectNoA11yViolations, test, waitForHydration } from "./fixtures";
+import {
+  account,
+  expect,
+  expectNoA11yViolations,
+  REAL_API,
+  test,
+  waitForHydration,
+} from "./fixtures";
 
 /**
  * v1 acceptance (#47): axe (WCAG 2.1 AA) and no sideways scroll at 390px and 1440px on the
@@ -51,8 +58,9 @@ test.describe("v1 pages: axe and 390px", () => {
     await expect(page.getByText(/Bu məhsul qiymətli metal deyil/)).toBeVisible();
 
     await check(page, "/az/products?kind=FASHION");
-    await expect(page.getByRole("link", { name: "Paslanmaz polad qolbaq" }).first()).toBeVisible();
-    await expect(page.getByText("Bijuteriya").first()).toBeVisible();
+    const card = page.getByRole("article").filter({ hasText: "Paslanmaz polad qolbaq" });
+    await expect(card).toBeVisible();
+    await expect(card.getByText("Bijuteriya")).toBeVisible();
   });
 
   test("product page with hallmark and label photos, and the catalog filter", async ({ page }) => {
@@ -60,10 +68,11 @@ test.describe("v1 pages: axe and 390px", () => {
     const evidence = page.getByRole("region", { name: "Damğa və etiket" });
     await expect(evidence).toBeVisible();
     await expect(evidence.getByText(/administratoru şəkli/)).toBeVisible();
+    // By attribute: the phone carousel hides the shots that are not shown (aria-hidden).
     await expect(
-      page.getByRole("img", { name: /əyar damğasının yaxın planda şəkli/ }),
+      page.locator('img[alt*="əyar damğasının yaxın planda şəkli"]').first(),
     ).toBeAttached();
-    await expect(page.getByRole("img", { name: /etiketin şəkli/ })).toBeAttached();
+    await expect(page.locator('img[alt*="etiketin şəkli"]').first()).toBeAttached();
 
     await check(page, "/az/products?hallmarkPhoto=true");
     await expect(page.getByRole("link", { name: "Səma — qızıl sırğa 585" }).first()).toBeVisible();
@@ -130,7 +139,9 @@ test.describe("v1 pages: axe and 390px", () => {
     });
   }
 
+  // The sample data has no admin actions: the page shows a note there, so only the API run has rows.
   test("admin evidence queue with a photo waiting for the check", async ({ page }) => {
+    test.skip(!REAL_API, "the admin queue lists photos only with the API");
     await signIn(page, "admin");
     await check(page, "/az/admin/evidence");
     await expect(page.getByText("Səma — qızıl sırğa 585").first()).toBeVisible();
