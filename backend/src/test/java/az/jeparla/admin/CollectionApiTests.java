@@ -195,6 +195,9 @@ class CollectionApiTests extends MerchantApiTestBase {
                 listed);
 
         assertThat(publicCount(slug)).isEqualTo(1);
+        // Its only product has no photo: no cover, never a stock picture (the demo covers: CatalogContractTests).
+        mvc.perform(get(PUBLIC)).andExpect(jsonPath("$[?(@.slug == '" + slug + "')].cover").value(
+                org.hamcrest.Matchers.contains((Object) null)));
         String page = body(mvc.perform(get("/api/v1/products").param("collection", slug))
                 .andExpect(status().isOk()).andReturn());
         List<Number> ids = JsonPath.read(page, "$.content[*].id");

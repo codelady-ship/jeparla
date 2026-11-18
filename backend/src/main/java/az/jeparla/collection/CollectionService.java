@@ -5,6 +5,10 @@ import az.jeparla.common.error.ApiException;
 import az.jeparla.product.Product;
 import az.jeparla.product.ProductCatalogService;
 import az.jeparla.product.ProductRepository;
+import az.jeparla.product.dto.ProductImageDto;
+import az.jeparla.product.dto.ProductQuery;
+import az.jeparla.product.dto.ProductSummaryDto;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -12,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,7 +41,15 @@ public class CollectionService {
         this.catalog = catalog;
     }
 
-    /** {@code GET /collections}: shown collections in the admin order, empty ones too (productCount 0). */
+    /** How many of the newest products of a collection are looked at for its cover photo. */
+    static final int COVER_CANDIDATES = 12;
+
+    /**
+     * {@code GET /collections}: shown collections in the admin order, empty ones too (productCount 0, no cover).
+     * The cover is the main photo of one of the collection's newest listed products, never an AI image: the first
+     * whose photo file no earlier collection uses yet (URL without its fragment), else the first at all. The same
+     * rule as the sample data (frontend mock), so the cards show real products, never stock pictures.
+     */
     @Transactional(readOnly = true)
     public List<CollectionDto> shown() {
         Set<Long> visible = catalog.visibleCategoryIds();
@@ -46,8 +59,35 @@ public class CollectionService {
                 counts.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
             }
         }
-        return collections.findByActiveTrueOrderBySortOrderAscIdAsc().stream()
-                .map(c -> CollectionDto.of(c, counts.getOrDefault(c.getId(), 0L))).toList();
+        Set<String> used = new HashSet<>();
+        List<CollectionDto> out = new ArrayList<>();
+        for (OccasionCollection c : collections.findByActiveTrueOrderBySortOrderAscIdAsc()) {
+            long count = counts.getOrDefault(c.getId(), 0L);
+            ProductImageDto cover = count == 0 ? null : cover(c.getSlug(), used);
+            if (cover != null) {
+                used.add(file(cover.url()));
+            }
+            out.add(CollectionDto.of(c, count, cover));
+        }
+        return out;
+    }
+
+    private ProductImageDto cover(String slug, Set<String> used) {
+        List<ProductSummaryDto> newest = catalog.list(ProductQuery.newestInCollection(slug, COVER_CANDIDATES))
+                .content();
+        List<ProductImageDto> main = newest.stream().filter(p -> !p.images().isEmpty()).map(p -> p.images().get(0))
+                .filter(i -> !i.aiGenerated()).toList();
+        Predicate<ProductImageDto> fresh = i -> !used.contains(file(i.url()));
+        return main.stream().filter(fresh).findFirst()
+                // Several products can share one photo file: another real photo of these products, if any.
+                .or(() -> newest.stream().flatMap(p -> p.images().stream()).filter(i -> !i.aiGenerated())
+                        .filter(fresh).findFirst())
+                .orElse(main.isEmpty() ? null : main.get(0));
+    }
+
+    private static String file(String url) {
+        int hash = url.indexOf('#');
+        return hash < 0 ? url : url.substring(0, hash);
     }
 
     /**

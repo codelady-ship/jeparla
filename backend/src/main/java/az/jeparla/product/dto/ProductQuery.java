@@ -94,6 +94,12 @@ public record ProductQuery(
                 null, null, null, null, null, null, null, null);
     }
 
+    /** The newest listed products of an occasion collection, first page (#115: collection covers). */
+    public static ProductQuery newestInCollection(String collectionSlug, int size) {
+        return new ProductQuery(null, null, collectionSlug, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, "newest", 0, size);
+    }
+
     /** The same query restricted to one store ({@code /stores/{slug}/products}). */
     public ProductQuery inStore(String storeSlug) {
         return new ProductQuery(q, category, collection, List.of(storeSlug), kind, audience, metal, fineness, minWeight,
