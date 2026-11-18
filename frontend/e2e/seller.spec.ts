@@ -1,4 +1,4 @@
-import { expect, expectNoA11yViolations, test, testPassword } from "./fixtures";
+import { expect, expectNoA11yViolations, test, testPassword, uniqueDigits } from "./fixtures";
 
 const next = (page: import("@playwright/test").Page) =>
   page.getByRole("button", { name: "Davam et" }).click();
@@ -23,17 +23,18 @@ test.describe("seller sign-up wizard", () => {
     await page.goto("/az/sell");
     await expectNoA11yViolations(page);
     await page.getByLabel("Ad və soyad").fill("Əli Şükürov");
-    await page.getByLabel("Mobil telefon").fill("050 123 45 67");
+    // The API keeps every sign-up: a new phone, store name and tax id per run.
+    await page.getByLabel("Mobil telefon").fill(`050 ${uniqueDigits(7)}`);
     await page.getByLabel("Şifrə").fill(testPassword());
     await next(page);
 
     await expect(page.getByRole("heading", { level: 2, name: "Mağaza" })).toBeVisible();
-    const store = "Gülşən Zərgər Evi";
+    const store = `Gülşən Zərgər Evi ${uniqueDigits(6)}`;
     await page.getByLabel("Mağazanın adı").fill(store);
     await page.getByLabel("WhatsApp nömrəsi").fill("055 765 43 21");
     await page.getByLabel("Şəhər").selectOption({ label: "Gəncə" });
     await page.getByLabel("Ünvan").fill("Nizami küçəsi 12");
-    await page.getByLabel("VÖEN").fill("1234567890");
+    await page.getByLabel("VÖEN").fill(uniqueDigits(10));
     // The seller code of conduct and the seller terms are accepted here (#107, #249).
     await page.getByRole("checkbox", { name: /Satıcı davranış kodeksini/ }).check();
     await next(page);

@@ -1,8 +1,15 @@
-import { expect, expectNoA11yViolations, test, testPassword, waitForHydration } from "./fixtures";
+import {
+  expect,
+  expectNoA11yViolations,
+  linkToken,
+  test,
+  testPassword,
+  waitForHydration,
+} from "./fixtures";
 
 /**
- * Password reset and email verification pages (#131), with the sample data (no backend):
- * the calls succeed without sending anything, so the flows and states can be checked.
+ * Password reset and email verification pages (#131). The sample data accepts any token; against
+ * the API each link carries one of the tokens docker/e2e/seed.sh stored (linkToken).
  */
 test.describe("account recovery", () => {
   test("sign-in links to forgot-password, which answers the same for every address", async ({
@@ -23,7 +30,7 @@ test.describe("account recovery", () => {
   test("a reset link clears its token from the address bar and sets a new password", async ({
     page,
   }) => {
-    const response = await page.goto("/az/reset-password#token=e2eTokenAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    const response = await page.goto(`/az/reset-password#token=${linkToken("reset")}`);
     expect(response?.headers()["referrer-policy"]).toBe("no-referrer");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
     const password = page.getByLabel("Şifrə", { exact: true });
@@ -52,7 +59,7 @@ test.describe("account recovery", () => {
   });
 
   test("a verification link confirms the address", async ({ page }) => {
-    await page.goto("/en/verify-email#token=e2eTokenAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    await page.goto(`/en/verify-email#token=${linkToken("verify")}`);
     await expect(page.getByText("Your e-mail is confirmed. Thank you.")).toBeVisible();
     await expect(page).toHaveURL(/\/en\/verify-email$/);
     await expectNoA11yViolations(page);

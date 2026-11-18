@@ -63,3 +63,31 @@ export async function expectNoA11yViolations(page: Page) {
 export function testPassword() {
   return `e2e${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}7`;
 }
+
+/**
+ * Real mode (#41): the suite runs against the API (NEXT_PUBLIC_USE_MOCK=false) with the backend
+ * demo catalog (same slugs as the sample data) and the accounts of docker/e2e/seed.sh.
+ */
+export const REAL_API = process.env.NEXT_PUBLIC_USE_MOCK === "false";
+
+/**
+ * Sign-in of a test account. The sample data signs anyone in (the role follows the address);
+ * the API knows only the seeded accounts and their password (E2E_PASSWORD).
+ */
+export const account = (role: "merchant" | "admin") =>
+  REAL_API
+    ? { email: `e2e-${role}@jeparla.test`, password: process.env.E2E_PASSWORD ?? "" }
+    : { email: `${role}@example.com`, password: testPassword() };
+
+/**
+ * A one-time link token. The sample data accepts any; the API only the ones seed.sh stored, one
+ * per purpose, project and retry (a used link cannot be opened again).
+ */
+export const linkToken = (purpose: "reset" | "verify") =>
+  REAL_API
+    ? `e2e-${purpose}-${test.info().project.name}-${test.info().retry}`
+    : "e2eTokenAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+/** Digits that make a phone number, a tax id or a name unique for this run (the API keeps them). */
+export const uniqueDigits = (length: number) =>
+  Array.from(crypto.getRandomValues(new Uint8Array(length)), (b) => b % 10).join("");
