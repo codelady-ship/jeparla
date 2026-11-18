@@ -1297,8 +1297,17 @@
       "fromPrice": "from {price}",
       "adminNote": "Admin note",
       "bulkReview": "Send the drafts shown to review ({count})",
+      "bulkReviewSelected": "Send the selected drafts to review ({count})",
       "bulkSent": "{done} of {total} products sent to review.",
       "bulkFailed": "The bulk change failed. Try again.",
+      "select": {
+        "col": "Select",
+        "one": "Select: {name}",
+        "all": "Select all drafts shown ({count})",
+        "some": "{count, plural, one {# draft selected} other {# drafts selected}}: bulk actions apply to them only.",
+        "none": "Nothing selected: bulk actions apply to all drafts shown.",
+        "clear": "Clear selection"
+      },
       "aiStudio": "AI Studio",
       "aiStudioNamed": "{name}: AI Studio",
       "bulkPricing": {
@@ -1309,6 +1318,7 @@
         "METAL_LINKED": "Linked to metal",
         "labor": "Labour per gram (AZN)",
         "apply": "Apply to the drafts in view",
+        "applySelected": "Apply to the selected drafts",
         "hint": "Switching to a fixed price keeps each variant's current price. Switching to metal-linked sets the labour per gram; the other rule fields (fixed labour, stones, markup) are 0 or stay as they were, and you can change them in the editor. With labour alone, only metal-linked variants change. New prices show in the table right away.",
         "done": "{done} of {total} drafts changed.",
         "pricingEmpty": "Choose a price mode or type a labour cost.",
