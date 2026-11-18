@@ -348,6 +348,11 @@ API token. `deploy/.env`-də `COMPOSE_PROFILES=` (boş) və `.env.example`-dakı
 |---|---|---|
 | 2026-11-16 | Lighthouse mobil və desktop (canlı URL) | **Mobil Performance həddi (90) keçmir**, qalan kateqoriyalar keçir. Bax: aşağıdakı cədvəl |
 | 2026-11-16 | Schema.org validator, `robots.txt`, `llms.txt`, sitemap | 14 ictimai səhifədə 0 xəta, 0 xəbərdarlıq; sitemap-in 60 URL-i 200, `noindex` yoxdur; `robots.txt`, `llms.txt`, `llms-full.txt` 200. Məhsul və mağaza səhifələri prod-da hələ yoxdur. Rich Results Test (Google hesabı ilə brauzerdə) aparılmayıb |
+| 2026-11-18 | `tools/sweep.py` və `tools/contrast.py` | CI-da keçir: frontend workflow-un "contrast and old-name sweep" işi (main `115ad5e`, run 44282861805) və backend workflow-un "old-name sweep" işi |
+| 2026-11-18 | Bütün testlər (CI, main) | `115ad5e`: lint, tiplər, vitest, build, e2e + axe (nümunə data, 390px və 1440px), e2e real API ilə (run 44282861778) yaşıl; backend `0c104ab`: `gradle build`, Testcontainers ilə, atlanmış test yoxdur (run 44276925210) |
+| 2026-11-18 | axe: nadir vəziyyətlər | Bijuteriya məhsulu və bölməsi, damğa və etiket şəkilli məhsul və filtri, admin damğa növbəsində yoxlama gözləyən şəkil, seçilmişlərdə qiymət dəyişikliyi (header qeydi və blok): nümunə dataya əlavə olundu (mock və backend demo seed), `e2e/v1-pages.spec.ts` |
+| _hələ aparılmayıb_ | Bərpa testi (bölmə 13) | Sahib, VM-də (#282) |
+| _hələ aparılmayıb_ | 1 saat istifadəsiz qaldıqdan sonra giriş < 1 s (#45) | Sahib, VM-də (#282) |
 
 **Lighthouse, canlı sayt (2026-11-16).** Lighthouse 13.6, headless Chrome, Windows noutbuku
 (`benchmarkIndex` 1000-1300; eyni vaxtda başqa proseslər də işləyirdi). Hər səhifə 3 dəfə, median.
@@ -369,5 +374,3 @@ Prod bazası boşdur (mağaza və məhsul yoxdur), ona görə kataloq və mağaz
   sabit müqayisə üçün PageSpeed Insights (Google serverləri) və ya CI-dakı Lighthouse lazımdır.
 - `/az/stores`-da Best Practices 96 brauzer konsolundakı `MISSING_MESSAGE: Stores` xətasına görə idi;
   PR #261 ilə düzəldildi, deploydan sonra yenidən ölçülməlidir.
-| _hələ aparılmayıb_ | Bərpa testi (bölmə 13) | |
-| _hələ aparılmayıb_ | 1 saat istifadəsiz qaldıqdan sonra giriş < 1 s (#45) | |
