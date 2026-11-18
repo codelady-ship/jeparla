@@ -147,10 +147,10 @@ class CatalogContractTests {
     }
 
     /**
-     * Keys the backend sends before the frontend mock knows them: {@code Variant.priceBreakdown} (#104) and
-     * {@code Product.evidencePhotos} (#106).
+     * Keys the backend sends before the frontend mock knows them: {@code Product.evidencePhotos} (#106).
+     * {@code Variant.priceBreakdown} (#104) left this set: the mock builds it like PriceBreakdownDto.
      */
-    static final Set<String> BACKEND_AHEAD = Set.of("priceBreakdown", "evidencePhotos");
+    static final Set<String> BACKEND_AHEAD = Set.of("evidencePhotos");
 
     /** A copy of {@code node} without the {@link #BACKEND_AHEAD} keys at any depth. */
     static JsonNode withoutBackendAhead(JsonNode node) {
