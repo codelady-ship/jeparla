@@ -53,7 +53,23 @@
       "text": "Azerbaijan’s jewelry stores in one place, with each store’s checks shown separately.",
       "cta": "All stores"
     },
-    "decorNote": "Decorative stock imagery, not a store or product on Jeparla."
+    "decorNote": "Decorative stock imagery, not a store or product on Jeparla.",
+    "video": {
+      "pause": "Pause the video",
+      "play": "Play the video"
+    },
+    "ringBand": {
+      "title": "A close look at every stone",
+      "cta": "Browse the catalog"
+    },
+    "categoryFallback": {
+      "uzukler": "Rings",
+      "sirgalar": "Earrings",
+      "boyunbagilar": "Necklaces",
+      "qolbaqlar": "Bracelets",
+      "asqilar": "Pendants",
+      "destler": "Sets"
+    }
   },
   "Nav": {
     "home": "Home",

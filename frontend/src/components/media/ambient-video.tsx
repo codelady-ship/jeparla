@@ -1,5 +1,6 @@
 "use client";
 
+import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "cn";
 
@@ -19,6 +20,11 @@ type Props = {
   desktopQuery?: string;
   /** Above the fold (/stores header): the poster loads at once with high priority. */
   eager?: boolean;
+  /**
+   * Labels for a pause / play button (WCAG 2.2.2) on full-width bands. The button is
+   * only shown where the video may play at all (not under reduced motion or Save-Data).
+   */
+  controls?: { pause: string; play: string };
   className?: string;
 };
 
@@ -41,11 +47,15 @@ export function AmbientVideo({
   mobile,
   desktopQuery = "(min-width: 48rem)",
   eager,
+  controls,
   className,
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [armed, setArmed] = useState(false);
+  /** The visitor paused it: scrolling back into view does not restart it. */
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -80,7 +90,7 @@ export function AmbientVideo({
     const io = new IntersectionObserver(
       (entries) => {
         const visible = entries.some((e) => e.isIntersecting);
-        if (visible) video.play()?.catch(() => {});
+        if (visible && !pausedRef.current) video.play()?.catch(() => {});
         else video.pause();
       },
       { threshold: 0.2 },
@@ -93,7 +103,19 @@ export function AmbientVideo({
     };
   }, [armed]);
 
-  return (
+  const toggle = () => {
+    const video = videoRef.current;
+    const next = !pausedRef.current;
+    pausedRef.current = next;
+    setPaused(next);
+    if (!video) return;
+    if (next) video.pause();
+    else {
+      video.play()?.catch(() => {});
+    }
+  };
+
+  const media = (
     <div ref={rootRef} aria-hidden className={cn("ambient-video", className)}>
       <picture>
         <source media={desktopQuery} srcSet={desktop.poster} type="image/avif" />
@@ -125,5 +147,26 @@ export function AmbientVideo({
         )}
       </video>
     </div>
+  );
+  if (!controls) return media;
+  return (
+    <>
+      {media}
+      {armed && (
+        <button
+          type="button"
+          onClick={toggle}
+          aria-pressed={paused}
+          aria-label={paused ? controls.play : controls.pause}
+          className="ambient-toggle"
+        >
+          {paused ? (
+            <Play aria-hidden className="size-4" />
+          ) : (
+            <Pause aria-hidden className="size-4" />
+          )}
+        </button>
+      )}
+    </>
   );
 }

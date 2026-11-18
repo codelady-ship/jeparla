@@ -13,12 +13,14 @@ type Props = {
   products: ProductSummary[];
   /** Shown instead of the grid when there are no products. */
   empty?: ReactNode;
+  /** Replaces the column classes (for example two columns in a half-width split). */
+  className?: string;
 };
 
-export function ProductGrid({ products, empty }: Props) {
+export function ProductGrid({ products, empty, className }: Props) {
   if (products.length === 0) return <>{empty}</>;
   return (
-    <ul className={GRID}>
+    <ul className={className ?? GRID}>
       {products.map((p, i) =>
         i < FIRST_ROW ? (
           <li key={p.id} className="flex">
