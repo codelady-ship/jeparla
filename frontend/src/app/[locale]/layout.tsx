@@ -37,6 +37,9 @@ const cormorant = Cormorant({
   preload: false,
 });
 
+/** Sets <html data-motion>: scripts run, so scroll reveals may hide content until seen. */
+const MOTION_MARK = "document.documentElement.dataset.motion=''";
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -106,6 +109,9 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/* Runs before anything below it is painted: marks that scripts work, and only
+            then may the scroll reveal styles hide content until it scrolls in (#287). */}
+        <script dangerouslySetInnerHTML={{ __html: MOTION_MARK }} />
         <IntlProvider locale={locale} messages={clientMessages}>
           <ThemeProvider>
             <SampleDataBanner locale={locale} />
