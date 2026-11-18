@@ -213,6 +213,8 @@ export function HeroMotion({
     }
 
     let timer = 0;
+    let raf = 0;
+    let deferred = 0;
     if (reduce) {
       track.dataset.mode = "static";
       video.pause();
@@ -226,15 +228,39 @@ export function HeroMotion({
       video.addEventListener("ended", land);
       video.addEventListener("error", land);
       video.muted = true;
-      video.play()?.catch(land);
-      timer = window.setTimeout(land, REVEAL_TIMEOUT);
+      // The film is requested only after the first frame with the headline is painted
+      // (one frame, then a task): fetched with the page it took the phone's bandwidth from
+      // the scripts and fonts the first screen waits for (#62). The poster is the same
+      // plain backdrop the film starts on, so nothing visible changes while it loads.
+      const begin = () => {
+        video.src = media.video;
+        if (landed) {
+          // Scrolled before the film began: hold its last frame (the tigers standing).
+          const toEnd = () => {
+            if (Number.isFinite(video.duration)) video.currentTime = video.duration;
+          };
+          video.addEventListener("loadedmetadata", toEnd, { once: true });
+          video.load();
+          return;
+        }
+        video.play()?.catch(land);
+        timer = window.setTimeout(land, REVEAL_TIMEOUT);
+      };
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        deferred = window.setTimeout(begin, 0);
+      });
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onResize);
-      render();
+      // First draw on the next frame, not inside hydration: render() reads layout, and a
+      // read here forced an extra full layout on the phone's busiest task (#62).
+      onScroll();
     }
 
     return () => {
       window.clearTimeout(timer);
+      window.clearTimeout(deferred);
+      if (raf) cancelAnimationFrame(raf);
       if (idle) {
         if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
         else window.clearTimeout(idle);
@@ -257,15 +283,13 @@ export function HeroMotion({
             ref={videoRef}
             className="hero-video"
             muted
-            autoPlay
             playsInline
-            preload="auto"
+            preload="none"
             poster={HERO_POSTER}
             disablePictureInPicture
-          >
-            <source src={HERO_MEDIA.desktop.video} type="video/mp4" media={HERO_DESKTOP_QUERY} />
-            <source src={HERO_MEDIA.mobile.video} type="video/mp4" />
-          </video>
+          />
+          {/* No <source> in the markup: the effect sets the cut that fits the screen after
+              the first paint, and never under reduced motion (the final frame is shown). */}
           {/* eslint-disable-next-line @next/next/no-img-element -- a frame sequence, src swapped per scroll step */}
           <img ref={framesRef} className="hero-frames" alt="" aria-hidden decoding="sync" />
         </div>

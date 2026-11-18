@@ -69,15 +69,29 @@ describe("CinematicHero", () => {
     expect(brand).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("plays a muted inline entrance video with a phone and a desktop cut", () => {
+  it("plays a muted inline entrance video, requested only after the first paint", async () => {
     mockMedia(false);
     const { container } = renderIn("az", az);
     const video = container.querySelector("video")!;
     expect(video.muted).toBe(true);
     expect(video).toHaveAttribute("playsinline");
     expect(video.hasAttribute("loop")).toBe(false);
-    const sources = [...video.querySelectorAll("source")].map((s) => s.getAttribute("src"));
-    expect(sources).toEqual(["/hero/enter-desktop.mp4", "/hero/enter-mobile.mp4"]);
+    // Nothing in the markup the browser could fetch with the page.
+    expect(video.querySelectorAll("source")).toHaveLength(0);
+    expect(video).toHaveAttribute("preload", "none");
+    expect(video.getAttribute("src")).toBeNull();
+    // Then the cut that fits the screen (phone here: the desktop query does not match).
+    await waitFor(() => expect(video.getAttribute("src")).toBe("/hero/enter-mobile.mp4"));
+    expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
+  });
+
+  it("never requests the film under reduced motion", async () => {
+    mockMedia(true);
+    const { container } = renderIn("az", az);
+    const hero = screen.getByRole("region", { name: az.Hero.label });
+    await waitFor(() => expect(hero).toHaveAttribute("data-mode", "static"));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(container.querySelector("video")!.getAttribute("src")).toBeNull();
   });
 
   it("goes static and shows the copy at once under reduced motion", async () => {
