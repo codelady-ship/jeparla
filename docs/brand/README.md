@@ -12,9 +12,11 @@
 | [`icons.md`](./icons.md)                   | `lucide-react` ikonlarının anlayış cədvəli                   |
 | `src/*.mjs`                                | SVG, HTML və PNG generatorları                               |
 
-**Status:** variantlar sahibin seçimini gözləyir. Sayt loqosu, favicon və tətbiq ikonu
-dəyişdirilməyib; seçimdən sonra ayrıca PR ilə köçürüləcək (favicon dəsti, 1024 px app ikonu,
-OG 1200x630).
+**Seçim (2026-11-18): variant A "Baget".** Sahib A-nı seçdi; o, saytın başlığına və footer-ə
+(`frontend/src/components/brand/wordmark.tsx`), favicon-a (`icon.svg`, `favicon.ico`), iOS və PWA
+ikonlarına (`npm run icons`), `/logo.png`-ə və mağaza link önizləməsinə köçürülüb. B və C seçimin
+qeydi kimi burada qalır. `build-logos.mjs` A-nın path-larını `frontend/src/components/brand/logo-paths.ts`-ə
+da yazır (rəngsiz; rəng token-lərdən).
 
 ## Variantlar
 

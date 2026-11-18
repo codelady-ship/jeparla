@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { Link } from "@/i18n/navigation";
 
@@ -51,8 +52,8 @@ export function SiteFooter() {
     <footer className="mt-auto border-t bg-surface pb-[var(--install-card-space,0px)]">
       <div className="container-page grid gap-10 py-12 md:grid-cols-[1.5fr_repeat(4,1fr)]">
         <div className="flex flex-col items-start gap-3">
-          <p translate="no" className="font-heading text-2xl font-semibold">
-            Jeparla
+          <p translate="no">
+            <Wordmark className="h-8" />
           </p>
           <p className="max-w-xs text-sm text-muted-foreground">{t("Footer.tagline")}</p>
           <LocaleSwitcher />
