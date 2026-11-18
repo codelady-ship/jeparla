@@ -24,9 +24,12 @@ import { VideoBand } from "./video-band";
  * every block arrives with a calm fade and rise (<Reveal>, none under reduced motion).
  */
 
-/** Large, quiet links on the deep green bands (categories, budgets). */
+/**
+ * Large, quiet links on the deep green bands (categories, budgets). At least 44px tall
+ * for a finger (min-h-11); the list has no gap, so the rhythm matches the text size.
+ */
 const BAND_LINK =
-  "home-head inline-flex items-baseline py-1 font-heading text-3xl text-scene-ivory transition-colors duration-200 hover:text-scene-gold focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-scene-gold sm:text-4xl lg:text-5xl";
+  "home-head inline-flex min-h-11 items-center py-1 font-heading text-3xl text-scene-ivory transition-colors duration-200 hover:text-scene-gold focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-scene-gold sm:text-4xl lg:text-5xl";
 
 /** Small band heading over a link list. */
 const BAND_HEAD = "home-head mb-6 text-xl text-scene-ivory-muted sm:text-2xl";
@@ -70,7 +73,7 @@ export async function HomeCategories() {
           <h2 id="home-categories" className={BAND_HEAD}>
             {t("categories")}
           </h2>
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col">
             {roots.map((c) => (
               <li key={c.slug}>
                 <Link href={`/categories/${c.slug}`} className={BAND_LINK}>
@@ -117,7 +120,7 @@ export async function BudgetPicks() {
           <h2 id="home-budget" className={BAND_HEAD}>
             {t("budget.title")}
           </h2>
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col">
             {budgets.map((max) => (
               <li key={max}>
                 <Link
