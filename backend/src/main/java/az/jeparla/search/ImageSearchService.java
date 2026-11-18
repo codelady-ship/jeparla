@@ -4,6 +4,7 @@ import az.jeparla.common.error.ApiException;
 import az.jeparla.common.storage.ImageProbe;
 import az.jeparla.common.storage.ImageProbe.ImageInfo;
 import az.jeparla.product.ProductCatalogService;
+import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductSummaryDto;
 import az.jeparla.search.dto.ImageSearchStatusDto;
 import az.jeparla.search.embedding.ImageEmbeddingException;
@@ -30,8 +31,8 @@ public class ImageSearchService {
     public static final int MAX_BYTES = 5 * 1024 * 1024;
     static final int MAX_SIDE = 6000;
     static final int RESULTS = 24;
-    /** Below this cosine a photo is not "similar" at all: an empty answer beats a random one. */
-    static final double MIN_SIMILARITY = 0.2;
+    /** Similar products a filtered search chooses from (#163). */
+    static final int POOL = 300;
 
     private static final Logger log = LoggerFactory.getLogger(ImageSearchService.class);
 
@@ -53,6 +54,16 @@ public class ImageSearchService {
     /** Listed products most similar to the photo, best first (at most {@value #RESULTS}); may be empty. */
     @Transactional(readOnly = true)
     public List<ProductSummaryDto> search(byte[] photo) {
+        return search(photo, null);
+    }
+
+    /**
+     * As {@link #search(byte[])}, keeping only products that match {@code filters} (category, metal, fineness,
+     * price, store, city; null or empty: no filter). The most similar {@value #POOL} products are filtered, so a
+     * filter narrows the similar ones and never brings in dissimilar products.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductSummaryDto> search(byte[] photo, ProductQuery filters) {
         ImageEmbeddingProvider provider = providers.active();
         if (!provider.configured()) {
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "search.image_not_configured");
@@ -66,9 +77,14 @@ public class ImageSearchService {
             log.info("Search by photo: the model could not read a {} photo: {}", info.contentType(), e.getMessage());
             throw new ApiException(HttpStatus.BAD_REQUEST, "search.image_unreadable", "image");
         }
-        List<Long> ids = ImageSimilarity.rank(query, embeddings.candidates(provider.model()), RESULTS,
-                MIN_SIMILARITY);
-        return ids.isEmpty() ? List.of() : catalog.byIds(ids);
+        if (filters == null) {
+            List<Long> ids = ImageSimilarity.rank(query, embeddings.candidates(provider.model()), RESULTS,
+                    provider.minSimilarity());
+            return ids.isEmpty() ? List.of() : catalog.byIds(ids);
+        }
+        List<Long> ids = ImageSimilarity.rank(query, embeddings.candidates(provider.model()), POOL,
+                provider.minSimilarity());
+        return ids.isEmpty() ? List.of() : catalog.byIdsMatching(ids, filters, RESULTS);
     }
 
     /** Magic number, size and dimensions; the client's Content-Type is not trusted. */

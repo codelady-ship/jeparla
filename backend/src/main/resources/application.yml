@@ -256,6 +256,8 @@ jeparla:
       # Search by photo (#163, docs/image-search.md). "none": no embedding model, the header shows the camera
       # button as not available and requests answer 503. Another value must be an installed provider id.
       provider: ${JEPARLA_IMAGE_SEARCH_PROVIDER:none}
+      # "local" provider only: ONNX Runtime threads per photo (DINOv2 small, docs/image-search.md).
+      threads: ${JEPARLA_IMAGE_SEARCH_THREADS:2}
       # How often new product photos get their embedding (idle without a model).
       embed-delay: 5m
     cache:

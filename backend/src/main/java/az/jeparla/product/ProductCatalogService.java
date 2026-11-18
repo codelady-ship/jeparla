@@ -96,6 +96,24 @@ public class ProductCatalogService {
         return PageDto.of(result, mapper::summary);
     }
 
+    /**
+     * Listed products among {@code ids} that also match the filters of {@code query} (search by photo, #163), in
+     * the order of {@code ids}, at most {@code limit}. Paging and sort of the query are ignored.
+     */
+    public List<ProductSummaryDto> byIdsMatching(List<Long> ids, ProductQuery query, int limit) {
+        requireRange(query.minPrice(), query.maxPrice(), "maxPrice");
+        List<Long> distinct = ids.stream().filter(Objects::nonNull).distinct().toList();
+        Optional<Specification<Product>> spec = specification(query, categoryTree());
+        if (distinct.isEmpty() || spec.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Product> matching = products.findAllMatching(spec.get().and(withIds(distinct)),
+                ProductOrder.RELEVANCE, PageRequest.of(0, distinct.size())).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+        return distinct.stream().map(matching::get).filter(Objects::nonNull).limit(limit).map(mapper::summary)
+                .toList();
+    }
+
     /** {@code GET /products?ids=} (favorites): in the order asked; unknown or hidden ids are left out. */
     public List<ProductSummaryDto> byIds(List<Long> ids) {
         Map<Long, Product> listed = findListed(ids);
