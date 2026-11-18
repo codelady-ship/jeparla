@@ -18,6 +18,7 @@ import {
 import { approxPrices } from "@/lib/currency";
 import { formatGrams, formatMm, formatPrice } from "@/lib/money";
 import { getFormatter, getLocale, getMessages, getTranslations } from "next-intl/server";
+import { RelatedGuides } from "@/components/guides/related-guides";
 import { IntlProvider } from "@/components/i18n/intl-provider";
 import type { Locale } from "@/i18n/routing";
 import { Reveal } from "@/components/motion/reveal";
@@ -368,6 +369,7 @@ export async function ProductDetails({
                   {t("fashionTitle")}
                 </p>
                 <p className="text-muted-foreground">{t("fashionNote")}</p>
+                <RelatedGuides locale={locale} slugs={["bijouterie-vs-precious"]} />
               </div>
             </aside>
           )}

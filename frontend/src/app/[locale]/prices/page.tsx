@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { RelatedGuides } from "@/components/guides/related-guides";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
@@ -163,11 +164,14 @@ export default async function PricesPage() {
         </ol>
       </section>
 
-      <p>
-        <Link href="/prices/monthly" className="link-underline font-medium">
-          {t("monthlyLink")}
-        </Link>
-      </p>
+      <div className="flex flex-col gap-3">
+        <p>
+          <Link href="/prices/monthly" className="link-underline font-medium">
+            {t("monthlyLink")}
+          </Link>
+        </p>
+        <RelatedGuides locale={locale} slugs={["gold-price-calculation", "fineness-chart"]} />
+      </div>
 
       <MetalPriceWidget pricesLink={false} />
     </div>

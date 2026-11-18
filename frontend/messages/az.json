@@ -2814,7 +2814,7 @@
   "Guides": {
     "title": "Bələdçilər",
     "metaTitle": "Zərgərlik bələdçiləri: qızıl, brilyant, əyar, gümüş",
-    "description": "Qızılın əyarı, qiymətin hesablanması, brilyantın 4C-si, əyar damğasının yoxlanması və gümüşə qulluq haqqında mənbəli bələdçilər.",
+    "description": "Qızılın əyarı və əyar cədvəli, qiymətin hesablanması, brilyantın 4C-si, əyar damğası, nişan üzüyü, bijuteriya, qızıl və gümüşə qulluq haqqında mənbəli bələdçilər.",
     "intro": "Zərgərlik alarkən ən çox verilən suallara qısa və mənbəli cavablar. Hər bələdçi qısa cavabla başlayır və istifadə olunan mənbələrlə bitir.",
     "navLabel": "Bələdçilər",
     "breadcrumb": "Naviqasiya yolu",
@@ -2828,7 +2828,9 @@
     "sources": "Mənbələr",
     "sourcesNote": "Bələdçi yazılarkən hər mənbə açılıb yoxlanılıb. Burada qiymət göstərilmir: metal qiymətləri hər gün dəyişir.",
     "more": "Digər bələdçilər",
-    "external": "başqa saytda yeni pəncərədə açılır"
+    "external": "başqa saytda yeni pəncərədə açılır",
+    "related": "Faydalı səhifələr",
+    "relatedGuide": "Bələdçi: {title}"
   },
   "PricesMonthly": {
     "title": "Azərbaycanda qızıl və gümüş qiymətləri: aylıq icmal",
