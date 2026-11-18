@@ -71,8 +71,8 @@ WHERE u.email ~ '^e2e-(reset|verify)-';
 INSERT INTO metal_price_snapshots (metal, quote_date, price_per_ounce, price_per_gram, currency, source, status,
                                    fetched_at, created_at)
 SELECT q.metal, d.day,
-       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0)), 4),
-       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0)) / 31.1034768, 4),
+       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0))::numeric, 4),
+       round(q.price_per_ounce * (1 + 0.02 * sin(d.n / 4.0))::numeric / 31.1034768, 4),
        'AZN', 'CBAR', 'APPLIED', d.day + TIME '10:05', d.day + TIME '10:05'
 FROM metal_price_snapshots q
 CROSS JOIN LATERAL (
