@@ -82,6 +82,7 @@ export function SiteHeader() {
                 empty: t("Search.photo.empty"),
                 notConfigured: t("Search.photo.notConfigured"),
                 aiBadge: t("Search.photo.aiBadge"),
+                fashionBadge: t("Product.fashionBadge"),
                 errors: {
                   "search.image_not_configured": t("Search.photo.notConfigured"),
                   "search.image_size": t("Search.photo.errors.size"),
