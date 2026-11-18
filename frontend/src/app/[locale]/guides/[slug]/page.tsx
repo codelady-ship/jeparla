@@ -10,9 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import {
   GUIDE_SLUGS,
-  GUIDES_MODIFIED,
   GUIDES_PATH,
-  GUIDES_PUBLISHED,
   getGuide,
   guideArticle,
   guidePath,
@@ -40,8 +38,8 @@ export async function generateMetadata({
     alternates: alternates(locale, path),
     openGraph: openGraph(locale, path, {
       type: "article",
-      publishedTime: GUIDES_PUBLISHED,
-      modifiedTime: GUIDES_MODIFIED,
+      publishedTime: g.published,
+      modifiedTime: g.modified,
     }),
   };
 }
@@ -101,11 +99,11 @@ export default async function GuidePage({ params }: PageProps<"/[locale]/guides/
               {t("author")}: {t("authorName")}
             </span>
             <span>
-              {t("published")}: {date(GUIDES_PUBLISHED)}
+              {t("published")}: {date(g.published)}
             </span>
-            {GUIDES_MODIFIED !== GUIDES_PUBLISHED && (
+            {g.modified !== g.published && (
               <span>
-                {t("updated")}: {date(GUIDES_MODIFIED)}
+                {t("updated")}: {date(g.modified)}
               </span>
             )}
           </p>
