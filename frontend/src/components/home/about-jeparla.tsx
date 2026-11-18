@@ -24,14 +24,14 @@ export async function AboutJeparla() {
         data={[organization(tm("description")), website(locale, tm("description")), faqPage(faq)]}
       />
       <div className="container-page grid gap-10 py-16 lg:grid-cols-2 lg:gap-16">
-        <Reveal>
+        <Reveal from="left">
           <h2 id="about" className="mb-4 text-2xl sm:text-3xl">
             {t("title")}
           </h2>
           <p className="leading-relaxed">{t("lead")}</p>
           <p className="mt-4 leading-relaxed text-muted-foreground">{t("how")}</p>
         </Reveal>
-        <Reveal index={1}>
+        <Reveal from="right" index={1}>
           <h2 className="mb-4 text-2xl sm:text-3xl">{t("faqTitle")}</h2>
           <FaqList items={faq} />
         </Reveal>
