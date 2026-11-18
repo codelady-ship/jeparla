@@ -28,6 +28,13 @@
 --   stock     = OUT_OF_STOCK if i % 11 = 10, MADE_TO_ORDER if i % 7 = 6, else IN_STOCK
 --   published = 2026-10-(1 + i % 30) 09:00 UTC; variant id = id * 10, SKU JP-0001 ...
 --
+-- Two exceptions, so the bijouterie and hallmark screens have sample data (#128, #106):
+--   i = 59    (product 60) is bijouterie: "Paslanmaz polad qolbaq", category bracelets (8), store 6
+--             (no documents, so the store is MIXED), material STAINLESS_STEEL, no metal or fineness,
+--             FIXED 45.00, weight, stock and date by the rules above, photo bracelet-silver-1
+--   product 13 has a hallmark photo an admin checked (VERIFIED) and a label photo waiting for the check
+--             (PENDING): demo/hallmark-gold-585.jpg and demo/tag-gold-585.jpg, drawn for the demo
+--
 -- Demo photos are the free photos in frontend/public/demo (credits in docs/credits.md). Several
 -- products share one photo, but storage_key is unique, so each key carries a URL fragment
 -- ("demo/ring-gold-1.jpg#12-0"): the fragment is never sent to the server, so every key still
@@ -130,7 +137,11 @@ BEGIN
         made_to_order_days = 10
     WHERE id = 1;
 
+    -- Store 6 sells the bijouterie product 60 next to its precious ones (#128).
+    UPDATE stores SET seller_kind = 'MIXED' WHERE id = 6;
+
     -- ------------------------------------------------------------ products (computed once)
+    -- Indexes 0..58 follow the rules; 59 (product 60) is the bijouterie exception below.
     CREATE TEMP TABLE demo_product ON COMMIT DROP AS
     WITH base AS (SELECT i,
                          i + 1                                                    AS id,
@@ -141,7 +152,7 @@ BEGIN
                              WHEN i % 4 = 1 THEN 5
                              ELSE (ARRAY [2, 3, 2, 1, 4])[i % 5 + 1] END            AS fineness_id,
                          round(1.2 + ((i * 37) % 90) / 10.0, 3)                   AS weight
-                  FROM generate_series(0, 59) AS i),
+                  FROM generate_series(0, 58) AS i),
          alloy AS (SELECT b.*,
                           dc.id                                                                AS db_category_id,
                           f.id                                                                 AS db_fineness_id,
@@ -304,6 +315,45 @@ BEGIN
     FROM shot
              JOIN demo_photo ph ON ph.kind = shot.kind AND ph.tone = shot.tone AND ph.idx = shot.n % shot.pool_size
     ORDER BY shot.id, shot.sort_order;
+
+    -- ------------------------------------------------------------ bijouterie product 60 (#128)
+    -- i = 59: store 59 % 6 + 1 = 6, weight 1.2 + 23 / 10 = 3.5 g, IN_STOCK, published 2026-10-30.
+    INSERT INTO products (id, store_id, category_id, slug, name_az, name_en, name_ru, description_az, description_en,
+                          description_ru, metal, material_kind, material, not_precious_confirmed_at, status,
+                          expertise_status, submitted_at, published_at, created_at, updated_at)
+    SELECT 60, 6, dc.id, 'qolbaqlar-polad-60',
+           'Paslanmaz polad qolbaq', 'Stainless steel bracelet', 'Браслет из нержавеющей стали',
+           'Paslanmaz polad qolbaq. Nümunə məhsul, real deyil.',
+           'Stainless steel bracelet. Demo product, not real.',
+           'Браслет из нержавеющей стали. Демонстрационный товар, не настоящий.',
+           NULL, 'FASHION', 'STAINLESS_STEEL', TIMESTAMPTZ '2026-10-30 09:00:00+00', 'APPROVED', 'NONE',
+           TIMESTAMPTZ '2026-10-30 09:00:00+00', TIMESTAMPTZ '2026-10-30 09:00:00+00',
+           TIMESTAMPTZ '2026-10-30 09:00:00+00', TIMESTAMPTZ '2026-10-30 09:00:00+00'
+    FROM demo_category dc
+    WHERE dc.fx_id = 8;
+
+    INSERT INTO product_variants (id, product_id, store_id, sku, fineness_id, weight_grams, size, price, currency,
+                                  pricing_mode, labor_per_gram, labor_fixed, stone_price, markup_percent, stock_status,
+                                  price_updated_at, metal_snapshot_id, created_at, updated_at)
+    VALUES (600, 60, 6, 'JP-0060', NULL, 3.500, NULL, 45.00, 'AZN', 'FIXED', 0, 0, 0, 0, 'IN_STOCK',
+            TIMESTAMPTZ '2026-11-03 10:05:00+04', NULL, TIMESTAMPTZ '2026-10-30 09:00:00+00',
+            TIMESTAMPTZ '2026-10-30 09:00:00+00');
+
+    INSERT INTO product_images (product_id, storage_key, alt_az, alt_en, alt_ru, width, height, content_type,
+                                size_bytes, ai_generated, sort_order, created_at)
+    VALUES (60, 'demo/bracelet-silver-1.jpg#60-0', 'Paslanmaz polad qolbaq', 'Stainless steel bracelet',
+            'Браслет из нержавеющей стали', 800, 1000, 'image/jpeg', 81001, FALSE, 0,
+            TIMESTAMPTZ '2026-09-01 09:00:00+04');
+
+    -- ------------------------------------------------------------ hallmark and label photos (#106)
+    -- Product 13 (gold 585 earrings of store 1). Drawn for the demo, not photos of a real hallmark
+    -- (docs/credits.md). Evidence keys carry no fragment: one row per file.
+    INSERT INTO product_evidence_photos (product_id, kind, storage_key, width, height, content_type, size_bytes,
+                                         status, checked_at, created_at)
+    VALUES (13, 'HALLMARK', 'demo/hallmark-gold-585.jpg', 800, 800, 'image/jpeg', 20516, 'VERIFIED',
+            TIMESTAMPTZ '2026-11-03 11:00:00+04', TIMESTAMPTZ '2026-11-03 09:00:00+04'),
+           (13, 'TAG', 'demo/tag-gold-585.jpg', 800, 800, 'image/jpeg', 13377, 'PENDING',
+            NULL, TIMESTAMPTZ '2026-11-03 09:00:00+04');
 
     -- ------------------------------------------------------------ identity sequences
     -- Store and product ids were given explicitly (the same as the fixtures): new rows continue after

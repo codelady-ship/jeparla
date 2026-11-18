@@ -457,7 +457,122 @@ function buildProduct(i: number): Product {
   };
 }
 
-export const PRODUCTS: Product[] = Array.from({ length: 60 }, (_, i) => buildProduct(i));
+/**
+ * Product 60 (index 59) is bijouterie (#128), so the FASHION card, product page and filter have sample
+ * data: a stainless steel bracelet of store 6 (no documents, so the store may be MIXED; the seed sets
+ * seller_kind there). It keeps the store, weight, stock and date rules of index 59, so every count of the
+ * catalog stays the same; only its category moves to bracelets. FIXED price, no metal, no fineness, no
+ * metal price block. Mirrored in backend/src/main/resources/db/demo/R__demo_seed.sql.
+ */
+const FASHION_INDEX = 59;
+const FASHION_PRICE = "45.00";
+
+function fashionProduct(i: number): Product {
+  const id = i + 1;
+  const categoryId = 8;
+  const st = STORES[i % STORES.length];
+  const weight = new Big(1.2).plus(new Big((i * 37) % 90).div(10)).toFixed(3);
+  const stockStatus = i % 11 === 10 ? "OUT_OF_STOCK" : i % 7 === 6 ? "MADE_TO_ORDER" : "IN_STOCK";
+  const publishedAt = new Date(Date.UTC(2026, 9, 1 + (i % 30), 9)).toISOString();
+  const name: LocalizedText = {
+    az: "Paslanmaz polad qolbaq",
+    en: "Stainless steel bracelet",
+    ru: "Браслет из нержавеющей стали",
+  };
+  const price = azn(FASHION_PRICE);
+  return {
+    id,
+    slug: `${CAT_SEEDS[categoryId - 1][1]}-polad-${id}`,
+    name,
+    categoryId,
+    store: {
+      id: st.id,
+      slug: st.slug,
+      name: st.name,
+      city: st.city,
+      verification: st.verification,
+    },
+    materialKind: "FASHION",
+    material: "STAINLESS_STEEL",
+    metal: null,
+    priceFrom: price,
+    defaultVariantId: id * 10,
+    pricingMode: "FIXED",
+    fineness: null,
+    weightGrams: weight,
+    images: [
+      {
+        url: "/demo/bracelet-silver-1.jpg",
+        alt: name,
+        width: 800,
+        height: 1000,
+        aiGenerated: false,
+      },
+    ],
+    hasStones: false,
+    // Bijouterie shows only the seller check (#128), as the API's CatalogMapper.verification.
+    verification: { ...st.verification, documents: "NONE", expertise: "NONE" },
+    stockStatus,
+    publishedAt,
+    description: {
+      az: `${name.az}. Nümunə məhsul, real deyil.`,
+      en: `${name.en}. Demo product, not real.`,
+      ru: `${name.ru}. Демонстрационный товар, не настоящий.`,
+    },
+    variants: [
+      {
+        id: id * 10,
+        sku: `JP-${String(id).padStart(4, "0")}`,
+        fineness: null,
+        weightGrams: weight,
+        size: null,
+        price,
+        pricingMode: "FIXED",
+        pricing: null,
+        stockStatus,
+        priceUpdatedAt: `${PRICE_DATE}T10:05:00+04:00`,
+        priceBreakdown: {
+          total: price,
+          metal: null,
+          labor: null,
+          stone: null,
+          markup: null,
+          clamped: null,
+          pricePerGram: azn(
+            new Big(FASHION_PRICE).div(weight).round(2, Big.roundHalfUp).toFixed(2),
+          ),
+          laborSeparate: false,
+        },
+      },
+    ],
+    stones: [],
+    status: "APPROVED",
+  };
+}
+
+export const PRODUCTS: Product[] = Array.from({ length: 60 }, (_, i) =>
+  i === FASHION_INDEX ? fashionProduct(i) : buildProduct(i),
+);
+
+/**
+ * Product 13 (gold 585 earrings of store 1) has a hallmark photo an admin checked and a label photo
+ * still waiting for the check (#106), so the gallery frames, the "hallmark photo" filter and the admin
+ * queue have sample data. The pictures are drawn for the demo (docs/credits.md), not photos of a real
+ * hallmark. Mirrored in R__demo_seed.sql (product_evidence_photos); the API lists HALLMARK first.
+ */
+export const EVIDENCE_PRODUCT_ID = 13;
+Object.assign(PRODUCTS[EVIDENCE_PRODUCT_ID - 1], {
+  evidencePhotos: [
+    {
+      kind: "HALLMARK",
+      url: "/demo/hallmark-gold-585.jpg",
+      width: 800,
+      height: 800,
+      checked: true,
+    },
+    { kind: "TAG", url: "/demo/tag-gold-585.jpg", width: 800, height: 800, checked: false },
+  ],
+} satisfies Partial<Product>);
 
 for (const s of STORES) s.productCount = PRODUCTS.filter((p) => p.store.id === s.id).length;
 

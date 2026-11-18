@@ -52,7 +52,8 @@ class DemoRepricingTests {
         MetalPriceJobTest.STUB.always(Answer.fixture("cbar-2026-11-06.xml"));
         clock.setBaku("2026-11-06", "10:15");
         Map<Long, Map<String, Object>> before = variants();
-        assertThat(before).hasSize(60);
+        // Every demo variant but the bijouterie one (product 60, no fineness: #128).
+        assertThat(before).hasSize(59);
 
         Report report = job.runLocked(Trigger.INTERNAL).orElseThrow();
 
