@@ -576,6 +576,23 @@ Object.assign(PRODUCTS[EVIDENCE_PRODUCT_ID - 1], {
   ],
 } satisfies Partial<Product>);
 
+/**
+ * Product 2 (a silver wedding ring) has a short video (#117), so the video frame of the gallery and
+ * the "has a video" mark of the card have sample data. The clip is the free stock clip of the home
+ * page (docs/credits.md), not AI-made. Mirrored in R__demo_seed.sql (products.video_*).
+ */
+export const VIDEO_PRODUCT_ID = 2;
+Object.assign(PRODUCTS[VIDEO_PRODUCT_ID - 1], {
+  video: {
+    url: "/demo/ring-video.mp4",
+    contentType: "video/mp4",
+    durationMs: 7920,
+    width: 480,
+    height: 600,
+    aiGenerated: false,
+  },
+} satisfies Partial<Product>);
+
 for (const s of STORES) s.productCount = PRODUCTS.filter((p) => p.store.id === s.id).length;
 
 // One demo store declares its own terms (#108, #174); the others have declared none.

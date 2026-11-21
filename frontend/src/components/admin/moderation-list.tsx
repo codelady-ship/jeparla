@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Video } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -129,6 +129,18 @@ export function ModerationList({
                     )}
                   </p>
                   <StatusBadge status={row.status} label={ts(row.status)} />
+                  {row.videoUrl && (
+                    // The moderator watches the clip before approving the product (#117).
+                    <a
+                      href={row.videoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-medium underline underline-offset-4"
+                    >
+                      <Video aria-hidden className="size-4" />
+                      {t("watchVideo")}
+                    </a>
+                  )}
                   {row.note && <Note label={t("note")} text={row.note} />}
                 </div>
               </div>

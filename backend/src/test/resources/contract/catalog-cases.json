@@ -112,7 +112,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           {
             "id": 3,
@@ -4786,7 +4794,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           {
             "id": 11,
@@ -6689,7 +6705,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           {
             "id": 5,
@@ -9538,7 +9562,15 @@
             "expertise": "NONE"
           },
           "stockStatus": "IN_STOCK",
-          "publishedAt": "2026-10-02T09:00:00.000Z"
+          "publishedAt": "2026-10-02T09:00:00.000Z",
+          "video": {
+            "url": "/demo/ring-video.mp4",
+            "contentType": "video/mp4",
+            "durationMs": 7920,
+            "width": 480,
+            "height": 600,
+            "aiGenerated": false
+          }
         }
       ]
     },
@@ -9600,7 +9632,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           "variant": {
             "id": 20,
@@ -10385,7 +10425,15 @@
           }
         ],
         "stones": [],
-        "status": "APPROVED"
+        "status": "APPROVED",
+        "video": {
+          "url": "/demo/ring-video.mp4",
+          "contentType": "video/mp4",
+          "durationMs": 7920,
+          "width": 480,
+          "height": 600,
+          "aiGenerated": false
+        }
       }
     },
     {
@@ -11953,7 +12001,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           {
             "id": 22,
@@ -12665,7 +12721,15 @@
               "expertise": "NONE"
             },
             "stockStatus": "IN_STOCK",
-            "publishedAt": "2026-10-02T09:00:00.000Z"
+            "publishedAt": "2026-10-02T09:00:00.000Z",
+            "video": {
+              "url": "/demo/ring-video.mp4",
+              "contentType": "video/mp4",
+              "durationMs": 7920,
+              "width": 480,
+              "height": 600,
+              "aiGenerated": false
+            }
           },
           {
             "id": 44,
@@ -14816,7 +14880,15 @@
                 "expertise": "NONE"
               },
               "stockStatus": "IN_STOCK",
-              "publishedAt": "2026-10-02T09:00:00.000Z"
+              "publishedAt": "2026-10-02T09:00:00.000Z",
+              "video": {
+                "url": "/demo/ring-video.mp4",
+                "contentType": "video/mp4",
+                "durationMs": 7920,
+                "width": 480,
+                "height": 600,
+                "aiGenerated": false
+              }
             },
             {
               "id": 3,

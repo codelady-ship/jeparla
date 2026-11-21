@@ -9,6 +9,7 @@ import az.jeparla.product.PricingMode;
 import az.jeparla.product.StockStatus;
 import az.jeparla.store.dto.StoreRefDto;
 import az.jeparla.verification.dto.VerificationDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -45,5 +46,7 @@ public record ProductSummaryDto(
         boolean hasStones,
         VerificationDto verification,
         StockStatus stockStatus,
-        @Schema(format = "date-time") String publishedAt) {
+        @Schema(format = "date-time") String publishedAt,
+        @Schema(nullable = true, description = "The short video (#117); left out when the product has none")
+        @JsonInclude(JsonInclude.Include.NON_NULL) ProductVideoDto video) {
 }

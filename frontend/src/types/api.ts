@@ -149,6 +149,20 @@ export type ProductImage = {
   aiGenerated: boolean;
 };
 
+/**
+ * The short clip of a product (#117): MP4 (H.264) or WebM, at most 15 seconds, checked by the API when it was
+ * uploaded. The page loads the file only after the buyer presses play; the poster is the cover photo.
+ */
+export type ProductVideo = {
+  url: string;
+  contentType: "video/mp4" | "video/webm";
+  durationMs: number;
+  width: number;
+  height: number;
+  /** An AI-generated or AI-edited video carries a visible label (CLAUDE.md, honesty). */
+  aiGenerated: boolean;
+};
+
 export type StoneType = "DIAMOND" | "RUBY" | "SAPPHIRE" | "EMERALD" | "PEARL" | "CUBIC_ZIRCONIA";
 export type Stone = {
   type: StoneType;
@@ -244,6 +258,8 @@ export type ProductSummary = {
   verification: Verification;
   stockStatus: StockStatus;
   publishedAt: IsoDate;
+  /** The short clip (#117); the key is absent when the product has none. A card only shows an icon for it. */
+  video?: ProductVideo;
 };
 
 /** A hallmark or label photo the seller added (#106); not a laboratory assay. */
@@ -359,6 +375,14 @@ export type SearchResult = {
 /** Grouped autocomplete (PLAN 5.3), up to 5 per group. */
 /** GET /api/v1/search/image/status (#163). */
 export type ImageSearchStatus = { configured: boolean; maxBytes: number };
+
+/** GET /api/search/image (site route): the status plus the result filter options (#163). */
+export type ImageSearchPanelStatus = ImageSearchStatus & {
+  /** Top-level categories (subcategories are included by the filter). */
+  categories?: Pick<Category, "slug" | "name">[];
+  /** Fineness values in parts per thousand, e.g. 585. */
+  finenesses?: number[];
+};
 
 /** Error codes of POST /api/v1/search/image. */
 export const IMAGE_SEARCH_ERRORS = [

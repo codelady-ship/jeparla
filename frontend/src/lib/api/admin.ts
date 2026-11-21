@@ -132,6 +132,7 @@ function moderationItem(p: Product): ModerationItem {
     slug: p.slug,
     name: p.name,
     imageUrl: p.images[0]?.url ?? null,
+    videoUrl: p.video?.url ?? null,
     store: { id: p.store.id, name: p.store.name },
     metal: p.metal,
     fineness: p.variants[0]?.fineness?.label ?? "",

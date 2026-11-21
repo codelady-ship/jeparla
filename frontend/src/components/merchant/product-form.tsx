@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { sendJson } from "@/lib/merchant/client";
+import type { MerchantVideo } from "@/lib/merchant/video";
 import { firstOpenStep, productDraft, STEPS, type ProductDraft } from "@/lib/merchant/draft";
 import {
   basicsStep,
@@ -39,6 +40,7 @@ import {
   type VariantInput,
 } from "@/types/merchant";
 import { EvidenceUpload } from "./evidence-upload";
+import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
@@ -68,6 +70,8 @@ export function ProductForm({
   draftKey,
   initial,
   productStatus,
+  productId,
+  video,
   categories,
   finenesses,
   sellerApproved,
@@ -84,6 +88,9 @@ export function ProductForm({
   draftKey: string;
   initial?: ProductInput;
   productStatus?: ProductStatus;
+  /** The saved product: its id and video (#117). The video is uploaded on its own, not with the form. */
+  productId?: number;
+  video?: MerchantVideo | null;
   categories: CategoryOption[];
   finenesses: FinenessOption[];
   sellerApproved: boolean;
@@ -322,6 +329,13 @@ export function ProductForm({
                 value={p.evidence ?? {}}
                 materialKind={kind}
                 onChange={(evidence) => set({ evidence })}
+              />
+            </div>
+            <div className="mt-4 border-t pt-5">
+              <VideoUpload
+                productId={productId ?? null}
+                initial={video ?? null}
+                listed={productStatus === "APPROVED"}
               />
             </div>
           </div>

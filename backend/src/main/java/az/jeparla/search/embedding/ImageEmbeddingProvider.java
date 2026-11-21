@@ -30,4 +30,12 @@ public interface ImageEmbeddingProvider {
      * @throws ImageEmbeddingException when the model cannot read the image or fails
      */
     float[] embed(byte[] image, String contentType);
+
+    /**
+     * Below this cosine a catalog photo is not "similar" at all: an empty answer beats a random one. Depends on
+     * the model (how far apart unrelated photos land), so each provider states its own.
+     */
+    default double minSimilarity() {
+        return 0.2;
+    }
 }

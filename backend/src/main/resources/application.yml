@@ -142,6 +142,10 @@ jeparla:
       # Deletes staged uploads that were never attached (ShedLock). "-" turns the schedule off.
       cleanup-cron: ${JEPARLA_UPLOAD_CLEANUP_CRON:0 7/30 * * * *}
       cleanup-lock-at-most-for: 15m
+    videos:
+      # Products of one store that may have a short video (#117). A video is at most 8 MB, so 20 is at most
+      # 160 MB per store; the free storage plan (10 GB, shared with the photos) is the reason for the limit.
+      max-per-store: ${JEPARLA_VIDEOS_PER_STORE:20}
   ai:
     # AI Studio (#55, docs/ai-providers.md). "none": no provider, AI Studio shows "not configured" and job
     # requests answer 503. Another value must be the id of an installed provider bean, or the API does not start.
@@ -256,6 +260,8 @@ jeparla:
       # Search by photo (#163, docs/image-search.md). "none": no embedding model, the header shows the camera
       # button as not available and requests answer 503. Another value must be an installed provider id.
       provider: ${JEPARLA_IMAGE_SEARCH_PROVIDER:none}
+      # "local" provider only: ONNX Runtime threads per photo (DINOv2 small, docs/image-search.md).
+      threads: ${JEPARLA_IMAGE_SEARCH_THREADS:2}
       # How often new product photos get their embedding (idle without a model).
       embed-delay: 5m
     cache:

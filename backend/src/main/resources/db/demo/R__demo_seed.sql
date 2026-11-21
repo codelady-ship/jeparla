@@ -355,6 +355,19 @@ BEGIN
            (13, 'TAG', 'demo/tag-gold-585.jpg', 800, 800, 'image/jpeg', 13377, 'PENDING',
             NULL, TIMESTAMPTZ '2026-11-03 09:00:00+04');
 
+    -- ------------------------------------------------------------ short video (#117)
+    -- Product 2 (a silver wedding ring): the free stock clip frontend/public/demo/ring-video.mp4
+    -- (docs/credits.md), H.264, 7.92 s, 480 x 600, not AI-made. One row, so the key has no fragment.
+    UPDATE products
+    SET video_key          = 'demo/ring-video.mp4',
+        video_content_type = 'video/mp4',
+        video_size_bytes   = 222692,
+        video_duration_ms  = 7920,
+        video_width        = 480,
+        video_height       = 600,
+        video_ai_generated = FALSE
+    WHERE id = 2;
+
     -- ------------------------------------------------------------ identity sequences
     -- Store and product ids were given explicitly (the same as the fixtures): new rows continue after
     -- them. Categories and finenesses got theirs from the identity columns (V61).

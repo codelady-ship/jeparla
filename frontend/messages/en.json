@@ -145,6 +145,7 @@
   "Product": {
     "verified": "Verified",
     "aiImage": "AI image",
+    "hasVideo": "Has a video",
     "favoriteAdd": "Add to favorites",
     "favoriteRemove": "Remove from favorites",
     "compareAdd": "Add to compare",
@@ -277,6 +278,14 @@
     "nextImage": "Next image",
     "zoom": "Enlarge image",
     "imagePosition": "Image {n} of {total}",
+    "video": {
+      "badge": "Video",
+      "ai": "AI video",
+      "play": "Play the video: {name}",
+      "label": "{name}: short video, no sound",
+      "position": "Video, {n} of {total}",
+      "loading": "Loading the video"
+    },
     "chooseVariant": "Choose a variant",
     "size": "Size {size}",
     "sku": "Code",
@@ -828,6 +837,14 @@
       "empty": "No similar piece found. Try a photo from another angle.",
       "notConfigured": "Search by photo is not available yet. Search with words for now.",
       "aiBadge": "Made with AI",
+      "crop": {
+        "title": "Frame the item",
+        "hint": "Drag the frame and resize it by its corner. Keyboard: arrows move it, Shift and arrows resize it.",
+        "frame": "Frame of the part to search",
+        "search": "Search this part",
+        "whole": "Whole photo"
+      },
+      "filtersEmpty": "No similar models with these filters. Clear the filters.",
       "errors": {
         "size": "The photo is too large or empty.",
         "type": "The photo could not be read: choose a JPEG, PNG or WebP.",
@@ -1597,6 +1614,37 @@
         "reason": "Reason: {reason}",
         "notAssay": "A hallmark photo is not a laboratory assay of the fineness: buyers only see the photo you added and the admin's comparison."
       },
+      "video": {
+        "title": "Short video",
+        "optional": "optional",
+        "intro": "A photo cannot show how a stone or metal shines. A clip of 5 to 10 seconds appears in the gallery of the product page and loads only when the buyer presses play.",
+        "saveFirst": "To add a video, save the product as a draft first, then open it for editing.",
+        "add": "Choose or record a video",
+        "replace": "Replace with another video",
+        "uploading": "Sending and checking the video",
+        "rules": "MP4 (H.264) or WebM, at most {seconds} seconds and {max} MB.",
+        "tip": "With a phone: record in daylight and turn the piece slowly. On an iPhone choose \"Most Compatible\" under Settings, Camera, Formats, otherwise the video is not accepted.",
+        "pick": "Choose a video for the product",
+        "preview": "Video of the product, preview",
+        "length": "Length {length}",
+        "aiBadge": "AI video",
+        "aiLabel": "This video was generated or edited with AI (buyers will see an \"AI video\" label). Tick this before choosing the video.",
+        "shown": "Buyers see this video on the product page. It plays without sound.",
+        "remove": "Remove the video",
+        "saved": "The video was added.",
+        "savedReview": "The video was added. The product went back to review; buyers will see the video once it is approved.",
+        "removed": "The video was removed.",
+        "badType": "{name}: only MP4 (H.264) and WebM are accepted.",
+        "tooBig": "{name}: the file is larger than {max} MB.",
+        "tooLong": "{name}: the video is longer than {seconds} seconds.",
+        "errors": {
+          "badType": "Only MP4 (H.264) and WebM are accepted.",
+          "tooBig": "The file is larger than {max} MB.",
+          "network": "Network error. Try again.",
+          "sessionExpired": "The session has ended. Sign in again.",
+          "server": "The video was not added. Try again."
+        }
+      },
       "kind": {
         "label": "Product kind",
         "PRECIOUS": "Precious metal",
@@ -2009,6 +2057,7 @@
     "colStatus": "Status",
     "colActions": "Actions",
     "submitted": "Submitted: {date}",
+    "watchVideo": "Watch the video (new window)",
     "note": "Reason",
     "emptyFiltered": "Nothing matches these filters.",
     "clearFilters": "Clear filters",
@@ -2410,6 +2459,8 @@
       "VARIANT_REMOVED": "Variant removed",
       "IMAGE_ADDED": "Image added",
       "IMAGE_REMOVED": "Image removed",
+      "VIDEO_ADDED": "Video added",
+      "VIDEO_REMOVED": "Video removed",
       "DOCUMENT_UPLOADED": "Document uploaded",
       "DOCUMENT_VIEWED": "Document viewed",
       "DOCUMENT_APPROVED": "Document approved",

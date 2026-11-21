@@ -10,6 +10,7 @@ import az.jeparla.product.dto.EvidencePhotoDto;
 import az.jeparla.product.dto.ProductDto;
 import az.jeparla.product.dto.ProductImageDto;
 import az.jeparla.product.dto.ProductSummaryDto;
+import az.jeparla.product.dto.ProductVideoDto;
 import az.jeparla.product.dto.StoneDto;
 import az.jeparla.product.dto.VariantDto;
 import az.jeparla.store.Store;
@@ -60,7 +61,8 @@ public class CatalogMapper {
                 !product.getStones().isEmpty(),
                 verification(product),
                 stock,
-                product.getPublishedAt().toString());
+                product.getPublishedAt().toString(),
+                ProductVideoDto.of(product, imageUrls));
     }
 
     public ProductDto detail(Product product) {
