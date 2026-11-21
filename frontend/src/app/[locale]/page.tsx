@@ -35,7 +35,11 @@ export default function Home() {
           browser skips its rendering until it comes near the viewport (.home-below). */}
       <div className="home-below">
         <HomeCategories />
-        <NewArrivals />
+        {/* Full width on the page ground: it scrolls over the pinned categories film and
+            covers it (the section itself is a centred column). */}
+        <div className="bg-background">
+          <NewArrivals />
+        </div>
         <VerifiedExplainer />
         <BudgetPicks />
         <FeaturedStores />

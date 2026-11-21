@@ -9,6 +9,13 @@ import { HeroMotion } from "./hero-motion";
 
 const delay = (d: number) => ({ "--d": d }) as CSSProperties;
 
+/** Where a scene name leads: the catalog filtered to that metal, or to pieces with a diamond. */
+const SCENE_HREF = {
+  diamond: "/products?minCarat=0.01",
+  gold: "/products?metal=GOLD",
+  silver: "/products?metal=SILVER",
+} as const;
+
 /**
  * Home hero (#27): a white tiger, a golden tiger and a black panther walk in (an
  * AI clip, cut out frame by frame) and stop in the center under a shadow-like
@@ -69,8 +76,11 @@ export function CinematicHero() {
       <ol data-hero-scenes aria-label={t("scenesLabel")} className="hero-scenes">
         {HERO_SCENES.map((key, i) => (
           <li key={key}>
-            <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-            {t(`scenes.${key}`)}
+            {/* The name opens the catalog with the pieces of that kind, from every store. */}
+            <Link href={SCENE_HREF[key]} prefetch={false} className="touch-target">
+              <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+              {t(`scenes.${key}`)}
+            </Link>
             <span aria-hidden className="hero-scene-bar">
               <span data-scene-bar />
             </span>

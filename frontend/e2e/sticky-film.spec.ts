@@ -5,7 +5,7 @@ import { expect, expectNoA11yViolations, test } from "./fixtures";
  * cards scroll over it, the film layer stays at the top of the viewport (under the sticky
  * header at most); at the end the next section covers it; axe passes over the film.
  */
-const SECTIONS = ["home-verified", "home-stores", "home-seller"] as const;
+const SECTIONS = ["home-categories", "home-verified", "home-stores", "home-seller"] as const;
 
 for (const id of SECTIONS) {
   test(`the ${id} film stays pinned while the content scrolls over it`, async ({ page }) => {

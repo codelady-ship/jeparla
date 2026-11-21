@@ -6,9 +6,10 @@ test.describe("language and theme", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "az");
     if (isPhone(page)) await page.getByRole("button", { name: "Menyu" }).click();
     const scope = isPhone(page) ? page.getByRole("dialog") : page.getByRole("banner");
-    const select = scope.getByRole("combobox", { name: "Dil" });
-    await waitForHydration(select);
-    await select.selectOption("en");
+    const menu = scope.getByRole("button", { name: /^Dil/ });
+    await waitForHydration(menu);
+    await menu.click();
+    await scope.getByRole("button", { name: "English", exact: true }).click();
 
     await expect(page).toHaveURL(/\/en\/products/);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
