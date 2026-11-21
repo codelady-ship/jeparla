@@ -251,7 +251,8 @@ export function Gallery({
                 </span>
                 <span
                   aria-hidden
-                  className="absolute inset-x-0 bottom-5 flex justify-center gap-1.5"
+                  // Full width, over the enlarge button: taps must pass through to it.
+                  className="pointer-events-none absolute inset-x-0 bottom-5 flex justify-center gap-1.5"
                 >
                   {slides.map((slide, i) => (
                     <span
