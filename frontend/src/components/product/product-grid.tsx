@@ -2,6 +2,7 @@ import { SearchX } from "lucide-react";
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { revealStep } from "@/lib/motion/reveal-step";
 import type { ProductSummary } from "@/types/api";
 import { ProductCard } from "./product-card";
 
@@ -20,15 +21,26 @@ type Props = {
    * a product page): no image is preloaded, so nothing competes with the first paint.
    */
   belowFold?: boolean;
+  /**
+   * The grid sits in a <Reveal stagger>: the first-row cards are its items and come in
+   * one after another (one beat after the group's first item).
+   */
+  revealItems?: boolean;
 };
 
-export function ProductGrid({ products, empty, className, belowFold = false }: Props) {
+export function ProductGrid({
+  products,
+  empty,
+  className,
+  belowFold = false,
+  revealItems = false,
+}: Props) {
   if (products.length === 0) return <>{empty}</>;
   return (
     <ul className={className ?? GRID}>
       {products.map((p, i) =>
         i < FIRST_ROW ? (
-          <li key={p.id} className="flex">
+          <li key={p.id} className="flex" {...(revealItems ? revealStep(i + 1) : {})}>
             <ProductCard product={p} preload={!belowFold && i < 2} />
           </li>
         ) : (

@@ -1432,7 +1432,8 @@
         "audience": "Kimin üçündür",
         "material": "Material",
         "notPrecious": "Təsdiq edirəm: bu məhsul qiymətli metal deyil və adında, təsvirində qızıl, gümüş, brilyant və ya əyar (məsələn 585) yazılmayıb.",
-        "keyFeatures": "Əsas xüsusiyyətlər"
+        "keyFeatures": "Əsas xüsusiyyətlər",
+        "occasions": "Münasibət"
       },
       "hints": {
         "name": "Məsələn: Qızıl nişan üzüyü, brilyantlı.",
@@ -1443,7 +1444,8 @@
         "audience": "Model üzərində AI şəklində uyğun modeli seçir. Kişi və uşaq kateqoriyalarında avtomatik seçilir, dəyişə bilərsiniz.",
         "material": "Əsas materialı seçin; örtük varsa \"Gümüş suyu\" və ya \"Qızıl suyu\".",
         "fashionPrice": "Bijuteriyada qiymət sabitdir: metal məzənnəsinə bağlanmır.",
-        "keyFeatures": "Hər sətirdə bir xüsusiyyət, ən çox {max} sətir, hər biri {length} simvola qədər. Məsələn: Əl işi, Hər gün taxmaq üçün."
+        "keyFeatures": "Hər sətirdə bir xüsusiyyət, ən çox {max} sətir, hər biri {length} simvola qədər. Məsələn: Əl işi, Hər gün taxmaq üçün.",
+        "occasions": "Məhsul hansı münasibətlərə uyğundursa, seçin: alıcılar onu həmin seçim səhifələrində görəcək. Bu dəyişiklik məhsulu yenidən yoxlamaya göndərmir."
       },
       "images": {
         "drop": "Şəkilləri bura atın və ya seçin",
@@ -2254,7 +2256,7 @@
     },
     "catalog": {
       "title": "Kataloq",
-      "intro": "Kateqoriyalar, əyarlar və axtarış sinonimləri.",
+      "intro": "Kateqoriyalar, münasibət seçimləri, əyarlar və axtarış sinonimləri.",
       "categories": "Kateqoriyalar",
       "categoriesIntro": "Adlar üç dildə yazılır; içində məhsul olan kateqoriya silinmir.",
       "addCategory": "Kateqoriya əlavə et",
@@ -2293,7 +2295,22 @@
       "deleted": "{name} silindi",
       "added": "{name} əlavə edildi",
       "synonym": "Sinonimi",
-      "same": "eynidir"
+      "same": "eynidir",
+      "collections": "Münasibət seçimləri",
+      "collectionsIntro": "Satıcılar məhsullarını bu siyahıdan qeyd edir. Gizlədilən seçim saytdan və satıcı formundan çıxır, qeydlər qalır.",
+      "addCollection": "Seçim əlavə et",
+      "editCollection": "Seçimi redaktə et",
+      "collectionText": "Adlar üç dildə yazılır; URL adı səhifə ünvanıdır: /collections/<ad>.",
+      "noCollections": "Hələ seçim yoxdur.",
+      "hidden": "Gizli",
+      "shown": "Saytda göstər",
+      "shownHint": "Söndürsəniz, səhifə və satıcı formundakı seçim gizlənir; məhsulların qeydləri qalır.",
+      "slugChangeHint": "Dəyişsəniz, köhnə paylaşılmış linklər işləməyəcək.",
+      "edit": "Redaktə",
+      "saved": "{name} yadda saxlanıldı",
+      "moved": "{name} yeri dəyişdi",
+      "moveUp": "{name}: yuxarı",
+      "moveDown": "{name}: aşağı"
     },
     "users": {
       "title": "İstifadəçilər",
@@ -2822,7 +2839,7 @@
   "Guides": {
     "title": "Bələdçilər",
     "metaTitle": "Zərgərlik bələdçiləri: qızıl, brilyant, əyar, gümüş",
-    "description": "Qızılın əyarı, qiymətin hesablanması, brilyantın 4C-si, əyar damğasının yoxlanması və gümüşə qulluq haqqında mənbəli bələdçilər.",
+    "description": "Qızılın əyarı və əyar cədvəli, qiymətin hesablanması, brilyantın 4C-si, əyar damğası, nişan üzüyü, bijuteriya, qızıl və gümüşə qulluq haqqında mənbəli bələdçilər.",
     "intro": "Zərgərlik alarkən ən çox verilən suallara qısa və mənbəli cavablar. Hər bələdçi qısa cavabla başlayır və istifadə olunan mənbələrlə bitir.",
     "navLabel": "Bələdçilər",
     "breadcrumb": "Naviqasiya yolu",
@@ -2836,7 +2853,9 @@
     "sources": "Mənbələr",
     "sourcesNote": "Bələdçi yazılarkən hər mənbə açılıb yoxlanılıb. Burada qiymət göstərilmir: metal qiymətləri hər gün dəyişir.",
     "more": "Digər bələdçilər",
-    "external": "başqa saytda yeni pəncərədə açılır"
+    "external": "başqa saytda yeni pəncərədə açılır",
+    "related": "Faydalı səhifələr",
+    "relatedGuide": "Bələdçi: {title}"
   },
   "PricesMonthly": {
     "title": "Azərbaycanda qızıl və gümüş qiymətləri: aylıq icmal",
@@ -2867,6 +2886,38 @@
       "gaps": "Həftəsonu və bayram günlərində AMB məzənnə dərc etmir, həmin günlər hesablamaya daxil deyil. Cari ay hələ bitməyibsə, son gün son saxlanılmış məzənnə günüdür.",
       "corrected": "Ulduz (*) həmin ayda AMB məzənnəsinin Jeparla admini tərəfindən düzəldildiyini göstərir.",
       "jewelry": "Bunlar zərgərlik məmulatının yox, metalın dəyəridir: məmulatın qiymətinə işçilik, daşlar və mağazanın əlavəsi də daxildir."
+    }
+  },
+  "Collections": {
+    "title": "Münasibətə görə seçimlər",
+    "navLabel": "Münasibətə görə",
+    "description": "Nişan, toy, hədiyyə və gündəlik taxmaq üçün zərgərlik: Azərbaycan mağazalarının məhsulları bir yerdə.",
+    "intro": "Satıcılar hər məhsulun hansı münasibətə uyğun olduğunu özləri qeyd edir. Seçimi açın və büdcəyə görə süzün.",
+    "collectionDescription": "{name}: Azərbaycan zərgərlik mağazalarının bu münasibət üçün qeyd etdiyi qızıl, gümüş və brilyant modellər, qiymət və əyarla.",
+    "source": "Siyahını satıcıların öz qeydləri formalaşdırır; Jeparla modelin münasibətə uyğunluğunu qiymətləndirmir.",
+    "breadcrumb": "Naviqasiya yolu",
+    "productCount": "{count, plural, =0 {Məhsul yoxdur} other {# məhsul}}",
+    "budget": "Büdcə",
+    "anyPrice": "İstənilən qiymət",
+    "emptyTitle": "Bu seçimdə hələ məhsul yoxdur",
+    "emptyText": "Satıcılar məhsullarını bu münasibətlə qeyd etdikcə burada görünəcək. Hələlik bütün kataloqa və ya digər seçimlərə baxın.",
+    "browseCatalog": "Bütün kataloq",
+    "others": "Digər seçimlər",
+    "none": "Hələ seçim yoxdur.",
+    "faqTitle": "{name}: suallar",
+    "faq": {
+      "how": {
+        "q": "{name} seçiminə hansı məhsullar düşür?",
+        "a": "Satıcı məhsulu əlavə edərkən onun hansı münasibətə uyğun olduğunu qeyd edir. Burada yalnız yoxlamadan keçmiş, satışda olan məhsullar göstərilir."
+      },
+      "budget": {
+        "q": "Büdcəyə görə necə seçim edim?",
+        "a": "Yuxarıdakı büdcə düymələri ən aşağı variant qiymətinə görə süzür, qiymətlər manatla göstərilir. Metala bağlı qiymətlər hər gün AMB məzənnəsi ilə yenilənir."
+      },
+      "contact": {
+        "q": "Bəyəndiyim modeli necə alım?",
+        "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
+      }
     }
   }
 }

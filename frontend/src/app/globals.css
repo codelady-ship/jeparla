@@ -100,21 +100,80 @@
    so nothing shifts layout (CLS) and work stays on the compositor.
    --------------------------------------------------------------------------- */
 
-/* Scroll reveal: content fades up once when it enters the viewport (see <Reveal>).
-   Hidden only when scripting is on, so no-JS visitors and crawlers see everything.
-   Never use on the LCP element or anything above the fold. */
-@media (scripting: enabled) {
-  [data-reveal] {
-    opacity: 0;
-    transform: translate3d(0, var(--reveal-distance), 0);
-    transition:
-      opacity var(--duration-reveal) var(--ease-luxe),
-      transform var(--duration-reveal) var(--ease-luxe);
-    transition-delay: calc(var(--reveal-index, 0) * var(--reveal-stagger));
+/* Scroll reveal (<Reveal>, <ScrollReveal>, #287): content arrives once when it enters
+   the viewport. From below by default; in split sections from the left or the right
+   (wide screens only: on a phone a sideways start would reach past the gutter); a
+   picture's frame opens from a slightly smaller window while the picture inside settles;
+   a group's items follow one another. Opacity and transform only.
+   Hidden only after the inline script in the layout has marked <html> (data-motion) and
+   only with motion allowed: without JS, for crawlers and under reduced motion
+   everything is simply there. Never on the LCP element or anything above the fold. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion] {
+    [data-reveal],
+    [data-reveal-stagger] [data-reveal-item] {
+      opacity: 0;
+      transform: translate3d(var(--reveal-x, 0), var(--reveal-y, var(--reveal-distance)), 0);
+      transition:
+        opacity var(--duration-reveal) var(--ease-luxe),
+        transform var(--duration-reveal) var(--ease-luxe);
+      transition-delay: calc(var(--reveal-index, 0) * var(--reveal-stagger));
+    }
+    /* A group stays put itself; its items carry the motion, one step apart. */
+    [data-reveal][data-reveal-stagger],
+    [data-reveal][data-reveal-from="film"] {
+      opacity: 1;
+      transform: none;
+    }
+    [data-reveal-stagger] [data-reveal-item] {
+      transition-delay: calc(
+        (var(--reveal-index, 0) + var(--reveal-item, 0)) * var(--reveal-stagger)
+      );
+    }
+    [data-reveal-item]:nth-child(2) {
+      --reveal-item: 1;
+    }
+    [data-reveal-item]:nth-child(3) {
+      --reveal-item: 2;
+    }
+    [data-reveal-item]:nth-child(4) {
+      --reveal-item: 3;
+    }
+    [data-reveal-item]:nth-child(5) {
+      --reveal-item: 4;
+    }
+    [data-reveal-item]:nth-child(n + 6) {
+      --reveal-item: 5;
+    }
+    /* Picture frames: the panel grows from 94% while the picture in it settles from 108%,
+       so the image seems to come to rest inside an opening window. */
+    [data-reveal] .reveal-frame {
+      transform: scale(0.94);
+      transition: transform var(--duration-reveal) var(--ease-luxe);
+      transition-delay: inherit;
+    }
+    [data-reveal] .reveal-frame > :is(img, .ambient-video) {
+      transform: scale(1.08);
+      transition: transform var(--duration-zoom) var(--ease-luxe);
+      transition-delay: inherit;
+    }
+    [data-reveal="shown"],
+    [data-reveal="shown"][data-reveal-stagger] [data-reveal-item],
+    [data-reveal="shown"] .reveal-frame,
+    [data-reveal="shown"] .reveal-frame > :is(img, .ambient-video) {
+      opacity: 1;
+      transform: none;
+    }
   }
-  [data-reveal="shown"] {
-    opacity: 1;
-    transform: none;
+  @media (min-width: 48rem) {
+    [data-reveal-from="left"] {
+      --reveal-x: calc(-1 * var(--reveal-shift));
+      --reveal-y: 0px;
+    }
+    [data-reveal-from="right"] {
+      --reveal-x: var(--reveal-shift);
+      --reveal-y: 0px;
+    }
   }
 }
 
@@ -320,6 +379,14 @@
 :root {
   --container-page: 90rem;
   --gutter-page: clamp(1rem, 3.5vw, 3rem);
+  /* Scene rail (landscape): its distance from the stage bottom and its height (one line
+     of 13px labels in a padded pill, 38px measured; rounded up). The copy column ends
+     this far above the bottom plus some air, so the two never meet (#287). */
+  --hero-rail-bottom: 2rem;
+  --hero-rail-height: 2.5rem;
+  --hero-copy-floor: calc(
+    var(--hero-rail-bottom) + var(--hero-rail-height) + clamp(1.25rem, 4svh, 3rem)
+  );
 }
 
 .hero-track {
@@ -440,21 +507,28 @@
     height: 100%;
     object-fit: cover;
   }
+  /* The copy column runs from under the header down to just above the scene rail and
+     sits at its foot, by the figures' feet. Its box never reaches the rail, whatever the
+     viewport height (#287); type also scales with the height, so it fits short screens. */
   .hero-copy {
     position: absolute;
-    top: 50%;
-    translate: 0 -10%;
+    top: 4rem;
+    bottom: var(--hero-copy-floor);
     left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
     right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe flex-end;
     width: min(26rem, 31vw);
     max-width: none;
     padding: 0;
   }
   .hero-brand {
-    font-size: clamp(3rem, 5vw, 5rem);
+    margin-bottom: clamp(1rem, min(3vw, 4svh), 2.5rem);
+    font-size: clamp(2.5rem, min(5vw, 9svh), 5rem);
   }
   .hero-title {
-    font-size: clamp(2.25rem, 3.4vw, 3.5rem);
+    font-size: clamp(2rem, min(3.4vw, 7svh), 3.5rem);
   }
 }
 /* Landscape phones: the stage is one short screen, so the copy is smaller, centered in
@@ -464,8 +538,8 @@
     min-height: 20rem;
   }
   .hero-copy {
-    top: calc(4rem + (100% - 4rem) / 2);
-    translate: 0 -50%;
+    bottom: 0.75rem;
+    justify-content: safe center;
     width: min(26rem, 38vw);
   }
   .hero-brand {
@@ -551,9 +625,18 @@
 @media (min-aspect-ratio: 4/5) {
   /* Landscape: under the copy column, on the page container's left edge. */
   .hero-scenes {
-    bottom: 2rem;
+    bottom: var(--hero-rail-bottom);
     left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
     translate: none;
+  }
+}
+/* Landscape phones: the copy needs the whole short column, so the rail moves to the
+   bottom right corner, clear of the copy column. */
+@media (min-aspect-ratio: 4/5) and (max-height: 32rem) {
+  .hero-scenes {
+    bottom: 0.75rem;
+    left: auto;
+    right: var(--gutter-page);
   }
 }
 
@@ -790,6 +873,43 @@
     min-height: 90svh;
   }
 }
+/* The film opens as the band scrolls in (#287): it starts as a slightly smaller window
+   on the page ground and widens to full bleed by the time the whole band is in view.
+   Scrubbed by the scroll where CSS scroll-driven animations exist (linear: the film
+   follows the thumb), otherwise a one-off widening when the band enters. Transform only,
+   on the film and its scrim; the copy rises in on its own (<Reveal from="group">). */
+@keyframes band-open {
+  from {
+    transform: scale(var(--band-from));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion] .video-band {
+    --band-from: 0.94;
+    @media (min-width: 48rem) {
+      --band-from: 0.88;
+    }
+  }
+  @supports (animation-timeline: view()) {
+    :root[data-motion] .video-band {
+      view-timeline: --band block;
+      > :is(.ambient-video, .band-scrim) {
+        animation: band-open linear both;
+        animation-timeline: --band;
+        animation-range: entry 0% entry 100%;
+      }
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    :root[data-motion] .video-band[data-reveal] > :is(.ambient-video, .band-scrim) {
+      transform: scale(var(--band-from));
+      transition: transform var(--duration-zoom) var(--ease-luxe);
+    }
+    :root[data-motion] .video-band[data-reveal="shown"] > :is(.ambient-video, .band-scrim) {
+      transform: none;
+    }
+  }
+}
 /* Deep green rising from the bottom, where the copy sits: 80% or more behind every
    line of copy, so ivory keeps AA over any frame; the top of the frame stays clear. */
 .band-scrim {
@@ -845,6 +965,20 @@
 .ambient-toggle:focus-visible {
   outline: 2px solid var(--scene-gold);
   outline-offset: 3px;
+}
+
+/* Scrim of a photo card (occasion collections, #115): deep green from the bottom, where
+   the name and count sit; 84% or more behind them, so ivory keeps AA over a white photo.
+   The top of the photo stays clear. Same in both themes (scene tokens are fixed). */
+.cover-scrim {
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--scene-deep) 94%, transparent) 0%,
+    color-mix(in oklab, var(--scene-deep) 84%, transparent) 40%,
+    color-mix(in oklab, var(--scene-deep) 35%, transparent) 62%,
+    transparent 82%
+  );
 }
 
 /* Scrim for ivory copy on scene imagery (stores banner, seller call to action): deep

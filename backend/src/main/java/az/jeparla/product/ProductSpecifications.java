@@ -1,10 +1,12 @@
 package az.jeparla.product;
 
+import az.jeparla.collection.OccasionCollection;
 import az.jeparla.store.StoreStatus;
 import az.jeparla.verification.CheckStatus;
 import jakarta.persistence.criteria.CommonAbstractCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -39,6 +41,18 @@ public final class ProductSpecifications {
 
     public static Specification<Product> inStores(Collection<String> storeSlugs) {
         return (root, query, cb) -> root.get("store").get("slug").in(storeSlugs);
+    }
+
+    /** Tagged with the shown occasion collection of this slug (#115); a hidden or unknown one matches nothing. */
+    public static Specification<Product> inCollection(String slug) {
+        return (root, query, cb) -> {
+            Subquery<Long> tagged = query.subquery(Long.class);
+            Root<Product> product = tagged.from(Product.class);
+            Join<Product, OccasionCollection> collection = product.join("collections");
+            tagged.select(product.get("id")).where(cb.equal(product, root), cb.equal(collection.get("slug"), slug),
+                    cb.isTrue(collection.get("active")));
+            return cb.exists(tagged);
+        };
     }
 
     public static Specification<Product> inCity(String city) {

@@ -14,9 +14,11 @@ import type {
   MetalPrice,
   MetalType,
   Money,
+  OccasionCollection,
   PricingMode,
   PricingRule,
   Product,
+  ProductImage,
   Stone,
   Store,
   VariantPriceBreakdown,
@@ -591,3 +593,68 @@ export const CATEGORIES: Category[] = CAT_SEEDS.map(([id, slug, parentId, az, en
   productCount: PRODUCTS.filter((p) => p.categoryId === id || CAT_SEEDS[p.categoryId - 1][2] === id)
     .length,
 }));
+
+// ---------------------------------------------------------------- occasion collections (#115)
+/** The first six (owner, 2026-11-18), as V63 creates them: ids 1..6 in this order. */
+const OCCASION_SEEDS: [slug: string, az: string, en: string, ru: string][] = [
+  ["nisan", "Nişan", "Engagement", "Помолвка"],
+  ["toy", "Toy", "Wedding", "Свадьба"],
+  ["hediyye", "Hədiyyə", "Gift", "Подарок"],
+  ["gundelik", "Gündəlik", "Everyday", "На каждый день"],
+  ["kisi-ucun", "Kişi üçün", "For him", "Для него"],
+  ["usaq-ucun", "Uşaq üçün", "For kids", "Для детей"],
+];
+
+/**
+ * The seller's occasion tags of a demo product (index i, leaf category c), the same rule as
+ * the demo seed (backend/src/main/resources/db/demo/R__demo_seed.sql).
+ */
+function occasionsOf(i: number, c: number): string[] {
+  const out: string[] = [];
+  if (c === 2) out.push("nisan");
+  if (c === 3 || c === 9) out.push("toy");
+  if ([4, 7, 8, 9, 10].includes(c) && i % 3 !== 1) out.push("hediyye");
+  if ([4, 6, 8].includes(c) && i % 3 !== 0) out.push("gundelik");
+  if (c === 11) out.push("kisi-ucun");
+  if (c === 12) out.push("usaq-ucun");
+  return out;
+}
+
+/** Product id -> occasion collection slugs. */
+export const PRODUCT_OCCASIONS: ReadonlyMap<number, readonly string[]> = new Map(
+  PRODUCTS.map((p, i) => [p.id, occasionsOf(i, p.categoryId)]),
+);
+
+/** How many of a collection's newest products are looked at for its cover (as the backend). */
+const COVER_CANDIDATES = 12;
+
+const photoFile = (url: string) => url.split("#")[0];
+
+/**
+ * Collections with counts and covers, the rule of backend CollectionService.shown(): the main
+ * photo of one of the 12 newest listed products, never an AI image, preferring a photo file no
+ * earlier collection uses yet. Real product photos only, no stock pictures.
+ */
+function withCovers(): OccasionCollection[] {
+  const used = new Set<string>();
+  return OCCASION_SEEDS.map(([slug, az, en, ru], i) => {
+    const listed = PRODUCTS.filter(
+      (p) => p.status === "APPROVED" && PRODUCT_OCCASIONS.get(p.id)?.includes(slug),
+    );
+    const newest = [...listed]
+      .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id - a.id)
+      .slice(0, COVER_CANDIDATES);
+    const real = (img: ProductImage | undefined): img is ProductImage => !!img && !img.aiGenerated;
+    const main = newest.map((p) => p.images[0]).filter(real);
+    const fresh = (img: ProductImage) => !used.has(photoFile(img.url));
+    const cover =
+      main.find(fresh) ??
+      newest.flatMap((p) => p.images.filter(real)).find(fresh) ??
+      main[0] ??
+      null;
+    if (cover) used.add(photoFile(cover.url));
+    return { id: i + 1, slug, name: { az, en, ru }, productCount: listed.length, cover };
+  });
+}
+
+export const OCCASIONS: OccasionCollection[] = withCovers();

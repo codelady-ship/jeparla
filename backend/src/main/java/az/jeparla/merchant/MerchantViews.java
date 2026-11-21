@@ -42,7 +42,8 @@ class MerchantViews {
                 product.getVariants().stream().map(MerchantVariantDto::of).toList(),
                 product.getStones().stream().map(StoneDto::of).toList(),
                 product.getEvidencePhotos().stream().map(this::evidence).toList(),
-                DimensionsDto.of(product), product.getKeyFeatures());
+                DimensionsDto.of(product), product.getKeyFeatures(),
+                product.getCollections().stream().map(c -> c.getId()).sorted().toList());
     }
 
     MerchantEvidencePhotoDto evidence(ProductEvidencePhoto photo) {

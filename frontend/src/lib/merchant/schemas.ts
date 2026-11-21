@@ -27,6 +27,8 @@ export const imagesStep = z.object({
 
 export const MAX_KEY_FEATURES = 5;
 export const KEY_FEATURE_LENGTH = 120;
+/** Occasion tags of one product (#115), as the backend ProductRequest.MAX_COLLECTIONS. */
+export const MAX_COLLECTIONS = 20;
 
 /** A size in mm as typed (#174): empty, or > 0 with up to 4 digits and 2 decimals. */
 const dimension = z
@@ -57,6 +59,8 @@ export const basicsStep = z.object({
   category: z.string().min(1, "required"),
   audience: z.enum(PRODUCT_AUDIENCES).default("UNISEX"),
   description: z.string().trim().max(2000, "descriptionLong"),
+  /** Occasion collections (#115) by id; the API checks they exist and are shown. */
+  collectionIds: z.array(z.number().int().positive()).max(MAX_COLLECTIONS).optional(),
 });
 
 /** Money as typed; checked by checkPricing because it depends on the mode. */

@@ -3,6 +3,7 @@ import type { Role } from "@/lib/auth/session";
 import type { CheckStatus, LocalizedText, MetalType, Money, ProductStatus } from "@/types/api";
 import type {
   AdminCategory,
+  AdminCollection,
   AdminFineness,
   AdminMetalPrice,
   AdminStore,
@@ -306,6 +307,9 @@ export const httpAdminApi: AdminApi = {
   },
   async categories() {
     return userFetch<AdminCategory[]>("/admin/categories");
+  },
+  async collections() {
+    return userFetch<AdminCollection[]>("/admin/collections");
   },
   async finenesses() {
     return userFetch<AdminFineness[]>("/admin/finenesses");

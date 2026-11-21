@@ -81,8 +81,14 @@ dəyərlər bizimdir (`tokens.json` -> `motion`).
 
 Naxışlar:
 
-- **Scroll reveal:** `<Reveal index={i}>`, 24px yuxarı + fade, qrupda 80 ms növbə. Bir dəfə işləyir.
-  JS olmadıqda (`@media (scripting: enabled)`) gizlənmir, crawler və AI hər şeyi görür.
+- **Scroll reveal (#287):** `<Reveal index={i} from="up|left|right" stagger>`. Default 24px yuxarı +
+  fade; split bölmələrdə mətn soldan, şəkil sağdan 40px (`--reveal-shift`, yalnız >= 48rem; telefonda
+  yuxarı); `stagger` qrupunda `[data-reveal-item]` elementləri 70 ms (`--reveal-stagger`) növbə ilə
+  gəlir (`revealStep(n)`); `.reveal-frame` şəkil paneli 94%-dən açılır, içindəki şəkil 108%-dən
+  yerinə oturur. Bir dəfə işləyir. Gizlətmə yalnız layout-dakı inline skript `<html data-motion>`
+  qoyandan sonra: JS olmadıqda crawler və AI hər şeyi görür.
+- **Film zolaqları:** `<VideoBand>` filmi scroll ilə kiçik pəncərədən tam enə açılır
+  (`animation-timeline: view()`, linear); dəstəkləməyən brauzerdə bir dəfəlik keçid.
 - **Məhsul şəkli:** `group` + `overflow-hidden` daxilində `img-zoom` (1.05, 1200 ms) və ikinci şəkil
   üçün `img-swap` (crossfade). Yalnız `hover: hover` cihazlarda.
 - **Link:** `link-underline`, xətt soldan sağa çəkilir.

@@ -13,6 +13,7 @@ import { TiltRing } from "@/components/motion/tilt-ring";
 import { StoreCard } from "@/components/stores/store-card";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
+import { revealStep } from "@/lib/motion/reveal-step";
 import { cn } from "cn";
 import { GHOST_PILL_DARK, PRIMARY_PILL } from "./pills";
 import { VideoBand } from "./video-band";
@@ -20,8 +21,10 @@ import { VideoBand } from "./video-band";
 /*
  * Home sections below the hero. Rhythm: full-bleed film bands alternate with
  * 1200px sections (text-left / picture-right splits and three-card grids), 72px
- * apart. One gold pill per section for the main action, ghost pills for the rest;
- * every block arrives with a calm fade and rise (<Reveal>, none under reduced motion).
+ * apart. One gold pill per section for the main action, ghost pills for the rest.
+ * Motion (<Reveal>, none under reduced motion): in a split the copy comes in from the
+ * left line by line and the picture from the right, opening like a window; cards rise
+ * one after another; film bands widen as they scroll in.
  */
 
 /**
@@ -69,26 +72,33 @@ export async function HomeCategories() {
   return (
     <section aria-labelledby="home-categories" className="bg-scene-green text-scene-ivory">
       <div className="home-wrap home-pad grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-16">
-        <Reveal>
-          <h2 id="home-categories" className={BAND_HEAD}>
+        <Reveal from="left" stagger>
+          <h2 id="home-categories" className={BAND_HEAD} {...revealStep(0)}>
             {t("categories")}
           </h2>
           <ul className="flex flex-col">
-            {roots.map((c) => (
-              <li key={c.slug}>
+            {roots.map((c, i) => (
+              <li key={c.slug} {...revealStep(i + 1)}>
                 <Link href={`/categories/${c.slug}`} className={BAND_LINK}>
                   {c.name}
                 </Link>
               </li>
             ))}
           </ul>
-          <Link href="/categories" className={cn(GHOST_PILL_DARK, "mt-10")}>
-            {t("seeAll")}
-            <ArrowRight aria-hidden className="size-4" />
-          </Link>
+          <div className="mt-10" {...revealStep(roots.length + 1)}>
+            <Link href="/categories" className={GHOST_PILL_DARK}>
+              {t("seeAll")}
+              <ArrowRight aria-hidden className="size-4" />
+            </Link>
+          </div>
         </Reveal>
-        <Reveal as="figure" index={1} className="md:w-full md:max-w-md md:justify-self-end">
-          <div className="video-panel relative isolate aspect-[4/5] overflow-hidden rounded-xl bg-scene-deep">
+        <Reveal
+          as="figure"
+          from="right"
+          index={1}
+          className="md:w-full md:max-w-md md:justify-self-end"
+        >
+          <div className="video-panel reveal-frame relative isolate aspect-[4/5] overflow-hidden rounded-xl bg-scene-deep">
             <AmbientVideo
               desktop={SHOWCASE_VIDEO.desktop}
               mobile={SHOWCASE_VIDEO.mobile}
@@ -116,13 +126,13 @@ export async function BudgetPicks() {
   return (
     <section aria-labelledby="home-budget" className="bg-scene-green text-scene-ivory">
       <div className="home-wrap home-pad grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-16">
-        <Reveal>
-          <h2 id="home-budget" className={BAND_HEAD}>
+        <Reveal from="left" stagger>
+          <h2 id="home-budget" className={BAND_HEAD} {...revealStep(0)}>
             {t("budget.title")}
           </h2>
           <ul className="flex flex-col">
-            {budgets.map((max) => (
-              <li key={max}>
+            {budgets.map((max, i) => (
+              <li key={max} {...revealStep(i + 1)}>
                 <Link
                   href={`/products?maxPrice=${max}`}
                   prefetch={false}
@@ -133,11 +143,16 @@ export async function BudgetPicks() {
               </li>
             ))}
           </ul>
-          <p className="mt-8 max-w-md text-sm text-scene-ivory-muted">{t("budget.note")}</p>
+          <p
+            className="mt-8 max-w-md text-sm text-scene-ivory-muted"
+            {...revealStep(budgets.length + 1)}
+          >
+            {t("budget.note")}
+          </p>
         </Reveal>
         {/* Decorative: a drawn ring that turns toward the pointer (our own SVG, #260). */}
-        <Reveal index={1} className="md:w-full md:max-w-md md:justify-self-end">
-          <TiltRing className="aspect-[16/9] rounded-xl md:aspect-[4/5]" />
+        <Reveal from="right" index={1} className="md:w-full md:max-w-md md:justify-self-end">
+          <TiltRing className="reveal-frame aspect-[16/9] rounded-xl md:aspect-[4/5]" />
         </Reveal>
       </div>
     </section>
@@ -158,8 +173,8 @@ export async function FeaturedStores() {
   return (
     <section aria-labelledby="home-stores" className="home-wrap home-pad">
       {/* Decorative interior (stock), never one of the listed stores: see the note below it. */}
-      <Reveal as="figure" className="mb-8">
-        <div className="video-panel relative isolate flex min-h-[28rem] items-end overflow-hidden rounded-xl bg-scene-green md:aspect-[12/5] md:min-h-0">
+      <Reveal as="figure" stagger className="mb-8">
+        <div className="video-panel reveal-frame relative isolate flex min-h-[28rem] items-end overflow-hidden rounded-xl bg-scene-green md:aspect-[12/5] md:min-h-0">
           <AmbientVideo
             desktop={VITRINE_HOME.desktop}
             mobile={VITRINE_HOME.mobile}
@@ -170,24 +185,29 @@ export async function FeaturedStores() {
             <h2
               id="home-stores"
               className="home-head text-3xl text-balance sm:text-4xl md:text-5xl"
+              {...revealStep(2)}
             >
               {t("storesBanner.title")}
             </h2>
-            <p className="max-w-md text-sm text-pretty sm:text-base">{t("storesBanner.text")}</p>
-            <Link href="/stores" className={cn(PRIMARY_PILL, "mt-2 self-start")}>
-              {t("storesBanner.cta")}
-            </Link>
+            <p className="max-w-md text-sm text-pretty sm:text-base" {...revealStep(3)}>
+              {t("storesBanner.text")}
+            </p>
+            <div className="mt-2 self-start" {...revealStep(4)}>
+              <Link href="/stores" className={PRIMARY_PILL}>
+                {t("storesBanner.cta")}
+              </Link>
+            </div>
           </div>
         </div>
         <figcaption className="mt-2 text-xs text-muted-foreground">{t("decorNote")}</figcaption>
       </Reveal>
-      <ul className="grid gap-4 md:grid-cols-3">
-        {featured.map((s, i) => (
-          <Reveal key={s.id} as="li" index={i}>
+      <Reveal as="ul" stagger className="grid gap-4 md:grid-cols-3">
+        {featured.map((s) => (
+          <li key={s.id} data-reveal-item="">
             <StoreCard store={s} />
-          </Reveal>
+          </li>
         ))}
-      </ul>
+      </Reveal>
     </section>
   );
 }
@@ -209,17 +229,23 @@ export async function VerifiedExplainer() {
       video={RING_VIDEO}
       note={t("decorNote")}
       after={
-        <ul className="home-wrap home-pad grid gap-4 md:grid-cols-3">
-          {items.map(({ key, Icon }, i) => (
-            <Reveal key={key} as="li" index={i} className="home-card flex flex-col gap-3">
+        // The three checks side by side from tablet width up, stacked on phones (#287).
+        <Reveal
+          as="ul"
+          stagger
+          data-checks=""
+          className="home-wrap home-pad grid gap-4 md:grid-cols-3"
+        >
+          {items.map(({ key, Icon }) => (
+            <li key={key} data-reveal-item="" className="home-card flex flex-col gap-3">
               <Icon aria-hidden className="size-7 text-gold-text" />
               <h3 className="home-head font-heading text-2xl">{t(`verified.${key}.title`)}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {t(`verified.${key}.text`)}
               </p>
-            </Reveal>
+            </li>
           ))}
-        </ul>
+        </Reveal>
       }
     />
   );
@@ -228,9 +254,9 @@ export async function VerifiedExplainer() {
 /** Daily CBAR gram prices and the 30-day chart (PLAN 5.10). */
 export function MetalPrices() {
   return (
-    <div className="home-wrap pb-12 md:pb-[4.5rem]">
+    <Reveal className="home-wrap pb-12 md:pb-[4.5rem]">
       <MetalPriceWidget />
-    </div>
+    </Reveal>
   );
 }
 

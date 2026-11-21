@@ -28,6 +28,30 @@ export const categorySchema = z.object({
   name: z.object({ az: text(60), en: text(60), ru: text(60) }),
 });
 
+/**
+ * An occasion collection (#115): the page address, three names and whether it is shown.
+ * Hidden collections leave the site and the seller form but keep their tags.
+ */
+export const collectionSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "slugFormat")
+    .min(2, "slugFormat")
+    .max(40, "tooLong"),
+  name: z.object({ az: text(60), en: text(60), ru: text(60) }),
+  active: z.boolean().default(true),
+});
+
+/** The new order: every collection id exactly once (the server checks the set). */
+export const collectionOrderSchema = z.object({
+  ids: z
+    .array(z.number().int().positive())
+    .min(1)
+    .max(200)
+    .refine((ids) => new Set(ids).size === ids.length, "invalid"),
+});
+
 export const finenessSchema = z.object({
   metal: z.enum(METALS),
   value: z.number("valueRange").int("valueRange").min(1, "valueRange").max(999, "valueRange"),
@@ -71,6 +95,7 @@ export function priceJump(current: Decimal, next: Decimal): { change: Decimal; l
 }
 
 export type CategoryInput = z.infer<typeof categorySchema>;
+export type CollectionInput = z.infer<typeof collectionSchema>;
 export type FinenessInput = z.infer<typeof finenessSchema>;
 export type SynonymInput = z.infer<typeof synonymSchema>;
 export type RoleInput = z.infer<typeof roleSchema>;

@@ -72,6 +72,7 @@ function motionVars(motion) {
   for (const [k, v] of Object.entries(motion.duration)) lines.push(`  --duration-${k}: ${v};`);
   for (const [k, v] of Object.entries(motion.easing)) lines.push(`  --ease-${k}: ${v};`);
   lines.push(`  --reveal-distance: ${motion["reveal-distance"]};`);
+  lines.push(`  --reveal-shift: ${motion["reveal-shift"]};`);
   lines.push(`  --reveal-stagger: ${motion["reveal-stagger"]};`);
   return lines.join("\n") + "\n";
 }

@@ -5,6 +5,7 @@ import static az.jeparla.product.ProductSpecifications.documentsVerified;
 import static az.jeparla.product.ProductSpecifications.hasLiveVariant;
 import static az.jeparla.product.ProductSpecifications.inCategories;
 import static az.jeparla.product.ProductSpecifications.inCity;
+import static az.jeparla.product.ProductSpecifications.inCollection;
 import static az.jeparla.product.ProductSpecifications.inStores;
 import static az.jeparla.product.ProductSpecifications.isPublic;
 import static az.jeparla.product.ProductSpecifications.matchingWords;
@@ -220,6 +221,9 @@ public class ProductCatalogService {
             return Optional.empty();
         }
         Specification<Product> spec = isPublic().and(hasLiveVariant()).and(inCategories(categoryIds));
+        if (query.collection() != null && !query.collection().isBlank()) {
+            spec = spec.and(inCollection(query.collection().strip()));
+        }
         if (notEmpty(query.store())) {
             spec = spec.and(inStores(query.store()));
         }

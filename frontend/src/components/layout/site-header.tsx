@@ -4,6 +4,7 @@ import { FavoritesPriceNote } from "@/components/saved/favorites-price-note";
 import { SavedCount } from "@/components/saved/saved-count";
 import { SearchLauncher } from "@/components/search/search-launcher";
 import { AccountMenu } from "@/components/auth/account-menu";
+import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -34,9 +35,9 @@ export function SiteHeader() {
           href="/"
           prefetch={false}
           translate="no"
-          className="touch-target relative font-heading text-2xl font-semibold tracking-tight"
+          className="touch-target relative inline-flex items-center"
         >
-          Jeparla
+          <Wordmark />
         </Link>
         <nav aria-label={t("Nav.mainNav")} className="ml-8 hidden md:block">
           <ul className="flex items-center gap-6 text-sm font-medium">

@@ -7,14 +7,20 @@ export const generateMetadata = () => adminMetadata("catalog");
 
 async function Settings() {
   const { api } = await adminContext();
-  const [categories, finenesses, synonyms] = await Promise.all([
+  const [categories, collections, finenesses, synonyms] = await Promise.all([
     api.categories(),
+    api.collections(),
     api.finenesses(),
     api.synonyms(),
   ]);
   return (
     <AdminIntl>
-      <CatalogSettings categories={categories} finenesses={finenesses} synonyms={synonyms} />
+      <CatalogSettings
+        categories={categories}
+        collections={collections}
+        finenesses={finenesses}
+        synonyms={synonyms}
+      />
     </AdminIntl>
   );
 }

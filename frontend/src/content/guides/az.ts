@@ -412,4 +412,371 @@ export const az: GuideTexts = {
       },
     ],
   },
+
+  "fineness-chart": {
+    title: "Əyar cədvəli: qızıl, gümüş və platində 375-dən 999-a qədər",
+    description:
+      "Qızıl, gümüş, platin və palladium əyarları: hər rəqəm nə qədər xalis metal deməkdir və qızılın əyarı hansı karata uyğundur.",
+    answer:
+      "Əyar ərintinin hər 1000 hissəsində neçə hissə xalis metal olduğunu göstərir. Qızılda geniş yayılmış əyarlar 375 (9 karat), 585 (14 karat), 750 (18 karat), 916 (22 karat) və 999 (24 karat), gümüşdə isə 800, 925 və 999-dur. Rəqəm nə qədər böyükdürsə, ərintidə bir o qədər çox xalis metal var.",
+    sections: [
+      {
+        id: "how-to-read",
+        title: "Rəqəmi necə oxumalı",
+        blocks: [
+          {
+            type: "p",
+            text: "Əyar min hissəlik sistemdir: 925 rəqəmi kütləcə hər 1000 hissədən 925-inin xalis gümüş olduğunu bildirir, yəni 92,5%. Faizi tapmaq üçün əyarı 10-a bölmək kifayətdir.",
+          },
+          {
+            type: "p",
+            text: "Qızıl üçün ikinci sistem karatdır və 24 hissə ilə hesablanır: 24 karat demək olar ki, xalis qızıldır, 18 karat isə 18/24, yəni 75%-dir.",
+          },
+        ],
+      },
+      {
+        id: "gold",
+        title: "Qızıl",
+        blocks: [
+          {
+            type: "table",
+            caption: "Qızılın əyarı, xalis qızılın payı və karat qarşılığı",
+            head: ["Əyar", "Xalis qızıl", "Karat"],
+            rows: [
+              ["375", "37,5%", "9"],
+              ["585", "58,5%", "14"],
+              ["750", "75%", "18"],
+              ["916", "91,6%", "22"],
+              ["999", "99,9%", "24"],
+            ],
+          },
+          {
+            type: "p",
+            text: "14 karat dəqiq hesabla 583,3 əyar edir (14/24), amma damğada 585 işlənir. 22 karat 916 ilə, 24 karat isə adətən 999 ilə göstərilir.",
+          },
+        ],
+      },
+      {
+        id: "silver",
+        title: "Gümüş",
+        blocks: [
+          {
+            type: "table",
+            caption: "Gümüşün əyarı və xalis gümüşün payı",
+            head: ["Əyar", "Xalis gümüş"],
+            rows: [
+              ["800", "80%"],
+              ["925", "92,5%"],
+              ["958", "95,8%"],
+              ["999", "99,9%"],
+            ],
+          },
+          {
+            type: "p",
+            text: "925 əyarlı gümüş ingilis dilində sterling silver adlanır. 958 əyar Böyük Britaniyada Britannia silver kimi tanınır.",
+          },
+        ],
+      },
+      {
+        id: "platinum",
+        title: "Platin və palladium",
+        blocks: [
+          {
+            type: "p",
+            text: "Edinburq Əyar İdarəsi (Böyük Britaniya) öz izahında platin üçün 850, 900, 950 və 999, palladium üçün 500, 950 və 999 əyarlarını sadalayır. Eyni siyahıda qızıl üçün 990 əyarı da var.",
+          },
+          {
+            type: "p",
+            text: "İcazə verilən əyarların siyahısı ölkədən ölkəyə fərqlənə bilər. Azərbaycanda aldığınız məmulatın əyarını üzərindəki damğadan və qəbzdən yoxlayın.",
+          },
+        ],
+      },
+      {
+        id: "price",
+        title: "Əyar və qiymət",
+        blocks: [
+          {
+            type: "p",
+            text: "Metalın dəyəri əyarla mütənasibdir: ərintinin qram qiyməti xalis metalın qram qiymətinin əyara vurulub 1000-ə bölünməsinə bərabərdir. Jeparla bu hesabı hər gün AMB-nin metal məzənnəsi ilə aparır və tarixi ilə göstərir.",
+          },
+          {
+            type: "links",
+            items: [
+              { label: "Bu günün metal qiymətləri", href: "/prices" },
+              { label: "Qızılın qiyməti necə hesablanır", href: "/guides/gold-price-calculation" },
+              { label: "585 və 750 əyar qızıl: fərq nədir", href: "/guides/585-vs-750-gold" },
+              { label: "Əyar damğasını necə yoxlamaq olar", href: "/guides/hallmark-check" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  "bijouterie-vs-precious": {
+    title: "Bijuteriya və qiymətli zərgərlik: fərq nədir",
+    description:
+      "Qiymətli metaldan zərgərliklə bijuteriya arasındakı fərq: material, əyar damğası, örtük, nikel və qiymətin necə yarandığı.",
+    answer:
+      "Qiymətli zərgərlik qızıl, gümüş, platin və ya palladium ərintisindən hazırlanır, onun əyarı olur və üzərinə əyar damğası vurulur; metalın dəyəri çəki və əyardan hesablanır. Bijuteriya polad, mis ərintiləri, muncuq, dəri kimi başqa materiallardan hazırlanır. Üzəri qızıl və ya gümüş təbəqəsi ilə örtülsə də, altındakı material qiymətli metal deyil. Jeparla-da bijuteriya ayrıca nişanla göstərilir və qiyməti metal məzənnəsinə bağlanmır.",
+    sections: [
+      {
+        id: "precious",
+        title: "Qiymətli zərgərlik",
+        blocks: [
+          {
+            type: "p",
+            text: "Qiymətli metal ərintisi müəyyən əyarla hazırlanır: məsələn, qızıl 585 və ya 750, gümüş 925. Edinburq Əyar İdarəsinin izahına görə, standart əyar damğası üç məcburi nişandan ibarətdir: istehsalçının və ya sifarişçinin nişanı, metal və əyar nişanı və əyar idarəsinin nişanı.",
+          },
+          {
+            type: "p",
+            text: "Belə məmulatda metalın dəyəri çəkidən və əyardan hesablanır, ona görə də qiymətin bir hissəsi metal məzənnəsi ilə dəyişir.",
+          },
+        ],
+      },
+      {
+        id: "bijouterie",
+        title: "Bijuteriya",
+        blocks: [
+          {
+            type: "p",
+            text: "Bijuteriya qiymətli metal olmayan materiallardan hazırlanır: polad, mis və onun ərintiləri, muncuq, şüşə, dəri və başqaları. Onun qiyməti material, dizayn və işlə müəyyən edilir və metal məzənnəsindən asılı deyil.",
+          },
+          {
+            type: "p",
+            text: "Bijuteriya pis və ya yaxşı deyil, sadəcə başqa məhsuldur. Vacib olan, satıcının məmulatın nədən hazırlandığını düzgün yazmasıdır.",
+          },
+        ],
+      },
+      {
+        id: "plating",
+        title: "Örtük: qızıl və ya gümüş suyu",
+        blocks: [
+          {
+            type: "p",
+            text: "Bəzi məmulatların üzəri nazik qızıl, gümüş və ya rodium təbəqəsi ilə örtülür. Örtük görünüşü dəyişir, amma əsas materialı dəyişmir: örtüklü polad qolbaq polad qolbaq olaraq qalır.",
+          },
+          {
+            type: "p",
+            text: "Örtük əbədi deyil. Məsələn, GIA ağ qızılın üzərindəki rodium örtüyünün zamanla sürtülə biləcəyini yazır. Örtüklü məmulat alarkən örtüyün nə olduğunu və əsas materialı satıcıdan soruşun.",
+          },
+        ],
+      },
+      {
+        id: "nickel",
+        title: "Nikel və dəri",
+        blocks: [
+          {
+            type: "p",
+            text: "Danimarka Ətraf Mühitin Mühafizəsi Agentliyinin izahına görə, nikellə dəri təması nikel allergiyasına səbəb ola bilər və bu allergiya ömürlük qalır. Avropa İttifaqında dəriyə uzun müddət toxunan məmulatlardan nikelin ayrılmasına hədd qoyulub; pirsinq zərgərliyi və sırğa ştiftləri üçün hədd daha sərtdir, örtüklü məmulatlarda isə örtük bu həddi ən azı iki il qorumalıdır.",
+          },
+          {
+            type: "p",
+            text: "Bu, yalnız bijuteriyaya aid deyil: GIA-ya görə ağ qızıl ərintisində də nikel ola bilər. Nikelə həssasınızsa, materialın tərkibini mağazadan soruşun.",
+          },
+        ],
+      },
+      {
+        id: "on-jeparla",
+        title: "Jeparla-da necə göstərilir",
+        blocks: [
+          {
+            type: "ul",
+            items: [
+              'Bijuteriya məhsulu kartda və məhsul səhifəsində "Bijuteriya" nişanı ilə göstərilir; metal və əyar əvəzinə material yazılır.',
+              "Bijuteriyanın qiyməti sabitdir: onu mağaza təyin edir, metal məzənnəsinə bağlanmır.",
+              'Bijuteriya satan mağazadan sənəd tələb olunmur. Satıcını Jeparla komandası yoxlayır, "Sənədlər yoxlanılıb" nişanı isə göstərilmir.',
+            ],
+          },
+          {
+            type: "links",
+            items: [
+              { label: "Bijuteriya və əl işi kataloqu", href: "/products?kind=FASHION" },
+              { label: "Əyar cədvəli", href: "/guides/fineness-chart" },
+              { label: "Əyar damğasını necə yoxlamaq olar", href: "/guides/hallmark-check" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  "gold-jewelry-care": {
+    title: "Qızıl zərgərliyə qulluq",
+    description:
+      "Qızılı necə təmizləməli, onu xlordan və aşındırıcı vasitələrdən niyə qorumalı, daşlı və ağ qızıl məmulatlarda nəyə diqqət etməli.",
+    answer:
+      "Qızıl məmulatı ilıq suda bir damcı yuyucu vasitə ilə isladıb yumşaq diş fırçası ilə təmizləyin, yaxalayın və yumşaq parça ilə qurulayın. Xlordan, ağardıcılardan və aşındırıcı vasitələrdən çəkinin: GIA-ya görə onlar qızıl ərintisindəki digər metallara və bəzi daşlara zərər verə bilər. Daşlı məmulatı ultrasəs cihazında təmizləməzdən əvvəl zərgərlə məsləhətləşin.",
+    sections: [
+      {
+        id: "alloy",
+        title: "Qızıl niyə ərintidir",
+        blocks: [
+          {
+            type: "p",
+            text: "Xalis qızıl üzük üçün çox yumşaqdır, ona görə də başqa metallarla qarışdırılır. GIA-ya görə sarı qızıla adətən mis, gümüş və sink, qırmızı qızıla mis və gümüş, ağ qızıla isə nikel, palladium və sink kimi ağ metallar qatılır. Qulluq qaydaları əsasən bu metalları və daşları qorumaq üçündür.",
+          },
+        ],
+      },
+      {
+        id: "cleaning",
+        title: "Necə təmizləməli",
+        blocks: [
+          {
+            type: "ol",
+            items: [
+              "İlıq suya bir damcı yuyucu vasitə qatın və ya zərgərlik üçün nəzərdə tutulmuş təmizləyicidən istifadə edin.",
+              "Məmulatı bir müddət isladın, sonra yumşaq diş fırçası ilə çirki təmizləyin.",
+              "İlıq su ilə yaxalayın və yumşaq parça ilə tam qurulayın.",
+            ],
+          },
+          {
+            type: "p",
+            text: "GIA qızıl üzük üçün su, ammonyak və bir damcı qab yuyucu vasitədən ibarət məhlulda 15–30 dəqiqə isladılmasını təsvir edir. Mirvari, mərcan və firuzə kimi məsaməli daşlar ammonyaklı vasitələrlə təmasda olmamalıdır: onları yalnız ilıq su və yumşaq sabunla təmizləyin.",
+          },
+        ],
+      },
+      {
+        id: "avoid",
+        title: "Nədən çəkinməli",
+        blocks: [
+          {
+            type: "ul",
+            items: [
+              "Xlor və ağardıcılar: GIA-ya görə bəzi daşlara və metal ərintilərinə zərər verə bilər.",
+              "Aşındırıcı vasitələr: GIA brilyantlı zərgərliyi məişət təmizləyici tozları və diş pastası ilə təmizləməməyi tövsiyə edir, çünki belə vasitələr qaşda istifadə olunan bəzi metalları aşındıra bilər.",
+              "Evdə ultrasəs cihazı: GIA-ya görə bir çox qiymətli daş ultrasəs təmizləyicisində zədələnə bilər. Daşlı məmulatı belə cihazda təmizləməzdən əvvəl zərgərlə məsləhətləşin.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "white-gold",
+        title: "Ağ qızıl və rodium örtüyü",
+        blocks: [
+          {
+            type: "p",
+            text: "Ağ qızıl adətən rodiumla örtülür və bu örtük zamanla sürtülə bilər. GIA alarkən mağazadan lazım olanda üzüyü yenidən örtüb-örtməyəcəyini soruşmağı tövsiyə edir.",
+          },
+        ],
+      },
+      {
+        id: "settings",
+        title: "Daşların bərkidilməsi",
+        blocks: [
+          {
+            type: "p",
+            text: "GIA xəbərdarlıq edir ki, bərkidici yoxlanılmayıbsa, brilyant yerindən oynaya bilər. Daşlı üzüyü vaxtaşırı zərgərə göstərin.",
+          },
+          {
+            type: "links",
+            items: [
+              { label: "Gümüş zərgərliyə qulluq", href: "/guides/silver-jewelry-care" },
+              { label: "Brilyantın 4C-si", href: "/guides/diamond-4c" },
+              { label: "Əyar cədvəli", href: "/guides/fineness-chart" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  "engagement-ring-buying": {
+    title: "Nişan üzüyü alarkən nəyi yoxlamalı",
+    description:
+      "Azərbaycanda nişan üzüyü alarkən yoxlama siyahısı: metal və əyar, damğa, brilyantın 4C-si və laboratoriya hesabatı, ölçü və qəbz.",
+    answer:
+      "Əvvəlcə metalı və əyarı seçin və üzüyün içindəki damğanın təsvirdəki əyarla eyni olduğunu yoxlayın. Brilyant üçün 4C-yə birlikdə baxın; daşın laboratoriya hesabatı varsa, nömrəsini laboratoriyanın saytında yoxlayın. Ölçünü mağaza ilə dəqiqləşdirin və metal, əyar, çəki və daş məlumatları yazılmış qəbz istəyin.",
+    sections: [
+      {
+        id: "metal",
+        title: "Metal və əyar",
+        blocks: [
+          {
+            type: "p",
+            text: "Qızıl üzük ərintidən hazırlanır: xalis qızıl gündəlik taxılan üzük üçün çox yumşaqdır. Əyar nə qədər yüksəkdirsə, ərintidə bir o qədər çox qızıl var və metalın dəyəri bir o qədər yüksəkdir.",
+          },
+          {
+            type: "ul",
+            items: [
+              "Sarı, ağ və qırmızı qızıl eyni əyarda ola bilər: rəngi ərintidəki digər metallar verir.",
+              "Ağ qızıl adətən rodiumla örtülür; mağazadan sonradan yenidən örtmə xidmətini soruşun.",
+              "Nikelə həssasınızsa, ərintinin tərkibini soruşun: GIA-ya görə ağ qızıl ərintisində nikel ola bilər.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "hallmark",
+        title: "Damğa",
+        blocks: [
+          {
+            type: "p",
+            text: "Üzüyün daxili tərəfində əyar rəqəmini tapın və onu təsvirdəki əyarla müqayisə edin. Azərbaycanda dövlət əyar nəzarəti var və əyar damğası olmadan qiymətli metal məmulatlarının satışa çıxarılmasına görə qanunvericiliklə məsuliyyət müəyyən edilib (AZƏRTAC xəbəri, mənbələrə baxın).",
+          },
+        ],
+      },
+      {
+        id: "diamond",
+        title: "Brilyant: 4C və laboratoriya hesabatı",
+        blocks: [
+          {
+            type: "ul",
+            items: [
+              "Kəsim, rəng, təmizlik və karat çəkisinə birlikdə baxın: onlardan yalnız biri daşı təsvir etmir.",
+              "Daşın gemoloji laboratoriya hesabatı varsa, mağazadan onu istəyin. GIA hesabatının nömrəsi ilə GIA-nın onlayn bazasında hesabatı yoxlamaq olar; bu nömrə bəzən daşın kənarına (rundistə) lazerlə yazılır.",
+              'GIA daşları sertifikatlaşdırmır, qiymətləndirir: "GIA sertifikatlı brilyant" ifadəsi əslində GIA hesabatı olan daş deməkdir. GIA özü brilyant almır və satmır.',
+              "Daşın təbii və ya laboratoriyada yetişdirilmiş olduğunu soruşun və bunun qəbzdə yazılmasını istəyin.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "size",
+        title: "Ölçü",
+        blocks: [
+          {
+            type: "p",
+            text: "Azərbaycanda üzük ölçüsü üzüyün daxili diametridir, millimetrlə. Ölçünü ölçü bələdçisində yoxlayın və sifarişdən əvvəl mağaza ilə dəqiqləşdirin: evdə alınan ölçü təxminidir.",
+          },
+          {
+            type: "links",
+            items: [{ label: "Üzük ölçüsü cədvəli və ölçü köməkçisi", href: "/size-guide" }],
+          },
+        ],
+      },
+      {
+        id: "receipt",
+        title: "Qəbzdə nə olmalıdır",
+        blocks: [
+          {
+            type: "ol",
+            items: [
+              "Metal, əyar və çəki.",
+              "Daşların növü, sayı və karat çəkisi; varsa, laboratoriya hesabatının nömrəsi.",
+              "Qiymətin hissələri: metal, işçilik və daşlar.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "on-jeparla",
+        title: "Jeparla-da",
+        blocks: [
+          {
+            type: "p",
+            text: "Məhsul səhifəsində metal, əyar, çəki və daş məlumatlarını mağaza daxil edir. Metala bağlı qiymətlərdə metal hissəsi AMB-nin gündəlik məzənnəsi ilə hesablanır. Yekun qiyməti və məlumatları WhatsApp ilə mağazadan dəqiqləşdirin.",
+          },
+          {
+            type: "links",
+            items: [
+              { label: "Brilyantın 4C-si", href: "/guides/diamond-4c" },
+              { label: "Əyar damğasını necə yoxlamaq olar", href: "/guides/hallmark-check" },
+              { label: "Qızılın qiyməti necə hesablanır", href: "/guides/gold-price-calculation" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 };

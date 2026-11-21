@@ -13,6 +13,10 @@ export const GUIDE_SLUGS = [
   "diamond-4c",
   "hallmark-check",
   "silver-jewelry-care",
+  "fineness-chart",
+  "bijouterie-vs-precious",
+  "gold-jewelry-care",
+  "engagement-ring-buying",
 ] as const;
 
 export type GuideSlug = (typeof GUIDE_SLUGS)[number];
@@ -24,7 +28,9 @@ export type GuideBlock =
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
-  | { type: "links"; items: GuideLink[] };
+  | { type: "links"; items: GuideLink[] }
+  /** A small data table; the first cell of each row is the row header. */
+  | { type: "table"; caption: string; head: string[]; rows: string[][] };
 
 export type GuideSection = {
   /** Fragment id, stable across languages. */
