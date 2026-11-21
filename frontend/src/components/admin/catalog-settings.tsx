@@ -1,14 +1,21 @@
 "use client";
 
-import { ArrowLeftRight, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowLeftRight, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import { z } from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { categorySchema, finenessSchema, synonymSchema } from "@/lib/admin/settings";
+import { errorKey } from "@/lib/admin/errors";
+import {
+  categorySchema,
+  collectionSchema,
+  finenessSchema,
+  synonymSchema,
+} from "@/lib/admin/settings";
+import { sendJson } from "@/lib/merchant/client";
 import { notices } from "@/lib/notice";
-import type { AdminCategory, AdminFineness, SynonymPair } from "@/types/admin";
+import type { AdminCategory, AdminCollection, AdminFineness, SynonymPair } from "@/types/admin";
 import type { LocalizedText, MetalType } from "@/types/api";
 import { AdminDialog, Field, fieldClass, useAdminForm } from "./admin-dialog";
 
@@ -21,16 +28,20 @@ const LANGS = ["az", "en", "ru"] as const;
  */
 export function CatalogSettings({
   categories,
+  collections,
   finenesses,
   synonyms,
 }: {
   categories: AdminCategory[];
+  /** Occasion collections (#115), hidden ones too, in order. */
+  collections: AdminCollection[];
   finenesses: AdminFineness[];
   synonyms: SynonymPair[];
 }) {
   return (
     <div className="flex flex-col gap-10">
       <Categories initial={categories} />
+      <Collections initial={collections} />
       <Finenesses initial={finenesses} />
       <Synonyms initial={synonyms} />
     </div>
@@ -263,6 +274,200 @@ function Categories({ initial }: { initial: AdminCategory[] }) {
             </select>
           )}
         </Field>
+      </AdminDialog>
+    </Section>
+  );
+}
+
+// ---------------------------------------------------------------- occasion collections (#115)
+
+type CollectionDraft = { id: number | null; slug: string; name: LocalizedText; active: boolean };
+
+function Collections({ initial }: { initial: AdminCollection[] }) {
+  const t = useTranslations("Admin");
+  const locale = useLocale() as keyof LocalizedText;
+  const [rows, setRows] = useState(initial);
+  const [draft, setDraft] = useState<CollectionDraft | null>(null);
+  const [moving, setMoving] = useState(false);
+  const form = useAdminForm();
+
+  function open(c: AdminCollection | null) {
+    form.setErrors({});
+    setDraft(
+      c
+        ? { id: c.id, slug: c.slug, name: c.name, active: c.active }
+        : { id: null, slug: "", name: EMPTY_NAME, active: true },
+    );
+  }
+
+  async function save() {
+    if (!draft) return;
+    const body = { slug: draft.slug, name: draft.name, active: draft.active };
+    const saved = await form.submit<AdminCollection, typeof collectionSchema>(
+      draft.id === null ? "POST" : "PUT",
+      draft.id === null ? "/api/admin/collections" : `/api/admin/collections/${draft.id}`,
+      collectionSchema,
+      body,
+    );
+    if (!saved) return;
+    setRows((all) =>
+      draft.id === null ? [...all, saved] : all.map((r) => (r.id === saved.id ? saved : r)),
+    );
+    setDraft(null);
+    notices.show(
+      t(draft.id === null ? "catalog.added" : "catalog.saved", { name: saved.name[locale] }),
+    );
+  }
+
+  /** Moves one collection up or down and saves the whole order at once. */
+  async function move(index: number, by: -1 | 1) {
+    const next = [...rows];
+    const [item] = next.splice(index, 1);
+    next.splice(index + by, 0, item);
+    setMoving(true);
+    const result = await sendJson<AdminCollection[]>("PUT", "/api/admin/collections/order", {
+      ids: next.map((r) => r.id),
+    });
+    setMoving(false);
+    if (!result.ok) {
+      notices.show(t(`errors.${errorKey(result.errors.form ?? "server")}`));
+      return;
+    }
+    setRows(result.data);
+    notices.show(t("catalog.moved", { name: item.name[locale] }));
+  }
+
+  return (
+    <Section
+      id="collections"
+      title={t("catalog.collections")}
+      intro={t("catalog.collectionsIntro")}
+      action={<AddButton label={t("catalog.addCollection")} onClick={() => open(null)} />}
+    >
+      {rows.length === 0 ? (
+        <Empty text={t("catalog.noCollections")} />
+      ) : (
+        <ol className="flex flex-col gap-3" aria-busy={moving || undefined}>
+          {rows.map((c, i) => (
+            <li
+              key={c.id}
+              className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex min-w-0 flex-col gap-1">
+                <p className="flex flex-wrap items-center gap-2 font-medium break-words">
+                  {c.name[locale]}
+                  {!c.active && <Badge variant="outline">{t("catalog.hidden")}</Badge>}
+                </p>
+                <p className="text-xs break-words text-muted-foreground">
+                  {LANGS.filter((l) => l !== locale)
+                    .map((l) => c.name[l])
+                    .join(" · ")}
+                </p>
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  <span className="font-mono">{`/collections/${c.slug}`}</span>
+                  {" · "}
+                  {t("stores.products", { count: c.productCount })}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={moving || i === 0}
+                  aria-label={t("catalog.moveUp", { name: c.name[locale] })}
+                  onClick={() => void move(i, -1)}
+                >
+                  <ArrowUp aria-hidden />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={moving || i === rows.length - 1}
+                  aria-label={t("catalog.moveDown", { name: c.name[locale] })}
+                  onClick={() => void move(i, 1)}
+                >
+                  <ArrowDown aria-hidden />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="pointer-coarse:h-11"
+                  aria-label={t("actions.named", {
+                    action: t("catalog.edit"),
+                    name: c.name[locale],
+                  })}
+                  onClick={() => open(c)}
+                >
+                  <Pencil aria-hidden />
+                  <span className="sr-only sm:not-sr-only">{t("catalog.edit")}</span>
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+      <AdminDialog
+        open={draft !== null}
+        onOpenChange={(o) => !o && setDraft(null)}
+        title={draft?.id === null ? t("catalog.addCollection") : t("catalog.editCollection")}
+        description={t("catalog.collectionText")}
+        submitLabel={t("catalog.save")}
+        busy={form.busy}
+        formError={form.errors.form}
+        onSubmit={() => void save()}
+      >
+        {draft && (
+          <>
+            {LANGS.map((l) => (
+              <Field key={l} label={t(`catalog.name.${l}`)} error={form.errors[`name.${l}`]}>
+                {(props) => (
+                  <input
+                    {...props}
+                    lang={l}
+                    value={draft.name[l]}
+                    maxLength={60}
+                    onChange={(e) =>
+                      setDraft({ ...draft, name: { ...draft.name, [l]: e.target.value } })
+                    }
+                    className={fieldClass}
+                  />
+                )}
+              </Field>
+            ))}
+            <Field
+              label={t("catalog.slug")}
+              error={form.errors.slug}
+              hint={draft.id === null ? t("catalog.slugHint") : t("catalog.slugChangeHint")}
+            >
+              {(props) => (
+                <input
+                  {...props}
+                  value={draft.slug}
+                  maxLength={40}
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  onChange={(e) => setDraft({ ...draft, slug: e.target.value })}
+                  className={fieldClass}
+                />
+              )}
+            </Field>
+            <label className="flex min-h-11 items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={draft.active}
+                onChange={(e) => setDraft({ ...draft, active: e.target.checked })}
+                className="mt-0.5 size-5 shrink-0 accent-primary"
+              />
+              <span className="flex flex-col gap-0.5">
+                <span className="font-medium">{t("catalog.shown")}</span>
+                <span className="text-xs text-muted-foreground">{t("catalog.shownHint")}</span>
+              </span>
+            </label>
+          </>
+        )}
       </AdminDialog>
     </Section>
   );

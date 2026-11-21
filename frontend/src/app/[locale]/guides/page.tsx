@@ -28,11 +28,20 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GuidesPage() {
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return null;
-  const [t, tn] = await Promise.all([
+  const [t, tn, ts, tp, tm] = await Promise.all([
     getTranslations({ locale, namespace: "Guides" }),
     getTranslations({ locale, namespace: "Nav" }),
+    getTranslations({ locale, namespace: "SizeGuide" }),
+    getTranslations({ locale, namespace: "PricesPage" }),
+    getTranslations({ locale, namespace: "PricesMonthly" }),
   ]);
   const guides = listGuides(locale);
+  // Reference pages that answer the same buyers' questions with tools and data.
+  const related = [
+    { href: "/size-guide", label: ts("title") },
+    { href: "/prices", label: tp("title") },
+    { href: "/prices/monthly", label: tm("title") },
+  ];
 
   return (
     <div className="container-page py-8 sm:py-12">
@@ -93,6 +102,25 @@ export default async function GuidesPage() {
           </li>
         ))}
       </ul>
+
+      <section aria-labelledby="related" className="mt-12 max-w-3xl border-t pt-8">
+        <h2 id="related" className="mb-4 text-2xl">
+          {t("related")}
+        </h2>
+        <ul className="flex flex-col gap-1">
+          {related.map((r) => (
+            <li key={r.href}>
+              <Link
+                href={r.href}
+                className="inline-flex min-h-11 items-center gap-1.5 font-medium text-gold-text underline underline-offset-4 hover:text-foreground"
+              >
+                {r.label}
+                <ArrowRight aria-hidden className="size-3.5 shrink-0" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

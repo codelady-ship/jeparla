@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -31,8 +32,8 @@ export default function MobileNavSheet({
       </SheetTrigger>
       <SheetContent side="left" closeLabel={labels.close} className="w-72">
         <SheetHeader>
-          <SheetTitle translate="no" className="font-heading text-2xl">
-            Jeparla
+          <SheetTitle translate="no">
+            <Wordmark />
           </SheetTitle>
         </SheetHeader>
         <nav aria-label={labels.menu} className="flex flex-col px-4">

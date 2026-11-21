@@ -13,25 +13,36 @@ import { FilterSlot, FiltersProvider, FiltersSheet } from "./filters-sheet";
 /**
  * Filters, results and pagination. Reads the query, so it streams.
  * On /products everything is in the URL; a category page passes `category` and
- * `action`, which fixes the category and hides its filter.
+ * `action`, which fixes the category and hides its filter. An occasion collection page
+ * (#115) passes `collection` the same way, with its name for the ItemList.
  */
 export async function Catalog({
   searchParams,
   action: ACTION = "/products",
   category,
+  collection,
+  listName: fixedListName,
 }: {
   searchParams: Promise<SearchParams>;
   action?: string;
   category?: string;
+  collection?: string;
+  listName?: string;
 }) {
   const parsed = parseFilters(await searchParams);
-  // UI state (chips, links) leaves the fixed category out; the API query includes it.
+  // UI state (chips, links) leaves the fixed category out; the API query includes it. The
+  // collection is never a URL parameter (parseFilters drops it): it is the page itself.
   const filters = category ? { ...parsed, category: undefined } : parsed;
   const [t, tc, locale, page, categories, stores, finenesses] = await Promise.all([
     getTranslations("Catalog"),
     getTranslations("Common"),
     getLocale(),
-    api.listProducts({ ...filters, ...(category && { category }), size: PAGE_SIZE }),
+    api.listProducts({
+      ...filters,
+      ...(category && { category }),
+      ...(collection && { collection }),
+      size: PAGE_SIZE,
+    }),
     api.listCategories(),
     api.listStores(),
     api.listFinenesses(),
@@ -47,7 +58,8 @@ export async function Catalog({
     .filter((c) => c.parentId === null && c.productCount > 0)
     .slice(0, 6);
 
-  const listName = categories.find((c) => c.slug === category)?.name[locale] ?? t("title");
+  const listName =
+    fixedListName ?? categories.find((c) => c.slug === category)?.name[locale] ?? t("title");
 
   return (
     <FiltersProvider>

@@ -17,6 +17,7 @@ const KNOWN: Record<string, [field: string, key: string]> = {
   "admin.parent_missing": ["parentId", "invalid"],
   "admin.category_cycle": ["parentId", "invalid"],
   "admin.category_in_use": ["form", "inUse"],
+  "admin.collection_order": ["form", "conflict"],
   "admin.fineness_exists": ["value", "taken"],
   "admin.fineness_in_use": ["form", "inUse"],
   "admin.synonym_exists": ["synonym", "taken"],

@@ -7,6 +7,7 @@ import type {
   ImageSearchStatus,
   MetalPrice,
   MetalType,
+  OccasionCollection,
   Page,
   Product,
   ProductFilters,
@@ -35,6 +36,8 @@ export interface JeparlaApi {
   getProduct(slug: string): Promise<Product | null>;
   /** GET /api/v1/categories */
   listCategories(): Promise<Category[]>;
+  /** GET /api/v1/collections (#115): shown occasion collections in the admin order. */
+  listCollections(): Promise<OccasionCollection[]>;
   /** GET /api/v1/finenesses */
   listFinenesses(): Promise<Fineness[]>;
   /**

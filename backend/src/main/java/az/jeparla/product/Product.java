@@ -1,5 +1,6 @@
 package az.jeparla.product;
 
+import az.jeparla.collection.OccasionCollection;
 import az.jeparla.common.i18n.LocalizedText;
 import az.jeparla.common.persistence.TimestampedEntity;
 import az.jeparla.indexnow.CatalogChangeListener;
@@ -16,6 +17,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -27,9 +30,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -170,6 +175,12 @@ public class Product extends TimestampedEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("kind ASC")
     private List<ProductEvidencePhoto> evidencePhotos = new ArrayList<>();
+
+    /** Occasion collections the seller tagged it with (#115, V63); hidden ones are kept while hidden. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_products", joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "collection_id"))
+    private Set<OccasionCollection> collections = new HashSet<>();
 
     protected Product() {
     }
@@ -366,6 +377,17 @@ public class Product extends TimestampedEntity {
 
     public List<ProductEvidencePhoto> getEvidencePhotos() {
         return Collections.unmodifiableList(evidencePhotos);
+    }
+
+    /** The occasion tags (#115); change them with {@link #setCollections}. */
+    public Set<OccasionCollection> getCollections() {
+        return Collections.unmodifiableSet(collections);
+    }
+
+    /** Replaces the occasion tags (#115). */
+    public void setCollections(Set<OccasionCollection> tags) {
+        collections.retainAll(tags);
+        collections.addAll(tags);
     }
 
     // ------------------------------------------------------------------ accessors

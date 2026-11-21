@@ -3,6 +3,7 @@ import { gramPrice, percentChange } from "@/lib/pricing";
 import type { MetalType, Product, ProductStatus } from "@/types/api";
 import type {
   AdminCategory,
+  AdminCollection,
   AdminFineness,
   AdminMetalPrice,
   AdminOverview,
@@ -20,6 +21,7 @@ import {
   CATEGORIES,
   FINENESSES,
   METAL_PRICE_HISTORY,
+  OCCASIONS,
   PRICE_DATE,
   PRODUCTS,
   STORES,
@@ -27,7 +29,7 @@ import {
 
 /**
  * Admin panel reads (PLAN 5.8): GET /api/v1/admin/{overview,stores,products,verifications,
- * categories,finenesses,synonyms,users,reports,audit,metal-prices}.
+ * categories,collections,finenesses,synonyms,users,reports,audit,metal-prices}.
  * Only ADMIN tokens are accepted by the backend; the panel never decides access itself.
  */
 export interface AdminApi {
@@ -39,6 +41,8 @@ export interface AdminApi {
   verifications(): Promise<VerificationRequest[]>;
   verification(id: string): Promise<VerificationRequest | null>;
   categories(): Promise<AdminCategory[]>;
+  /** Occasion collections (#115), hidden ones too, in order. */
+  collections(): Promise<AdminCollection[]>;
   finenesses(): Promise<AdminFineness[]>;
   synonyms(): Promise<SynonymPair[]>;
   users(): Promise<AdminUser[]>;
@@ -459,6 +463,10 @@ const mockAdminApi: AdminApi = {
   },
   async categories() {
     return CATEGORIES;
+  },
+  async collections() {
+    // The demo list as V63 creates it; every demo product counts (all are approved).
+    return OCCASIONS.map((o, i) => ({ ...o, sortOrder: (i + 1) * 10, active: true }));
   },
   async finenesses() {
     return ADMIN_FINENESSES;

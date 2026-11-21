@@ -185,8 +185,17 @@ services:
       JEPARLA_S3_PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      # Local, free image models on this VM's CPU (docs/ai-providers.md, docs/image-search.md). Off by default:
+      # nothing is downloaded. With a model on, give the API more memory and a smaller heap share (ONNX Runtime
+      # works outside the Java heap): JEPARLA_API_MEM_LIMIT=4g, JEPARLA_API_JAVA_OPTS=-XX:MaxRAMPercentage=50 ...
+      JEPARLA_AI_STUDIO_PROCESSOR: ${JEPARLA_AI_STUDIO_PROCESSOR:-none}
+      JEPARLA_AI_STUDIO_MODEL: ${JEPARLA_AI_STUDIO_MODEL:-isnet}
+      JEPARLA_AI_STUDIO_THREADS: ${JEPARLA_AI_STUDIO_THREADS:-2}
+      JAVA_TOOL_OPTIONS: ${JEPARLA_API_JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError}
+    volumes:
+      - models-data:/var/lib/jeparla/models
     networks: [internal]
-    mem_limit: 2g
+    mem_limit: ${JEPARLA_API_MEM_LIMIT:-2g}
     healthcheck:
       # The runtime image has bash but no curl: a plain HTTP request over /dev/tcp.
       test:
@@ -291,5 +300,6 @@ volumes:
   postgres-data:
   redis-data:
   s3-data:
+  models-data:
   caddy-data:
   caddy-config:

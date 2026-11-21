@@ -38,7 +38,7 @@ olmayan endpoint-i adı ilə göstərib düşür.
 | `/api/v1/merchant/**` | `MERCHANT` |
 | `/api/v1/notifications`, `/api/v1/notifications/**` (`GET` də) | daxil olmuş istifadəçi, yalnız öz bildirişləri (#138) |
 | `/api/v1/favorites`, `/api/v1/favorites/**` (`GET` də) | daxil olmuş istifadəçi (`USER`, ierarxiya ilə hamı), yalnız öz siyahısı (#41) |
-| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/finenesses`, `/search/**`, `/metal-prices/**`, `/share/{code}` (#100; `/stores/{slug}/facts` və `/preview` `/stores/**`-dədir, #108) | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
+| `GET` ictimai kataloq: `/api/v1/products/**`, `/variants`, `/stores/**`, `/categories/**`, `/collections` (#115), `/finenesses`, `/search/**`, `/metal-prices/**`, `/share/{code}` (#100; `/stores/{slug}/facts` və `/preview` `/stores/**`-dədir, #108) | hamı, anonim (açıq siyahı; siyahıda olmayan `GET` ictimai deyil) |
 | `POST /api/v1/products/{id}/reports`, `/products/{id}/contact-click`, `/stores/{id}/reports` | hamı, qonaq da (rate limit ilə, #37, #40) |
 | `POST /api/v1/search/image` (şəkillə axtarış) | hamı, qonaq da (rate limit ilə; şəkil saxlanılmır, #163) |
 | `POST /api/v1/stores/{slug}/visits` | hamı, qonaq da: paylaşılmış linklə gələn baxış (#100), `referral-*` limitləri ilə |
@@ -149,6 +149,11 @@ Hamısı `ADMIN`, hər yazma `audit_logs`-a düşür.
   dəyəri dəyişmir. Kateqoriya öz alt ağacına köçürülmür (`409 admin.category_cycle`). Sinonimin hər tərəfi bir sözdür
   (fold-dan sonra 2-40 simvol), cüt hər iki istiqamətdə bir dəfə olur. Sinonim və ya kateqoriya dəyişəndə axtarış
   keşi (#151, 60 san.) commit-dən sonra boşalır, ictimai cavablar CDN-də ən çox bir neçə dəqiqə qalır.
+- **Münasibət seçimləri** (`/admin/collections`, #115): yaratma, ad və URL adını dəyişmə, gizlətmə (`active`),
+  `PUT /order` ilə sıralama (hər seçim bir dəfə, yoxsa `400 admin.collection_order`). Silinmir: gizlədilən seçim
+  saytdan və satıcı formundan çıxır, məhsul qeydləri qalır. Satıcı öz məhsulunu `PUT /merchant/products/{id}`
+  (`collectionIds`) ilə qeyd edir; sahiblik `ProductAccess.requireOwner` ilə yoxlanılır, yalnız göstərilən seçimlər
+  (və məhsulun artıq olan gizli qeydi) qəbul olunur (`400 merchant.collection_unknown`); qeyd məhsulu yoxlamaya qaytarmır.
 - **İstifadəçilər** (`/admin/users`): siyahı (rol, status filtri; e-poçt və ya telefon parçası ilə axtarış), rol
   (`POST /{id}/role`: `USER` və ya `MERCHANT`) və bloklama (`POST /{id}/status`, bloklamada ən az 10 simvol səbəb).
   Qaydalar: admin öz rolunu və statusunu dəyişmir (`409 admin.self`); ən az bir aktiv admin qalır

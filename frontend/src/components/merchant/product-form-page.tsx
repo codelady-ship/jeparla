@@ -26,7 +26,7 @@ export async function ProductFormPage({
   if (!hasLocale(routing.locales, locale)) return null;
   const { api } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t, prices] = await Promise.all([
+  const [store, product, categories, finenesses, t, prices, occasions] = await Promise.all([
     api.store(),
     productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
     publicApi.listCategories(),
@@ -34,6 +34,8 @@ export async function ProductFormPage({
     getTranslations("Merchant.form"),
     // Without a quote the form still works; the preview says the rate is missing.
     publicApi.latestMetalPrices().catch(() => []),
+    // Occasion tags are optional (#115): without the list the form simply leaves them out.
+    publicApi.listCollections().catch(() => []),
   ]);
   const quotes = Object.fromEntries(
     prices.map((q) => [q.metal, { pricePerGram: q.pricePerGram, date: q.date }]),
@@ -88,6 +90,7 @@ export async function ProductFormPage({
           sellerApproved={store.sellerStatus === "VERIFIED"}
           requireDocs={USING_MOCK}
           sellerKind={store.sellerKind ?? "PRECIOUS"}
+          occasions={occasions.map((o) => ({ value: String(o.id), label: o.name[locale] }))}
         />
       </MerchantIntl>
     </div>

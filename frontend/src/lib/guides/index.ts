@@ -9,9 +9,32 @@ import { ORG_ID } from "@/lib/seo/json-ld";
 
 export { GUIDE_SLUGS, type Guide, type GuideSlug };
 
-/** Content dates (ISO). Change GUIDES_MODIFIED whenever a guide's facts change. */
-export const GUIDES_PUBLISHED = "2026-11-14";
-export const GUIDES_MODIFIED = "2026-11-14";
+export type GuideDates = { published: string; modified: string };
+
+const FIRST_SET: GuideDates = { published: "2026-11-14", modified: "2026-11-14" };
+const SECOND_SET: GuideDates = { published: "2026-11-18", modified: "2026-11-18" };
+
+/**
+ * Content dates (ISO) per guide. Change a guide's `modified` whenever its facts change;
+ * the page, the Article JSON-LD and the sitemap all read it from here.
+ */
+export const GUIDE_DATES: Record<GuideSlug, GuideDates> = {
+  "585-vs-750-gold": FIRST_SET,
+  "gold-price-calculation": FIRST_SET,
+  "diamond-4c": FIRST_SET,
+  "hallmark-check": FIRST_SET,
+  "silver-jewelry-care": FIRST_SET,
+  "fineness-chart": SECOND_SET,
+  "bijouterie-vs-precious": SECOND_SET,
+  "gold-jewelry-care": SECOND_SET,
+  "engagement-ring-buying": SECOND_SET,
+};
+
+/** The latest change to any guide: the index page's last-modified date. */
+export const GUIDES_MODIFIED = Object.values(GUIDE_DATES)
+  .map((d) => d.modified)
+  .sort()
+  .at(-1) as string;
 
 export const GUIDES_PATH = "/guides";
 
@@ -21,11 +44,11 @@ export function isGuideSlug(slug: string): slug is GuideSlug {
   return (GUIDE_SLUGS as readonly string[]).includes(slug);
 }
 
-export function getGuide(locale: Locale, slug: GuideSlug): Guide {
-  return { slug, ...TEXTS[locale][slug], sources: GUIDE_SOURCES[slug] };
+export function getGuide(locale: Locale, slug: GuideSlug): Guide & GuideDates {
+  return { slug, ...TEXTS[locale][slug], sources: GUIDE_SOURCES[slug], ...GUIDE_DATES[slug] };
 }
 
-export function listGuides(locale: Locale): Guide[] {
+export function listGuides(locale: Locale): (Guide & GuideDates)[] {
   return GUIDE_SLUGS.map((slug) => getGuide(locale, slug));
 }
 
@@ -40,7 +63,7 @@ type Thing = Record<string, unknown>;
  * schema.org Article for one guide. The author is the editorial team (an organization,
  * not an invented person); the publisher is Jeparla.
  */
-export function guideArticle(g: Guide, locale: Locale, authorName: string): Thing {
+export function guideArticle(g: Guide & GuideDates, locale: Locale, authorName: string): Thing {
   const url = `${SITE_URL}/${locale}${guidePath(g.slug)}`;
   return {
     "@type": "Article",
@@ -51,8 +74,8 @@ export function guideArticle(g: Guide, locale: Locale, authorName: string): Thin
     inLanguage: locale,
     url,
     mainEntityOfPage: url,
-    datePublished: GUIDES_PUBLISHED,
-    dateModified: GUIDES_MODIFIED,
+    datePublished: g.published,
+    dateModified: g.modified,
     author: { "@type": "Organization", name: authorName, url: `${SITE_URL}/${locale}` },
     publisher: { "@type": "Organization", "@id": ORG_ID, name: "Jeparla", url: `${SITE_URL}/` },
     citation: g.sources.map((s) => ({ "@type": "CreativeWork", name: s.title, url: s.url })),

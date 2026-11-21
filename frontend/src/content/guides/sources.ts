@@ -41,6 +41,37 @@ export const SOURCES = {
     publisher: "Canadian Conservation Institute, Government of Canada",
     url: "https://www.canada.ca/en/conservation-institute/services/conservation-preservation-publications/canadian-conservation-institute-notes/care-silver.html",
   },
+  // Opened and read on 2026-11-18 for the second set of guides.
+  edinburghHallmark: {
+    title: "What is a Hallmark?",
+    publisher: "Edinburgh Assay Office",
+    url: "https://www.edinburghassayoffice.co.uk/?p=4797",
+  },
+  danishNickel: {
+    title: "Fact-sheet: Nickel",
+    publisher: "The Danish Environmental Protection Agency",
+    url: "https://eng.mst.dk/chemicals/chemicals-in-products/chemical-legislation/fact-sheets-on-legislation/fact-sheet-nickel",
+  },
+  giaGoldRings: {
+    title: "Buying Guide for White, Yellow and Rose Gold Engagement Rings",
+    publisher: "GIA (Gemological Institute of America)",
+    url: "https://4cs.gia.edu/en-us/blog/buying-guide-white-yellow-rose-gold-engagement-rings/",
+  },
+  giaCleanJewelry: {
+    title: "Holiday Buying Guide: How to Clean Jewelry",
+    publisher: "GIA (Gemological Institute of America)",
+    url: "https://4cs.gia.edu/en-us/blog/holiday-buying-guide-clean-jewelry/",
+  },
+  giaCleanDiamond: {
+    title: "How to Clean Your Diamond Jewelry",
+    publisher: "GIA (Gemological Institute of America)",
+    url: "https://4cs.gia.edu/en-us/blog/how-to-clean-your-diamond-jewelry/",
+  },
+  giaWhatIs: {
+    title: "What is a GIA Diamond?",
+    publisher: "GIA (Gemological Institute of America)",
+    url: "https://4cs.gia.edu/en-us/blog/what-is-a-gia-diamond/",
+  },
 } as const satisfies Record<string, GuideSource>;
 
 /** Sources per guide, in the order they are listed on the page. */
@@ -50,4 +81,13 @@ export const GUIDE_SOURCES: Record<GuideSlug, GuideSource[]> = {
   "diamond-4c": [SOURCES.giaQuality],
   "hallmark-check": [SOURCES.hallmarkingConvention, SOURCES.azertagAssay, SOURCES.fineness],
   "silver-jewelry-care": [SOURCES.cciSilver, SOURCES.fineness],
+  "fineness-chart": [SOURCES.edinburghHallmark, SOURCES.fineness],
+  "bijouterie-vs-precious": [SOURCES.edinburghHallmark, SOURCES.danishNickel, SOURCES.giaGoldRings],
+  "gold-jewelry-care": [SOURCES.giaGoldRings, SOURCES.giaCleanJewelry, SOURCES.giaCleanDiamond],
+  "engagement-ring-buying": [
+    SOURCES.giaQuality,
+    SOURCES.giaWhatIs,
+    SOURCES.giaGoldRings,
+    SOURCES.azertagAssay,
+  ],
 };

@@ -17,6 +17,7 @@ import {
 } from "./json-ld";
 import { buildLlmsFullTxt, buildLlmsTxt } from "./llms";
 import { formatPrice } from "@/lib/money";
+import { listGuides } from "@/lib/guides";
 
 describe("robots", () => {
   const r = robots();
@@ -314,6 +315,20 @@ describe("llms.txt", () => {
     }
     expect(txt).toContain("https://example.test/sitemap.xml");
     expect(txt).toContain("https://example.test/llms-full.txt");
+  });
+
+  it("lists every guide in every language; the full text adds each short answer (#63)", () => {
+    const txt = buildLlmsTxt("https://example.test");
+    const full = buildLlmsFullTxt("https://example.test", { categories: CATEGORIES, stores: [] });
+    for (const l of ["az", "en", "ru"] as const) {
+      expect(txt).toContain(`https://example.test/${l}/guides)`);
+      for (const g of listGuides(l)) {
+        expect(txt).toContain(`https://example.test/${l}/guides/${g.slug})`);
+        expect(txt).not.toContain(g.answer);
+        expect(full).toContain(`https://example.test/${l}/guides/${g.slug})`);
+        expect(full).toContain(g.answer);
+      }
+    }
   });
 
   it("llms-full.txt adds the price method and categories, and lists only real stores", () => {

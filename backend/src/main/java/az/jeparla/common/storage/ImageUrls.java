@@ -46,4 +46,17 @@ public class ImageUrls {
         }
         return publicUrl + "/" + (key.startsWith("/") ? key.substring(1) : key);
     }
+
+    /**
+     * The public bucket key of a URL made by {@link #url}, or empty for a demo path or any other URL. Lets a local
+     * processor read a photo from storage instead of fetching a URL (#119).
+     */
+    public java.util.Optional<String> key(String url) {
+        if (url == null || publicUrl == null || !url.startsWith(publicUrl + "/")) {
+            return java.util.Optional.empty();
+        }
+        String key = url.substring(publicUrl.length() + 1);
+        return key.isEmpty() || key.indexOf('#') >= 0 || key.contains("..") ? java.util.Optional.empty()
+                : java.util.Optional.of(key);
+    }
 }

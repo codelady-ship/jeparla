@@ -106,6 +106,43 @@ daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir. Xərc və lise
   `aiGenerated=false` məhsul şəkli olur, nişansız. Generativ provayder seçilibsə nişan həmişə qalır.
 - Orijinal şəkil dəyişmir; nəticə əlavə şəkil kimi gəlir, satıcı istəsə onu birinci edir (#121 qaydası: birinci
   şəkil AI ilə yaradılmış ola bilməz, təmizlənmiş foto isə orijinal sayılır).
+- Seçim qaydası (başlanğıcda yoxlanılır): `JEPARLA_AI_STUDIO_PROCESSOR`-a generativ provayder, `JEPARLA_AI_IMAGE_PROVIDER`-ə
+  generativ olmayan prosessor yazılsa tətbiq başlamır.
+
+#### Lokal prosessor: `JEPARLA_AI_STUDIO_PROCESSOR=local`
+
+Pulsuz, VM-in öz CPU-sunda, heç bir xarici API olmadan (`az.jeparla.ai.studio`):
+
+1. Orijinal şəkil public bucket-dən oxunur (URL fetch yoxdur), EXIF istiqaməti tətbiq olunur, emal üçün ən çox
+   2000 px-ə kiçildilir. JPEG, PNG, WebP.
+2. **Seqmentasiya modeli** (ONNX Runtime 1.22, CPU) əşyanın yumşaq maskasını verir. Model şəkil çəkmir, yalnız hər
+   piksel üçün "əşya / fon" ehtimalı verir.
+3. `StudioComposer` (təmiz Java, model yoxdur): kiçik ləkələr atılır, kənar piksellərdən köhnə fonun rəngi
+   çıxarılır, əşya krem `#F7F3EA` fonda mərkəzə qoyulur (4:5 kadrın ~70%-i; orijinal kadrdan çıxan zəncir yeni
+   kadrın da həmin kənarından çıxır), altına yumşaq kölgə. Əşyanın öz piksellərinə yalnız bir ümumi parlaqlıq
+   əmsalı (0.92-1.15, üç kanal üçün eyni, rəng tonu qalır) tətbiq olunur. Nəticə JPEG, 800-1600 px en; faylın
+   JPEG şərhində "Jeparla studio look ... not generated or redrawn" yazılır (emal olunmuş foto işarəsi).
+4. Maskada əşya tapılmasa tapşırıq `ai.bad_result` ilə bitir (boş kadr qaytarılmır).
+
+| Model (`JEPARLA_AI_STUDIO_MODEL`) | Lisenziya | Fayl | Giriş | RAM (pik, proses) | Vaxt / şəkil |
+| --- | --- | --- | --- | --- | --- |
+| `isnet` (default): IS-Net general use, [DIS](https://github.com/xuebinqin/DIS) | Apache-2.0 | 179 MB | 1024 px | ~1.05 GB (heap daxil) | ~10-13 s 2 thread x64 masaüstü; ARM VM-də ~15-30 s (gözlənilən) |
+| `u2netp`: [U2-Net](https://github.com/xuebinqin/U-2-Net) kiçik | Apache-2.0 | 4.6 MB | 320 px | ~0.5 GB (heap daxil) | ~5 s (çoxu kompozisiya); zəncirdə kobud |
+
+Ölçmə: 2026-11-18, 800x1000 foto, `-Xmx512m`, 2 thread, Windows x64 masaüstü. ARM VM-də ölçmə sahibin
+yoxlamasıdır (#282). Tapşırıq asinxrondur (`attempt-timeout` 5 dəq.), satıcı gözləmir.
+
+- Fayllar: [rembg](https://github.com/danielgatis/rembg) (MIT) layihəsinin `v0.0.0` release asset-ləri, SHA-256
+  kodda sabitdir (`SegmentationModel`): `isnet-general-use.onnx` `60920e99c454...`, `u2netp.onnx` `309c8469258d...`.
+  Fayl repoya düşmür: prosessor seçiləndə tətbiq başlayandan sonra fonda `JEPARLA_MODELS_DIR`-ə (prod-da
+  `models-data` volume) bir dəfə endirilir; hash uyğun gəlməsə yüklənmir, prosessor "qoşulmayıb" qalır.
+  CI heç nə endirmir (testlər saxta seqmentator ilə).
+- ONNX Runtime (MIT) Java heap-dən kənar yaddaş işlədir. Prosessoru açanda `deploy/.env`-də:
+  `JEPARLA_API_MEM_LIMIT=4g` və `JEPARLA_API_JAVA_OPTS=-XX:MaxRAMPercentage=50 -XX:+ExitOnOutOfMemoryError`
+  (heap 2 GB, model üçün ~2 GB yer). VM-də 12 GB var; pullu resurs lazım deyil.
+- Bir anda bir şəkil emal olunur (növbə), `JEPARLA_AI_STUDIO_THREADS=2`.
+- Eyni pipeline komanda sətrindən: `./gradlew studioLook --args="--size 800x1000 --out build/studio <fayllar>"`
+  (demo fotolar belə hazırlanıb, `docs/credits.md`).
 
 ### Dürüstlük
 

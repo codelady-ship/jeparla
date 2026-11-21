@@ -74,7 +74,7 @@ class JpaMappingTests {
                   AND table_name NOT IN ('flyway_schema_history', 'shedlock')
                 """, String.class);
         // shedlock (V12) is the job lock table of ShedLock, used through JDBC only (no entity).
-        assertThat(tables).hasSize(43);
+        assertThat(tables).hasSize(45);
         assertThat(tables).containsAll(JDBC_ONLY);
         assertThat(mapped).containsExactlyInAnyOrderElementsOf(
                 tables.stream().filter(table -> !JDBC_ONLY.contains(table)).toList());
