@@ -363,3 +363,40 @@ BEGIN
     PERFORM setval(pg_get_serial_sequence('product_variants', 'id'), (SELECT max(id) FROM product_variants));
 END
 $$;
+
+-- ------------------------------------------------------------ occasion tags (#115)
+-- The demo products' occasion tags, the same rule as fixtures.ts (PRODUCT_OCCASIONS), for product index
+-- i = id - 1 and fixture category c = leaf[i % 10] (product 60, the bijouterie exception, is a bracelet: c = 8):
+--   nisan     c = 2                      toy       c in (3, 9)
+--   hediyye   c in (4, 7, 8, 9, 10) and i % 3 <> 1
+--   gundelik  c in (4, 6, 8) and i % 3 <> 0
+--   kisi-ucun c = 11                     usaq-ucun c = 12
+-- The collections are reference data (V63). A block of its own, so a demo database made before #115 gets the
+-- tags too: it runs only while no product has a tag, and tags only the demo products (ids 1..60 with their
+-- fixture slugs).
+DO
+$$
+BEGIN
+    IF EXISTS (SELECT 1 FROM collection_products) THEN
+        RETURN;
+    END IF;
+
+    INSERT INTO collection_products (collection_id, product_id, created_at)
+    SELECT col.id, d.id, TIMESTAMPTZ '2026-10-01 09:00:00+00'
+    FROM (SELECT p.id,
+                 p.id - 1                                                       AS i,
+                 CASE WHEN p.id = 60 THEN 8
+                      ELSE (ARRAY [2, 3, 4, 6, 7, 8, 9, 10, 11, 12])[(p.id - 1) % 10 + 1] END AS c
+          FROM products p
+          WHERE p.id BETWEEN 1 AND 60
+            AND p.slug LIKE '%-' || p.id) AS d
+             JOIN collections col ON
+        (col.slug = 'nisan' AND d.c = 2)
+            OR (col.slug = 'toy' AND d.c IN (3, 9))
+            OR (col.slug = 'hediyye' AND d.c IN (4, 7, 8, 9, 10) AND d.i % 3 <> 1)
+            OR (col.slug = 'gundelik' AND d.c IN (4, 6, 8) AND d.i % 3 <> 0)
+            OR (col.slug = 'kisi-ucun' AND d.c = 11)
+            OR (col.slug = 'usaq-ucun' AND d.c = 12)
+    ON CONFLICT DO NOTHING;
+END
+$$;

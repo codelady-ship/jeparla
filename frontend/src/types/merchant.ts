@@ -193,6 +193,11 @@ export type ProductInput = {
   keyFeatures?: string[];
   /** Hallmark and label photos (#106); absent in older drafts. */
   evidence?: Partial<Record<EvidenceKind, EvidenceInput>>;
+  /**
+   * Occasion collections (#115) by id; absent in older drafts, then the stored tags are kept.
+   * May hold hidden ones the product already had: the API keeps those.
+   */
+  collectionIds?: number[];
 };
 
 export type MerchantProduct = { id: number; status: ProductStatus; input: ProductInput };

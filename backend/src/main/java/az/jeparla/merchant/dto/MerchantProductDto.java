@@ -45,5 +45,7 @@ public record MerchantProductDto(
         @Schema(description = "Hallmark and label photos (#106), at most one of each kind")
         List<MerchantEvidencePhotoDto> evidencePhotos,
         @Schema(nullable = true, description = "Sizes in mm (#174); null when none") DimensionsDto dimensions,
-        @Schema(description = "Up to 5 key features (#174)") List<String> keyFeatures) {
+        @Schema(description = "Up to 5 key features (#174)") List<String> keyFeatures,
+        @Schema(description = "Occasion collections (#115) it is tagged with, hidden ones too, by id")
+        List<Long> collectionIds) {
 }

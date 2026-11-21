@@ -1424,7 +1424,8 @@
         "audience": "Who it is for",
         "material": "Material",
         "notPrecious": "I confirm that this product is not a precious metal and that its name and description do not mention gold, silver, diamonds or a fineness (for example 585).",
-        "keyFeatures": "Key features"
+        "keyFeatures": "Key features",
+        "occasions": "Occasion"
       },
       "hints": {
         "name": "For example: Gold engagement ring with diamond.",
@@ -1435,7 +1436,8 @@
         "audience": "Picks the model of an on-model AI image. Set automatically in men's and children's categories; you can change it.",
         "material": "Choose the main material; for a plating pick \"Silver plated\" or \"Gold plated\".",
         "fashionPrice": "Bijouterie has a fixed price: it does not follow the metal rate.",
-        "keyFeatures": "One feature per line, up to {max} lines of {length} characters each. For example: Handmade, Made for everyday wear."
+        "keyFeatures": "One feature per line, up to {max} lines of {length} characters each. For example: Handmade, Made for everyday wear.",
+        "occasions": "Pick the occasions this piece suits: buyers will find it on those collection pages. Changing them does not send the product to review again."
       },
       "images": {
         "drop": "Drop photos here or choose them",
@@ -2246,7 +2248,7 @@
     },
     "catalog": {
       "title": "Catalog",
-      "intro": "Categories, finenesses and search synonyms.",
+      "intro": "Categories, occasion collections, finenesses and search synonyms.",
       "categories": "Categories",
       "categoriesIntro": "Names are written in three languages; a category with products can't be deleted.",
       "addCategory": "Add category",
@@ -2285,7 +2287,22 @@
       "deleted": "{name} deleted",
       "added": "{name} added",
       "synonym": "Its synonym",
-      "same": "is the same as"
+      "same": "is the same as",
+      "collections": "Occasion collections",
+      "collectionsIntro": "Sellers tag their products from this list. A hidden collection leaves the site and the seller form; the tags stay.",
+      "addCollection": "Add collection",
+      "editCollection": "Edit collection",
+      "collectionText": "Names in three languages; the URL name is the page address: /collections/<name>.",
+      "noCollections": "No collections yet.",
+      "hidden": "Hidden",
+      "shown": "Show on the site",
+      "shownHint": "When off, the page and the choice in the seller form are hidden; products keep their tags.",
+      "slugChangeHint": "If you change it, links shared earlier stop working.",
+      "edit": "Edit",
+      "saved": "{name} saved",
+      "moved": "{name} moved",
+      "moveUp": "{name}: move up",
+      "moveDown": "{name}: move down"
     },
     "users": {
       "title": "Users",
@@ -2861,6 +2878,38 @@
       "gaps": "CBAR publishes no rate on weekends and holidays; those days are not part of the figures. While the current month is running, the last day is the last stored rate day.",
       "corrected": "An asterisk (*) means a Jeparla admin corrected a CBAR rate in that month.",
       "jewelry": "These are metal values, not jewellery prices: the price of a piece also includes the work, the stones and the store's margin."
+    }
+  },
+  "Collections": {
+    "title": "Shop by occasion",
+    "navLabel": "By occasion",
+    "description": "Jewellery for an engagement, a wedding, a gift or every day, from jewellery stores in Azerbaijan in one place.",
+    "intro": "Sellers mark which occasions each piece suits. Open a collection and narrow it down by budget.",
+    "collectionDescription": "{name}: gold, silver and diamond pieces that jewellery stores in Azerbaijan marked for this occasion, with price and fineness.",
+    "source": "The list comes from the sellers' own tags; Jeparla does not judge whether a piece suits the occasion.",
+    "breadcrumb": "Breadcrumb",
+    "productCount": "{count, plural, =0 {No products} one {# product} other {# products}}",
+    "budget": "Budget",
+    "anyPrice": "Any price",
+    "emptyTitle": "No products in this collection yet",
+    "emptyText": "Pieces appear here as sellers tag them with this occasion. Meanwhile, browse the whole catalog or another collection.",
+    "browseCatalog": "Whole catalog",
+    "others": "Other collections",
+    "none": "No collections yet.",
+    "faqTitle": "{name}: questions",
+    "faq": {
+      "how": {
+        "q": "Which pieces are in the {name} collection?",
+        "a": "When a seller adds a piece, they mark the occasions it suits. Only checked products that are on sale are shown here."
+      },
+      "budget": {
+        "q": "How do I choose by budget?",
+        "a": "The budget buttons above filter by the lowest variant price, in Azerbaijani manat. Metal-linked prices follow the Central Bank rate every day."
+      },
+      "contact": {
+        "q": "How do I buy a piece I like?",
+        "a": "Message the store with the WhatsApp button on the product page; the message includes the product name, code and link. You agree on the purchase directly with the store."
+      }
     }
   }
 }

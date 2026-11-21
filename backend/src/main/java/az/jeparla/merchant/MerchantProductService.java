@@ -6,6 +6,7 @@ import az.jeparla.admin.AuditService;
 import az.jeparla.admin.AuditTargetType;
 import az.jeparla.auth.CurrentUser;
 import az.jeparla.auth.UserRepository;
+import az.jeparla.collection.CollectionService;
 import az.jeparla.common.Currencies;
 import az.jeparla.common.error.ApiException;
 import az.jeparla.merchant.ProductRequestChecks.Checked;
@@ -79,12 +80,14 @@ public class MerchantProductService {
     private final ProductRequestChecks checks;
     private final MerchantViews views;
     private final AuditService audit;
+    private final CollectionService collections;
     private final Clock clock;
 
     public MerchantProductService(MerchantStores merchantStores, MerchantProducts merchantProducts,
             ProductRepository products, ProductVariantRepository variants, MetalPriceSnapshotRepository snapshots,
             PriceHistoryRepository history, UserRepository users, ProductRequestChecks checks, MerchantViews views,
-            AuditService audit, Clock clock) {
+            AuditService audit, CollectionService collections, Clock clock) {
+        this.collections = collections;
         this.merchantStores = merchantStores;
         this.merchantProducts = merchantProducts;
         this.products = products;
@@ -138,6 +141,7 @@ public class MerchantProductService {
         product.setAudience(request.audience() != null ? request.audience()
                 : AudienceRules.suggest(checked.category()));
         replaceStones(product, request.stonesOrEmpty());
+        collections.tag(product, request.collectionIds());
         products.saveAndFlush(product);
         for (int i = 0; i < request.variants().size(); i++) {
             addVariant(product, request.variants().get(i), checked.finenesses().get(i), now, "variants[" + i + "].");
@@ -219,6 +223,8 @@ public class MerchantProductService {
         String stonesBefore = stonesSignature(product);
         replaceStones(product, request.stonesOrEmpty());
         content |= !stonesBefore.equals(stonesSignature(product));
+        // Occasion tags (#115) only help buyers find the piece: not a change of what is sold, no review.
+        collections.tag(product, request.collectionIds());
 
         // Removed first, so their SKUs are free for the variants of this request.
         List<Long> kept = request.variants().stream().map(VariantRequest::id).filter(Objects::nonNull).toList();

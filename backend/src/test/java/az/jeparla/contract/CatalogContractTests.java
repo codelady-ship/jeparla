@@ -107,6 +107,8 @@ class CatalogContractTests {
                 .anyMatch(r -> r.startsWith("/api/v1/variants?ids="))
                 .anyMatch(r -> r.matches("/api/v1/products/[a-z0-9-]+"))
                 .anyMatch(r -> r.equals("/api/v1/categories"))
+                .anyMatch(r -> r.equals("/api/v1/collections"))
+                .anyMatch(r -> r.startsWith("/api/v1/products?collection="))
                 .anyMatch(r -> r.equals("/api/v1/finenesses"))
                 .anyMatch(r -> r.startsWith("/api/v1/stores"))
                 .anyMatch(r -> r.matches("/api/v1/stores/[a-z0-9-]+"))

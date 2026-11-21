@@ -114,6 +114,14 @@ await add("unknown product", (api) => api.getProduct("no-such-product"), { statu
 
 // Categories, finenesses, stores.
 await add("categories", (api) => api.listCategories());
+
+// Occasion collections (#115): the list with counts, and a collection page with a budget.
+await add("collections", (api) => api.listCollections());
+await add("products of a collection", (api) => api.listProducts({ collection: "hediyye", size: 50 }));
+await add("products of a collection up to a budget", (api) =>
+  api.listProducts({ collection: "toy", maxPrice: "1000", sort: "price_asc", size: 50 }),
+);
+await add("products of an unknown collection", (api) => api.listProducts({ collection: "no-such-collection" }));
 await add("finenesses", (api) => api.listFinenesses());
 await add("stores", (api) => api.listStores());
 await add("stores of a city", (api) => api.listStores({ city: "Bakı" }));

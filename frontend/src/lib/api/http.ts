@@ -163,6 +163,7 @@ export const httpApi: JeparlaApi = {
   getCompareItems: async (ids) => (ids.length ? get("/variants", { ids: ids.join(",") }) : []),
   getProduct: (slug) => getOrNull(`/products/${enc(slug)}`),
   listCategories: () => get("/categories"),
+  listCollections: () => get("/collections"),
   listFinenesses: () => get("/finenesses"),
   listStores: (params = {}) => get("/stores", params),
   getStore: (slug) => getOrNull(`/stores/${enc(slug)}`),

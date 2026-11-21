@@ -10,7 +10,10 @@ import { mockApi } from "./mock";
  * the catalog changes rarely). When the backend cannot be asked, the page is let through
  * and shows its own error or 404 state: this check never turns an outage into a 404.
  */
-export type DetailKind = "products" | "stores" | "categories";
+export type DetailKind = "products" | "stores" | "categories" | "collections";
+
+/** Kinds answered from a public list (no detail endpoint): the slug must be in it. */
+const LISTED: DetailKind[] = ["categories", "collections"];
 
 const TTL_FOUND = 5 * 60_000;
 const TTL_MISSING = 60_000;
@@ -21,11 +24,13 @@ async function ask(kind: DetailKind, slug: string, mock: boolean): Promise<boole
   if (mock) {
     if (kind === "products") return (await mockApi.getProduct(slug)) !== null;
     if (kind === "stores") return (await mockApi.getStore(slug)) !== null;
+    if (kind === "collections")
+      return (await mockApi.listCollections()).some((c) => c.slug === slug);
     return (await mockApi.listCategories()).some((c) => c.slug === slug);
   }
   try {
-    if (kind === "categories") {
-      const all = await apiFetch<{ slug: string }[]>("/categories", { timeoutMs: 3_000 });
+    if (LISTED.includes(kind)) {
+      const all = await apiFetch<{ slug: string }[]>(`/${kind}`, { timeoutMs: 3_000 });
       return all.some((c) => c.slug === slug);
     }
     await apiFetch(`/${kind}/${encodeURIComponent(slug)}`, { timeoutMs: 3_000 });

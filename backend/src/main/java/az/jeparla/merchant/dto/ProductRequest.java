@@ -28,6 +28,8 @@ import java.util.List;
  *                             create suggested from the category (MEN / KIDS roots, otherwise UNISEX), on update kept
  * @param dimensions           optional sizes in mm (#174); null clears them
  * @param keyFeatures          up to 5 short points the seller writes (#174), shown under the description
+ * @param collectionIds        occasion collections (#115) of the product, shown ones only; null keeps the tags.
+ *                             Tags only help buyers find the piece, so changing them never sends it to review
  */
 public record ProductRequest(
         @NotNull MaterialKind materialKind,
@@ -41,10 +43,13 @@ public record ProductRequest(
         @Size(max = MAX_STONES) List<@NotNull @Valid StoneRequest> stones,
         Audience audience,
         @Valid DimensionsRequest dimensions,
-        @Size(max = MAX_KEY_FEATURES) List<@NotBlank @Size(max = KEY_FEATURE_LENGTH) String> keyFeatures) {
+        @Size(max = MAX_KEY_FEATURES) List<@NotBlank @Size(max = KEY_FEATURE_LENGTH) String> keyFeatures,
+        @Size(max = MAX_COLLECTIONS) List<@NotNull @Positive Long> collectionIds) {
 
     /** Same limits as frontend/src/lib/merchant/schemas.ts. */
     public static final int MAX_VARIANTS = 10;
+    /** Occasion tags (#115) of one product. */
+    public static final int MAX_COLLECTIONS = 20;
     public static final int MAX_STONES = 6;
     public static final int MAX_KEY_FEATURES = 5;
     public static final int KEY_FEATURE_LENGTH = 120;
