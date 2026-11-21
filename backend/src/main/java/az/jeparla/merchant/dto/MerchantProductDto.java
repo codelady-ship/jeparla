@@ -47,5 +47,6 @@ public record MerchantProductDto(
         @Schema(nullable = true, description = "Sizes in mm (#174); null when none") DimensionsDto dimensions,
         @Schema(description = "Up to 5 key features (#174)") List<String> keyFeatures,
         @Schema(description = "Occasion collections (#115) it is tagged with, hidden ones too, by id")
-        List<Long> collectionIds) {
+        List<Long> collectionIds,
+        @Schema(nullable = true, description = "The short video (#117); null when none") MerchantVideoDto video) {
 }
