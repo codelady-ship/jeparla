@@ -9,13 +9,19 @@ import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { HeaderMenu } from "./header-menu";
 import { HeaderShell } from "./header-shell";
 import { MobileNav } from "./mobile-nav";
-import { NAV_ITEMS } from "./nav-items";
+import { NAV_GROUPS, NAV_ITEMS } from "./nav-items";
 
 export function SiteHeader() {
   const t = useTranslations();
   const items = NAV_ITEMS.map((i) => ({ href: i.href, label: t(`Nav.${i.key}`) }));
+  const groups = NAV_GROUPS.map((g) => ({
+    key: g.key,
+    title: t(`Nav.${g.key}`),
+    links: g.links.map((l) => ({ href: l.href, label: t(l.label) })),
+  }));
   const icon = buttonVariants({ variant: "ghost", size: "icon" });
 
   return (
@@ -29,6 +35,7 @@ export function SiteHeader() {
       <div className="container-page flex h-16 items-center gap-1 min-[22.5rem]:gap-2">
         <MobileNav
           items={items}
+          groups={groups}
           labels={{ menu: t("Nav.menu"), close: t("Common.close"), home: t("Nav.home") }}
         />
         <Link
@@ -39,8 +46,8 @@ export function SiteHeader() {
         >
           <Wordmark />
         </Link>
-        <nav aria-label={t("Nav.mainNav")} className="ml-8 hidden md:block">
-          <ul className="flex items-center gap-6 text-sm font-medium">
+        <nav aria-label={t("Nav.mainNav")} className="ml-6 hidden lg:block xl:ml-8">
+          <ul className="flex items-center gap-5 text-sm font-medium xl:gap-6">
             {items.map((item) => (
               <li key={item.href}>
                 {/* No prefetch, like the other header links (#160): prefetching a route also
@@ -49,6 +56,10 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               </li>
+            ))}
+            {/* The whole bar shows from lg up; below that everything is in the menu sheet. */}
+            {groups.map((g) => (
+              <HeaderMenu key={g.key} label={g.title} links={g.links} />
             ))}
           </ul>
         </nav>

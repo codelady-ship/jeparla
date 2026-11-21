@@ -84,7 +84,9 @@
     "account": "Hesab menyusu",
     "dashboard": "Kabinet",
     "logout": "Çıxış",
-    "myAccount": "Hesabım"
+    "myAccount": "Hesabım",
+    "buyers": "Alıcılar üçün",
+    "sellers": "Satıcılar üçün"
   },
   "Account": {
     "title": "Hesabım",
@@ -2994,6 +2996,71 @@
         "q": "Bəyəndiyim modeli necə alım?",
         "a": "Məhsul səhifəsində WhatsApp düyməsi ilə mağazaya yazın; mesajda məhsulun adı, kodu və linki olacaq. Alış birbaşa mağaza ilə razılaşdırılır."
       }
+    }
+  },
+  "AboutPage": {
+    "title": "Haqqımızda",
+    "description": "Jeparla Azərbaycanın zərgərlik mağazalarını bir yerdə toplayan kataloqdur: qızıl, gümüş, brilyant, bijuteriya və əl işi.",
+    "intro": "Jeparla Azərbaycanın qızıl, gümüş və brilyant zərgərlik mağazalarını, eləcə də bijuteriya və əl işi satıcılarını bir yerdə toplayan kataloqdur.",
+    "notAShop": "Jeparla özü məhsul satmır. Məhsulu bəyənəndə WhatsApp ilə birbaşa mağazaya yazırsınız; alış-veriş mağaza ilə sizin aranızda olur.",
+    "sections": {
+      "buyers": {
+        "title": "Alıcı üçün",
+        "text": "Məhsulu mağaza, kateqoriya, metal, əyar və qiymətə görə axtarın, bir neçə mağazanın təklifini bir yerdə müqayisə edin."
+      },
+      "prices": {
+        "title": "Qiymətlər",
+        "text": "Metal qiymətləri Azərbaycan Mərkəzi Bankının gündəlik məzənnəsindən götürülür. Satıcı qiyməti metala bağlayıbsa, o hər gün özü yenilənir."
+      },
+      "checks": {
+        "title": "Yoxlama",
+        "text": "Satıcı, sənədlər və ekspertiza ayrı-ayrılıqda yoxlanılır və hər məhsulda ayrıca göstərilir. Aparılmayan yoxlama gizlədilmir. Bijuteriya və əl işi ayrıca bölmədədir və sertifikat tələb etmir."
+      },
+      "sellers": {
+        "title": "Satıcı üçün",
+        "text": "Mağazanızı açın, məhsullarınızı yerləşdirin və mağazanızın linkini müştərilərinizlə paylaşın. Alıcılar sizə birbaşa yazır."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "prices": "Metal qiymətləri",
+      "verified": "Necə yoxlayırıq",
+      "sell": "Mağaza aç",
+      "contact": "Əlaqə",
+      "help": "Kömək və dəstək"
+    },
+    "contact": {
+      "title": "Jeparla ilə əlaqə",
+      "operator": "Saytı idarə edən: {name}.",
+      "text": "Sualınız, təklifiniz və ya şikayətiniz varsa, bizə yazın."
+    }
+  },
+  "ContactPage": {
+    "title": "Əlaqə",
+    "description": "Jeparla ilə əlaqə: məhsul haqqında sual, mağaza açmaq, problem bildirmək.",
+    "intro": "Sualınıza uyğun yolu seçin: belə daha tez cavab alırsınız.",
+    "support": {
+      "title": "Jeparla komandasına yazın"
+    },
+    "topics": {
+      "product": {
+        "title": "Məhsul haqqında sualınız var?",
+        "text": "Qiymət, ölçü, çatdırılma və mövcudluq barədə birbaşa mağazaya yazın: məhsulun səhifəsində WhatsApp düyməsi var. Jeparla özü məhsul satmır."
+      },
+      "seller": {
+        "title": "Satıcısınız?",
+        "text": "Mağaza açmaq üçün qeydiyyatdan keçin. Mağazanız artıq varsa, məhsulları, sənədləri və bildirişləri kabinetdən idarə edin."
+      },
+      "report": {
+        "title": "Problem və ya şikayət",
+        "text": "Yanlış məlumat, şübhəli elan və ya saytda xəta görsəniz, bizə bildirin. Tez-tez verilən suallar kömək səhifəsindədir."
+      }
+    },
+    "links": {
+      "catalog": "Kataloqa keç",
+      "sell": "Mağaza aç",
+      "merchant": "Mağaza kabineti",
+      "help": "Kömək və dəstək"
     }
   }
 }
