@@ -20,6 +20,17 @@ class ImageUrlsTests {
     }
 
     @Test
+    void aBucketUrlGivesItsKeyBackAndNothingElseDoes() {
+        ImageUrls urls = urls("https://img.jeparla.az/pub");
+        assertThat(urls.key(urls.url("products/12/a.jpg"))).contains("products/12/a.jpg");
+        assertThat(urls.key("/demo/ring-gold-1.jpg")).isEmpty();
+        assertThat(urls.key("https://img.jeparla.az/public/x.jpg")).isEmpty();
+        assertThat(urls.key("https://img.jeparla.az/pub/../x.jpg")).isEmpty();
+        assertThat(urls.key(null)).isEmpty();
+        assertThat(urls(null).key("https://img.jeparla.az/pub/x.jpg")).isEmpty();
+    }
+
+    @Test
     void demoKeysNeedNoBucketUrl() {
         assertThat(urls(null).url("demo/ring-gold-1.jpg#12-0")).isEqualTo("/demo/ring-gold-1.jpg");
         assertThat(urls("").url("demo/ring-gold-1.jpg#1-0")).isEqualTo("/demo/ring-gold-1.jpg");
