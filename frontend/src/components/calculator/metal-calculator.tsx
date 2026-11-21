@@ -91,6 +91,7 @@ export async function MetalCalculator({ searchParams }: { searchParams: Promise<
     weightHint: t("weightHint"),
     metal: t("metal"),
     fineness: t("fineness"),
+    finenessHint: t("finenessHint"),
     submit: t("submit"),
     result: t("resultLabel"),
     prompt: t("prompt"),

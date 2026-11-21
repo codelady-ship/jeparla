@@ -200,6 +200,7 @@
     "metal": "Metal",
     "any": "Fərqi yoxdur",
     "fineness": "Əyar",
+    "finenessHint": "Əyar təmiz metalın payıdır: 585 əyar 58,5% qızıl deməkdir.",
     "price": "Qiymət",
     "weight": "Çəki",
     "min": "Min",
@@ -209,6 +210,7 @@
     "diamond": "Brilyant",
     "shape": "Forma",
     "carat": "Karat",
+    "caratHint": "daşın çəkisi, 1 karat 0,2 qramdır",
     "color": "Rəng",
     "clarity": "Təmizlik",
     "shapes": {
@@ -277,7 +279,7 @@
     "nextImage": "Növbəti şəkil",
     "zoom": "Şəkli böyüt",
     "imagePosition": "Şəkil {n} / {total}",
-    "chooseVariant": "Variant seçin",
+    "chooseVariant": "Ölçü və çəki seçin",
     "size": "Ölçü {size}",
     "sku": "Kod",
     "priceUpdated": "Qiymət yenilənib:",
@@ -424,7 +426,7 @@
       "perGram": "Məhsulun 1 qram qiyməti",
       "gramToday": "Bu gün 1 qram {fineness} metal",
       "note": "Hesab təxminidir, yekun qiyməti mağaza təsdiqləyir.",
-      "variant": "Variant: {label}",
+      "variant": "Seçim: {label}",
       "labor": "İşçilik",
       "markup": "Mağaza payı",
       "markupPercent": "{percent}%"
@@ -469,6 +471,7 @@
     "count": "{count, plural, =0 {Mağaza yoxdur} other {# mağaza}}",
     "productCount": "{count, plural, =0 {Məhsul yoxdur} other {# məhsul}}",
     "emptyTitle": "Mağaza tapılmadı",
+    "emptyText": "Bu ad və ya şəhərdə mağaza yoxdur. Adı qısaldın, başqa şəhər seçin və ya bütün mağazalara baxın.",
     "showAll": "Bütün mağazalar",
     "sellerVerified": "Satıcı yoxlanılıb",
     "visit": "Ziyarət",
@@ -510,7 +513,7 @@
       },
       "products": {
         "label": "Aktiv məhsullar",
-        "how": "Hazırda kataloqda görünən məhsulların sayı: təsdiqlənmiş, silinməmiş və ən azı bir aktiv variantı olan."
+        "how": "Hazırda kataloqda görünən məhsulların sayı: təsdiqlənmiş, silinməmiş və satışda olan."
       },
       "updated": {
         "label": "Kataloq yenilənib",
@@ -812,8 +815,8 @@
     "products": "Məhsullar",
     "seeAll": "\"{query}\" üzrə bütün nəticələr",
     "loading": "Axtarılır",
-    "empty": "Heç nə tapılmadı. Başqa söz yoxlayın.",
-    "error": "Axtarış alınmadı. Yenidən yoxlayın.",
+    "empty": "Heç nə tapılmadı. Daha qısa və ya başqa söz yazın, məsələn \"üzük\".",
+    "error": "Axtarış alınmadı. İnterneti yoxlayın və sözü yenidən yazın.",
     "results": "{count} nəticə",
     "photo": {
       "open": "Şəkillə axtar",
@@ -872,9 +875,9 @@
     "favoritesIntro": "Ürək işarəsi ilə saxladığınız məhsullar.",
     "compareTitle": "Müqayisə",
     "compareDescription": "2–4 zərgərlik məmulatını çəki, əyar, qiymət, daş və mağaza üzrə müqayisə edin.",
-    "compareIntro": "Müqayisə variant səviyyəsindədir: çəki, əyar və qiymət seçdiyiniz varianta aiddir.",
+    "compareIntro": "Müqayisə seçdiyiniz ölçü və çəki üzrədir: çəki, əyar və qiymət ona aiddir.",
     "loading": "Yüklənir",
-    "error": "Siyahını yükləmək alınmadı.",
+    "error": "Siyahını yükləmək alınmadı. İnterneti yoxlayın və \"Yenidən yoxla\" düyməsinə basın.",
     "retry": "Yenidən yoxla",
     "browse": "Kataloqa bax",
     "clearAll": "Hamısını təmizlə",
@@ -887,6 +890,7 @@
     "compareCount": "{count} / {max} məhsul",
     "compareAddMore": "Müqayisə üçün ən azı daha bir məhsul əlavə edin.",
     "compareNote": "Fərqli dəyərlər qızılı rənglə göstərilir.",
+    "compareTerms": "Əyar təmiz metalın payıdır (585 = 58,5%); ct daşın çəkisidir (1 karat = 0,2 qram).",
     "compareTable": "Məhsulların müqayisəsi",
     "sku": "Kod {sku}",
     "remove": "Çıxar",
@@ -1014,19 +1018,19 @@
     "steps": {
       "1": {
         "title": "Hesab",
-        "intro": "Sizinlə əlaqə və giriş üçün."
+        "intro": "Adınızı və mobil nömrənizi yazın, şifrə seçin: kabinetə bunlarla girəcəksiniz."
       },
       "2": {
         "title": "Mağaza",
-        "intro": "Alıcıların görəcəyi məlumatlar."
+        "intro": "Mağazanın adını, WhatsApp nömrəsini və ünvanını yazın: alıcılar bunları görəcək."
       },
       "3": {
         "title": "Sənədlər",
-        "intro": "\"Jeparla Verified\" yoxlaması üçün."
+        "intro": "Qızıl və ya gümüş satırsınızsa, mağaza sənədinin şəklini və ya PDF-ini yükləyin; sonra da göndərmək olar."
       },
       "4": {
         "title": "İlk məhsul",
-        "intro": "İstəyə bağlıdır: indi və ya sonra kabinetdən əlavə edə bilərsiniz."
+        "intro": "İlk məhsulun adını, əyarını, çəkisini və qiymətini yazın və ya bu addımı keçib sonra əlavə edin."
       }
     },
     "fields": {
@@ -1051,7 +1055,14 @@
       "phone": "Məsələn 050 123 45 67. SMS təsdiqi sonra əlavə olunacaq.",
       "whatsapp": "Alıcılar bu nömrəyə yazacaq.",
       "social": "@ad və ya https:// ilə başlayan keçid.",
-      "taxId": "10 rəqəm."
+      "taxId": "10 rəqəm.",
+      "fineness": "Məmulatın üzərindəki damğadakı rəqəm, məsələn 585."
+    },
+    "examples": {
+      "name": "Məsələn: Aysel Məmmədova",
+      "storeName": "Məsələn: Aysel Zərgərlik",
+      "address": "Məsələn: Nizami küçəsi 12",
+      "productName": "Məsələn: Qızıl nişan üzüyü"
     },
     "legal": {
       "COMPANY": "Hüquqi şəxs (MMC və s.)",
@@ -1278,12 +1289,33 @@
       "byQuestion": "WhatsApp sualları",
       "byQuestionNote": "Son 30 gündə alıcının WhatsApp-dan əvvəl seçdiyi hazır sual. Alıcı haqqında heç nə saxlanılmır."
     },
+    "guide": {
+      "title": "Mağazanızı 3 addımda hazırlayın",
+      "intro": "Qısa bələdçi: bağlasanız, bir daha göstərilməyəcək.",
+      "stepOf": "Addım {step} / {total}",
+      "profile": {
+        "title": "Mağaza məlumatlarını doldurun",
+        "text": "İş saatlarını, ünvanı və xəritədəki yeri yazın: alıcı sizi belə tapır.",
+        "action": "Profili aç"
+      },
+      "product": {
+        "title": "İlk məhsulu əlavə edin",
+        "text": "Şəkil, ad, çəki və qiymət yazın; məhsul yoxlamadan sonra kataloqda görünür.",
+        "action": "Məhsul əlavə et"
+      },
+      "share": {
+        "title": "Mağaza linkini paylaşın",
+        "text": "Linki Instagram və WhatsApp-da paylaşın ki, müştərilər kataloqunuzu görsün.",
+        "action": "Paylaşma səhifəsini aç"
+      },
+      "dismiss": "Aydındır, bağla"
+    },
     "products": {
       "title": "Məhsullar",
       "search": "Məhsul adı ilə axtar",
       "statusLabel": "Status",
       "count": "{count, plural, one {# məhsul} other {# məhsul}}",
-      "emptyFiltered": "Bu axtarışa uyğun məhsul yoxdur.",
+      "emptyFiltered": "Bu axtarışa uyğun məhsul yoxdur. Axtarış sözünü qısaldın və ya başqa status seçin.",
       "clearFilters": "Filtrləri təmizlə",
       "colProduct": "Məhsul",
       "colStatus": "Status",
@@ -1776,7 +1808,7 @@
     "notifications": {
       "title": "Bildirişlər",
       "intro": "Mağaza, məhsul və sənəd qərarları burada görünür.",
-      "empty": "Bildiriş yoxdur.",
+      "empty": "Bildiriş yoxdur. Məhsul və ya sənəd yoxlanılanda nəticəsi burada görünəcək.",
       "readAll": "Hamısını oxunmuş et",
       "unread": "Yeni",
       "open": "Ətraflı"
@@ -2641,7 +2673,7 @@
     "perGram": "1 qram",
     "note": "Qiymət AMB-nin gündəlik metal məzənnəsinə əsasən təxminidir, yekun qiyməti mağaza təsdiqləyir.",
     "error": "Metal qiymətlərini indi yükləmək alınmadı. Bir az sonra yenidən baxın.",
-    "empty": "Bugünkü qiymət hələ gəlməyib.",
+    "empty": "Bugünkü qiymət hələ gəlməyib. Bir az sonra yenidən baxın.",
     "calculatorLink": "Zərgərliyin metal dəyərini hesablayın",
     "adminSource": "Bu qiymətə Jeparla administratoru əl ilə düzəliş edib; növbəti AMB bülleteni onu əvəz edəcək.",
     "allPrices": "Bütün qiymətlər və hesablama qaydası"
@@ -2683,7 +2715,7 @@
     "share": "Paylaş",
     "copy": "Linki kopyala",
     "copied": "Link kopyalandı",
-    "copyFailed": "Linki kopyalamaq alınmadı"
+    "copyFailed": "Linki kopyalamaq alınmadı. Ünvan sətrindən əl ilə kopyalayın."
   },
   "Calculator": {
     "title": "Qızıl və gümüş kalkulyatoru",
@@ -2694,6 +2726,7 @@
     "weightHint": "Məsələn 4,2 və ya 4.2; vergüldən sonra ən çox 3 rəqəm.",
     "metal": "Metal",
     "fineness": "Əyar",
+    "finenessHint": "Əyar məmulatın üzərindəki damğada yazılır, məsələn 585 və ya 750.",
     "submit": "Hesabla",
     "resultLabel": "Metal dəyəri",
     "prompt": "Metal dəyərini görmək üçün çəkini daxil edin.",
@@ -2912,7 +2945,7 @@
       },
       "budget": {
         "q": "Büdcəyə görə necə seçim edim?",
-        "a": "Yuxarıdakı büdcə düymələri ən aşağı variant qiymətinə görə süzür, qiymətlər manatla göstərilir. Metala bağlı qiymətlər hər gün AMB məzənnəsi ilə yenilənir."
+        "a": "Yuxarıdakı büdcə düymələri məhsulun ən aşağı qiymətinə görə süzür, qiymətlər manatla göstərilir. Metala bağlı qiymətlər hər gün AMB məzənnəsi ilə yenilənir."
       },
       "contact": {
         "q": "Bəyəndiyim modeli necə alım?",

@@ -232,6 +232,8 @@ export function FilterFields({
       </Group>
 
       <Group legend={t("fineness")}>
+        {/* Plain words next to the term (#176): static text, no script. */}
+        <p className="text-xs text-muted-foreground">{t("finenessHint")}</p>
         <div className="grid grid-cols-2 gap-1.5">
           {data.finenesses.map((fi) => (
             <Check
@@ -282,7 +284,9 @@ export function FilterFields({
             </Check>
           ))}
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">{t("carat")}</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {t("carat")}: {t("caratHint")}
+        </p>
         <Range
           id={`${id}-carat`}
           label={minMax}

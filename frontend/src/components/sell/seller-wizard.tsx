@@ -228,6 +228,7 @@ export function SellerWizard({
               id="s-name"
               label={t("fields.name")}
               autoComplete="name"
+              placeholder={t("examples.name")}
               value={a.name}
               onChange={(e) => setAccount({ name: e.target.value })}
               error={err(errors.name)}
@@ -278,6 +279,7 @@ export function SellerWizard({
               id="s-store"
               label={t("fields.storeName")}
               autoComplete="organization"
+              placeholder={t("examples.storeName")}
               value={s.storeName}
               onChange={(e) => setStore({ storeName: e.target.value })}
               error={err(errors.storeName)}
@@ -306,6 +308,7 @@ export function SellerWizard({
               id="s-address"
               label={t("fields.address")}
               autoComplete="street-address"
+              placeholder={t("examples.address")}
               value={s.address}
               onChange={(e) => setStore({ address: e.target.value })}
               error={err(errors.address)}
@@ -339,6 +342,7 @@ export function SellerWizard({
               label={t("fields.taxId")}
               inputMode="numeric"
               maxLength={10}
+              placeholder="1234567890"
               value={s.taxId}
               onChange={(e) => setStore({ taxId: e.target.value.replace(/\D/g, "") })}
               error={err(errors.taxId)}
@@ -415,6 +419,7 @@ export function SellerWizard({
             <TextField
               id="s-product"
               label={t("fields.productName")}
+              placeholder={t("examples.productName")}
               value={p.productName}
               onChange={(e) => setProduct({ productName: e.target.value })}
               error={err(errors.productName)}
@@ -437,6 +442,7 @@ export function SellerWizard({
               value={p.fineness}
               onChange={(e) => setProduct({ fineness: e.target.value })}
               error={err(errors.fineness)}
+              hint={t("hints.fineness")}
             />
             <TextField
               id="s-weight"
