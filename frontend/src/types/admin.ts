@@ -41,6 +41,8 @@ export type ModerationItem = {
   slug: string;
   name: LocalizedText;
   imageUrl: string | null;
+  /** The short video (#117) to watch before approving; absent or null when none. */
+  videoUrl?: string | null;
   store: { id: number; name: string };
   /** The API list carries no variant data yet: null. */
   metal: MetalType | null;
