@@ -19,6 +19,7 @@ import {
 } from "@/types/merchant";
 import { suggestAudience } from "./audience";
 import { EMPTY_PRICING } from "./draft";
+import type { MerchantVideo } from "./video";
 
 /**
  * Merchant cabinet against the backend (PLAN 5.5, backend/README.md "Satıcı API"):
@@ -72,6 +73,8 @@ export type BackendProduct = {
   keyFeatures?: string[];
   /** Occasion collections (#115), hidden ones too. */
   collectionIds?: number[];
+  /** The short video (#117); null when none. */
+  video?: MerchantVideo | null;
 };
 
 export type BackendEvidencePhoto = {
@@ -167,6 +170,7 @@ export const toMerchantProduct = (p: BackendProduct, categories: Category[]): Me
   id: p.id,
   status: p.status,
   input: toProductInput(p, categories),
+  video: p.video ?? null,
 });
 
 const blank = (v: string) => (v.trim() === "" ? null : v.trim());

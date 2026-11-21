@@ -79,6 +79,8 @@ export async function ProductFormPage({
           draftKey={product ? String(product.id) : fromDraft ? `draft-${fromDraft.id}` : "new"}
           initial={initial}
           productStatus={product?.status}
+          productId={product?.id}
+          video={product?.video}
           categories={options}
           finenesses={finenesses.map((f) => ({
             value: String(f.id),

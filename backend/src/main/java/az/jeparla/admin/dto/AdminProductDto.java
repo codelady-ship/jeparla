@@ -29,6 +29,7 @@ import java.util.function.UnaryOperator;
  * @param variantCount     live variants
  * @param imageUrl         URL of the first photo, or null
  * @param imageAiGenerated whether that photo is AI-generated (shown with a label), or null without a photo
+ * @param videoUrl         URL of the short video (#117) the moderator watches before approving, or null
  */
 @Schema(name = "AdminProduct", requiredProperties = {
         "id", "slug", "name", "names", "storeId", "storeName", "materialKind", "status", "expertiseStatus",
@@ -41,7 +42,8 @@ public record AdminProductDto(long id, String slug, String name, LocalizedTextDt
         @Schema(nullable = true, example = "585") Integer fineness,
         @Schema(nullable = true, example = "585 (14K)") String finenessLabel,
         @Schema(nullable = true, example = "3.250") String weightGrams, int variantCount,
-        @Schema(nullable = true) String imageUrl, @Schema(nullable = true) Boolean imageAiGenerated) {
+        @Schema(nullable = true) String imageUrl, @Schema(nullable = true) Boolean imageAiGenerated,
+        @Schema(nullable = true, description = "URL of the short video (#117), or null") String videoUrl) {
 
     /**
      * @param imageUrls turns a storage key into a browser URL ({@code ImageUrls::url})
@@ -61,6 +63,7 @@ public record AdminProductDto(long id, String slug, String name, LocalizedTextDt
                 cheapest == null || cheapest.getWeightGrams() == null ? null : Decimal.of(cheapest.getWeightGrams()),
                 product.getVariants().size(),
                 image == null ? null : imageUrls.apply(image.getStorageKey()),
-                image == null ? null : image.isAiGenerated());
+                image == null ? null : image.isAiGenerated(),
+                product.getVideo().map(video -> imageUrls.apply(video.storageKey())).orElse(null));
     }
 }

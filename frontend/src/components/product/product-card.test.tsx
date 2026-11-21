@@ -80,6 +80,31 @@ describe("ProductCard", () => {
     expect(screen.getByText(az.Product.stock.OUT_OF_STOCK)).toBeInTheDocument();
   });
 
+  it("marks a product that has a video with an icon and never loads or plays the video (#117)", () => {
+    const { container, unmount } = renderIn(
+      <ProductCard
+        product={{
+          ...base,
+          video: {
+            url: "https://img.example/products/1/2/video/clip.mp4",
+            contentType: "video/mp4",
+            durationMs: 8000,
+            width: 480,
+            height: 600,
+            aiGenerated: false,
+          },
+        }}
+      />,
+    );
+    expect(screen.getByText(az.Product.hasVideo)).toBeInTheDocument();
+    expect(container.querySelector("video, source")).toBeNull();
+    expect(container.innerHTML).not.toContain("clip.mp4");
+    unmount();
+
+    renderIn(<ProductCard product={{ ...base, video: undefined }} />);
+    expect(screen.queryByText(az.Product.hasVideo)).not.toBeInTheDocument();
+  });
+
   it("shows a bijouterie badge and the material instead of metal and fineness (#128)", () => {
     renderIn(
       <ProductCard

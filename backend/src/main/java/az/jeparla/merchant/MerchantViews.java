@@ -8,9 +8,11 @@ import az.jeparla.merchant.dto.MerchantImageDto;
 import az.jeparla.merchant.dto.MerchantProductDto;
 import az.jeparla.merchant.dto.MerchantProductRowDto;
 import az.jeparla.merchant.dto.MerchantVariantDto;
+import az.jeparla.merchant.dto.MerchantVideoDto;
 import az.jeparla.product.Product;
 import az.jeparla.product.ProductEvidencePhoto;
 import az.jeparla.product.ProductImage;
+import az.jeparla.product.ProductVideo;
 import az.jeparla.product.dto.DimensionsDto;
 import az.jeparla.product.dto.StoneDto;
 import java.util.Comparator;
@@ -43,7 +45,8 @@ class MerchantViews {
                 product.getStones().stream().map(StoneDto::of).toList(),
                 product.getEvidencePhotos().stream().map(this::evidence).toList(),
                 DimensionsDto.of(product), product.getKeyFeatures(),
-                product.getCollections().stream().map(c -> c.getId()).sorted().toList());
+                product.getCollections().stream().map(c -> c.getId()).sorted().toList(),
+                product.getVideo().map(this::video).orElse(null));
     }
 
     MerchantEvidencePhotoDto evidence(ProductEvidencePhoto photo) {
@@ -59,6 +62,11 @@ class MerchantViews {
         return new MerchantProductRowDto(product.getId(), product.getSlug(), LocalizedTextDto.of(product.getName()),
                 cover, product.getCategory().getId(), product.getStatus(), product.getMaterialKind(), priceFrom,
                 product.getVariants().size(), null, product.getUpdatedAt(), product.getReviewNote());
+    }
+
+    MerchantVideoDto video(ProductVideo video) {
+        return new MerchantVideoDto(imageUrls.url(video.storageKey()), video.contentType(), video.sizeBytes(),
+                video.durationMs(), video.width(), video.height(), video.aiGenerated());
     }
 
     MerchantImageDto image(ProductImage image) {

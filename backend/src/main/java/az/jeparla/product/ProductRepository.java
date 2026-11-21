@@ -128,6 +128,13 @@ public interface ProductRepository extends NoDeleteRepository<Product, Long>, Pr
     @Query("select p from Product p join fetch p.store s where p.id = :id and s.owner.id = :ownerId")
     Optional<Product> findByIdAndStoreOwnerId(@Param("id") Long id, @Param("ownerId") Long ownerId);
 
+    /** Live products of the store that have a video, except {@code exceptId} (#117: the video quota of a store). */
+    @Query("""
+            select count(p) from Product p
+            where p.store.id = :storeId and p.videoKey is not null and p.deletedAt is null and p.id <> :exceptId
+            """)
+    long countVideosOfStore(@Param("storeId") Long storeId, @Param("exceptId") Long exceptId);
+
     @Query("select count(p) > 0 from Product p where p.id = :id and p.store.owner.id = :ownerId")
     boolean existsByIdAndStoreOwnerId(@Param("id") Long id, @Param("ownerId") Long ownerId);
 

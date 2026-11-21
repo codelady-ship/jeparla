@@ -16,6 +16,7 @@ import type {
   StoneType,
   StoreServiceKind,
 } from "./api";
+import type { MerchantVideo } from "@/lib/merchant/video";
 import type { ContactQuestion } from "@/lib/whatsapp";
 
 /** Seller check (PLAN 5.9): only an APPROVED seller can send products to review. */
@@ -200,4 +201,10 @@ export type ProductInput = {
   collectionIds?: number[];
 };
 
-export type MerchantProduct = { id: number; status: ProductStatus; input: ProductInput };
+export type MerchantProduct = {
+  id: number;
+  status: ProductStatus;
+  input: ProductInput;
+  /** The short video (#117); it is uploaded on its own, not with the form. */
+  video?: MerchantVideo | null;
+};

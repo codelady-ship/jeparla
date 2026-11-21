@@ -15,9 +15,11 @@ import az.jeparla.merchant.dto.MerchantImageDto;
 import az.jeparla.merchant.dto.MerchantProductDto;
 import az.jeparla.merchant.dto.MerchantProductRowDto;
 import az.jeparla.merchant.dto.MerchantVariantDto;
+import az.jeparla.merchant.dto.MerchantVideoDto;
 import az.jeparla.merchant.dto.ProductRequest;
 import az.jeparla.merchant.dto.StatusChangeRequest;
 import az.jeparla.merchant.dto.VariantRequest;
+import az.jeparla.merchant.dto.VideoAttachRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,12 +50,15 @@ public class MerchantProductController {
 
     private final MerchantProductService products;
     private final MerchantImageService images;
+    private final MerchantVideoService videos;
     private final RateLimitService rateLimits;
 
     public MerchantProductController(MerchantProductService products, MerchantImageService images,
+            MerchantVideoService videos,
             RateLimitService rateLimits) {
         this.products = products;
         this.images = images;
+        this.videos = videos;
         this.rateLimits = rateLimits;
     }
 
@@ -186,6 +191,35 @@ public class MerchantProductController {
     @Operation(summary = "Remove the hallmark or label photo (404 when there is none)")
     public ResponseEntity<Void> removeEvidence(@PathVariable long id, @PathVariable EvidenceKind kind) {
         images.removeEvidence(id, kind);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ------------------------------------------------------------------ short video (#117)
+
+    @PostMapping("/{id}/video/uploads")
+    @Operation(summary = "Presigned upload URL for the short video (MP4 with H.264 or WebM, up to 15 s and 8 MB)",
+            description = "Same rate limits as a photo upload; 409 merchant.video_quota when the store's other"
+                    + " products hold all its videos, 409 merchant.video_upload_limit with 3 open uploads")
+    public ImageUploadDto uploadVideo(@PathVariable long id, @Valid @RequestBody ImageUploadRequest request) {
+        rateLimits.check(RateLimitPolicy.IMAGE_UPLOAD_ACCOUNT, "user:" + CurrentUser.id());
+        return videos.upload(id, request);
+    }
+
+    @PutMapping("/{id}/video")
+    @Operation(summary = "Set the video from an upload after checking the stored file (replaces the previous one)",
+            description = "201 set; 200 when the key is already the video. 400 merchant.video_type for a file that"
+                    + " is not MP4 (H.264) or WebM, merchant.video_duration over 15 s or without a readable"
+                    + " duration, merchant.video_size over 8 MB. An APPROVED product goes back to review.")
+    public ResponseEntity<MerchantVideoDto> attachVideo(@PathVariable long id,
+            @Valid @RequestBody VideoAttachRequest request) {
+        Created<MerchantVideoDto> result = videos.attach(id, request);
+        return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(result.body());
+    }
+
+    @DeleteMapping("/{id}/video")
+    @Operation(summary = "Remove the video (404 when there is none)")
+    public ResponseEntity<Void> removeVideo(@PathVariable long id) {
+        videos.remove(id);
         return ResponseEntity.noContent().build();
     }
 }
