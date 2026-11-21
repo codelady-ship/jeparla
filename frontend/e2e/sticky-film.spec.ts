@@ -15,29 +15,43 @@ for (const id of SECTIONS) {
     const stage = section.locator("[data-sticky-film-stage]");
     const heading = page.locator(`#${id}`);
 
-    const geometry = await section.evaluate((el) => {
-      const box = el.getBoundingClientRect();
-      return { top: box.top + window.scrollY, height: box.height, viewport: window.innerHeight };
-    });
+    // The sections use content-visibility (#286): until one is near the viewport it has
+    // its placeholder height, so bring it in first and measure again before every step.
+    await section.scrollIntoViewIfNeeded();
+    const settle = () =>
+      page.evaluate(
+        () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+      );
+    const measure = () =>
+      section.evaluate((el) => {
+        const box = el.getBoundingClientRect();
+        return { top: box.top + window.scrollY, height: box.height, viewport: window.innerHeight };
+      });
+    await settle();
     const headerHeight = await page
       .locator("header")
       .first()
       .evaluate((el) => el.getBoundingClientRect().height);
     // The pinned stretch: from the section top at the viewport top until the section
     // bottom reaches the viewport bottom (the last screen is the next section covering it).
-    const travel = geometry.height - geometry.viewport;
-    expect(travel, "the section is taller than one screen").toBeGreaterThan(0);
+    let geometry = await measure();
+    expect(
+      geometry.height - geometry.viewport,
+      "the section is taller than one screen",
+    ).toBeGreaterThan(0);
 
     const headingTops: number[] = [];
     for (const share of [0, 0.3, 0.6, 1]) {
-      await page.evaluate(
-        (y) => window.scrollTo({ top: y, behavior: "instant" }),
-        Math.round(geometry.top + travel * share),
-      );
-      // Two frames: the content-visibility pass and the sticky layout settle.
-      await page.evaluate(
-        () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
-      );
+      // Twice: sections above may take their real height once they come near.
+      for (let pass = 0; pass < 2; pass++) {
+        geometry = await measure();
+        const travel = geometry.height - geometry.viewport;
+        await page.evaluate(
+          (y) => window.scrollTo({ top: y, behavior: "instant" }),
+          Math.round(geometry.top + travel * share),
+        );
+        await settle();
+      }
       const stageTop = await stage.evaluate((el) => el.getBoundingClientRect().top);
       expect(stageTop, `film top at ${share} of the stretch`).toBeGreaterThanOrEqual(-1);
       expect(stageTop, `film top at ${share} of the stretch`).toBeLessThanOrEqual(headerHeight + 1);
