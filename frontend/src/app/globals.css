@@ -864,78 +864,123 @@
   color: var(--card-foreground);
 }
 
-/* Full-bleed film bands (<VideoBand>): nearly a screen tall, copy bottom left. */
-.video-band {
-  min-height: 80svh;
+/* Film sections with the film pinned behind the content (<StickyVideoSection>, #292).
+   The stage is one screen tall and sticks to the top of the viewport for the whole
+   section (the sticky header lies over its top edge and hides on the way down). The
+   content layer is pulled up by one stage height, so it starts at the same top and
+   scrolls over the film: first the copy, bottom left, as one screen; then the cards
+   on their own surfaces. The content ends with one empty screen that the section gives
+   back (negative margin), so the next section scrolls up over the still pinned film and
+   covers it exactly when the pin lets go. CSS only, no scroll listener.
+   lvh: on phones the stage also fills the strip the browser bar frees when it hides;
+   the copy screen keeps to svh so the copy is on screen while the bar is shown. */
+.sticky-film {
+  --film-h: 100lvh;
+  position: relative;
+  margin-bottom: calc(-1 * var(--film-h));
+  background: var(--scene-deep);
 }
-@media (min-width: 48rem) {
-  .video-band {
-    min-height: 90svh;
+/* The section after a film section covers it, so it paints above the pinned stage. */
+:where(.sticky-film) + * {
+  position: relative;
+}
+.sticky-film-stage {
+  position: sticky;
+  top: 0;
+  height: var(--film-h);
+  overflow: hidden;
+  isolation: isolate;
+}
+.sticky-film-scrim,
+.sticky-film-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sticky-film-content {
+  position: relative;
+  margin-top: calc(-1 * var(--film-h));
+  padding-bottom: var(--film-h);
+  /* The empty parts of the layer let clicks through to the pause button on the stage. */
+  pointer-events: none;
+  :is(h2, h3, p, a, li) {
+    pointer-events: auto;
   }
 }
-/* The film opens as the band scrolls in (#287): it starts as a slightly smaller window
-   on the page ground and widens to full bleed by the time the whole band is in view.
-   Scrubbed by the scroll where CSS scroll-driven animations exist (linear: the film
-   follows the thumb), otherwise a one-off widening when the band enters. Transform only,
-   on the film and its scrim; the copy rises in on its own (<Reveal from="group">). */
-@keyframes band-open {
+/* The copy screen: copy bottom left, clear of the pause button (bottom right). */
+.sticky-film-lead {
+  display: flex;
+  align-items: flex-end;
+  min-height: 100svh;
+  padding-block: 6rem 5rem;
+}
+/* Deep green over the whole frame, since the copy travels the full height: 66% or more
+   everywhere on phones (copy across the width), 84% or more behind the text column on
+   wider screens, thinning out to the right where the footage's subject stays clear.
+   Ivory copy keeps AA even over a white frame (about 6:1 at 66%). */
+.sticky-film-scrim {
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--scene-deep) 92%, transparent) 0%,
+    color-mix(in oklab, var(--scene-deep) 76%, transparent) 40%,
+    color-mix(in oklab, var(--scene-deep) 66%, transparent) 100%
+  );
+}
+@media (min-width: 48rem) {
+  .sticky-film-scrim {
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--scene-deep) 92%, transparent) 0%,
+      color-mix(in oklab, var(--scene-deep) 84%, transparent) 42%,
+      color-mix(in oklab, var(--scene-deep) 40%, transparent) 70%,
+      color-mix(in oklab, var(--scene-deep) 12%, transparent) 100%
+    );
+  }
+}
+/* Extra depth once the content passes over the film (motion only; the scrim alone
+   carries the contrast). */
+.sticky-film-shade {
+  background: color-mix(in oklab, var(--scene-deep) 40%, transparent);
+  opacity: 0;
+}
+/* Scroll-linked where the browser has CSS scroll-driven animations (linear: it follows
+   the thumb): the film settles from 106% while the section comes in, the shade deepens
+   over the first third of the pinned stretch. Elsewhere a one-off settle when the section
+   enters (<Reveal from="film">) and no shade. Transform and opacity only. */
+@keyframes film-settle {
   from {
-    transform: scale(var(--band-from));
+    transform: scale(1.06);
+  }
+}
+@keyframes film-shade {
+  to {
+    opacity: 1;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  :root[data-motion] .video-band {
-    --band-from: 0.94;
-    @media (min-width: 48rem) {
-      --band-from: 0.88;
-    }
-  }
   @supports (animation-timeline: view()) {
-    :root[data-motion] .video-band {
-      view-timeline: --band block;
-      > :is(.ambient-video, .band-scrim) {
-        animation: band-open linear both;
-        animation-timeline: --band;
+    :root[data-motion] .sticky-film {
+      view-timeline: --film block;
+      .sticky-film-stage > .ambient-video {
+        animation: film-settle linear both;
+        animation-timeline: --film;
         animation-range: entry 0% entry 100%;
+      }
+      .sticky-film-shade {
+        animation: film-shade linear both;
+        animation-timeline: --film;
+        animation-range: contain 0% contain 35%;
       }
     }
   }
   @supports not (animation-timeline: view()) {
-    :root[data-motion] .video-band[data-reveal] > :is(.ambient-video, .band-scrim) {
-      transform: scale(var(--band-from));
+    :root[data-motion] .sticky-film[data-reveal] .sticky-film-stage > .ambient-video {
+      transform: scale(1.06);
       transition: transform var(--duration-zoom) var(--ease-luxe);
     }
-    :root[data-motion] .video-band[data-reveal="shown"] > :is(.ambient-video, .band-scrim) {
+    :root[data-motion] .sticky-film[data-reveal="shown"] .sticky-film-stage > .ambient-video {
       transform: none;
     }
-  }
-}
-/* Deep green rising from the bottom, where the copy sits: 80% or more behind every
-   line of copy, so ivory keeps AA over any frame; the top of the frame stays clear. */
-.band-scrim {
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    color-mix(in oklab, var(--scene-deep) 94%, transparent) 0%,
-    color-mix(in oklab, var(--scene-deep) 86%, transparent) 38%,
-    color-mix(in oklab, var(--scene-deep) 55%, transparent) 62%,
-    color-mix(in oklab, var(--scene-deep) 10%, transparent) 100%
-  );
-}
-@media (min-width: 48rem) {
-  .band-scrim {
-    background:
-      linear-gradient(
-        to right,
-        color-mix(in oklab, var(--scene-deep) 70%, transparent) 0%,
-        transparent 65%
-      ),
-      linear-gradient(
-        to top,
-        color-mix(in oklab, var(--scene-deep) 92%, transparent) 0%,
-        color-mix(in oklab, var(--scene-deep) 70%, transparent) 40%,
-        transparent 85%
-      );
   }
 }
 /* Pause / play for a band's film (WCAG 2.2.2), bottom right, above the scrim. */

@@ -50,7 +50,8 @@ export function SiteFooter() {
 
   return (
     // While the install card is open, the page ends with room for it (set by InstallPrompt).
-    <footer className="mt-auto border-t bg-surface pb-[var(--install-card-space,0px)]">
+    // relative: the footer covers a film pinned at the end of the page (#292), like the section after a film.
+    <footer className="relative mt-auto border-t bg-surface pb-[var(--install-card-space,0px)]">
       <div className="container-page grid gap-10 py-12 md:grid-cols-[1.5fr_repeat(4,1fr)]">
         <div className="flex flex-col items-start gap-3">
           <p translate="no">
