@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { WORDMARK_RATIO, wordmarkOnGreenDataUrl } from "@/components/brand/logo-svg";
 import { routing } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import { BRAND_OG, imageAsDataUrl } from "@/lib/seo/og-image";
@@ -44,9 +45,13 @@ export async function GET(request: Request, ctx: RouteContext<"/api/og/store/[sl
           color: C.cream,
         }}
       >
-        <div style={{ display: "flex", fontSize: 30, color: C.gold, letterSpacing: 4 }}>
-          JEPARLA
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse draws plain img only */}
+        <img
+          src={wordmarkOnGreenDataUrl()}
+          alt="Jeparla"
+          height={52}
+          width={Math.round(52 * WORDMARK_RATIO)}
+        />
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "flex", fontSize: 68, lineHeight: 1.1 }}>{preview.name}</div>
           <div style={{ display: "flex", fontSize: 32, opacity: 0.85 }}>
