@@ -360,6 +360,14 @@ export type SearchResult = {
 /** GET /api/v1/search/image/status (#163). */
 export type ImageSearchStatus = { configured: boolean; maxBytes: number };
 
+/** GET /api/search/image (site route): the status plus the result filter options (#163). */
+export type ImageSearchPanelStatus = ImageSearchStatus & {
+  /** Top-level categories (subcategories are included by the filter). */
+  categories?: Pick<Category, "slug" | "name">[];
+  /** Fineness values in parts per thousand, e.g. 585. */
+  finenesses?: number[];
+};
+
 /** Error codes of POST /api/v1/search/image. */
 export const IMAGE_SEARCH_ERRORS = [
   "search.image_not_configured",

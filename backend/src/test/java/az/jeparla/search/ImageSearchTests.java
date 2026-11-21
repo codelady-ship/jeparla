@@ -65,6 +65,27 @@ class ImageSearchTests {
     }
 
     @Test
+    void filtersNarrowTheSimilarPoolAndKeepItsOrder() {
+        ImageEmbeddings embeddings = mock(ImageEmbeddings.class);
+        when(embeddings.candidates("stand-in@1")).thenReturn(List.of(
+                new ImageEmbeddings.Candidate(1, new float[] {0.6f, 0.8f}),
+                new ImageEmbeddings.Candidate(2, new float[] {1, 0.05f}),
+                new ImageEmbeddings.Candidate(3, new float[] {-1, 0})));
+        ProductCatalogService catalog = mock(ProductCatalogService.class);
+        ImageSearchService service = new ImageSearchService(providers("stand-in", new StandIn()), embeddings,
+                catalog);
+        az.jeparla.product.dto.ProductQuery gold = new az.jeparla.search.dto.ImageSearchFilters(null,
+                az.jeparla.product.Metal.GOLD, null, null, null, null, null).toQuery();
+
+        service.search(PNG, gold);
+
+        // Dissimilar product 3 is never offered to the filter; the similar ones go in similarity order.
+        org.mockito.Mockito.verify(catalog).byIdsMatching(List.of(2L, 1L), gold, ImageSearchService.RESULTS);
+        assertThat(new az.jeparla.search.dto.ImageSearchFilters(null, null, List.of(), null, null, List.of(), "")
+                .toQuery()).isNull();
+    }
+
+    @Test
     void anUnknownProviderStopsTheStartup() {
         assertThatThrownBy(() -> providers("clip")).isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("clip");

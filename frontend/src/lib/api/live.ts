@@ -72,7 +72,7 @@ export const liveApi: JeparlaApi = {
   // Search by photo (#163): never cached, the photo goes straight to the backend, which
   // counts its limit per visitor (#222).
   imageSearchStatus: () => apiFetch("/search/image/status"),
-  searchByImage: async (image) => postImageSearch(image, await visitorHeaders()),
+  searchByImage: async (image, filters) => postImageSearch(image, await visitorHeaders(), filters),
   latestMetalPrices: () => cached("/metal-prices/latest", undefined, "prices"),
   metalPriceHistory: (metal, days = 30) =>
     cached("/metal-prices/history", { metal, days }, "prices"),

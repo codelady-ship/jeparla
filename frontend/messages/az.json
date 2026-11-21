@@ -828,6 +828,14 @@
       "empty": "Oxşar model tapılmadı. Başqa bucaqdan çəkilmiş şəkil yoxlayın.",
       "notConfigured": "Şəkillə axtarış hələ qoşulmayıb. Hələlik mətnlə axtarın.",
       "aiBadge": "AI ilə yaradılıb",
+      "crop": {
+        "title": "Əşyanı çərçivəyə alın",
+        "hint": "Çərçivəni sürüşdürün və küncündən böyüdüb-kiçildin. Klaviatura: oxlar yerini, Shift və oxlar ölçüsünü dəyişir.",
+        "frame": "Axtarılacaq hissənin çərçivəsi",
+        "search": "Bu hissə ilə axtar",
+        "whole": "Bütün şəkil"
+      },
+      "filtersEmpty": "Bu filtrlərlə oxşar model tapılmadı. Filtrləri təmizləyin.",
       "errors": {
         "size": "Şəkil çox böyükdür və ya boşdur.",
         "type": "Şəkil oxunmadı: JPEG, PNG və ya WebP seçin.",
