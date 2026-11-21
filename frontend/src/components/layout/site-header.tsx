@@ -46,7 +46,7 @@ export function SiteHeader() {
         >
           <Wordmark />
         </Link>
-        <nav aria-label={t("Nav.mainNav")} className="ml-6 hidden md:block xl:ml-8">
+        <nav aria-label={t("Nav.mainNav")} className="ml-6 hidden lg:block xl:ml-8">
           <ul className="flex items-center gap-5 text-sm font-medium xl:gap-6">
             {items.map((item) => (
               <li key={item.href}>
@@ -57,7 +57,7 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
-            {/* Buyers and sellers menus: from lg up; below that they are in the menu sheet. */}
+            {/* The whole bar shows from lg up; below that everything is in the menu sheet. */}
             {groups.map((g) => (
               <HeaderMenu key={g.key} label={g.title} links={g.links} />
             ))}

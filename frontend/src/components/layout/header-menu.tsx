@@ -30,7 +30,7 @@ export function HeaderMenu({ label, links }: Props) {
 
   return (
     <li
-      className="relative hidden lg:block"
+      className="relative"
       onPointerEnter={(e) => {
         if (e.pointerType !== "mouse") return;
         hovering.current = true;
