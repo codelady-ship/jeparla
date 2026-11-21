@@ -104,6 +104,7 @@ export function ProfileForm({
           id="pr-name"
           label={t("fields.name")}
           autoComplete="organization"
+          placeholder={ts("examples.storeName")}
           value={form.name}
           onChange={(e) => set({ name: e.target.value })}
           error={err(errors.name)}
@@ -132,6 +133,7 @@ export function ProfileForm({
           id="pr-address"
           label={t("fields.address")}
           autoComplete="street-address"
+          placeholder={ts("examples.address")}
           value={form.address}
           onChange={(e) => set({ address: e.target.value })}
           error={err(errors.address)}

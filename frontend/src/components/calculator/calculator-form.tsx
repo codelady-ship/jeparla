@@ -23,6 +23,7 @@ export type CalculatorLabels = {
   weightHint: string;
   metal: string;
   fineness: string;
+  finenessHint: string;
   submit: string;
   result: string;
   prompt: string;
@@ -147,6 +148,7 @@ export function CalculatorForm({
             name="fineness"
             value={sel.fineness}
             onChange={(e) => update({ ...sel, fineness: Number(e.target.value) })}
+            aria-describedby="calc-fineness-hint"
             className={field}
           >
             {option.finenesses.map((f) => (
@@ -155,6 +157,9 @@ export function CalculatorForm({
               </option>
             ))}
           </select>
+          <p id="calc-fineness-hint" className="text-xs text-muted-foreground">
+            {labels.finenessHint}
+          </p>
         </div>
 
         <noscript>

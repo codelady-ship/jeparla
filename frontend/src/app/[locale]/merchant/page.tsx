@@ -11,6 +11,7 @@ import {
   SellerBanner,
   StatusBadge,
 } from "@/components/merchant/merchant-shell";
+import { SellerGuide } from "@/components/merchant/seller-guide";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -51,10 +52,14 @@ async function Dashboard() {
           <h1 className="text-3xl">{t("title")}</h1>
           <p className="text-muted-foreground">{t("intro", { store: store.name })}</p>
         </div>
-        <Link href="/merchant/products/new" className={buttonVariants({ size: "lg" })}>
-          <Plus aria-hidden />
-          {t("newProduct")}
-        </Link>
+        {/* One primary button per screen (#176): with no products yet, the empty state below
+            carries "New product", so the header does not repeat it. */}
+        {rows.length > 0 && (
+          <Link href="/merchant/products/new" className={buttonVariants({ size: "lg" })}>
+            <Plus aria-hidden />
+            {t("newProduct")}
+          </Link>
+        )}
       </div>
 
       <SellerBanner status={store.sellerStatus} />
@@ -74,6 +79,7 @@ async function Dashboard() {
         </MerchantIntl>
       )}
       <MerchantIntl>
+        <SellerGuide />
         <DraftResume />
       </MerchantIntl>
 

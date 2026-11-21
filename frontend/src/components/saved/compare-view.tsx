@@ -160,7 +160,9 @@ export function CompareView() {
           {t("clearAll")}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">{t("compareNote")}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("compareNote")} {t("compareTerms")}
+      </p>
 
       <div
         className="overflow-x-auto rounded-lg border"

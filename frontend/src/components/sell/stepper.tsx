@@ -47,7 +47,9 @@ export function Stepper({
             <span
               className={cn(
                 "truncate text-sm",
-                isCurrent ? "font-semibold" : "hidden sm:inline",
+                // Phones show only the current step's title; the others keep theirs for
+                // screen readers, so a finished step's button still has a name (#176, axe).
+                isCurrent ? "font-semibold" : "max-sm:sr-only",
                 isDone && "text-success",
                 !reachable && "text-muted-foreground",
               )}
@@ -71,7 +73,7 @@ export function Stepper({
                 <button
                   type="button"
                   onClick={() => onSelect(n)}
-                  className="flex min-w-0 items-center gap-2 rounded-full pr-2 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="touch-target relative flex min-w-0 items-center gap-2 rounded-full pr-2 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   {badge}
                   {text}

@@ -201,6 +201,7 @@
     "metal": "Metal",
     "any": "Any",
     "fineness": "Fineness",
+    "finenessHint": "Fineness is the share of pure metal: 585 means 58.5% gold.",
     "price": "Price",
     "weight": "Weight",
     "min": "Min",
@@ -210,6 +211,7 @@
     "diamond": "Diamond",
     "shape": "Shape",
     "carat": "Carat",
+    "caratHint": "the stone's weight, 1 carat is 0.2 g",
     "color": "Color",
     "clarity": "Clarity",
     "shapes": {
@@ -286,7 +288,7 @@
       "position": "Video, {n} of {total}",
       "loading": "Loading the video"
     },
-    "chooseVariant": "Choose a variant",
+    "chooseVariant": "Choose size and weight",
     "size": "Size {size}",
     "sku": "Code",
     "priceUpdated": "Price updated:",
@@ -433,7 +435,7 @@
       "perGram": "Price of this piece per gram",
       "gramToday": "1 g of {fineness} metal today",
       "note": "This is an estimate; the store confirms the final price.",
-      "variant": "Variant: {label}",
+      "variant": "Option: {label}",
       "labor": "Workmanship",
       "markup": "Store share",
       "markupPercent": "{percent}%"
@@ -478,6 +480,7 @@
     "count": "{count, plural, =0 {No stores} one {# store} other {# stores}}",
     "productCount": "{count, plural, =0 {No products} one {# product} other {# products}}",
     "emptyTitle": "No stores found",
+    "emptyText": "No store matches this name or city. Shorten the name, choose another city, or see all stores.",
     "showAll": "All stores",
     "sellerVerified": "Seller verified",
     "visit": "Visit",
@@ -519,7 +522,7 @@
       },
       "products": {
         "label": "Active products",
-        "how": "Products visible in the catalog now: approved, not deleted, with at least one live variant."
+        "how": "Products visible in the catalog now: approved, not deleted and on sale."
       },
       "updated": {
         "label": "Catalog updated",
@@ -821,8 +824,8 @@
     "products": "Products",
     "seeAll": "All results for \"{query}\"",
     "loading": "Searching",
-    "empty": "Nothing found. Try another word.",
-    "error": "Search failed. Please try again.",
+    "empty": "Nothing found. Try a shorter or different word, for example \"ring\".",
+    "error": "Search did not work. Check your internet connection and type the word again.",
     "results": "{count} results",
     "photo": {
       "open": "Search by photo",
@@ -881,9 +884,9 @@
     "favoritesIntro": "Products you saved with the heart button.",
     "compareTitle": "Compare",
     "compareDescription": "Compare 2–4 pieces of jewelry by weight, fineness, price, stones and store.",
-    "compareIntro": "Comparison is per variant: weight, fineness and price belong to the variant you picked.",
+    "compareIntro": "Comparison uses the size and weight you picked: weight, fineness and price belong to it.",
     "loading": "Loading",
-    "error": "Could not load the list.",
+    "error": "Could not load the list. Check your internet connection and press \"Try again\".",
     "retry": "Try again",
     "browse": "Browse the catalog",
     "clearAll": "Clear all",
@@ -896,6 +899,7 @@
     "compareCount": "{count} of {max} products",
     "compareAddMore": "Add at least one more product to compare.",
     "compareNote": "Values that differ are shown in gold.",
+    "compareTerms": "Fineness is the share of pure metal (585 = 58.5%); ct is the stone's weight (1 carat = 0.2 g).",
     "compareTable": "Product comparison",
     "sku": "Code {sku}",
     "remove": "Remove",
@@ -1023,19 +1027,19 @@
     "steps": {
       "1": {
         "title": "Account",
-        "intro": "So we can reach you and you can sign in."
+        "intro": "Type your name and mobile number and choose a password: you will sign in with them."
       },
       "2": {
         "title": "Store",
-        "intro": "What buyers will see."
+        "intro": "Type the store name, WhatsApp number and address: buyers will see them."
       },
       "3": {
         "title": "Documents",
-        "intro": "For the \"Jeparla Verified\" check."
+        "intro": "If you sell gold or silver, upload a photo or PDF of a store document; you can also send it later."
       },
       "4": {
         "title": "First product",
-        "intro": "Optional: add it now or later from your dashboard."
+        "intro": "Type the name, fineness, weight and price of your first product, or skip this step and add it later."
       }
     },
     "fields": {
@@ -1060,7 +1064,14 @@
       "phone": "For example 050 123 45 67. SMS confirmation comes later.",
       "whatsapp": "Buyers will message this number.",
       "social": "@name or a link starting with https://.",
-      "taxId": "10 digits."
+      "taxId": "10 digits.",
+      "fineness": "The number stamped on the piece, for example 585."
+    },
+    "examples": {
+      "name": "For example: Aysel Mammadova",
+      "storeName": "For example: Aysel Jewelry",
+      "address": "For example: 12 Nizami Street",
+      "productName": "For example: Gold engagement ring"
     },
     "legal": {
       "COMPANY": "Company (LLC etc.)",
@@ -1287,12 +1298,33 @@
       "byQuestion": "WhatsApp questions",
       "byQuestionNote": "The ready question buyers picked before opening WhatsApp in the last 30 days. Nothing about the buyer is stored."
     },
+    "guide": {
+      "title": "Get your store ready in 3 steps",
+      "intro": "A short guide: once you close it, it will not be shown again.",
+      "stepOf": "Step {step} of {total}",
+      "profile": {
+        "title": "Fill in your store details",
+        "text": "Add opening hours, the address and your place on the map: this is how buyers find you.",
+        "action": "Open profile"
+      },
+      "product": {
+        "title": "Add your first product",
+        "text": "Add photos, a name, weight and price; the product appears in the catalog after review.",
+        "action": "Add a product"
+      },
+      "share": {
+        "title": "Share your store link",
+        "text": "Share the link on Instagram and WhatsApp so customers see your catalog.",
+        "action": "Open sharing page"
+      },
+      "dismiss": "Got it, close"
+    },
     "products": {
       "title": "Products",
       "search": "Search by product name",
       "statusLabel": "Status",
       "count": "{count, plural, one {# product} other {# products}}",
-      "emptyFiltered": "No products match this search.",
+      "emptyFiltered": "No products match this search. Shorten the search word or choose another status.",
       "clearFilters": "Clear filters",
       "colProduct": "Product",
       "colStatus": "Status",
@@ -1816,7 +1848,7 @@
     "notifications": {
       "title": "Notifications",
       "intro": "Decisions about your store, products and documents appear here.",
-      "empty": "No notifications.",
+      "empty": "No notifications. When a product or document is checked, the result will appear here.",
       "readAll": "Mark all as read",
       "unread": "New",
       "open": "Details"
@@ -2684,7 +2716,7 @@
     "perGram": "1 gram",
     "note": "Prices are estimates based on the CBAR daily metal rate; the store confirms the final price.",
     "error": "Metal prices could not be loaded right now. Check again a little later.",
-    "empty": "Today's price has not arrived yet.",
+    "empty": "Today's price has not arrived yet. Check again a little later.",
     "calculatorLink": "Calculate the metal value of a piece",
     "adminSource": "A Jeparla administrator corrected this price by hand; the next CBAR bulletin replaces it.",
     "allPrices": "All prices and how they are calculated"
@@ -2726,7 +2758,7 @@
     "share": "Share",
     "copy": "Copy link",
     "copied": "Link copied",
-    "copyFailed": "Could not copy the link"
+    "copyFailed": "Could not copy the link. Copy it from the address bar instead."
   },
   "Calculator": {
     "title": "Gold and silver calculator",
@@ -2737,6 +2769,7 @@
     "weightHint": "For example 4.2 or 4,2; at most 3 decimals.",
     "metal": "Metal",
     "fineness": "Fineness",
+    "finenessHint": "The fineness is stamped on the piece, for example 585 or 750.",
     "submit": "Calculate",
     "resultLabel": "Metal value",
     "prompt": "Enter the weight to see the metal value.",
@@ -2955,7 +2988,7 @@
       },
       "budget": {
         "q": "How do I choose by budget?",
-        "a": "The budget buttons above filter by the lowest variant price, in Azerbaijani manat. Metal-linked prices follow the Central Bank rate every day."
+        "a": "The budget buttons above filter by a product's lowest price, in Azerbaijani manat. Metal-linked prices follow the Central Bank rate every day."
       },
       "contact": {
         "q": "How do I buy a piece I like?",

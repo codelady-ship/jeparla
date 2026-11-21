@@ -43,7 +43,12 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
           ),
         ]}
       />
-      <FilterForm action="/stores" className="flex flex-col gap-3 sm:flex-row sm:items-end">
+      {/* Choosing a city lists its stores at once: one step fewer than "choose, then Search" (#176). */}
+      <FilterForm
+        action="/stores"
+        auto="select"
+        className="flex flex-col gap-3 sm:flex-row sm:items-end"
+      >
         {near && <input type="hidden" name="near" value={near} />}
         <label className="flex flex-1 flex-col gap-1 text-sm">
           {t("searchLabel")}
@@ -91,7 +96,8 @@ export async function StoreList({ searchParams }: { searchParams: Promise<Search
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-16 text-center">
           <Store aria-hidden className="size-8 text-muted-foreground" />
           <h2 className="text-xl">{t("emptyTitle")}</h2>
-          <Link href="/stores" className="link-underline text-sm font-medium">
+          <p className="max-w-md text-sm text-muted-foreground">{t("emptyText")}</p>
+          <Link href="/stores" className="touch-target relative link-underline text-sm font-medium">
             {t("showAll")}
           </Link>
         </div>
