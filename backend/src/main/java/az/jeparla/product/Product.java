@@ -121,6 +121,28 @@ public class Product extends TimestampedEntity {
     @Column(name = "key_features")
     private String keyFeatures;
 
+    /** The short video (#117, V64): all seven columns are set or none (CHECK {@code products_video_all_or_none}). */
+    @Column(name = "video_key", unique = true)
+    private String videoKey;
+
+    @Column(name = "video_content_type")
+    private String videoContentType;
+
+    @Column(name = "video_size_bytes")
+    private Long videoSizeBytes;
+
+    @Column(name = "video_duration_ms")
+    private Integer videoDurationMs;
+
+    @Column(name = "video_width")
+    private Integer videoWidth;
+
+    @Column(name = "video_height")
+    private Integer videoHeight;
+
+    @Column(name = "video_ai_generated")
+    private Boolean videoAiGenerated;
+
     @Column(name = "hidden_by_seller", nullable = false)
     private boolean hiddenBySeller;
 
@@ -333,6 +355,35 @@ public class Product extends TimestampedEntity {
 
     public Optional<ProductEvidencePhoto> evidencePhoto(EvidenceKind kind) {
         return evidencePhotos.stream().filter(photo -> photo.getKind() == kind).findFirst();
+    }
+
+    /** The short video of the product (#117), or empty. */
+    public Optional<ProductVideo> getVideo() {
+        return videoKey == null ? Optional.empty()
+                : Optional.of(new ProductVideo(videoKey, videoContentType, videoSizeBytes, videoDurationMs, videoWidth,
+                        videoHeight, videoAiGenerated));
+    }
+
+    /** Sets the one video of the product, replacing the one it had. */
+    public void setVideo(ProductVideo video) {
+        Objects.requireNonNull(video, "video");
+        this.videoKey = video.storageKey();
+        this.videoContentType = video.contentType();
+        this.videoSizeBytes = video.sizeBytes();
+        this.videoDurationMs = video.durationMs();
+        this.videoWidth = video.width();
+        this.videoHeight = video.height();
+        this.videoAiGenerated = video.aiGenerated();
+    }
+
+    public void removeVideo() {
+        this.videoKey = null;
+        this.videoContentType = null;
+        this.videoSizeBytes = null;
+        this.videoDurationMs = null;
+        this.videoWidth = null;
+        this.videoHeight = null;
+        this.videoAiGenerated = null;
     }
 
     public void addVariant(ProductVariant variant) {

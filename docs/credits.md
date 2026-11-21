@@ -39,6 +39,7 @@ yazı yoxdur.
 |---|---|---|---|
 | `atelier/*` (8 san. dövrə, səssiz) | Ana səhifə: "Mağazanız var?" tam enli video zolağı | Tima Miroshnichenko | https://www.pexels.com/video/close-up-shot-of-a-person-making-jewelry-6262806/ |
 | `ring/*` (8 san. dövrə, səssiz) | Ana səhifə: "Hər daşa yaxından baxın" tam enli video zolağı (yoxlamalar) | Tima Miroshnichenko | https://www.pexels.com/video/video-of-a-peron-holding-a-ring-6263177/ |
+| `../demo/ring-video.mp4` (`ring/mobile.mp4` faylının surəti) | Nümunə məhsul 2-nin qısa videosu (#117): məhsul səhifəsinin qalereyası, yalnız alıcı oynat düyməsini basanda yüklənir | Tima Miroshnichenko | https://www.pexels.com/video/video-of-a-peron-holding-a-ring-6263177/ |
 | `editorial/hands-*.avif` (videodan kadr) | Ana səhifə: yeni məhsullar bölməsinin yanında, əldə üzüklər və bilərziklər | RDNE Stock project | https://www.pexels.com/video/a-hands-full-of-jewelries-8183385/ |
 | `showcase/*` (8 san. dövrə, səssiz) | Ana səhifə: kateqoriyalar zolağı, siyahının yanında | Lara Jameson | https://www.pexels.com/video/jewelries-on-the-display-window-8849053/ |
 | `vitrine/*` (8 san. dövrə, səssiz, yavaşladılmış) | Ana səhifə: mağazalar banneri; `/stores` başlığı | Sururi Ballıdağ | https://www.pexels.com/video/elegant-display-of-gold-jewelry-in-store-36353836/ |

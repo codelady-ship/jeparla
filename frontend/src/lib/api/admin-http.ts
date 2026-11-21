@@ -61,6 +61,8 @@ type BackendProduct = {
   priceFrom: Money | null;
   finenessLabel: string | null;
   imageUrl: string | null;
+  /** The short video (#117), or null. */
+  videoUrl?: string | null;
 };
 
 export type DocumentStatus = "PENDING" | "VERIFIED" | "REJECTED" | "CHANGES_REQUESTED";
@@ -162,6 +164,7 @@ export const toModerationItem = (p: BackendProduct): ModerationItem => ({
   slug: p.slug,
   name: p.names ?? { az: p.name, en: p.name, ru: p.name },
   imageUrl: p.imageUrl ?? null,
+  videoUrl: p.videoUrl ?? null,
   store: { id: p.storeId, name: p.storeName },
   metal: p.metal ?? null,
   fineness: p.finenessLabel ?? null,
