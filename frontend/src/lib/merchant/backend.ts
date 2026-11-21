@@ -70,6 +70,8 @@ export type BackendProduct = {
   /** Sizes in mm and key features (#174). */
   dimensions?: Dimensions | null;
   keyFeatures?: string[];
+  /** Occasion collections (#115), hidden ones too. */
+  collectionIds?: number[];
 };
 
 export type BackendEvidencePhoto = {
@@ -148,6 +150,7 @@ export function toProductInput(p: BackendProduct, categories: Category[]): Produ
       DIMENSION_KEYS.map((k) => [k, p.dimensions?.[k] ?? ""]),
     ) as DimensionsInput,
     keyFeatures: p.keyFeatures ?? [],
+    collectionIds: p.collectionIds ?? [],
     materialKind: p.materialKind,
     material: p.material ?? "",
     notPreciousConfirmed: p.materialKind === "FASHION" && Boolean(p.notPreciousConfirmedAt),
@@ -205,6 +208,8 @@ export function toProductRequest(
     notPreciousConfirmed: fashion ? input.notPreciousConfirmed === true : null,
     dimensions: dimensionsRequest(input.dimensions),
     keyFeatures: (input.keyFeatures ?? []).map((f) => f.trim()).filter((f) => f !== ""),
+    // null keeps the stored tags (a draft saved before #115 has none).
+    collectionIds: input.collectionIds ? [...new Set(input.collectionIds)] : null,
     variants: input.variants.map((v) => {
       const id = /^v(\d+)$/.exec(v.key) ? Number(v.key.slice(1)) : null;
       const stored = id !== null ? known.get(id) : undefined;

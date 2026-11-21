@@ -68,6 +68,23 @@ export type Category = {
   productCount: number;
 };
 
+/**
+ * An occasion collection (#115): "Nişan", "Toy", "Hədiyyə" ... Sellers tag their products,
+ * the admin names and orders the list. Only shown collections come from the public API.
+ */
+export type OccasionCollection = {
+  id: number;
+  slug: string;
+  name: LocalizedText;
+  /** Listed products tagged with it; 0 = an honest empty page, left out of the sitemap. */
+  productCount: number;
+  /**
+   * Card photo: the main photo of one of its newest listed products, never an AI image (the
+   * first not used by an earlier collection, else the first); null without one.
+   */
+  cover: ProductImage | null;
+};
+
 export type StoreSummary = {
   id: number;
   slug: string;
@@ -301,6 +318,8 @@ export type ProductSort = "relevance" | "newest" | "price_asc" | "price_desc" | 
 export type ProductFilters = {
   q?: string;
   category?: string;
+  /** Occasion collection slug (#115); unknown or hidden: no products. */
+  collection?: string;
   store?: string[];
   metal?: MetalType;
   fineness?: number[];
@@ -340,6 +359,14 @@ export type SearchResult = {
 /** Grouped autocomplete (PLAN 5.3), up to 5 per group. */
 /** GET /api/v1/search/image/status (#163). */
 export type ImageSearchStatus = { configured: boolean; maxBytes: number };
+
+/** GET /api/search/image (site route): the status plus the result filter options (#163). */
+export type ImageSearchPanelStatus = ImageSearchStatus & {
+  /** Top-level categories (subcategories are included by the filter). */
+  categories?: Pick<Category, "slug" | "name">[];
+  /** Fineness values in parts per thousand, e.g. 585. */
+  finenesses?: number[];
+};
 
 /** Error codes of POST /api/v1/search/image. */
 export const IMAGE_SEARCH_ERRORS = [

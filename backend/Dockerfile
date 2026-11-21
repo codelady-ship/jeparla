@@ -24,6 +24,8 @@ FROM eclipse-temurin:21-jre-noble
 WORKDIR /app
 
 RUN groupadd --system jeparla && useradd --system --gid jeparla --no-create-home --shell /usr/sbin/nologin jeparla
+# Local ONNX model files (#119, #163) are downloaded here on first use; a volume keeps them between deploys.
+RUN mkdir -p /var/lib/jeparla/models && chown jeparla:jeparla /var/lib/jeparla/models
 
 COPY --from=build --chown=jeparla:jeparla /workspace/extracted/dependencies/ ./
 COPY --from=build --chown=jeparla:jeparla /workspace/extracted/spring-boot-loader/ ./
@@ -34,7 +36,8 @@ USER jeparla
 
 # Configuration and secrets come only from the environment (see README.md).
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError" \
-    PORT=8080
+    PORT=8080 \
+    JEPARLA_MODELS_DIR=/var/lib/jeparla/models
 EXPOSE 8080
 
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

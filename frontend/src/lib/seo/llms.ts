@@ -1,6 +1,7 @@
 import az from "../../../messages/az.json";
 import en from "../../../messages/en.json";
 import ru from "../../../messages/ru.json";
+import { GUIDES_PATH, guidePath, listGuides } from "@/lib/guides";
 import type { Category, StoreSummary } from "@/types/api";
 
 const FAQ = ["what", "buy", "price", "verified", "sell"] as const;
@@ -17,10 +18,23 @@ function keyPages(site: string, code: string, m: (typeof LANGS)[number][2]): str
     `- [${m.Nav.home}](${site}/${code}): ${m.Metadata.description}`,
     `- [${m.Catalog.title}](${site}/${code}/products): ${m.Catalog.description}`,
     `- [${m.Categories.title}](${site}/${code}/categories): ${m.Categories.description}`,
+    `- [${m.Collections.title}](${site}/${code}/collections): ${m.Collections.description}`,
     `- [${m.Stores.title}](${site}/${code}/stores): ${m.Stores.description}`,
     `- [${m.PricesPage.title}](${site}/${code}/prices): ${m.PricesPage.description}`,
     `- [${m.PricesMonthly.title}](${site}/${code}/prices/monthly): ${m.PricesMonthly.description}`,
+    `- [${m.Guides.title}](${site}/${code}${GUIDES_PATH}): ${m.Guides.description}`,
   ];
+}
+
+/**
+ * The sourced guides of one language (#63). With `answers`, each guide's short answer
+ * follows its link, word for word as on the page.
+ */
+function guideLines(site: string, code: (typeof LANGS)[number][0], answers: boolean): string[] {
+  return listGuides(code).flatMap((g) => {
+    const link = `- [${g.title}](${site}/${code}${guidePath(g.slug)}): ${g.description}`;
+    return answers ? [link, `  ${g.answer}`] : [link];
+  });
 }
 
 /**
@@ -31,6 +45,7 @@ export function buildLlmsTxt(site: string): string {
   const out: string[] = ["# Jeparla", "", `> ${en.About.lead}`, "", en.About.how, ""];
   for (const [code, label, m] of LANGS) {
     out.push(`## ${label} (${code})`, "", ...keyPages(site, code, m), "");
+    out.push(`### ${m.Guides.title}`, "", ...guideLines(site, code, false), "");
     for (const k of FAQ) out.push(`### ${m.About.faq[k].q}`, "", m.About.faq[k].a, "");
   }
   out.push(
@@ -62,6 +77,7 @@ export function buildLlmsFullTxt(
     out.push(`### ${m.PricesPage.methodTitle}`, "");
     METHOD.forEach((k, i) => out.push(`${i + 1}. ${m.PricesPage.method[k]}`));
     out.push("", `${m.PricesPage.title}: ${site}/${code}/prices`, "");
+    out.push(`### ${m.Guides.title}`, "", ...guideLines(site, code, true), "");
     out.push(`### ${m.Categories.title}`, "");
     for (const root of roots) {
       out.push(`- [${root.name[code]}](${site}/${code}/categories/${root.slug})`);

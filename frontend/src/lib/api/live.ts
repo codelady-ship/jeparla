@@ -58,6 +58,7 @@ export const liveApi: JeparlaApi = {
     ids.length ? cached("/variants", { ids: ids.join(",") }, "catalog") : [],
   getProduct: (slug) => cachedOrNull(`/products/${enc(slug)}`),
   listCategories: () => cached("/categories", undefined, "catalog"),
+  listCollections: () => cached("/collections", undefined, "catalog"),
   listFinenesses: () => cached("/finenesses", undefined, "catalog"),
   listStores: (params = {}) => cached("/stores", params, "catalog"),
   getStore: (slug) => cachedOrNull(`/stores/${enc(slug)}`),
@@ -71,7 +72,7 @@ export const liveApi: JeparlaApi = {
   // Search by photo (#163): never cached, the photo goes straight to the backend, which
   // counts its limit per visitor (#222).
   imageSearchStatus: () => apiFetch("/search/image/status"),
-  searchByImage: async (image) => postImageSearch(image, await visitorHeaders()),
+  searchByImage: async (image, filters) => postImageSearch(image, await visitorHeaders(), filters),
   latestMetalPrices: () => cached("/metal-prices/latest", undefined, "prices"),
   metalPriceHistory: (metal, days = 30) =>
     cached("/metal-prices/history", { metal, days }, "prices"),

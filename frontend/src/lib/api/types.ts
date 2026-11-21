@@ -7,6 +7,7 @@ import type {
   ImageSearchStatus,
   MetalPrice,
   MetalType,
+  OccasionCollection,
   Page,
   Product,
   ProductFilters,
@@ -35,6 +36,8 @@ export interface JeparlaApi {
   getProduct(slug: string): Promise<Product | null>;
   /** GET /api/v1/categories */
   listCategories(): Promise<Category[]>;
+  /** GET /api/v1/collections (#115): shown occasion collections in the admin order. */
+  listCollections(): Promise<OccasionCollection[]>;
   /** GET /api/v1/finenesses */
   listFinenesses(): Promise<Fineness[]>;
   /**
@@ -57,7 +60,7 @@ export interface JeparlaApi {
   /** GET /api/v1/search/image/status (#163) */
   imageSearchStatus(): Promise<ImageSearchStatus>;
   /** POST /api/v1/search/image (#163): the photo is never stored. */
-  searchByImage(image: Blob): Promise<ImageSearchResult>;
+  searchByImage(image: Blob, filters?: [string, string][]): Promise<ImageSearchResult>;
   /** GET /api/v1/metal-prices/latest */
   latestMetalPrices(): Promise<MetalPrice[]>;
   /** GET /api/v1/metal-prices/history */

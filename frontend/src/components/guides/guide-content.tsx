@@ -45,6 +45,40 @@ function Block({ block, externalLabel }: { block: GuideBlock; externalLabel: str
           ))}
         </ol>
       );
+    case "table":
+      return (
+        // The wrapper scrolls on its own if a table is ever wider than a phone, never the page.
+        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <table className="w-full max-w-xl border-collapse text-left tabular-nums">
+            <caption className="mb-2 text-left text-sm text-muted-foreground">
+              {block.caption}
+            </caption>
+            <thead>
+              <tr className="border-b border-gold/40">
+                {block.head.map((h) => (
+                  <th key={h} scope="col" className="py-2 pr-6 font-sans text-sm font-semibold">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map(([first, ...rest]) => (
+                <tr key={first} className="border-b last:border-b-0">
+                  <th scope="row" className="py-2 pr-6 font-medium">
+                    {first}
+                  </th>
+                  {rest.map((cell, i) => (
+                    <td key={i} className="py-2 pr-6 text-muted-foreground">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
     case "links":
       return (
         <ul className="flex flex-col gap-1">

@@ -125,8 +125,9 @@ Kataloq bir premium mağaza kimi görünməlidir: bütün məhsul şəkilləri e
 - **Satıcı bələdçisi:** məhsul formasının şəkil addımında "Telefonla yaxşı şəkil: 5 addım" (işıq, fon, bucaq,
   fokus, miqyas) və hər şəkil üçün xəbərdarlıq: qısa tərəf 800 px-dən az, çox qaranlıq, bulanıq
   (`lib/merchant/photo-quality.ts`). Xəbərdarlıq bloklamır, satıcı qərar verir.
-- Demo fotoların fonunun lokal silinməsi (`@imgly/background-removal-node`) və 390/1440 px-də 12 kartlıq dizayn
-  review ayrıca işdir: hər demo şəkil gözlə yoxlanılır.
+- Demo fotolar (`frontend/public/demo/`) satıcının "Studiya görünüşü" ilə eyni lokal pipeline ilə (IS-Net fon
+  silmə + `StudioComposer`, `docs/ai-providers.md`) vahid krem fona gətirilib, 800x1000. 390/1440 px-də
+  12 kartlıq dizayn review sahibin işidir (#282).
 
 ## Hərəkət kitabxanası
 

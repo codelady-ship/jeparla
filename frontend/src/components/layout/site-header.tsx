@@ -4,6 +4,7 @@ import { FavoritesPriceNote } from "@/components/saved/favorites-price-note";
 import { SavedCount } from "@/components/saved/saved-count";
 import { SearchLauncher } from "@/components/search/search-launcher";
 import { AccountMenu } from "@/components/auth/account-menu";
+import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -34,9 +35,9 @@ export function SiteHeader() {
           href="/"
           prefetch={false}
           translate="no"
-          className="touch-target relative font-heading text-2xl font-semibold tracking-tight"
+          className="touch-target relative inline-flex items-center"
         >
-          Jeparla
+          <Wordmark />
         </Link>
         <nav aria-label={t("Nav.mainNav")} className="ml-8 hidden md:block">
           <ul className="flex items-center gap-6 text-sm font-medium">
@@ -83,6 +84,35 @@ export function SiteHeader() {
                 notConfigured: t("Search.photo.notConfigured"),
                 aiBadge: t("Search.photo.aiBadge"),
                 fashionBadge: t("Product.fashionBadge"),
+                crop: {
+                  title: t("Search.photo.crop.title"),
+                  hint: t("Search.photo.crop.hint"),
+                  frame: t("Search.photo.crop.frame"),
+                  search: t("Search.photo.crop.search"),
+                  whole: t("Search.photo.crop.whole"),
+                },
+                filters: {
+                  title: t("Catalog.filters"),
+                  category: t("Catalog.category"),
+                  allCategories: t("Catalog.allCategories"),
+                  metal: t("Catalog.metal"),
+                  any: t("Catalog.any"),
+                  fineness: t("Catalog.fineness"),
+                  price: t("Catalog.price"),
+                  min: t("Catalog.min"),
+                  max: t("Catalog.max"),
+                  store: t("Catalog.store"),
+                  city: t("Catalog.city"),
+                  anyCity: t("Catalog.anyCity"),
+                  apply: t("Catalog.apply"),
+                  clear: t("Catalog.clearAll"),
+                  empty: t("Search.photo.filtersEmpty"),
+                },
+                metals: {
+                  GOLD: t("Product.metal.GOLD"),
+                  SILVER: t("Product.metal.SILVER"),
+                  PLATINUM: t("Product.metal.PLATINUM"),
+                },
                 errors: {
                   "search.image_not_configured": t("Search.photo.notConfigured"),
                   "search.image_size": t("Search.photo.errors.size"),

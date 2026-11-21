@@ -16,7 +16,7 @@ import { EMPTY_PRICING } from "@/lib/merchant/draft";
 import { toMerchantProduct, type BackendProduct } from "@/lib/merchant/backend";
 import { ApiError } from "./http";
 import { api as publicApi, USING_MOCK } from "./index";
-import { CATEGORIES, PRODUCTS, STORES } from "./mock/fixtures";
+import { CATEGORIES, OCCASIONS, PRODUCT_OCCASIONS, PRODUCTS, STORES } from "./mock/fixtures";
 
 /**
  * Merchant cabinet reads (PLAN 5.5): GET /api/v1/merchant/{store,dashboard,products}.
@@ -157,6 +157,9 @@ export function toInput(p: Product): ProductInput {
       certificateNumber: s.certificateNumber ?? "",
     })),
     docs: [],
+    collectionIds: OCCASIONS.filter((o) => PRODUCT_OCCASIONS.get(p.id)?.includes(o.slug)).map(
+      (o) => o.id,
+    ),
   };
 }
 

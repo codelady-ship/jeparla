@@ -85,6 +85,11 @@ server:
     include-message: never
 
 jeparla:
+  models:
+    # Local ONNX model files (#119, #163): downloaded once from a pinned URL, SHA-256 checked, never committed.
+    # A Docker volume in production (deploy/docker-compose.prod.yml). Nothing is downloaded while every local
+    # model feature is off (the default).
+    dir: ${JEPARLA_MODELS_DIR:${java.io.tmpdir}/jeparla-models}
   cors:
     # Comma-separated list of exact frontend origins. "*" is rejected at startup.
     allowed-origins: ${JEPARLA_FRONTEND_ORIGIN:http://localhost:3000}
@@ -145,6 +150,12 @@ jeparla:
     # #119: processor of STUDIO_LOOK jobs (background removal, cream background, shadow, 4:5). "none": the studio
     # look option is shown as not configured. It must not generate; a local one has the daily quota only.
     studio-processor: ${JEPARLA_AI_STUDIO_PROCESSOR:none}
+    studio:
+      # "local" processor only (docs/ai-providers.md): isnet (179 MB, fine edges, default) or u2netp (4.6 MB,
+      # coarse). The file is downloaded into models.dir on the first start with the processor on.
+      model: ${JEPARLA_AI_STUDIO_MODEL:isnet}
+      # ONNX Runtime threads per photo; the VM has 2 cores shared with the database.
+      threads: ${JEPARLA_AI_STUDIO_THREADS:2}
     # Jobs and retries per store and day (Asia/Baku); per seller account also the rate-limit policy ai-job-account.
     daily-jobs-per-store: ${JEPARLA_AI_DAILY_JOBS_PER_STORE:10}
     max-attempts: 3
@@ -245,6 +256,8 @@ jeparla:
       # Search by photo (#163, docs/image-search.md). "none": no embedding model, the header shows the camera
       # button as not available and requests answer 503. Another value must be an installed provider id.
       provider: ${JEPARLA_IMAGE_SEARCH_PROVIDER:none}
+      # "local" provider only: ONNX Runtime threads per photo (DINOv2 small, docs/image-search.md).
+      threads: ${JEPARLA_IMAGE_SEARCH_THREADS:2}
       # How often new product photos get their embedding (idle without a model).
       embed-delay: 5m
     cache:

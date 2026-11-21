@@ -967,6 +967,20 @@
   outline-offset: 3px;
 }
 
+/* Scrim of a photo card (occasion collections, #115): deep green from the bottom, where
+   the name and count sit; 84% or more behind them, so ivory keeps AA over a white photo.
+   The top of the photo stays clear. Same in both themes (scene tokens are fixed). */
+.cover-scrim {
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--scene-deep) 94%, transparent) 0%,
+    color-mix(in oklab, var(--scene-deep) 84%, transparent) 40%,
+    color-mix(in oklab, var(--scene-deep) 35%, transparent) 62%,
+    transparent 82%
+  );
+}
+
 /* Scrim for ivory copy on scene imagery (stores banner, seller call to action): deep
    green, darkest where the copy sits, at the bottom on phones and on the left on wider
    screens. Behind the copy it is 84% or more, so ivory text keeps AA even over a

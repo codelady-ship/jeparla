@@ -28,14 +28,16 @@ class CatalogOpenApiTests {
                 "/api/v1/products", "/api/v1/products/{slug}", "/api/v1/variants", "/api/v1/products/{id}/reports",
                 "/api/v1/products/{id}/contact-click", "/api/v1/categories", "/api/v1/finenesses", "/api/v1/stores",
                 "/api/v1/stores/{slug}", "/api/v1/stores/{slug}/products", "/api/v1/metal-prices/latest",
-                "/api/v1/metal-prices/history", "/api/v1/exchange-rates/latest", "/api/v1/search", "/api/v1/search/suggest");
+                "/api/v1/metal-prices/history", "/api/v1/exchange-rates/latest", "/api/v1/search", "/api/v1/search/suggest",
+                "/api/v1/collections");
         assertThat(doc.get("components").get("schemas").propertyNames()).contains(
                 "ProductSummary", "Product", "Variant", "Stone", "ProductImage", "PricingRule", "Fineness",
                 "Category", "StoreSummary", "Store", "Verification", "CompareItem", "MetalPrice", "ExchangeRate", "LocalizedText",
-                "Money", "SearchResult", "Suggestions", "StoreSuggestion", "CategorySuggestion", "ProductSuggestion");
+                "Money", "SearchResult", "Suggestions", "StoreSuggestion", "CategorySuggestion", "ProductSuggestion",
+                "OccasionCollection");
 
         JsonNode list = doc.get("paths").get("/api/v1/products").get("get");
-        assertThat(list.get("parameters").findValuesAsString("name")).contains("q", "category", "store", "kind",
+        assertThat(list.get("parameters").findValuesAsString("name")).contains("q", "category", "collection", "store", "kind",
                 "audience", "metal",
                 "fineness", "minWeight", "maxWeight", "minPrice", "maxPrice", "verified", "hallmarkPhoto", "inStock", "city", "shape",
                 "minCarat", "maxCarat", "color", "clarity", "sort", "page", "size");

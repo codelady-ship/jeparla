@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { RelatedGuides } from "@/components/guides/related-guides";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { alternates } from "@/i18n/alternates";
@@ -220,6 +221,7 @@ export default async function MonthlyPricesPage() {
             <li key={k}>{t(`method.${k}`)}</li>
           ))}
         </ul>
+        <RelatedGuides locale={locale} slugs={["gold-price-calculation", "fineness-chart"]} />
       </section>
     </div>
   );

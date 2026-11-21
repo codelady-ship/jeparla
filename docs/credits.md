@@ -64,6 +64,12 @@ Backend gələnə qədər nümunə məhsulların (`src/lib/api/mock/fixtures.ts`
 kəsilib (2026-11-09). Real fotodur, AI deyil, amma kataloqdakı nümunə məhsulun özünü göstərmir:
 məhsul təsviri "nümunə məhsul, real deyil" deyir. Real mağaza şəkilləri gələndə silinəcək.
 
+Studiya görünüşü (#119, 2026-11-18): 16 foto Jeparla-nın öz lokal pipeline-ı ilə emal olunub
+(`./gradlew studioLook`, IS-Net fon silmə modeli, Apache-2.0, `docs/ai-providers.md`): fon silinib, əşya krem fonda
+mərkəzə qoyulub, yumşaq kölgə, 800x1000. Generativ AI və pullu xidmət işlədilməyib, əşyanın forması, rəngi və
+daşları yenidən çəkilməyib, ona görə "AI ilə yaradılıb" nişanı yoxdur. Unsplash Lisenziyası dəyişdirməyə icazə
+verir; müəlliflər aşağıdakı kimi qalır.
+
 | Fayl | Müəllif | Mənbə |
 |---|---|---|
 | `ring-gold-1.jpg` | JESUS ECA | https://unsplash.com/photos/wewzzx11ShI |
@@ -97,3 +103,13 @@ Modellər pullu generasiya ilə yaradıldığı üçün xərc sahibin təsdiqi i
 | Model | Auditoriya | Dəri tonu | Üslub | Mənşə (alət, tarix) |
 | --- | --- | --- | --- | --- |
 | (hələ model yoxdur) | | | | |
+
+## Loqo və ikonlar (#50)
+
+Loqo: **variant A "Baget"** (sahibin seçimi, 2026-11-18). Hərflər Cormorant şriftindən
+konturlanıb (Copyright 2015 the Cormorant Project Authors, SIL Open Font License 1.1, Reserved
+Font Name yoxdur); "l" hərfini əvəz edən baget daşı və kompakt nişan Jeparla üçün çəkilib, AI ilə
+yaradılmayıb. Mənbə və generator: `docs/brand/` (`src/build-logos.mjs`). Saytda: başlıq və footer
+söz-nişanı (`frontend/src/components/brand/`), `icon.svg`, `favicon.ico`, `apple-icon.png`,
+`public/icons/*` (`npm run icons`), `/logo.png` və mağaza link önizləməsi (`/api/og/store`).
+B və C variantları seçimin qeydi kimi `docs/brand/`-də qalır.

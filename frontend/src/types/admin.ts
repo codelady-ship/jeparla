@@ -95,6 +95,19 @@ export type AdminCategory = Category;
 
 export type AdminFineness = Fineness & { productCount: number };
 
+/**
+ * An occasion collection in the catalog settings (#115), hidden ones too. productCount counts
+ * tagged products that are not deleted, in any status.
+ */
+export type AdminCollection = {
+  id: number;
+  slug: string;
+  name: LocalizedText;
+  sortOrder: number;
+  active: boolean;
+  productCount: number;
+};
+
 /** Search treats the two words as the same query, in both directions (PLAN 5.4). */
 export type SynonymPair = {
   id: number;
