@@ -26,6 +26,8 @@ type Props = {
  * over any frame; cards sit on their own solid surfaces.
  * The film loads only near the viewport and plays only while on screen, with a pause
  * button (WCAG 2.2.2); reduced motion and Save-Data keep the poster.
+ * The copy follows the scroll ([data-drift], globals.css): it comes in from the left as it
+ * rises into view and fades away as it leaves at the top.
  * Motion: the film settles from 106% as the section scrolls in and the scrim deepens a
  * little once the content passes over it, tied to the scroll where the browser can
  * (animation-timeline), otherwise a one-off settle when the section comes in (<Reveal
@@ -58,20 +60,25 @@ export async function StickyVideoSection({ id, title, text, cta, video, note, af
               id={id}
               className="home-head text-4xl text-balance sm:text-6xl lg:text-7xl"
               data-reveal-item=""
+              data-drift="left"
             >
               {title}
             </h2>
-            <p className="max-w-md text-pretty sm:text-lg" data-reveal-item="">
+            <p className="max-w-md text-pretty sm:text-lg" data-reveal-item="" data-drift="left">
               {text}
             </p>
-            <div className="mt-1" data-reveal-item="">
+            <div className="mt-1" data-reveal-item="" data-drift="left">
               <Link href={cta.href} prefetch={false} className={cn(PRIMARY_PILL, "h-12")}>
                 {cta.label}
               </Link>
             </div>
             {note && (
               // Full ivory, not the muted tone: the scrim under it thins out to the right.
-              <p className="max-w-md text-xs text-scene-ivory" data-reveal-item="">
+              <p
+                className="max-w-md text-xs text-scene-ivory"
+                data-reveal-item=""
+                data-drift="left"
+              >
                 {note}
               </p>
             )}

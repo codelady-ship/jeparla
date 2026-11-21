@@ -37,7 +37,7 @@ export function SiteFooter() {
             <Wordmark className="h-8" />
           </p>
           <p className="max-w-xs text-sm text-muted-foreground">{t("Footer.tagline")}</p>
-          <LocaleSwitcher />
+          <LocaleSwitcher side="top" />
         </div>
         {COLUMNS.map((col) => (
           <nav key={col.title} aria-label={t(`Footer.${col.title}`)}>

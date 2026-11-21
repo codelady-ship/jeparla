@@ -52,8 +52,9 @@ const FALLBACK_CATEGORIES = [
 ] as const;
 
 /**
- * Categories: a list of large links on deep green, a film of jewellery in a showcase
- * beside it (stock, decorative). The links are the content; the film sets the tone.
+ * Categories: a list of large links over a film of jewellery in a showcase (stock,
+ * decorative), pinned behind them like the film sections below. The links come in from
+ * the left as they scroll into view ([data-drift]).
  */
 export async function HomeCategories() {
   const [t, tv, categories, locale] = await Promise.all([
@@ -71,45 +72,51 @@ export async function HomeCategories() {
       ? fromApi
       : FALLBACK_CATEGORIES.map((slug) => ({ slug, name: t(`categoryFallback.${slug}`) }));
   return (
-    <section aria-labelledby="home-categories" className="bg-scene-green text-scene-ivory">
-      <div className="home-wrap home-pad grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-16">
-        <Reveal from="left" stagger>
-          <h2 id="home-categories" className={BAND_HEAD} {...revealStep(0)}>
-            {t("categories")}
-          </h2>
-          <ul className="flex flex-col">
-            {roots.map((c, i) => (
-              <li key={c.slug} {...revealStep(i + 1)}>
-                <Link href={`/categories/${c.slug}`} className={BAND_LINK}>
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-10" {...revealStep(roots.length + 1)}>
-            <Link href="/categories" className={GHOST_PILL_DARK}>
-              {t("seeAll")}
-              <ArrowRight aria-hidden className="size-4" />
-            </Link>
-          </div>
-        </Reveal>
-        <Reveal
-          as="figure"
-          from="right"
-          index={1}
-          className="md:w-full md:max-w-md md:justify-self-end"
-        >
-          <div className="video-panel reveal-frame relative isolate aspect-[4/5] overflow-hidden rounded-xl bg-scene-deep">
-            <AmbientVideo
-              desktop={SHOWCASE_VIDEO.desktop}
-              mobile={SHOWCASE_VIDEO.mobile}
-              controls={{ pause: tv("pause"), play: tv("play") }}
-            />
-          </div>
-          <figcaption className="mt-3 text-xs text-scene-ivory-muted">{t("decorNote")}</figcaption>
-        </Reveal>
+    <Reveal
+      as="section"
+      from="film"
+      aria-labelledby="home-categories"
+      className="sticky-film"
+      data-sticky-film=""
+    >
+      <div className="sticky-film-stage" data-sticky-film-stage="">
+        <AmbientVideo
+          desktop={SHOWCASE_VIDEO.desktop}
+          mobile={SHOWCASE_VIDEO.mobile}
+          controls={{ pause: tv("pause"), play: tv("play") }}
+          className="bg-scene-green"
+        />
+        <div aria-hidden className="sticky-film-scrim" />
+        <div aria-hidden className="sticky-film-shade" />
       </div>
-    </section>
+      <div className="sticky-film-content">
+        <div className="sticky-film-lead home-wrap">
+          <div className="flex flex-col items-start text-scene-ivory">
+            <h2 id="home-categories" className={BAND_HEAD} data-drift="left">
+              {t("categories")}
+            </h2>
+            <ul className="flex flex-col">
+              {roots.map((c) => (
+                <li key={c.slug} data-drift="left">
+                  <Link href={`/categories/${c.slug}`} className={BAND_LINK}>
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-10" data-drift="left">
+              <Link href="/categories" className={GHOST_PILL_DARK}>
+                {t("seeAll")}
+                <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </div>
+            <p className="mt-6 max-w-md text-xs text-scene-ivory" data-drift="left">
+              {t("decorNote")}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Reveal>
   );
 }
 
@@ -182,7 +189,7 @@ export async function FeaturedStores() {
           {featured.map((s) => (
             // A solid ground under the card: its hover tint is translucent, and here the
             // film is behind it, not the page.
-            <li key={s.id} data-reveal-item="" className="rounded-lg bg-card">
+            <li key={s.id} data-reveal-item="" data-drift="up" className="rounded-lg bg-card">
               <StoreCard store={s} />
             </li>
           ))}
@@ -212,7 +219,12 @@ export async function VerifiedExplainer() {
         // The three checks side by side from tablet width up, stacked on phones (#287).
         <Reveal as="ul" stagger data-checks="" className="home-wrap grid gap-4 md:grid-cols-3">
           {items.map(({ key, Icon }) => (
-            <li key={key} data-reveal-item="" className="home-card flex flex-col gap-3">
+            <li
+              key={key}
+              data-reveal-item=""
+              data-drift="up"
+              className="home-card flex flex-col gap-3"
+            >
               <Icon aria-hidden className="size-7 text-gold-text" />
               <h3 className="home-head font-heading text-2xl">{t(`verified.${key}.title`)}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">

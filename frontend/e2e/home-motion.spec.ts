@@ -26,8 +26,12 @@ test.describe("with motion allowed", () => {
     await expect(page.locator("html")).toHaveAttribute("data-motion", "");
     const checks = page.locator("[data-checks]");
     await expect(checks).toHaveAttribute("data-reveal", "hidden");
-    await checks.scrollIntoViewIfNeeded();
-    await expect(checks).toHaveAttribute("data-reveal", "shown");
+    // Sections above take their real height as they render (content-visibility), so the
+    // first scroll can land short: scroll again until the list has been reached.
+    await expect(async () => {
+      await checks.scrollIntoViewIfNeeded();
+      await expect(checks).toHaveAttribute("data-reveal", "shown", { timeout: 1000 });
+    }).toPass();
     await expect
       .poll(() =>
         checks

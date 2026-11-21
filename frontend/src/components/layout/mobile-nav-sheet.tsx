@@ -71,7 +71,7 @@ export default function MobileNavSheet({
           </nav>
         ))}
         <div className="mt-auto p-4">
-          <LocaleSwitcher />
+          <LocaleSwitcher side="top" />
         </div>
       </SheetContent>
     </Sheet>
