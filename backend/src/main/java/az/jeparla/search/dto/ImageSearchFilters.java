@@ -39,7 +39,7 @@ public record ImageSearchFilters(
         if (!any()) {
             return null;
         }
-        return new ProductQuery(null, blankToNull(category), emptyToNull(store), null, null, metal,
+        return new ProductQuery(null, blankToNull(category), null, emptyToNull(store), null, null, metal,
                 emptyToNull(fineness), null, null, minPrice, maxPrice, null, null, null, blankToNull(city), null, null,
                 null, null, null, null, null, null);
     }
