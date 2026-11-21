@@ -32,6 +32,7 @@ import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 import { breadcrumbs, isRealPrice, product as productLd } from "@/lib/seo/json-ld";
 import type { ReactNode } from "react";
+import { clipLength } from "@/lib/merchant/video";
 import { CONTACT_QUESTIONS, whatsappLink, type ContactQuestion } from "@/lib/whatsapp";
 import type { CheckStatus, Dimensions, Product, Store, StoreServiceKind } from "@/types/api";
 import { Gallery } from "./gallery";
@@ -264,6 +265,14 @@ export async function ProductDetails({
               badge: t(`evidence.badge.${e.kind}`),
             })),
           ]}
+          video={
+            p.video && {
+              url: p.video.url,
+              contentType: p.video.contentType,
+              aiGenerated: p.video.aiGenerated,
+              length: clipLength(p.video.durationMs),
+            }
+          }
           labels={{
             prev: t("prevImage"),
             next: t("nextImage"),
@@ -271,6 +280,14 @@ export async function ProductDetails({
             close: tc("close"),
             ai: tp("aiImage"),
             position: t.raw("imagePosition") as string,
+            video: p.video && {
+              badge: t("video.badge"),
+              ai: t("video.ai"),
+              play: t("video.play", { name }),
+              label: t("video.label", { name }),
+              position: t.raw("video.position") as string,
+              loading: t("video.loading"),
+            },
           }}
         />
 

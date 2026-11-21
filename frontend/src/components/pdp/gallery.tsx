@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
+import { VideoSlide, type GalleryVideo, type VideoLabels } from "./video-slide";
 
 /** `badge` names a hallmark or label shot (#106); otherwise AI images carry the AI label. */
 export type GalleryImage = { url: string; alt: string; aiGenerated: boolean; badge?: string };
@@ -26,7 +27,12 @@ type Labels = {
   ai: string;
   /** Raw template with {n} and {total}, filled in here (functions cannot cross to the client). */
   position: string;
+  /** Only read when the product has a video (#117). */
+  video?: VideoLabels;
 };
+
+/** A frame of the gallery: a photo (with its number among the photos) or the video. */
+type Slide = { kind: "image"; img: GalleryImage; n: number } | { kind: "video" };
 
 const fill = (tpl: string, n: number, total: number) =>
   tpl.replace("{n}", String(n)).replace("{total}", String(total));
@@ -47,20 +53,32 @@ const roundButton =
  * - Full view: one photo at a time, arrows and the keyboard to move, pinch-zoom on
  *   touch, Escape closes and focus returns. Large files load only when it opens.
  * The first photo shares its view-transition name with the product card (morph).
+ *
+ * A product with a short video (#117) shows it as the second frame, after the cover photo:
+ * the cover is its poster and nothing of the video loads before the buyer presses play. The
+ * full view stays photos only. Without a video the gallery is exactly the photo gallery.
  */
 export function Gallery({
   productId,
   images,
+  video,
   labels,
 }: {
   productId: number;
   images: GalleryImage[];
+  video?: GalleryVideo | null;
   labels: Labels;
 }) {
+  // `index` is the carousel frame, `shot` the photo of the full view.
   const [index, setIndex] = useState(0);
+  const [shot, setShot] = useState(0);
   const [zoom, setZoom] = useState(false);
   const startX = useRef<number | null>(null);
   const total = images.length;
+  const videoLabels = video ? labels.video : undefined;
+  const slides: Slide[] = images.map((img, n) => ({ kind: "image", img, n }));
+  if (video && videoLabels) slides.splice(Math.min(1, slides.length), 0, { kind: "video" });
+  const frames = slides.length;
   // The hidden shots (opacity 0, same box) load after the page, not with the first
   // photo (#160); choosing a shot before that loads it at once.
   const [rest, setRest] = useState(false);
@@ -68,9 +86,11 @@ export function Gallery({
     setRest(true);
     setIndex(i);
   };
-  const go = (i: number) => show((i + total) % total);
-  const open = (i: number) => {
-    show(i);
+  const go = (i: number) => show((i + frames) % frames);
+  const turn = (i: number) => setShot((i + total) % total);
+  const open = (n: number) => {
+    setRest(true);
+    setShot(n);
     setZoom(true);
   };
 
@@ -82,6 +102,8 @@ export function Gallery({
   }, []);
 
   function onPointerDown(e: PointerEvent) {
+    // A touch on the playing video is for its controls (the timeline), not a swipe.
+    if (e.target instanceof HTMLVideoElement) return;
     if (e.pointerType === "touch") startX.current = e.clientX;
   }
   function onPointerUp(e: PointerEvent) {
@@ -92,13 +114,19 @@ export function Gallery({
   }
   function onKeyDown(e: KeyboardEvent) {
     if (total < 2) return;
-    if (e.key === "ArrowRight") go(index + 1);
-    if (e.key === "ArrowLeft") go(index - 1);
+    if (e.key === "ArrowRight") turn(shot + 1);
+    if (e.key === "ArrowLeft") turn(shot - 1);
   }
 
-  if (total === 0) return null;
-  const current = images[index];
-  const position = fill(labels.position, index + 1, total);
+  if (frames === 0) return null;
+  const current = slides[index];
+  const zoomed = images[shot];
+  const position = fill(
+    current.kind === "video" && videoLabels ? videoLabels.position : labels.position,
+    index + 1,
+    frames,
+  );
+  const poster = images[0] ?? null;
 
   /** The label on a shot: hallmark or tag (#106), else the AI mark; none for a plain photo. */
   const badgeText = (img: GalleryImage) => img.badge || (img.aiGenerated ? labels.ai : null);
@@ -121,7 +149,7 @@ export function Gallery({
   );
 
   return (
-    <div>
+    <div data-gallery>
       {/* Phones and tablets: swipe carousel. */}
       <div
         className="relative aspect-[4/5] touch-pan-y overflow-hidden rounded-lg bg-muted select-none lg:hidden"
@@ -129,50 +157,72 @@ export function Gallery({
         onPointerUp={onPointerUp}
         aria-roledescription="carousel"
       >
-        {images.map((img, i) => {
-          const image = (i === 0 || rest) && (
+        {slides.map((slide, i) => {
+          const layer = cn(
+            "absolute inset-0 transition-opacity duration-(--duration-slow) ease-(--ease-luxe) motion-reduce:transition-none",
+            i === index ? "opacity-100" : "pointer-events-none opacity-0",
+          );
+          if (slide.kind === "video") {
+            return (
+              video &&
+              videoLabels && (
+                // `inert` keeps the play button of a hidden frame out of the tab order.
+                <div key="video" aria-hidden={i !== index} inert={i !== index} className={layer}>
+                  <VideoSlide
+                    video={video}
+                    poster={poster}
+                    showPoster={rest}
+                    sizes="100vw"
+                    labels={videoLabels}
+                    active={i === index}
+                  />
+                </div>
+              )
+            );
+          }
+          const { img, n } = slide;
+          const image = (n === 0 || rest) && (
             <Image
               src={img.url}
               alt={img.alt}
               fill
-              sizes={i === 0 ? FIRST_SIZES : "100vw"}
-              preload={i === 0}
-              fetchPriority={i === 0 ? "high" : undefined}
+              sizes={n === 0 ? FIRST_SIZES : "100vw"}
+              preload={n === 0}
+              fetchPriority={n === 0 ? "high" : undefined}
               unoptimized={svg(img.url)}
               className="object-cover"
             />
           );
           return (
-            <div
-              key={img.url + i}
-              aria-hidden={i !== index}
-              className={cn(
-                "absolute inset-0 transition-opacity duration-(--duration-slow) ease-(--ease-luxe) motion-reduce:transition-none",
-                i === index ? "opacity-100" : "opacity-0",
-              )}
-            >
-              {i === 0 ? morph(image) : image}
+            <div key={img.url + n} aria-hidden={i !== index} className={layer}>
+              {n === 0 ? morph(image) : image}
             </div>
           );
         })}
-        {aiBadge(current)}
-        <button
-          type="button"
-          onClick={() => setZoom(true)}
-          aria-label={labels.zoom}
-          className={cn(roundButton, "absolute right-3 bottom-3")}
-        >
-          <Expand aria-hidden className="size-4" />
-        </button>
-        {total > 1 && (
+        {current.kind === "image" && (
           <>
+            {aiBadge(current.img)}
+            <button
+              type="button"
+              onClick={() => open(current.n)}
+              aria-label={labels.zoom}
+              className={cn(roundButton, "absolute right-3 bottom-3")}
+            >
+              <Expand aria-hidden className="size-4" />
+            </button>
+          </>
+        )}
+        {frames > 1 && (
+          <>
+            {/* On the video frame a swipe belongs to the player, so the arrows show on phones too. */}
             <button
               type="button"
               onClick={() => go(index - 1)}
               aria-label={labels.prev}
               className={cn(
                 roundButton,
-                "absolute top-1/2 left-3 hidden -translate-y-1/2 sm:inline-flex",
+                "absolute top-1/2 left-3 z-20 -translate-y-1/2",
+                current.kind === "video" ? "inline-flex" : "hidden sm:inline-flex",
               )}
             >
               <ChevronLeft aria-hidden className="size-5" />
@@ -183,29 +233,38 @@ export function Gallery({
               aria-label={labels.next}
               className={cn(
                 roundButton,
-                "absolute top-1/2 right-3 hidden -translate-y-1/2 sm:inline-flex",
+                "absolute top-1/2 right-3 z-20 -translate-y-1/2",
+                current.kind === "video" ? "inline-flex" : "hidden sm:inline-flex",
               )}
             >
               <ChevronRight aria-hidden className="size-5" />
             </button>
-            {/* Visible counter and dots; the live region below speaks the position. */}
-            <span
-              aria-hidden
-              className="absolute bottom-3 left-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium tabular-nums shadow-sm"
-            >
-              {index + 1} / {total}
-            </span>
-            <span aria-hidden className="absolute inset-x-0 bottom-5 flex justify-center gap-1.5">
-              {images.map((img, i) => (
+            {/* Visible counter and dots; the live region below speaks the position. On the
+                video frame they would cover the player's controls, so only the arrows stay. */}
+            {current.kind === "image" && (
+              <>
                 <span
-                  key={img.url + i}
-                  className={cn(
-                    "size-1.5 rounded-full bg-background shadow-sm transition-opacity duration-(--duration-base) motion-reduce:transition-none",
-                    i === index ? "opacity-100" : "opacity-50",
-                  )}
-                />
-              ))}
-            </span>
+                  aria-hidden
+                  className="absolute bottom-3 left-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium tabular-nums shadow-sm"
+                >
+                  {index + 1} / {frames}
+                </span>
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 bottom-5 flex justify-center gap-1.5"
+                >
+                  {slides.map((slide, i) => (
+                    <span
+                      key={slide.kind === "video" ? "video" : slide.img.url + slide.n}
+                      className={cn(
+                        "size-1.5 rounded-full bg-background shadow-sm transition-opacity duration-(--duration-base) motion-reduce:transition-none",
+                        i === index ? "opacity-100" : "opacity-50",
+                      )}
+                    />
+                  ))}
+                </span>
+              </>
+            )}
           </>
         )}
         <p className="sr-only" aria-live="polite">
@@ -215,23 +274,36 @@ export function Gallery({
 
       {/* Desktop: large grid with a magnifier; a click opens the full view. */}
       <ul className="hidden grid-cols-2 gap-3 lg:grid">
-        {images.map((img, i) => {
+        {slides.map((slide) => {
+          if (slide.kind === "video") {
+            return (
+              video &&
+              videoLabels && (
+                <li key="video">
+                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-muted">
+                    <VideoSlide video={video} poster={poster} sizes="25vw" labels={videoLabels} />
+                  </div>
+                </li>
+              )
+            );
+          }
+          const { img, n } = slide;
           const image = (
             <Image
               src={img.url}
               alt={img.alt}
               fill
-              sizes={i === 0 ? FIRST_SIZES : "25vw"}
-              fetchPriority={i === 0 ? "high" : undefined}
+              sizes={n === 0 ? FIRST_SIZES : "25vw"}
+              fetchPriority={n === 0 ? "high" : undefined}
               unoptimized={svg(img.url)}
               className="gallery-lens object-cover"
             />
           );
           return (
-            <li key={img.url + i} className={cn(i === 0 && "col-span-2")}>
+            <li key={img.url + n} className={cn(n === 0 && "col-span-2")}>
               <button
                 type="button"
-                onClick={() => open(i)}
+                onClick={() => open(n)}
                 onPointerMove={(e) => {
                   if (e.pointerType !== "mouse") return;
                   const r = e.currentTarget.getBoundingClientRect();
@@ -248,13 +320,13 @@ export function Gallery({
                 // 2.5.3, axe label-content-name-mismatch).
                 aria-label={[
                   badgeText(img),
-                  `${labels.zoom}: ${fill(labels.position, i + 1, total)}`,
+                  `${labels.zoom}: ${fill(labels.position, n + 1, total)}`,
                 ]
                   .filter(Boolean)
                   .join(". ")}
                 className="group/lens relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-lg bg-muted outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
-                {i === 0 ? morph(image) : image}
+                {n === 0 ? morph(image) : image}
                 {aiBadge(img)}
               </button>
             </li>
@@ -262,50 +334,52 @@ export function Gallery({
         })}
       </ul>
 
-      <Dialog open={zoom} onOpenChange={setZoom}>
-        <DialogContent
-          closeLabel={labels.close}
-          className="max-w-[min(92vw,56rem)] p-2 sm:max-w-[min(92vw,56rem)]"
-          onKeyDown={onKeyDown}
-        >
-          <DialogTitle className="sr-only">{current.alt}</DialogTitle>
-          {/* Pinch-zoom stays with the browser on touch screens. */}
-          <div className="relative aspect-[4/5] max-h-[85vh] w-full touch-pinch-zoom overflow-auto">
-            <Image
-              src={current.url}
-              alt={current.alt}
-              fill
-              sizes="92vw"
-              unoptimized={svg(current.url)}
-              className="object-contain"
-            />
-            {aiBadge(current)}
-          </div>
-          {total > 1 && (
-            <div className="flex items-center justify-between gap-2 px-1 pb-1">
-              <button
-                type="button"
-                onClick={() => go(index - 1)}
-                aria-label={labels.prev}
-                className={roundButton}
-              >
-                <ChevronLeft aria-hidden className="size-5" />
-              </button>
-              <p className="text-sm tabular-nums" aria-live="polite">
-                {position}
-              </p>
-              <button
-                type="button"
-                onClick={() => go(index + 1)}
-                aria-label={labels.next}
-                className={roundButton}
-              >
-                <ChevronRight aria-hidden className="size-5" />
-              </button>
+      {zoomed && (
+        <Dialog open={zoom} onOpenChange={setZoom}>
+          <DialogContent
+            closeLabel={labels.close}
+            className="max-w-[min(92vw,56rem)] p-2 sm:max-w-[min(92vw,56rem)]"
+            onKeyDown={onKeyDown}
+          >
+            <DialogTitle className="sr-only">{zoomed.alt}</DialogTitle>
+            {/* Pinch-zoom stays with the browser on touch screens. */}
+            <div className="relative aspect-[4/5] max-h-[85vh] w-full touch-pinch-zoom overflow-auto">
+              <Image
+                src={zoomed.url}
+                alt={zoomed.alt}
+                fill
+                sizes="92vw"
+                unoptimized={svg(zoomed.url)}
+                className="object-contain"
+              />
+              {aiBadge(zoomed)}
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            {total > 1 && (
+              <div className="flex items-center justify-between gap-2 px-1 pb-1">
+                <button
+                  type="button"
+                  onClick={() => turn(shot - 1)}
+                  aria-label={labels.prev}
+                  className={roundButton}
+                >
+                  <ChevronLeft aria-hidden className="size-5" />
+                </button>
+                <p className="text-sm tabular-nums" aria-live="polite">
+                  {fill(labels.position, shot + 1, total)}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => turn(shot + 1)}
+                  aria-label={labels.next}
+                  className={roundButton}
+                >
+                  <ChevronRight aria-hidden className="size-5" />
+                </button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

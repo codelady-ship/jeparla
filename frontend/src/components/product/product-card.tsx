@@ -1,4 +1,4 @@
-import { Shapes, ShieldCheck, Sparkles } from "lucide-react";
+import { Shapes, ShieldCheck, Sparkles, Video } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { ViewTransition } from "react";
@@ -98,6 +98,13 @@ export function ProductCard({ product: p, preload = false }: Props) {
             <Badge variant="secondary">{t(`stock.${p.stockStatus}`)}</Badge>
           )}
         </div>
+        {/* A card never plays or loads the video (#117): only this mark says there is one. */}
+        {p.video && (
+          <span className="absolute bottom-2 left-2 inline-flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm">
+            <Video aria-hidden className="size-4" />
+            <span className="sr-only">{t("hasVideo")}</span>
+          </span>
+        )}
         <ProductActions
           id={p.id}
           variantId={p.defaultVariantId}
