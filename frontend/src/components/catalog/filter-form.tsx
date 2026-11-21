@@ -7,6 +7,8 @@ import { useTransition, type FormEvent, type ReactNode } from "react";
  * GET form for catalog filters. Without JavaScript it submits normally; with it, the
  * URL is updated in place (no full reload) and empty fields are left out.
  * `auto` submits on every change; the mobile sheet uses an explicit button instead.
+ * `auto="select"` submits only when a list (<select>) changes: choosing a city shows its
+ * stores at once (#176), while a text field still waits for the button or Enter.
  */
 export function FilterForm({
   action,
@@ -16,7 +18,7 @@ export function FilterForm({
 }: {
   /** Path without locale, e.g. "/products". */
   action: string;
-  auto?: boolean;
+  auto?: boolean | "select";
   className?: string;
   children: ReactNode;
 }) {
@@ -42,7 +44,13 @@ export function FilterForm({
       action={action}
       method="get"
       onSubmit={onSubmit}
-      onChange={auto ? (e) => navigate(e.currentTarget) : undefined}
+      onChange={
+        auto
+          ? (e) => {
+              if (auto === true || e.target instanceof HTMLSelectElement) navigate(e.currentTarget);
+            }
+          : undefined
+      }
       aria-busy={pending}
       className={className}
     >
