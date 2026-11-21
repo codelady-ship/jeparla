@@ -41,7 +41,7 @@ yazı yoxdur.
 | `ring/*` (8 san. dövrə, səssiz) | Ana səhifə: "Hər daşa yaxından baxın" tam enli video zolağı (yoxlamalar) | Tima Miroshnichenko | https://www.pexels.com/video/video-of-a-peron-holding-a-ring-6263177/ |
 | `../demo/ring-video.mp4` (`ring/mobile.mp4` faylının surəti) | Nümunə məhsul 2-nin qısa videosu (#117): məhsul səhifəsinin qalereyası, yalnız alıcı oynat düyməsini basanda yüklənir | Tima Miroshnichenko | https://www.pexels.com/video/video-of-a-peron-holding-a-ring-6263177/ |
 | `editorial/hands-*.avif` (videodan kadr) | Ana səhifə: yeni məhsullar bölməsinin yanında, əldə üzüklər və bilərziklər | RDNE Stock project | https://www.pexels.com/video/a-hands-full-of-jewelries-8183385/ |
-| `showcase/*` (8 san. dövrə, səssiz) | Ana səhifə: kateqoriyalar zolağı, siyahının yanında | Lara Jameson | https://www.pexels.com/video/jewelries-on-the-display-window-8849053/ |
+| `showcase/*` (8 san. dövrə, səssiz) | Ana səhifə: kateqoriyalar bölməsinin arxa fonu | Lara Jameson | https://www.pexels.com/video/jewelries-on-the-display-window-8849053/ |
 | `vitrine/*` (8 san. dövrə, səssiz, yavaşladılmış) | Ana səhifə: mağazalar banneri; `/stores` başlığı | Sururi Ballıdağ | https://www.pexels.com/video/elegant-display-of-gold-jewelry-in-store-36353836/ |
 | `showroom/wide.avif`, `showroom/phone.avif` (poster) | Ana səhifə: mağazalar banneri, video başlamazdan əvvəl və reduced motion-da | Rana Matloob Hussain | https://www.pexels.com/photo/luxurious-modern-jewelry-store-interior-design-33257665/ |
 | `showroom/counter*.avif` (poster) | `/stores` başlığı, video başlamazdan əvvəl və reduced motion-da | Rana Matloob Hussain | https://www.pexels.com/photo/luxurious-jewelry-store-interior-with-elegant-display-33257668/ |
@@ -52,7 +52,11 @@ AVIF poster. `vitrine` klipi 50 fps-dən 25 fps-ə yavaşladılıb (2 san. -> 4 
 (dizayn vizualizasiyası kimi görünür) yalnız poster kimi istifadə olunur; `counter*` kəsimi
 pəncərədəki küçə yazılarını və ekranı kənarda qoyur. `vitrine` kadrlarında oxunan yazı yoxdur.
 `editorial/hands-*` şəkli videodan bir kadr kimi götürülüb, portret formatda kəsilib və AVIF-ə
-çevrilib (iki en ölçüsü). `showcase` klipi 4:5 portret kəsilib; stenddəki kiçik etiket oxunmur.
+çevrilib (iki en ölçüsü). `showcase` klipində stenddəki kiçik etiket oxunmur.
+
+2026-11-21: `ring`, `showcase` və `atelier` klipləri 4K orijinaldan yenidən kəsilib (masaüstü 1600x900,
+16:9; telefon 720x900, 4:5), çünki bu videolar indi tam ekran arxa fon kimi göstərilir və əvvəlki kiçik
+kəsimlər (720x900, 640x800) bulanıq görünürdü.
 
 ## Köhnə hero (silinib, 2026-11-08)
 
