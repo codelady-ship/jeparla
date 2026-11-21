@@ -42,6 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/size-guide", 0.6),
     entry("/calculator", 0.7),
     entry("/help", 0.5),
+    entry("/about", 0.5),
+    entry("/contact", 0.4),
     ...LEGAL_DOCS.map((doc) => entry(`/legal/${doc}`, 0.3, LEGAL_UPDATED)),
     ...categories.map((c) => entry(`/categories/${c.slug}`, 0.7)),
     // Occasion collections (#115): an empty one is an honest empty page, not listed.

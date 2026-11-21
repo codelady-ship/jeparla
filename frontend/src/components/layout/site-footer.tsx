@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
 import { Link } from "@/i18n/navigation";
 
-// Link targets are placeholders until their pages exist (#12, #14, #61, #56).
+// The buyers and sellers links live in the header menus (nav-items.ts, NAV_GROUPS).
 const COLUMNS = [
   {
     title: "about",
@@ -11,27 +11,6 @@ const COLUMNS = [
       { href: "/about", label: "Footer.aboutUs" },
       { href: "/contact", label: "Footer.contact" },
       { href: "/help", label: "Footer.help" },
-    ],
-  },
-  {
-    title: "buyers",
-    links: [
-      { href: "/guides", label: "Guides.navLabel" },
-      { href: "/products", label: "Nav.catalog" },
-      { href: "/collections", label: "Collections.navLabel" },
-      { href: "/products?kind=FASHION", label: "Catalog.fashionSection" },
-      { href: "/stores", label: "Nav.stores" },
-      { href: "/prices", label: "Footer.metalPrices" },
-      { href: "/verified", label: "Footer.howWeVerify" },
-      { href: "/size-guide", label: "Footer.sizeGuide" },
-      { href: "/calculator", label: "Footer.calculator" },
-    ],
-  },
-  {
-    title: "sellers",
-    links: [
-      { href: "/sell", label: "Footer.openStore" },
-      { href: "/merchant", label: "Footer.merchantCabinet" },
     ],
   },
   {
@@ -52,7 +31,7 @@ export function SiteFooter() {
     // While the install card is open, the page ends with room for it (set by InstallPrompt).
     // relative: the footer covers a film pinned at the end of the page (#292), like the section after a film.
     <footer className="relative mt-auto border-t bg-surface pb-[var(--install-card-space,0px)]">
-      <div className="container-page grid gap-10 py-12 md:grid-cols-[1.5fr_repeat(4,1fr)]">
+      <div className="container-page grid gap-10 py-12 md:grid-cols-[2fr_repeat(2,1fr)]">
         <div className="flex flex-col items-start gap-3">
           <p translate="no">
             <Wordmark className="h-8" />
@@ -66,7 +45,6 @@ export function SiteFooter() {
             <ul className="flex flex-col gap-2 text-sm text-muted-foreground pointer-coarse:gap-0">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  {/* Most footer routes arrive later; no prefetch keeps 404s out. */}
                   <Link
                     href={l.href}
                     prefetch={false}

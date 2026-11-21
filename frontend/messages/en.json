@@ -84,7 +84,9 @@
     "account": "Account menu",
     "dashboard": "Dashboard",
     "logout": "Sign out",
-    "myAccount": "My account"
+    "myAccount": "My account",
+    "buyers": "For buyers",
+    "sellers": "For sellers"
   },
   "Account": {
     "title": "My account",
@@ -2994,6 +2996,71 @@
         "q": "How do I buy a piece I like?",
         "a": "Message the store with the WhatsApp button on the product page; the message includes the product name, code and link. You agree on the purchase directly with the store."
       }
+    }
+  },
+  "AboutPage": {
+    "title": "About us",
+    "description": "Jeparla is a catalog that brings Azerbaijan's jewelry stores together: gold, silver, diamonds, fashion jewelry and handmade pieces.",
+    "intro": "Jeparla is a catalog that brings Azerbaijan's gold, silver and diamond jewelry stores, as well as fashion jewelry and handmade sellers, together in one place.",
+    "notAShop": "Jeparla does not sell anything itself. When you like a piece, you write to the store directly on WhatsApp; the purchase is between you and the store.",
+    "sections": {
+      "buyers": {
+        "title": "For buyers",
+        "text": "Search by store, category, metal, fineness and price, and compare the offers of several stores in one place."
+      },
+      "prices": {
+        "title": "Prices",
+        "text": "Metal prices come from the daily rate of the Central Bank of Azerbaijan. When a seller links a price to the metal, it updates itself every day."
+      },
+      "checks": {
+        "title": "Checks",
+        "text": "The seller, the documents and the expert examination are checked separately and shown separately on every product. A check that was not done is not hidden. Fashion jewelry and handmade pieces have their own section and need no certificate."
+      },
+      "sellers": {
+        "title": "For sellers",
+        "text": "Open your store, list your products and share your store link with your customers. Buyers write to you directly."
+      }
+    },
+    "links": {
+      "catalog": "Go to the catalog",
+      "prices": "Metal prices",
+      "verified": "How we verify",
+      "sell": "Open a store",
+      "contact": "Contact",
+      "help": "Help and support"
+    },
+    "contact": {
+      "title": "Contact Jeparla",
+      "operator": "The site is run by {name}.",
+      "text": "If you have a question, a suggestion or a complaint, write to us."
+    }
+  },
+  "ContactPage": {
+    "title": "Contact",
+    "description": "Contact Jeparla: a question about a product, opening a store, reporting a problem.",
+    "intro": "Pick the way that fits your question: you get an answer sooner.",
+    "support": {
+      "title": "Write to the Jeparla team"
+    },
+    "topics": {
+      "product": {
+        "title": "A question about a product?",
+        "text": "Ask the store directly about price, size, delivery and availability: the product page has a WhatsApp button. Jeparla does not sell anything itself."
+      },
+      "seller": {
+        "title": "Are you a seller?",
+        "text": "Sign up to open a store. If you already have one, manage your products, documents and notifications in the cabinet."
+      },
+      "report": {
+        "title": "A problem or a complaint",
+        "text": "If you see wrong information, a suspicious listing or an error on the site, let us know. Frequent questions are answered on the help page."
+      }
+    },
+    "links": {
+      "catalog": "Go to the catalog",
+      "sell": "Open a store",
+      "merchant": "Store cabinet",
+      "help": "Help and support"
     }
   }
 }

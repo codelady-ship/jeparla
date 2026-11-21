@@ -70,9 +70,17 @@ test.describe("size guide (#114)", () => {
     await expectNoA11yViolations(page);
   });
 
-  test("the footer links to the guide", async ({ page }) => {
+  test("the buyers menu links to the guide", async ({ page }) => {
     await page.goto("/az");
-    await page.getByRole("contentinfo").getByRole("link", { name: "Ölçü bələdçisi" }).click();
+    const menuButton = page.getByRole("button", { name: "Menyu" });
+    if (await menuButton.isVisible()) {
+      // Phones and tablets: the group is in the menu sheet.
+      await menuButton.click();
+      await page.getByRole("dialog").getByRole("link", { name: "Ölçü bələdçisi" }).click();
+    } else {
+      await page.getByRole("button", { name: "Alıcılar üçün" }).click();
+      await page.getByRole("banner").getByRole("link", { name: "Ölçü bələdçisi" }).click();
+    }
     await expect(page).toHaveURL(/\/az\/size-guide$/);
   });
 });

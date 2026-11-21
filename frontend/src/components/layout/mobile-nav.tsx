@@ -14,13 +14,13 @@ const MobileNavSheet = lazy(load);
  * loads when the button is touched, pointed at or focused, so it is not part of the
  * first page load (#160, mobile blocking time). Labels come translated from the server.
  */
-export function MobileNav({ items, labels }: MobileNavProps) {
+export function MobileNav({ items, groups, labels }: MobileNavProps) {
   const [armed, setArmed] = useState(false);
 
   const button = (
     <button
       type="button"
-      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "md:hidden")}
+      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "lg:hidden")}
       aria-label={labels.menu}
       aria-haspopup="dialog"
       onPointerDown={() => void load()}
@@ -35,7 +35,7 @@ export function MobileNav({ items, labels }: MobileNavProps) {
   if (!armed) return button;
   return (
     <Suspense fallback={button}>
-      <MobileNavSheet items={items} labels={labels} defaultOpen />
+      <MobileNavSheet items={items} groups={groups} labels={labels} defaultOpen />
     </Suspense>
   );
 }
