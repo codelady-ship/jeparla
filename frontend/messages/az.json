@@ -38,7 +38,8 @@
       "expertise": {
         "title": "Ekspertiza",
         "text": "Müstəqil ekspert məhsulu yoxlayıbsa, bu ayrıca qeyd olunur."
-      }
+      },
+      "how": "Proses necə gedir"
     },
     "sellerTitle": "Mağazanız var? Onu Jeparla-da açın.",
     "sellerText": "Məhsullarınızı Jeparla-da göstərin: alıcılar sizə birbaşa WhatsApp ilə yazır.",
