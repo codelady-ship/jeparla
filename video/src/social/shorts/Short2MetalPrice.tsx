@@ -66,7 +66,7 @@ export function Short2MetalPrice({ platform }: ShortProps) {
       </Scene>
       <Scene from={T.phone} to={T.end + 10}>
         <Backdrop />
-        <Phone from={T.phone} to={T.end + 10} screens={[{ name: "home-prices", at: T.phone, focus: [0.3, 0.2], zoomTo: 1.7 }]} />
+        <Phone from={T.phone} to={T.end + 10} screens={[{ name: "home-prices", at: T.phone, focus: [0.5, 0.3], zoomTo: 1.2 }]} />
         <Caption from={T.phone + 4} to={T.linked + 4}>
           Jeparla bu hesabı <Gold>hər səhər</Gold> özü edir.
         </Caption>

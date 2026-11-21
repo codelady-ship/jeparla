@@ -48,7 +48,7 @@ export function Short5Verified({ platform }: ShortProps) {
       </Scene>
       <Scene from={T.phone} to={T.end + 10}>
         <Backdrop />
-        <Phone from={T.phone} to={T.end + 10} screens={[{ name: "verified-checks", at: T.phone, focus: [0.2, 0.3], zoomTo: 1.35 }]} />
+        <Phone from={T.phone} to={T.end + 10} screens={[{ name: "verified-checks", at: T.phone, focus: [0.5, 0.3], zoomTo: 1.08 }]} />
         <Caption from={T.phone + 4} to={T.tip + 4}>
           Heç bir yoxlama <Gold>tam zəmanət</Gold> deyil.
         </Caption>

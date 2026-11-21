@@ -81,8 +81,8 @@ export function Short1Jeparla({ platform }: ShortProps) {
           ai={[T.phone, T.prices + 8]}
           screens={[
             { name: "home-top", at: T.phone },
-            { name: "home-prices", at: T.prices, focus: [0.3, 0.22], zoomTo: 1.4 },
-            { name: "home-checks", at: T.checks, focus: [0.2, 0.25], zoomTo: 1.3 },
+            { name: "home-prices", at: T.prices, focus: [0.5, 0.3], zoomTo: 1.2 },
+            { name: "home-checks", at: T.checks, focus: [0.5, 0.25], zoomTo: 1.08 },
           ]}
         />
         <Caption from={T.phone + 4} to={T.prices + 4}>

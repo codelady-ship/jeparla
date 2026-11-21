@@ -22,8 +22,9 @@ yoxdur). Hər videonun 3 faylı var, yalnız son kadrdakı çağırış fərqlid
 | `-tt.mp4` | TikTok | Link profildə |
 | `-yt.mp4` | YouTube Shorts | Link kanalın səhifəsində (Shorts təsvirindəki link kliklənmir) |
 
-Fayllar repoda deyil: `video/out/social/` (gitignore). Örtüklər (cover) repoda:
-`docs/social/covers/`.
+Fayllar repoda deyil: `video/out/social/` (gitignore). Örtük (cover) faylı repoda
+yoxdur: videodan kadr seçilir və ya `npx remotion still <Kompozisiya> out/social/cover.png --frame=<kadr>`
+ilə çıxarılır.
 
 | # | Kompozisiya | Fayl adı | Müddət | Mövzu | AI vizual |
 |---|---|---|---|---|---|
@@ -282,8 +283,7 @@ link, profil şəkli və highlight-lar: [`profile.md`](../marketing/profile.md) 
 3. İki faktorlu giriş (2FA) aç. Bərpa kodlarını parol menecerində saxla.
 4. Bio və link (sayt + `utm_source=instagram&utm_medium=social&utm_campaign=bio`).
 5. Paylaşım: + -> Reel -> `-ig.mp4` seç. Musiqi əlavə etmə və ya yalnız Instagram-ın öz kitabxanasından
-   (business hesab üçün kommersiya səsləri). Örtük: "Edit cover" -> `docs/social/covers/` faylı
-   (və ya videodan kadr). Caption bölmə 3-dən.
+   (business hesab üçün kommersiya səsləri). Örtük: "Edit cover" -> videodan kadr (bölmə 1). Caption bölmə 3-dən.
 6. Video 1 üçün: "Advanced settings" -> "AI label" ("Add AI info") aç.
 7. Paylaşmazdan əvvəl ön baxışda yoxla: son kadrdakı "Link bioda" düymələrin altında qalmır.
 

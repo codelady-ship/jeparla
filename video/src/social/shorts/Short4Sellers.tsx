@@ -29,9 +29,9 @@ export function Short4Sellers({ platform }: ShortProps) {
           from={T.phone}
           to={T.end + 10}
           screens={[
-            { name: "sell-top", at: T.phone, focus: [0.2, 0.3], zoomTo: 1.4 },
-            { name: "sell-steps", at: T.steps, focus: [0.2, 0.3], zoomTo: 1.35 },
-            { name: "sell-compare", at: T.linked, focus: [0.5, 0.45], zoomTo: 1.3 },
+            { name: "sell-top", at: T.phone, focus: [0.5, 0.3], zoomTo: 1.08 },
+            { name: "sell-steps", at: T.steps, focus: [0.5, 0.3], zoomTo: 1.08 },
+            { name: "sell-compare", at: T.linked, focus: [0.5, 0.45], zoomTo: 1.08 },
           ]}
         />
         <Caption from={T.phone + 4} to={T.steps + 4}>
