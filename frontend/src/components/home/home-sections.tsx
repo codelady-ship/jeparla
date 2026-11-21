@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, FileCheck2, Microscope } from "lucide-react";
+import { ArrowRight, BadgeCheck, ChevronDown, FileCheck2, Microscope } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { MetalPriceWidget } from "@/components/metal/metal-price-widget";
 import { AmbientVideo } from "@/components/media/ambient-video";
@@ -200,7 +200,7 @@ export async function FeaturedStores() {
 }
 
 export async function VerifiedExplainer() {
-  const t = await getTranslations("Home");
+  const [t, tc] = await Promise.all([getTranslations("Home"), getTranslations("Verified")]);
   const items = [
     { key: "seller", Icon: BadgeCheck },
     { key: "documents", Icon: FileCheck2 },
@@ -217,19 +217,48 @@ export async function VerifiedExplainer() {
       note={t("decorNote")}
       after={
         // The three checks side by side from tablet width up, stacked on phones (#287).
-        <Reveal as="ul" stagger data-checks="" className="home-wrap grid gap-4 md:grid-cols-3">
+        <Reveal
+          as="ul"
+          stagger
+          data-checks=""
+          className="home-wrap grid gap-4 md:grid-cols-3 md:items-start"
+        >
           {items.map(({ key, Icon }) => (
-            <li
-              key={key}
-              data-reveal-item=""
-              data-drift="up"
-              className="home-card flex flex-col gap-3"
-            >
-              <Icon aria-hidden className="size-7 text-gold-text" />
-              <h3 className="home-head font-heading text-2xl">{t(`verified.${key}.title`)}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {t(`verified.${key}.text`)}
-              </p>
+            // Each card opens in place and tells how that check is done (the same words as
+            // on /verified). Native <details>: keyboard and screen readers for free, no script;
+            // one name, so opening a card closes the others.
+            <li key={key} data-reveal-item="" data-drift="right" className="home-card">
+              <details name="home-checks" className="group">
+                <summary className="flex cursor-pointer list-none flex-col gap-3 rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+                  <Icon aria-hidden className="size-7 text-gold-text" />
+                  <h3 className="home-head font-heading text-2xl">{t(`verified.${key}.title`)}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t(`verified.${key}.text`)}
+                  </p>
+                  <span className="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-gold-text">
+                    {t("verified.how")}
+                    <ChevronDown
+                      aria-hidden
+                      className="size-4 transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
+                    />
+                  </span>
+                </summary>
+                <dl className="mt-2 flex flex-col gap-3 border-t pt-4 text-sm leading-relaxed">
+                  {(["what", "who", "not"] as const).map((part) => (
+                    <div key={part}>
+                      <dt className="font-semibold">{tc(part)}</dt>
+                      <dd className="text-muted-foreground">{tc(`checks.${key}.${part}`)}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <Link
+                  href="/verified"
+                  prefetch={false}
+                  className="mt-4 inline-flex min-h-11 items-center link-underline text-sm font-medium"
+                >
+                  {tc("title")}
+                </Link>
+              </details>
             </li>
           ))}
         </Reveal>

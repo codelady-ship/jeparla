@@ -38,7 +38,8 @@
       "expertise": {
         "title": "Appraisal",
         "text": "If an independent expert inspected the piece, it is noted separately."
-      }
+      },
+      "how": "How the check works"
     },
     "sellerTitle": "Have a store? Open it on Jeparla.",
     "sellerText": "Show your pieces on Jeparla: buyers message you directly on WhatsApp.",

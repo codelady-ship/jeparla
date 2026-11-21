@@ -1021,6 +1021,13 @@
       --drift-y: 8.5rem;
     }
     @media (min-width: 48rem) {
+      /* Cards in a row coming from the right start further out one after another. */
+      :root[data-motion] [data-drift="right"]:nth-child(2) {
+        --drift-x: 8rem;
+      }
+      :root[data-motion] [data-drift="right"]:nth-child(3) {
+        --drift-x: 11rem;
+      }
       :root[data-motion] [data-drift="left"] {
         --drift-x: -5rem;
         --drift-y: 0px;
