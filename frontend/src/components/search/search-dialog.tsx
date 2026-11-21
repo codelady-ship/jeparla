@@ -274,7 +274,7 @@ export default function SearchDialog({
             onClick={() => setMode(mode === "photo" ? "text" : "photo")}
             aria-label={mode === "photo" ? labels.photo.back : labels.photo.open}
             aria-pressed={mode === "photo"}
-            className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted aria-pressed:bg-muted"
+            className="inline-flex size-11 items-center justify-center rounded-md hover:bg-muted aria-pressed:bg-muted"
           >
             <Camera aria-hidden className="size-4" />
           </button>
@@ -282,7 +282,7 @@ export default function SearchDialog({
             type="button"
             onClick={() => changeOpen(false)}
             aria-label={labels.close}
-            className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted"
+            className="inline-flex size-11 items-center justify-center rounded-md hover:bg-muted"
           >
             <X aria-hidden className="size-4" />
           </button>
