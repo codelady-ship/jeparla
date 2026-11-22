@@ -142,7 +142,7 @@ export function SiteHeader() {
             <SavedCount list="favorites" />
             <FavoritesPriceNote />
           </Link>
-          <div className="hidden sm:block">
+          <div className="hidden sm:block lg:hidden">
             <LocaleSwitcher />
           </div>
           <ThemeToggle

@@ -14,6 +14,7 @@ import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { CompareTray } from "@/components/saved/compare-tray";
 import { SampleDataBanner } from "@/components/layout/sample-data-banner";
+import { TopBar } from "@/components/layout/top-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -115,6 +116,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
         <IntlProvider locale={locale} messages={clientMessages}>
           <ThemeProvider>
             <SampleDataBanner locale={locale} />
+            <TopBar />
             <SiteHeader />
             <VerifyEmailBanner
               text={ta("verifyBanner.text")}

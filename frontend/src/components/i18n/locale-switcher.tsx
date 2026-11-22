@@ -11,6 +11,10 @@ import { cn } from "cn";
 type Props = {
   /** Where the list opens: below the button (header) or above it (footer, menu sheet). */
   side?: "bottom" | "top";
+  /** Top bar: the language code only (AZ, EN, RU), no frame. */
+  compact?: boolean;
+  /** Which edge of the button the list lines up with. */
+  align?: "start" | "end";
 };
 
 /**
@@ -20,7 +24,7 @@ type Props = {
  * The URL is read only when the user switches, not during render, so the header and footer
  * stay part of the static shell. next-intl stores the choice in a cookie.
  */
-export function LocaleSwitcher({ side = "bottom" }: Props) {
+export function LocaleSwitcher({ side = "bottom", compact = false, align = "start" }: Props) {
   const t = useTranslations("LocaleSwitcher");
   const locale = useLocale();
   const router = useRouter();
@@ -56,13 +60,24 @@ export function LocaleSwitcher({ side = "bottom" }: Props) {
         type="button"
         aria-expanded={open}
         aria-controls={id}
-        aria-label={`${t("label")}: ${t(`locale.${locale as Locale}`)}`}
+        // Compact: the visible code stays part of the name ("Dil: Azərbaycanca AZ").
+        aria-label={compact ? undefined : `${t("label")}: ${t(`locale.${locale as Locale}`)}`}
         disabled={isPending}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-input bg-background px-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60 pointer-coarse:h-11"
+        className={cn(
+          "inline-flex cursor-pointer items-center outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60",
+          compact
+            ? "h-7 gap-1 rounded-sm px-1.5 text-xs font-medium tracking-wide hover:text-gold-text"
+            : "h-8 gap-1.5 rounded-md border border-input bg-background px-2 hover:bg-muted pointer-coarse:h-11",
+        )}
       >
-        <Languages aria-hidden className="size-4 text-muted-foreground" />
-        <span lang={locale}>{t(`locale.${locale as Locale}`)}</span>
+        {!compact && <Languages aria-hidden className="size-4 text-muted-foreground" />}
+        {compact && (
+          <span className="sr-only">{`${t("label")}: ${t(`locale.${locale as Locale}`)} `}</span>
+        )}
+        <span lang={locale}>
+          {compact ? locale.toUpperCase() : t(`locale.${locale as Locale}`)}
+        </span>
         <ChevronDown
           aria-hidden
           className={cn(
@@ -75,7 +90,9 @@ export function LocaleSwitcher({ side = "bottom" }: Props) {
         id={id}
         aria-label={t("label")}
         className={cn(
-          "absolute left-0 z-50 flex min-w-full flex-col rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 transition-[opacity,translate,visibility] duration-(--duration-base) motion-reduce:transition-none",
+          "absolute z-50 flex min-w-full flex-col text-sm",
+          align === "end" ? "right-0" : "left-0",
+          "rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 transition-[opacity,translate,visibility] duration-(--duration-base) motion-reduce:transition-none",
           side === "bottom" ? "top-full mt-2" : "bottom-full mb-2",
           open
             ? "visible opacity-100"

@@ -5,7 +5,8 @@ test.describe("language and theme", () => {
     await page.goto("/az/products");
     await expect(page.locator("html")).toHaveAttribute("lang", "az");
     if (isPhone(page)) await page.getByRole("button", { name: "Menyu" }).click();
-    const scope = isPhone(page) ? page.getByRole("dialog") : page.getByRole("banner");
+    // Wide screens: the language sits in the top bar above the header.
+    const scope = isPhone(page) ? page.getByRole("dialog") : page.locator("[data-topbar]");
     const menu = scope.getByRole("button", { name: /^Dil/ });
     await waitForHydration(menu);
     await menu.click();
