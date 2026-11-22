@@ -3063,5 +3063,12 @@
       "merchant": "Store cabinet",
       "help": "Help and support"
     }
+  },
+  "TopBar": {
+    "stores": "Verified stores",
+    "prices": "Prices follow the daily CBAR rate",
+    "contact": "Write to the store directly on WhatsApp",
+    "quality": "Quality assured",
+    "support": "Professional support"
   }
 }

@@ -12,8 +12,8 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SEARCH_TRIGGER, SearchTriggerContent } from "./search-trigger";
 import { useRouter } from "@/i18n/navigation";
 import { addRecent, clearRecent, readRecent } from "@/lib/search/recent";
 import type { Suggestions } from "@/types/api";
@@ -225,12 +225,8 @@ export default function SearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
-      <DialogTrigger
-        className={buttonVariants({ variant: "ghost", size: "icon" })}
-        aria-label={labels.open}
-        aria-keyshortcuts="/"
-      >
-        <Search aria-hidden className="size-4" />
+      <DialogTrigger className={SEARCH_TRIGGER} aria-label={labels.open} aria-keyshortcuts="/">
+        <SearchTriggerContent label={labels.open} />
       </DialogTrigger>
       <DialogContent
         closeLabel={labels.close}

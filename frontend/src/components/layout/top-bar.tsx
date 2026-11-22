@@ -1,0 +1,56 @@
+import { Gem, Headset, Landmark, MessageCircle, ShieldCheck, type LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { cn } from "cn";
+
+type Note = {
+  key: "stores" | "prices" | "contact" | "quality" | "support";
+  Icon: LucideIcon;
+  /** The page that explains the promise. */
+  href?: string;
+  /** From which width the note shows: the bar holds as many as fit. */
+  show?: string;
+};
+
+const NOTES: Note[] = [
+  { key: "contact", Icon: MessageCircle },
+  { key: "quality", Icon: Gem, href: "/verified" },
+  { key: "support", Icon: Headset, href: "/help" },
+  { key: "prices", Icon: Landmark, show: "hidden xl:flex" },
+  { key: "stores", Icon: ShieldCheck, show: "hidden 2xl:flex" },
+];
+
+/**
+ * Utility bar above the header on wide screens (owner's design, 2026-11-21): short notes
+ * about how Jeparla works; quality and support open the pages that explain them. It
+ * scrolls away with the page; the sticky header below it stays. No delivery or
+ * round-the-clock promise: stores sell and deliver, not Jeparla.
+ */
+export function TopBar() {
+  const t = useTranslations("TopBar");
+  return (
+    <div data-topbar="" className="relative z-50 hidden border-b bg-surface-warm text-xs lg:block">
+      <ul className="container-page flex h-9 items-center divide-x divide-border">
+        {NOTES.map(({ key, Icon, href, show }) => (
+          <li key={key} className={cn("items-center px-5 first:pl-0", show ?? "flex")}>
+            {href ? (
+              <Link
+                href={href}
+                prefetch={false}
+                className="inline-flex items-center gap-2 link-underline"
+              >
+                <Icon aria-hidden className="size-3.5 shrink-0 text-gold-text" />
+                {t(key)}
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <Icon aria-hidden className="size-3.5 shrink-0 text-gold-text" />
+                {t(key)}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

@@ -1,9 +1,8 @@
 "use client";
 
-import { Search } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
 import type { SearchLabels } from "./search-dialog";
+import { SEARCH_TRIGGER, SearchTriggerContent } from "./search-trigger";
 
 const load = () => import("./search-dialog");
 const SearchDialog = lazy(load);
@@ -37,7 +36,7 @@ export function SearchLauncher({ labels }: { labels: SearchLabels }) {
   const button = (
     <button
       type="button"
-      className={buttonVariants({ variant: "ghost", size: "icon" })}
+      className={SEARCH_TRIGGER}
       aria-label={labels.open}
       aria-keyshortcuts="/"
       aria-haspopup="dialog"
@@ -45,7 +44,7 @@ export function SearchLauncher({ labels }: { labels: SearchLabels }) {
       onFocus={() => void load()}
       onClick={() => setArmed("open")}
     >
-      <Search aria-hidden />
+      <SearchTriggerContent label={labels.open} />
     </button>
   );
 

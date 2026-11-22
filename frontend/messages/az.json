@@ -3063,5 +3063,12 @@
       "merchant": "Mağaza kabineti",
       "help": "Kömək və dəstək"
     }
+  },
+  "TopBar": {
+    "stores": "Yoxlanılmış mağazalar",
+    "prices": "Qiymətlər hər gün AMB məzənnəsi ilə",
+    "contact": "Mağazaya birbaşa WhatsApp ilə yazın",
+    "quality": "Zəmanətli keyfiyyət",
+    "support": "Peşəkar dəstək"
   }
 }

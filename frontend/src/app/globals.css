@@ -25,6 +25,7 @@
   --color-scene-diamond: var(--scene-diamond);
   --color-scene-silver-text: var(--scene-silver-text);
   --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
   --color-gold: var(--gold);
   --color-on-gold: var(--on-gold);
   --color-gold-text: var(--gold-text);
@@ -382,6 +383,8 @@
   /* Scene rail (landscape): its distance from the stage bottom and its height (one line
      of 13px labels in a padded pill, 38px measured; rounded up). The copy column ends
      this far above the bottom plus some air, so the two never meet (#287). */
+  /* Utility bar above the header (<TopBar>, wide screens only): the hero starts under it. */
+  --topbar-height: 0rem;
   --hero-rail-bottom: 2rem;
   --hero-rail-height: 2.5rem;
   --hero-copy-floor: calc(
@@ -389,10 +392,16 @@
   );
 }
 
+@media (min-width: 64rem) {
+  :root {
+    --topbar-height: 2.25rem;
+  }
+}
 .hero-track {
   position: relative;
-  /* Starts under the sticky header (4rem), so the first screen is exactly one viewport. */
-  margin-top: -4rem;
+  /* Starts under the sticky header (4rem) and the top bar, so the first screen is exactly
+     one viewport. */
+  margin-top: calc(-4rem - var(--topbar-height));
 }
 .hero {
   --hero-bg: var(--scene-ivory);
@@ -441,7 +450,7 @@
   z-index: 2;
   flex: none;
   /* Phone: under the header (4rem), above the figures. */
-  padding: 5.25rem 1rem 1rem;
+  padding: calc(5.25rem + var(--topbar-height)) 1rem 1rem;
   max-width: 28rem;
 }
 .hero-ctas {
@@ -512,7 +521,7 @@
      viewport height (#287); type also scales with the height, so it fits short screens. */
   .hero-copy {
     position: absolute;
-    top: 4rem;
+    top: calc(4rem + var(--topbar-height));
     bottom: var(--hero-copy-floor);
     left: max(var(--gutter-page), calc((100vw - var(--container-page)) / 2 + var(--gutter-page)));
     right: auto;
