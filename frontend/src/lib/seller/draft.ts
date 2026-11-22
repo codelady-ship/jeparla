@@ -13,6 +13,8 @@ export type SellerDraft = {
   done: number[];
   /** Set when step 4 was skipped on purpose. */
   productSkipped: boolean;
+  /** The first product's draft id when the API created it (the done screen links to it). */
+  productId: number | null;
   /** Sent successfully: /sell shows the congratulations screen. */
   submitted: boolean;
 };
@@ -34,6 +36,7 @@ export const EMPTY_DRAFT: SellerDraft = Object.freeze({
   product: { productName: "", category: "", fineness: "", weight: "", price: "" },
   done: [],
   productSkipped: false,
+  productId: null,
   submitted: false,
 }) as SellerDraft;
 

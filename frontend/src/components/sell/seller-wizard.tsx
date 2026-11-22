@@ -139,7 +139,13 @@ export function SellerWizard({
         return;
       }
       setPassword("");
-      update((d) => ({ ...d, productSkipped: skipProduct, done: [1, 2, 3, 4], submitted: true }));
+      update((d) => ({
+        ...d,
+        productSkipped: skipProduct,
+        productId: result.productId ?? null,
+        done: [1, 2, 3, 4],
+        submitted: true,
+      }));
       router.replace("/sell", { scroll: true });
     } catch {
       fail({ form: "network" });
@@ -210,7 +216,11 @@ export function SellerWizard({
           <h2 ref={headingRef} tabIndex={-1} className="text-2xl outline-none">
             {titles[step - 1]}
           </h2>
-          <p className="text-sm text-muted-foreground">{t(`steps.${STEP_KEYS[step - 1]}.intro`)}</p>
+          <p className="text-sm text-muted-foreground">
+            {step === 3 && fashionOnly
+              ? t("steps.3.introFashion")
+              : t(`steps.${STEP_KEYS[step - 1]}.intro`)}
+          </p>
         </div>
 
         {errors.form && (

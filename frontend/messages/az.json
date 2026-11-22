@@ -1038,7 +1038,8 @@
       },
       "3": {
         "title": "Sənədlər",
-        "intro": "Qızıl və ya gümüş satırsınızsa, mağaza sənədinin şəklini və ya PDF-ini yükləyin; sonra da göndərmək olar."
+        "intro": "Qızıl və ya gümüş satırsınızsa, mağaza sənədinin şəklini və ya PDF-ini yükləyin; sonra da göndərmək olar.",
+        "introFashion": "Bijuteriya və əl işi üçün sənəd lazım deyil: bu addımı keçə bilərsiniz."
       },
       "4": {
         "title": "İlk məhsul",
@@ -1137,7 +1138,8 @@
       },
       "dashboard": "Kabinetə keç",
       "home": "Ana səhifə",
-      "startOver": "Yeni qeydiyyat başlat"
+      "startOver": "Yeni qeydiyyat başlat",
+      "addPhoto": "Şəkil əlavə et və yoxlamaya göndər"
     },
     "sellerKind": {
       "question": "Rəsmi zərgərlik məhsulları (qızıl, gümüş, platin, brilyant) satırsınız?",

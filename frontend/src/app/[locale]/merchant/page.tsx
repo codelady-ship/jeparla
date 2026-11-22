@@ -79,7 +79,7 @@ async function Dashboard() {
         </MerchantIntl>
       )}
       <MerchantIntl>
-        <SellerGuide />
+        <SellerGuide dismissed={store.guideDismissed === true} />
         <DraftResume />
       </MerchantIntl>
 

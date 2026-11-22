@@ -13,7 +13,8 @@ export async function signOut() {
 }
 
 export type AuthResult =
-  { ok: true; session: Session } | { ok: false; errors: Record<string, string> };
+  | { ok: true; session: Session; productId?: number }
+  | { ok: false; errors: Record<string, string> };
 
 /** Posts a form to an auth route. The password is only in the request body. */
 export async function postAuth(path: string, body: unknown): Promise<AuthResult> {
@@ -24,13 +25,14 @@ export async function postAuth(path: string, body: unknown): Promise<AuthResult>
   });
   const data = (await res.json().catch(() => ({}))) as {
     session?: Session;
+    productId?: number;
     errors?: Record<string, string>;
   };
   if (res.ok && data.session) {
     setSession(data.session);
     // A buyer's favourites and their saved prices move into the account (#112).
     if (data.session.role === "USER") void syncFavorites();
-    return { ok: true, session: data.session };
+    return { ok: true, session: data.session, productId: data.productId };
   }
   return {
     ok: false,

@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheck, CircleDashed, CircleMinus } from "lucide-react";
+import { CircleCheck, CircleDashed, CircleMinus, ImagePlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { buttonVariants } from "@/components/ui/button";
@@ -40,6 +40,15 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
     { label: t("rows.product"), status: draft.productSkipped ? "none" : "draft" },
   ];
 
+  // The first product is a draft without photos: one tap to its form (#301). Without an id
+  // (sample data, or the product was not saved) the product list is the way there.
+  const draftHref =
+    !fashion && !draft.productSkipped
+      ? draft.productId
+        ? `/merchant/products/${draft.productId}/edit`
+        : "/merchant/products"
+      : null;
+
   return (
     <section className="flex flex-col gap-6 rounded-lg border bg-card p-6 sm:p-10">
       <div className="flex flex-col items-center gap-3 text-center">
@@ -75,6 +84,15 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
             );
           })}
         </ul>
+        {draftHref && (
+          <Link
+            href={draftHref}
+            className="touch-target inline-flex items-center gap-2 self-start link-underline text-sm text-gold-text"
+          >
+            <ImagePlus aria-hidden className="size-4" />
+            {t("addPhoto")}
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
