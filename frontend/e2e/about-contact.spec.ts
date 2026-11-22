@@ -64,3 +64,20 @@ test.describe("buyers and sellers menus in the header", () => {
     await expect(page).toHaveURL(/\/az\/prices$/);
   });
 });
+
+test.describe("top bar above the header", () => {
+  test("every note opens its page", async ({ page }) => {
+    await page.goto("/az/help");
+    const bar = page.locator("[data-topbar]");
+    test.skip(!(await bar.isVisible()), "wide screens only");
+    for (const [name, url] of [
+      ["Mağazaya birbaşa WhatsApp ilə yazın", /\/az\/stores$/],
+      ["Zəmanətli keyfiyyət", /\/az\/verified$/],
+      ["Peşəkar dəstək", /\/az\/help$/],
+      ["Qiymətlər hər gün AMB məzənnəsi ilə", /\/az\/prices$/],
+    ] as const) {
+      await bar.getByRole("link", { name }).click();
+      await expect(page).toHaveURL(url);
+    }
+  });
+});
