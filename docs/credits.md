@@ -111,10 +111,12 @@ Modellər pullu generasiya ilə yaradıldığı üçün xərc sahibin təsdiqi i
 
 ## Loqo və ikonlar (#50)
 
-Loqo: **variant A "Baget"** (sahibin seçimi, 2026-11-18). Hərflər Cormorant şriftindən
-konturlanıb (Copyright 2015 the Cormorant Project Authors, SIL Open Font License 1.1, Reserved
-Font Name yoxdur); "l" hərfini əvəz edən baget daşı və kompakt nişan Jeparla üçün çəkilib, AI ilə
-yaradılmayıb. Mənbə və generator: `docs/brand/` (`src/build-logos.mjs`). Saytda: başlıq və footer
-söz-nişanı (`frontend/src/components/brand/`), `icon.svg`, `favicon.ico`, `apple-icon.png`,
+Loqo: **əl yazısı söz-nişan** (sahibin seçimi, 2026-11-22). Hərflər Great Vibes şriftindən
+konturlanıb (Copyright 2010 The Great Vibes Pro Project Authors, SIL Open Font License 1.1);
+"J"-nin başına taxılmış üzük və kompakt nişan Jeparla üçün çəkilib, AI ilə yaradılmayıb. Şrift
+faylı repoda saxlanılmır və saytda yüklənmir. Mənbə və generator: `docs/brand/`
+(`src/build-logo-script.mjs`). Saytda: başlıq və footer söz-nişanı
+(`frontend/src/components/brand/`), `icon.svg`, `favicon.ico`, `apple-icon.png`,
 `public/icons/*` (`npm run icons`), `/logo.png` və mağaza link önizləməsi (`/api/og/store`).
-B və C variantları seçimin qeydi kimi `docs/brand/`-də qalır.
+Əvvəlki loqo (variant A "Baget", Cormorant, 2026-11-18) və B, C variantları qeyd kimi
+`docs/brand/`-də qalır.

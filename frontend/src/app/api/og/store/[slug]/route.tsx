@@ -49,8 +49,8 @@ export async function GET(request: Request, ctx: RouteContext<"/api/og/store/[sl
         <img
           src={wordmarkOnGreenDataUrl()}
           alt="Jeparla"
-          height={52}
-          width={Math.round(52 * WORDMARK_RATIO)}
+          height={84}
+          width={Math.round(84 * WORDMARK_RATIO)}
         />
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "flex", fontSize: 68, lineHeight: 1.1 }}>{preview.name}</div>

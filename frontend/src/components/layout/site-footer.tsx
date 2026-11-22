@@ -34,7 +34,7 @@ export function SiteFooter() {
       <div className="container-page grid gap-10 py-12 md:grid-cols-[2fr_repeat(2,1fr)]">
         <div className="flex flex-col items-start gap-3">
           <p translate="no">
-            <Wordmark className="h-8" />
+            <Wordmark className="h-12" />
           </p>
           <p className="max-w-xs text-sm text-muted-foreground">{t("Footer.tagline")}</p>
           <LocaleSwitcher side="top" />

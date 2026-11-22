@@ -12,7 +12,14 @@
 | [`icons.md`](./icons.md)                   | `lucide-react` ikonlarının anlayış cədvəli                   |
 | `src/*.mjs`                                | SVG, HTML və PNG generatorları                               |
 
-**Seçim (2026-11-18): variant A "Baget".** Sahib A-nı seçdi; o, saytın başlığına və footer-ə
+**Hazırkı loqo (2026-11-22): əl yazısı söz-nişan.** Sahib dörd yeni qaralamadan "C"-ni seçdi: Great Vibes
+şrifti ilə "Jeparla", "J"-nin başına taxılmış üzük (halqanın arxa yarısı hərfin arxasında, ön yarısı və daşı
+öndədir). Generator: `src/build-logo-script.mjs`; çıxışlar: `logo/script-*.svg`,
+`frontend/src/components/brand/logo-paths.ts`, `frontend/src/app/icon.svg` (sonra `npm run icons`).
+Şrift: Great Vibes (Copyright 2010 The Great Vibes Pro Project Authors, SIL Open Font License 1.1); hərflər
+konturlanıb, şrift faylı repoda saxlanılmır və saytda yüklənmir.
+
+**Əvvəlki seçim (2026-11-18): variant A "Baget".** Sahib A-nı seçdi; o, saytın başlığına və footer-ə
 (`frontend/src/components/brand/wordmark.tsx`), favicon-a (`icon.svg`, `favicon.ico`), iOS və PWA
 ikonlarına (`npm run icons`), `/logo.png`-ə və mağaza link önizləməsinə köçürülüb. B və C seçimin
 qeydi kimi burada qalır. `build-logos.mjs` A-nın path-larını `frontend/src/components/brand/logo-paths.ts`-ə
