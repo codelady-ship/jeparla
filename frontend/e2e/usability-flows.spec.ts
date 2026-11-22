@@ -4,6 +4,7 @@ import {
   expect,
   expectNoA11yViolations,
   isPhone,
+  REAL_API,
   test,
   testPassword,
   uniqueDigits,
@@ -261,10 +262,38 @@ test.describe("usability: seller cabinet", () => {
     await expect(page).not.toHaveURL(/\/login/);
   }
 
+  /**
+   * A new seller of its own: closing the guide is kept on the account (#301), so the shared
+   * seeded seller would carry it from one project or retry to the next.
+   */
+  async function newSeller(page: Page) {
+    const phone = `050 ${uniqueDigits(7)}`;
+    const res = await page.request.post("/api/auth/seller", {
+      data: {
+        account: { name: "Gülşən Əliyeva", phone, password: testPassword() },
+        store: {
+          storeName: `Bələdçi Zərgər ${uniqueDigits(6)}`,
+          whatsapp: "055 765 43 21",
+          city: "Gəncə",
+          address: "Nizami küçəsi 12",
+          social: "",
+          legalType: "COMPANY",
+          sellerKind: "PRECIOUS",
+          taxId: uniqueDigits(10),
+          codeAccepted: true,
+        },
+        docs: { docs: [] },
+        product: null,
+      },
+    });
+    expect(res.status(), await res.text()).toBe(201);
+  }
+
   test("the 3-step guide shows on the first visit and never again once closed", async ({
     page,
+    browser,
   }) => {
-    await signIn(page);
+    await newSeller(page);
     await page.goto("/az/merchant");
     const guide = page.getByRole("region", { name: "Mağazanızı 3 addımda hazırlayın" });
     await expect(guide).toBeVisible();
@@ -284,6 +313,21 @@ test.describe("usability: seller cabinet", () => {
     await page.reload();
     await expect(page.getByRole("heading", { level: 1, name: "Panel" })).toBeVisible();
     await expect(guide).toHaveCount(0);
+
+    // A second device (same account, empty browser storage) does not show it either (#301).
+    // The sample data has no account to keep it on.
+    if (REAL_API) {
+      const other = await browser.newContext({
+        storageState: { ...(await page.context().storageState()), origins: [] },
+      });
+      const second = await other.newPage();
+      await second.goto("/az/merchant");
+      await expect(second.getByRole("heading", { level: 1, name: "Panel" })).toBeVisible();
+      await expect(
+        second.getByRole("region", { name: "Mağazanızı 3 addımda hazırlayın" }),
+      ).toHaveCount(0);
+      await other.close();
+    }
   });
 
   test("each cabinet screen has one primary action", async ({ page }) => {
