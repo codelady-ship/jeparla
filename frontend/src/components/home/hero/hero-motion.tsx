@@ -190,8 +190,10 @@ export function HeroMotion({
       if (hint) hint.style.opacity = landed ? String(1 - out) : "";
       if (brand) {
         const b = phase(p, HERO_PHASES.brandIn);
-        brand.style.opacity = String(b);
-        brand.style.transform = `translateY(${(1 - b) * 0.75}rem)`;
+        // Written by hand as the models arrive (owner, 2026-11-22): visible at once, the
+        // pen (--write) carries the rest.
+        brand.style.opacity = String(Math.min(1, b * 4));
+        brand.style.setProperty("--write", String(b));
       }
       const tf = phase(p, HERO_PHASES.transform);
       frames.style.opacity = p > 0.005 ? "1" : "0";
