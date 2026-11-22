@@ -44,7 +44,7 @@ export function SiteHeader() {
           translate="no"
           className="touch-target relative inline-flex items-center"
         >
-          <Wordmark />
+          <Wordmark className="h-8 min-[23.5rem]:h-10" />
         </Link>
         <nav aria-label={t("Nav.mainNav")} className="ml-6 hidden lg:block xl:ml-8">
           <ul className="flex items-center gap-5 text-sm font-medium xl:gap-6">
