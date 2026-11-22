@@ -138,7 +138,7 @@ for (const width of [360, 390, 430]) {
 
     test("store page: WhatsApp, phone and product search", async ({ page }) => {
       await page.goto(STORE);
-      await expectTouchSized(page.getByRole("link", { name: "WhatsApp ilə yaz" }), 1);
+      await expectTouchSized(page.getByRole("link", { name: "WhatsApp ilə yaz", exact: true }), 1);
       await expectTouchSized(page.locator('a[href^="tel:"]'), 1);
       await expectTouchSized(page.getByRole("searchbox", { name: "Mağazada axtar" }), 1);
       await expectTouchSized(page.getByRole("combobox", { name: "Kateqoriya" }), 1);
@@ -165,7 +165,7 @@ test("desktop keeps its compact controls", async ({ page }) => {
   test.skip(test.info().project.name !== "desktop", "the desktop look");
   await page.goto(STORE);
   const height = (l: Locator) => l.evaluate((el) => el.getBoundingClientRect().height);
-  expect(await height(page.getByRole("link", { name: "WhatsApp ilə yaz" }))).toBe(40);
+  expect(await height(page.getByRole("link", { name: "WhatsApp ilə yaz", exact: true }))).toBe(40);
   expect(await height(page.getByRole("button", { name: "Axtar", exact: true }))).toBe(40);
   expect(await height(page.getByRole("searchbox", { name: "Mağazada axtar" }))).toBe(40);
 });
