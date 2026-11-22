@@ -105,10 +105,14 @@ function wordmark() {
   const pad = 4;
   const x0 = pad - minX * s;
   const baseline = pad + maxY * s;
-  const letters = items
-    .map((it) => glyphD(it.g, s, x0 + it.x * s, baseline))
-    .join("");
+  const glyphs = items.map((it) => ({
+    d: glyphD(it.g, s, x0 + it.x * s, baseline),
+    x0: r(x0 + (it.x + it.g.bbox.minX) * s),
+    x1: r(x0 + (it.x + it.g.bbox.maxX) * s),
+  }));
+  const letters = glyphs.map((g) => g.d).join("");
   return {
+    glyphs,
     width: r((maxX - minX) * s + pad * 2),
     height: r((maxY - minY) * s + pad * 2),
     letters,
@@ -214,6 +218,10 @@ export const WORDMARK = {
   width: ${wm.width},
   height: ${wm.height},
 ${part(wm)}
+  /** The same letters one by one, with their horizontal extent (the hero writes them in turn). */
+  glyphs: [
+${wm.glyphs.map((g) => `    { d: "${g.d}", x0: ${g.x0}, x1: ${g.x1} },`).join("\n")}
+  ],
 } as const;
 
 /** Compact mark on a 64-unit tile: the J with its ring. */
