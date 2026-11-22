@@ -50,6 +50,8 @@ const SHADCN = {
 // Brand roles shadcn has no name for
 const BRAND = {
   surface: "surface",
+  // Warm beige of the utility bar above the header (owner reference, 2026-11-22).
+  "surface-warm": "surface-warm",
   gold: "accent",
   "on-gold": "on-accent",
   "gold-text": "accent-text",

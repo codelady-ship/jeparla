@@ -135,6 +135,10 @@ export function SiteHeader() {
               },
             }}
           />
+          {/* Wide screens: the language as its code, next to the search. */}
+          <div className="hidden lg:block">
+            <LocaleSwitcher compact align="end" />
+          </div>
           {/* Header links are on every page: no prefetch during the first load (#160). */}
           <Link href="/favorites" prefetch={false} className={`${icon} relative`}>
             <Heart aria-hidden />

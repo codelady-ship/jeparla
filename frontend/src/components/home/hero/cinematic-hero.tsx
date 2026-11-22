@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronDown, Gem, Headset } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
@@ -87,23 +87,6 @@ export function CinematicHero() {
           </li>
         ))}
       </ol>
-
-      {/* Trust strip along the foot of the first screen (owner's design, 2026-11-21): each
-          promise opens the page that explains it. */}
-      <ul className="hero-trust">
-        <li>
-          <Link href="/verified" prefetch={false}>
-            <Gem aria-hidden className="size-5" />
-            {t("trust.quality")}
-          </Link>
-        </li>
-        <li>
-          <Link href="/help" prefetch={false}>
-            <Headset aria-hidden className="size-5" />
-            {t("trust.support")}
-          </Link>
-        </li>
-      </ul>
     </HeroMotion>
   );
 }

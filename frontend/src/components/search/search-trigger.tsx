@@ -9,7 +9,7 @@ import { cn } from "cn";
  */
 export const SEARCH_TRIGGER = cn(
   buttonVariants({ variant: "ghost", size: "icon" }),
-  "lg:h-9 lg:w-52 lg:justify-start lg:gap-2 lg:rounded-full lg:bg-muted lg:px-3.5 lg:text-sm lg:font-normal lg:text-muted-foreground",
+  "lg:h-9 lg:w-44 lg:justify-start xl:w-52 lg:gap-2 lg:rounded-full lg:bg-muted lg:px-3.5 lg:text-sm lg:font-normal lg:text-muted-foreground",
 );
 
 export function SearchTriggerContent({ label }: { label: string }) {

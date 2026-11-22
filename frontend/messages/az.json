@@ -2737,10 +2737,6 @@
       "diamond": "Brilyant",
       "gold": "Qızıl",
       "silver": "Gümüş"
-    },
-    "trust": {
-      "quality": "Zəmanətli keyfiyyət",
-      "support": "Peşəkar dəstək"
     }
   },
   "Pwa": {
@@ -3071,6 +3067,8 @@
   "TopBar": {
     "stores": "Yoxlanılmış mağazalar",
     "prices": "Qiymətlər hər gün AMB məzənnəsi ilə",
-    "contact": "Mağazaya birbaşa WhatsApp ilə yazın"
+    "contact": "Mağazaya birbaşa WhatsApp ilə yazın",
+    "quality": "Zəmanətli keyfiyyət",
+    "support": "Peşəkar dəstək"
   }
 }

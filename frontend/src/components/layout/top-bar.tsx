@@ -1,35 +1,56 @@
-import { Landmark, MessageCircle, ShieldCheck } from "lucide-react";
+import { Gem, Headset, Landmark, MessageCircle, ShieldCheck, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { LocaleSwitcher } from "@/components/i18n/locale-switcher";
+import { Link } from "@/i18n/navigation";
+import { cn } from "cn";
 
-const NOTES = [
-  { key: "stores", Icon: ShieldCheck },
-  { key: "prices", Icon: Landmark },
+type Note = {
+  key: "stores" | "prices" | "contact" | "quality" | "support";
+  Icon: LucideIcon;
+  /** The page that explains the promise. */
+  href?: string;
+  /** From which width the note shows: the bar holds as many as fit. */
+  show?: string;
+};
+
+const NOTES: Note[] = [
   { key: "contact", Icon: MessageCircle },
-] as const;
+  { key: "quality", Icon: Gem, href: "/verified" },
+  { key: "support", Icon: Headset, href: "/help" },
+  { key: "prices", Icon: Landmark, show: "hidden xl:flex" },
+  { key: "stores", Icon: ShieldCheck, show: "hidden 2xl:flex" },
+];
 
 /**
- * Utility bar above the header on wide screens (owner's design, 2026-11-21): three short
- * facts about how Jeparla works on the left, the language on the right. It scrolls away
- * with the page; the sticky header below it stays. Only what is true of a catalog: no
- * delivery or round-the-clock promise, since stores sell and deliver, not Jeparla.
- * Above the header in the stack (z-50), so the language list opens over it.
+ * Utility bar above the header on wide screens (owner's design, 2026-11-21): short notes
+ * about how Jeparla works; quality and support open the pages that explain them. It
+ * scrolls away with the page; the sticky header below it stays. No delivery or
+ * round-the-clock promise: stores sell and deliver, not Jeparla.
  */
 export function TopBar() {
   const t = useTranslations("TopBar");
   return (
-    <div data-topbar="" className="relative z-50 hidden border-b bg-muted text-xs lg:block">
-      <div className="container-page flex h-9 items-center justify-between gap-6">
-        <ul className="flex items-center divide-x divide-border">
-          {NOTES.map(({ key, Icon }) => (
-            <li key={key} className="flex items-center gap-2 px-5 first:pl-0">
-              <Icon aria-hidden className="size-3.5 shrink-0 text-gold-text" />
-              {t(key)}
-            </li>
-          ))}
-        </ul>
-        <LocaleSwitcher compact align="end" />
-      </div>
+    <div data-topbar="" className="relative z-50 hidden border-b bg-surface-warm text-xs lg:block">
+      <ul className="container-page flex h-9 items-center divide-x divide-border">
+        {NOTES.map(({ key, Icon, href, show }) => (
+          <li key={key} className={cn("items-center px-5 first:pl-0", show ?? "flex")}>
+            {href ? (
+              <Link
+                href={href}
+                prefetch={false}
+                className="inline-flex items-center gap-2 link-underline"
+              >
+                <Icon aria-hidden className="size-3.5 shrink-0 text-gold-text" />
+                {t(key)}
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <Icon aria-hidden className="size-3.5 shrink-0 text-gold-text" />
+                {t(key)}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

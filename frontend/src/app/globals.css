@@ -25,6 +25,7 @@
   --color-scene-diamond: var(--scene-diamond);
   --color-scene-silver-text: var(--scene-silver-text);
   --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
   --color-gold: var(--gold);
   --color-on-gold: var(--on-gold);
   --color-gold-text: var(--gold-text);
@@ -384,9 +385,7 @@
      this far above the bottom plus some air, so the two never meet (#287). */
   /* Utility bar above the header (<TopBar>, wide screens only): the hero starts under it. */
   --topbar-height: 0rem;
-  /* Trust strip along the hero's foot; the rail and the copy stand this much higher. */
-  --hero-strip-height: 3.5rem;
-  --hero-rail-bottom: calc(2rem + var(--hero-strip-height));
+  --hero-rail-bottom: 2rem;
   --hero-rail-height: 2.5rem;
   --hero-copy-floor: calc(
     var(--hero-rail-bottom) + var(--hero-rail-height) + clamp(1.25rem, 4svh, 3rem)
@@ -497,7 +496,7 @@
   position: absolute;
   z-index: 2;
   left: 50%;
-  bottom: calc(1.25rem + var(--hero-strip-height));
+  bottom: 1.25rem;
   display: none;
   align-items: center;
   gap: 0.375rem;
@@ -567,75 +566,12 @@
   }
 }
 
-/* Trust strip: a cream band along the foot of the hero with two promises, each a link
-   to the page that explains it. Solid ground, so the labels keep AA over any frame. */
-.hero-trust {
-  position: absolute;
-  z-index: 2;
-  inset: auto 0 0;
-  display: flex;
-  justify-content: center;
-  height: var(--hero-strip-height);
-  margin: 0;
-  padding: 0 var(--gutter-page);
-  list-style: none;
-  border-top: 1px solid color-mix(in oklab, var(--scene-green) 14%, transparent);
-  background: var(--scene-ivory);
-  color: var(--scene-green);
-  font-size: 0.8125rem;
-  line-height: 1.2;
-}
-.hero-trust li {
-  display: flex;
-  flex: 0 1 22rem;
-  justify-content: center;
-}
-.hero-trust li + li {
-  border-left: 1px solid color-mix(in oklab, var(--scene-green) 14%, transparent);
-}
-.hero-trust a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  min-height: 2.75rem;
-  align-self: center;
-  padding-inline: 0.75rem;
-  border-radius: 0.375rem;
-  color: inherit;
-  transition: color 200ms;
-}
-.hero-trust a:hover {
-  color: var(--scene-gold-deep);
-}
-.hero-trust a:focus-visible {
-  outline: 2px solid var(--scene-gold-deep);
-  outline-offset: -2px;
-}
-.hero-trust svg {
-  flex: none;
-  color: var(--scene-gold-deep);
-}
-@media (min-width: 48rem) {
-  .hero-trust {
-    font-size: 0.875rem;
-  }
-}
-/* Landscape phones: one short screen has no room for the strip. */
-@media (min-aspect-ratio: 4/5) and (max-height: 32rem) {
-  :root {
-    --hero-strip-height: 0rem;
-  }
-  .hero-trust {
-    display: none;
-  }
-}
-
 /* Scene rail (#259): names the three models left to right. A cream pill keeps the
    labels AA over any frame; the gold line fills while the camera is on that model. */
 .hero-scenes {
   position: absolute;
   z-index: 2;
-  bottom: calc(1rem + var(--hero-strip-height));
+  bottom: 1rem;
   left: 50%;
   translate: -50% 0;
   display: flex;
