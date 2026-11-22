@@ -1,4 +1,10 @@
 import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
+import {
+  LETTERS,
+  letterProgress,
+  PEN_BOLD,
+  PEN_FEATHER,
+} from "../../frontend/src/components/brand/handwriting";
 import { WORDMARK } from "../../frontend/src/components/brand/logo-paths";
 import {
   BACKDROP,
@@ -60,15 +66,14 @@ function Shadow({ box, f, opacity }: { box: Box; f: Format; opacity: number }) {
 }
 
 /**
- * The brand word behind the animals, written by hand as they walk in (owner, 2026-11-22):
+ * The brand word behind the animals, written by hand, letter by letter, as they walk in
+ * (owner, 2026-11-22):
  * the script wordmark of the site (frontend/src/components/brand/logo-paths.ts, generated
  * by docs/brand/src/build-logo-script.mjs) in a bold stroke, revealed left to right behind
  * a soft pen, then the ring is drawn on the J. Same look as the word above the models on
  * the site. Centred over the animals, its lower part hidden by their heads; it dissolves at
  * the start of act 2 (as the scroll begins).
  */
-const FEATHER = 36;
-const BOLD = 4;
 function Word({ f, frame }: { f: Format; frame: number }) {
   const span = (GROUP.right - GROUP.left) * f.scale;
   const width = span * 0.95;
@@ -77,7 +82,7 @@ function Word({ f, frame }: { f: Format; frame: number }) {
   const cx = f.x + ((GROUP.left + GROUP.right) / 2) * f.scale;
   const headTop = f.y + Math.min(...TIGERS.map((t) => t.top)) * f.scale;
   // Letters 6-70, ring 70-92, stone 88-96; a short hold, then it leaves with act 2.
-  const pen = interpolate(frame, [6, 70], [0, 1], { ...clamp, easing: Easing.inOut(Easing.sin) });
+  const pen = interpolate(frame, [6, 70], [0, 1], clamp);
   const ringDraw = interpolate(frame, [70, 92], [0, 1], { ...clamp, easing: easeOut });
   const stone = interpolate(frame, [88, 96], [0, 1], clamp);
   const appear = interpolate(frame, [4, 10], [0, 1], clamp);
@@ -100,25 +105,31 @@ function Word({ f, frame }: { f: Format; frame: number }) {
       }}
     >
       <defs>
-        <linearGradient id="pen-fade" x1="0" x2="1" y1="0" y2="0">
-          <stop offset={WORDMARK.width / (WORDMARK.width + FEATHER)} stopColor="#fff" />
-          <stop offset="1" stopColor="#000" />
-        </linearGradient>
-        <mask id="pen" maskUnits="userSpaceOnUse" x={-FEATHER} y={-20} width={WORDMARK.width + FEATHER * 2} height={WORDMARK.height + 40}>
-          <rect
-            x={(pen - 1) * (WORDMARK.width + FEATHER)}
-            y={-20}
-            width={WORDMARK.width + FEATHER}
-            height={WORDMARK.height + 40}
-            fill="url(#pen-fade)"
-          />
-        </mask>
+        {LETTERS.map((l, i) => (
+          <linearGradient key={i} id={`pen-fade-${i}`} x1="0" x2="1" y1="0" y2="0">
+            <stop offset={1 - PEN_FEATHER / (l.travel + 4)} stopColor="#fff" />
+            <stop offset="1" stopColor="#000" />
+          </linearGradient>
+        ))}
+        {LETTERS.map((l, i) => (
+          <mask key={i} id={`pen-${i}`} maskUnits="userSpaceOnUse" x={l.x0 - 40} y={-30} width={l.travel + 80} height={WORDMARK.height + 60}>
+            <rect
+              x={l.x0 - 4 + (letterProgress(l, pen) - 1) * (l.travel + 4)}
+              y={-30}
+              width={l.travel + 4}
+              height={WORDMARK.height + 60}
+              fill={`url(#pen-fade-${i})`}
+            />
+          </mask>
+        ))}
       </defs>
       <path fill="none" stroke={GOLD_DEEP} strokeWidth={ring.stroke * 1.25} strokeLinecap="round"
-        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} d={ring.back} />
-      <path mask="url(#pen)" fill={INK} stroke={INK} strokeWidth={BOLD} strokeLinejoin="round" d={WORDMARK.letters} />
+        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} opacity={ringDraw > 0 ? 1 : 0} d={ring.back} />
+      {LETTERS.map((l, i) => (
+        <path key={i} mask={`url(#pen-${i})`} fill={INK} stroke={INK} strokeWidth={PEN_BOLD} strokeLinejoin="round" d={l.d} />
+      ))}
       <path fill="none" stroke={GOLD} strokeWidth={ring.stroke * 1.25} strokeLinecap="round"
-        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} d={ring.front} />
+        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} opacity={ringDraw > 0 ? 1 : 0} d={ring.front} />
       <path fill={GOLD_LIGHT} stroke={GOLD_DEEP} strokeWidth={ring.stoneStroke} strokeLinejoin="round"
         opacity={stone} d={ring.stone} />
     </svg>
