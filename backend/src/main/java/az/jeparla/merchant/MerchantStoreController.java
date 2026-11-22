@@ -61,6 +61,13 @@ public class MerchantStoreController {
         return stores.acceptCode();
     }
 
+    @PostMapping("/store/guide-dismissal")
+    @Operation(summary = "Close the cabinet's first-visit guide (#301)",
+            description = "Kept on the store, so the guide stays closed on every device. Repeating it is a no-op.")
+    public MerchantStoreDto dismissGuide() {
+        return stores.dismissGuide();
+    }
+
     @GetMapping("/dashboard")
     @Operation(summary = "Products per status and WhatsApp clicks of the last 30 days")
     public MerchantDashboardDto dashboard() {

@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     return problemResponse(e);
   }
 
+  let productId: number | undefined;
   try {
     await apiFetch("/merchant/stores", {
       method: "POST",
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
       const category = categories.find((c) => c.slug === product.category);
       const fineness = finenesses.find((f) => String(f.id) === product.fineness);
       if (category && fineness) {
-        await apiFetch("/merchant/products", {
+        const created = await apiFetch<{ id: number }>("/merchant/products", {
           method: "POST",
           token,
           locale,
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
             ],
           },
         });
+        productId = created.id;
       }
     }
   } catch (e) {
@@ -98,5 +100,6 @@ export async function POST(request: Request) {
     console.error("Seller wizard: store or first product not saved", e);
     return Response.json({ session, partial: true }, { status: 201 });
   }
-  return Response.json({ session }, { status: 201 });
+  // The congratulations screen links straight to the draft (#301).
+  return Response.json({ session, productId }, { status: 201 });
 }

@@ -239,6 +239,10 @@ test.describe("usability: seller signs up and adds the first product", () => {
     ).toBeVisible();
     // The seller learns what happens next and has one main way forward.
     await expect(page.getByRole("link", { name: "Kabinetə keç" })).toBeVisible();
+    // The first product is a draft without photos: one tap to it (#301).
+    await expect(
+      page.getByRole("link", { name: "Şəkil əlavə et və yoxlamaya göndər" }),
+    ).toHaveAttribute("href", /\/merchant\/products(\/\d+\/edit)?$/);
     await expectNoA11yViolations(page);
 
     f.expectAtMost(SELLER_WIZARD_SCREENS_MAX);

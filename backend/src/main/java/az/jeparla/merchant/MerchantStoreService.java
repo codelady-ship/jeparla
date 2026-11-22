@@ -119,6 +119,14 @@ public class MerchantStoreService {
                         + SellerCode.CURRENT_TERMS_VERSION + "}");
     }
 
+    /** The seller closed the cabinet's first-visit guide (#301): not shown again on any device. */
+    @Transactional
+    public MerchantStoreDto dismissGuide() {
+        Store store = merchantStores.own();
+        store.dismissGuide(clock.instant());
+        return MerchantStoreDto.of(store);
+    }
+
     @Transactional(readOnly = true)
     public MerchantStoreDto get() {
         return MerchantStoreDto.of(merchantStores.own());

@@ -19,17 +19,20 @@ const hidden = () => false;
 
 /**
  * First-visit guide of the seller cabinet (#176): three steps, dismissible, and not shown
- * again once dismissed (remembered per browser, like the install card).
+ * again once dismissed. Closing it is kept on the account (#301), so a second device does
+ * not show it again; the browser copy covers sample data and an offline close.
  */
-export function SellerGuide() {
+export function SellerGuide({ dismissed = false }: { dismissed?: boolean }) {
   const show = useSyncExternalStore(subscribe, visible, hidden);
-  if (!show) return null;
+  if (dismissed || !show) return null;
   return (
     <Suspense fallback={null}>
       <SellerGuideCard
         onDismiss={() => {
           dismissGuide(storage("localStorage"));
           closed = true;
+          // Best effort: without the backend (sample data) the route answers 503.
+          void fetch("/api/merchant/profile/guide", { method: "POST" }).catch(() => undefined);
           // Focus inside the card would be lost when it unmounts: hand it to the page.
           document.getElementById("main")?.focus({ preventScroll: true });
           listeners.forEach((l) => l());

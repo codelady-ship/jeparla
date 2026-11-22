@@ -1038,7 +1038,8 @@
       },
       "3": {
         "title": "Documents",
-        "intro": "If you sell gold or silver, upload a photo or PDF of a store document; you can also send it later."
+        "intro": "If you sell gold or silver, upload a photo or PDF of a store document; you can also send it later.",
+        "introFashion": "Bijouterie and handmade items need no documents: you can skip this step."
       },
       "4": {
         "title": "First product",
@@ -1137,7 +1138,8 @@
       },
       "dashboard": "Go to dashboard",
       "home": "Home",
-      "startOver": "Start a new sign-up"
+      "startOver": "Start a new sign-up",
+      "addPhoto": "Add photos and send for review"
     },
     "sellerKind": {
       "question": "Do you sell official jewellery (gold, silver, platinum, diamonds)?",

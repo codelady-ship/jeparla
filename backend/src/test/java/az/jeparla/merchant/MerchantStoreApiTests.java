@@ -98,6 +98,25 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void theClosedGuideStaysClosedForTheStoreNotTheBrowser() throws Exception {
+        Seller seller = seller(SellerKind.PRECIOUS, false);
+        mvc.perform(get("/api/v1/merchant/store").with(seller.token()))
+                .andExpect(jsonPath("$.guideDismissed").value(false));
+        mvc.perform(post("/api/v1/merchant/store/guide-dismissal").with(seller.token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.guideDismissed").value(true));
+        // A repeat keeps the first time.
+        var first = jdbc.queryForObject("SELECT guide_dismissed_at FROM stores WHERE id = ?",
+                java.sql.Timestamp.class, seller.storeId());
+        mvc.perform(post("/api/v1/merchant/store/guide-dismissal").with(seller.token()))
+                .andExpect(status().isOk());
+        assertThat(jdbc.queryForObject("SELECT guide_dismissed_at FROM stores WHERE id = ?",
+                java.sql.Timestamp.class, seller.storeId())).isEqualTo(first);
+        mvc.perform(get("/api/v1/merchant/store").with(seller.token()))
+                .andExpect(jsonPath("$.guideDismissed").value(true));
+    }
+
+    @Test
     void theProfileChangesButNotTheLegalData() throws Exception {
         Seller seller = seller(SellerKind.PRECIOUS, false);
         mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Yeni Ad", SellerKind.MIXED)).with(seller.token()))

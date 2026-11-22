@@ -55,6 +55,8 @@ export type MerchantStore = {
   codeAcceptedAt?: string | null;
   /** A year after the acceptance; after it products cannot go to review. */
   codeValidUntil?: string | null;
+  /** Backend only (#301): the seller closed the cabinet guide, on any device. */
+  guideDismissed?: boolean;
 };
 
 export type MerchantDashboard = {
