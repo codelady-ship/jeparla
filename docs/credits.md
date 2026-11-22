@@ -18,6 +18,8 @@ qızıl və brilyant zərgərlik taxmış üç modelə çevrilir.
   arxiv kimi `video/source/`-da qalır.
 - **Kompozisiya:** Remotion layihəsi (`video/`). `cd video && sh scripts/export.sh`
   `enter-*.mp4` (1-ci akt) və `tf-*/NN.jpg` (2-ci akt, scroll ilə) fayllarını yaradır.
+- **"Jeparla" yazısı:** pələnglərin arxasında və modellərin üstündə saytın əl yazısı loqosu
+  (Great Vibes konturları, `docs/brand/`) qalın xətlə, əl ilə yazılırmış kimi çıxır (sahibin istəyi, 2026-11-22).
 - **İşarələmə:** sahibin qərarı ilə (2026-11-05) hero-da "AI" yazısı göstərilmir. Bu, kampaniya
   vizualıdır, məhsul şəkli deyil: modellərin taxdığı zərgərlik kataloqdakı konkret məhsulu
   təsvir etmir. Məhsul şəkilləri üçün AI işarəsi qaydası (`CLAUDE.md`) qüvvədədir.

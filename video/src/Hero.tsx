@@ -1,9 +1,10 @@
 import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { loadFont } from "@remotion/google-fonts/Cormorant";
+import { WORDMARK } from "../../frontend/src/components/brand/logo-paths";
 import {
   BACKDROP,
   ENTER,
   GOLD,
+  GOLD_DEEP,
   GOLD_LIGHT,
   GROUP,
   INK,
@@ -16,8 +17,6 @@ import {
   type Format,
 } from "./layout";
 
-// Same heading face as the site (Cormorant), loaded at render time.
-const { fontFamily } = loadFont("normal", { weights: ["500"], subsets: ["latin"] });
 
 type Box = { left: number; top: number; width: number; height: number };
 
@@ -61,39 +60,68 @@ function Shadow({ box, f, opacity }: { box: Box; f: Format; opacity: number }) {
 }
 
 /**
- * The brand word behind the animals: centred over them, its lower part hidden by
- * their heads. A shadow-dark ink, so it reads clearly on the cream. It rises in
- * during act 1 and dissolves at the start of act 2 (as the scroll begins).
+ * The brand word behind the animals, written by hand as they walk in (owner, 2026-11-22):
+ * the script wordmark of the site (frontend/src/components/brand/logo-paths.ts, generated
+ * by docs/brand/src/build-logo-script.mjs) in a bold stroke, revealed left to right behind
+ * a soft pen, then the ring is drawn on the J. Same look as the word above the models on
+ * the site. Centred over the animals, its lower part hidden by their heads; it dissolves at
+ * the start of act 2 (as the scroll begins).
  */
+const FEATHER = 36;
+const BOLD = 4;
 function Word({ f, frame }: { f: Format; frame: number }) {
   const span = (GROUP.right - GROUP.left) * f.scale;
-  const size = (span * 1.05) / 3.1;
+  const width = span * 0.95;
+  const k = width / WORDMARK.width;
+  const height = WORDMARK.height * k;
   const cx = f.x + ((GROUP.left + GROUP.right) / 2) * f.scale;
   const headTop = f.y + Math.min(...TIGERS.map((t) => t.top)) * f.scale;
-  const enter = interpolate(frame, [4, 46], [0, 1], { ...clamp, easing: easeOut });
+  // Letters 6-70, ring 70-92, stone 88-96; a short hold, then it leaves with act 2.
+  const pen = interpolate(frame, [6, 70], [0, 1], { ...clamp, easing: Easing.inOut(Easing.sin) });
+  const ringDraw = interpolate(frame, [70, 92], [0, 1], { ...clamp, easing: easeOut });
+  const stone = interpolate(frame, [88, 96], [0, 1], clamp);
+  const appear = interpolate(frame, [4, 10], [0, 1], clamp);
   const leave = interpolate(frame, [ENTER, ENTER + 14], [0, 1], { ...clamp, easing: easeInOut });
+  const { ring } = WORDMARK;
   return (
-    <div
+    <svg
+      viewBox={`0 0 ${WORDMARK.width} ${WORDMARK.height}`}
       style={{
         position: "absolute",
-        left: cx - size * 2.5,
-        width: size * 5,
-        top: headTop - size * 0.55,
-        textAlign: "center",
-        fontFamily,
-        fontWeight: 500,
-        fontSize: size,
-        lineHeight: 1,
-        letterSpacing: `${(1 - enter) * 0.08}em`,
-        color: INK,
-        opacity: enter * (1 - leave) * 0.2,
-        transform: `translateY(${(1 - enter) * size * 0.25 - leave * size * 0.3}px)`,
-        filter: `blur(${(1 - enter) * 14 + leave * 12}px)`,
-        textShadow: `0 ${size * 0.05}px ${size * 0.1}px rgba(22, 37, 31, 0.55)`,
+        left: cx - width / 2,
+        // The baseline sits a little below the tallest head, as the word did before.
+        top: headTop - height * 0.62,
+        width,
+        height,
+        overflow: "visible",
+        opacity: appear * (1 - leave),
+        transform: `translateY(${-leave * height * 0.15}px)`,
+        filter: `blur(${leave * 12}px) drop-shadow(0 ${4 * k}px ${8 * k}px rgba(22, 37, 31, 0.25))`,
       }}
     >
-      Jeparla
-    </div>
+      <defs>
+        <linearGradient id="pen-fade" x1="0" x2="1" y1="0" y2="0">
+          <stop offset={WORDMARK.width / (WORDMARK.width + FEATHER)} stopColor="#fff" />
+          <stop offset="1" stopColor="#000" />
+        </linearGradient>
+        <mask id="pen" maskUnits="userSpaceOnUse" x={-FEATHER} y={-20} width={WORDMARK.width + FEATHER * 2} height={WORDMARK.height + 40}>
+          <rect
+            x={(pen - 1) * (WORDMARK.width + FEATHER)}
+            y={-20}
+            width={WORDMARK.width + FEATHER}
+            height={WORDMARK.height + 40}
+            fill="url(#pen-fade)"
+          />
+        </mask>
+      </defs>
+      <path fill="none" stroke={GOLD_DEEP} strokeWidth={ring.stroke * 1.25} strokeLinecap="round"
+        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} d={ring.back} />
+      <path mask="url(#pen)" fill={INK} stroke={INK} strokeWidth={BOLD} strokeLinejoin="round" d={WORDMARK.letters} />
+      <path fill="none" stroke={GOLD} strokeWidth={ring.stroke * 1.25} strokeLinecap="round"
+        pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ringDraw} d={ring.front} />
+      <path fill={GOLD_LIGHT} stroke={GOLD_DEEP} strokeWidth={ring.stoneStroke} strokeLinejoin="round"
+        opacity={stone} d={ring.stone} />
+    </svg>
   );
 }
 

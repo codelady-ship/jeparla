@@ -35,6 +35,8 @@ export const GOLD = "#C5A15A";
 /** Site dark green (scene green), used for the shadow-like brand word. */
 export const INK = "#16251F";
 export const GOLD_LIGHT = "#E8D39A";
+/** Scene gold deep: the far half of the ring on the wordmark. */
+export const GOLD_DEEP = "#8C6A26";
 
 export const FPS = 30;
 /** Frames until the last clip frame is reached (scene frame -> clip frame). */

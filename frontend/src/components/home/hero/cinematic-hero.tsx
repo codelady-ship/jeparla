@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { HERO_SCENES } from "./hero-media";
 import { HeroMotion } from "./hero-motion";
+import { HandwrittenWordmark } from "@/components/brand/handwritten-wordmark";
 
 const delay = (d: number) => ({ "--d": d }) as CSSProperties;
 
@@ -32,8 +33,9 @@ export function CinematicHero() {
   return (
     <HeroMotion label={t("label")} scene={t("scene")}>
       <div className="hero-copy">
-        <p aria-hidden data-hero-brand className="hero-brand font-heading">
-          Jeparla
+        <p aria-hidden data-hero-brand className="hero-brand">
+          <HandwrittenWordmark />
+          <span className="sr-only">Jeparla</span>
         </p>
         <h1 className="hero-title font-heading text-balance">{t("title")}</h1>
         <p

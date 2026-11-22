@@ -486,6 +486,19 @@
   line-height: 1;
   letter-spacing: 0.01em;
 }
+/* Handwritten wordmark (components/brand/handwritten-wordmark.tsx): the letters behind a
+   soft pen until --write reaches 0.8, then the ring is drawn on the J and the stone lights.
+   333.4 = wordmark width + pen feather (user units). Without --write: complete. */
+.handwritten-pen {
+  transform: translateX(calc((min(1, var(--write, 1) / 0.8) - 1) * 333.4px));
+}
+.handwritten-ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - clamp(0, (var(--write, 1) - 0.78) * 5, 1));
+}
+.handwritten-stone {
+  opacity: clamp(0, (var(--write, 1) - 0.92) * 12.5, 1);
+}
 .hero-title {
   margin: 0;
   font-size: clamp(2.25rem, 9vw, 3.25rem);
