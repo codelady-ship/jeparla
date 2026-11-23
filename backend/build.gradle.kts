@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.1.2"
+    id("org.springframework.boot") version "4.2.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -23,7 +23,7 @@ val springdocVersion = "3.2.0"
 // ShedLock 7.x targets Spring Framework 7 / Boot 4.
 val shedlockVersion = "7.11.0"
 // AWS SDK v2 for S3-compatible storage (Cloudflare R2, MinIO locally): presigned uploads and object checks (#39).
-val awsSdkVersion = "2.59.1"
+val awsSdkVersion = "2.59.5"
 // QR code of the store share link as SVG (#100): Nayuki's encoder, MIT, one 38 KB jar without dependencies.
 val qrcodegenVersion = "1.8.0"
 
@@ -59,7 +59,7 @@ dependencies {
     // Email outbox (#131): plain-text mail through any SMTP relay (provider in docs/deploy.md, keys in env only).
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // Error tracking (#56): Sentry Free. Off unless SENTRY_DSN is set (env only); no personal data is sent.
-    implementation("io.sentry:sentry-spring-boot-4-starter:8.64.0")
+    implementation("io.sentry:sentry-spring-boot-4-starter:8.65.0")
     // Store share link QR code, rendered as SVG on the server so the frontend ships no QR library (#100).
     implementation("io.nayuki:qrcodegen:$qrcodegenVersion")
     // Catalog PDF import (#129): only embedded images and text are read; PDFBox runs no JavaScript or actions.
@@ -70,9 +70,9 @@ dependencies {
     // Local image models on the API's CPU (#119 studio look, #163 search by photo): ONNX Runtime, MIT. The jar
     // carries the native CPU library for linux-aarch64 (the Oracle ARM VM) and x64. Model files are not in the
     // repository: they are downloaded on first start from a pinned URL and checked by SHA-256 (OnnxModelFile).
-    implementation("com.microsoft.onnxruntime:onnxruntime:1.22.0")
+    implementation("com.microsoft.onnxruntime:onnxruntime:1.32.0")
     // WebP decoding for ImageIO (seller photos may be WebP): TwelveMonkeys, BSD-3-Clause, pure Java.
-    implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
+    implementation("com.twelvemonkeys.imageio:imageio-webp:3.15.3")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
