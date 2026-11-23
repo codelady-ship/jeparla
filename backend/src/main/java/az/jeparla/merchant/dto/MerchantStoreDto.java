@@ -44,7 +44,7 @@ public record MerchantStoreDto(
         String description,
         String openingHours,
         LegalType legalType,
-        String taxId,
+        @Schema(nullable = true) String taxId,
         SellerKind sellerKind,
         StoreStatus status,
         @Schema(nullable = true) String statusNote,

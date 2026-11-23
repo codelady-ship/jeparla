@@ -86,6 +86,40 @@ class MerchantStoreApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void onlyABijouterieStoreMayApplyWithoutATaxId() throws Exception {
+        for (SellerKind kind : new SellerKind[] {SellerKind.PRECIOUS, SellerKind.MIXED}) {
+            long userId = newMerchant();
+            mvc.perform(json(post(STORES), storeJson("Ayzər", kind).replace("1234567890", "")).with(merchant(userId)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("merchant.tax_id_required"));
+            mvc.perform(get("/api/v1/merchant/store").with(merchant(userId))).andExpect(status().isNotFound());
+        }
+
+        long userId = newMerchant();
+        String noTaxId = storeJson("Muncuq Evi", SellerKind.FASHION).replace(", \"taxId\": \"1234567890\"", "");
+        mvc.perform(json(post(STORES), noTaxId).with(merchant(userId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.sellerKind").value("FASHION"))
+                .andExpect(jsonPath("$.taxId").doesNotExist());
+        String blankTaxId = storeJson("Əl İşi", SellerKind.FASHION).replace("1234567890", "");
+        mvc.perform(json(post(STORES), blankTaxId).with(merchant(newMerchant())))
+                .andExpect(status().isCreated());
+        // A wrong VOEN is still wrong, also for bijouterie.
+        String badTaxId = storeJson("Əl İşi", SellerKind.FASHION).replace("1234567890", "12345");
+        mvc.perform(json(post(STORES), badTaxId).with(merchant(newMerchant())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[*].field", Matchers.contains("taxId")));
+
+        // Without a VOEN the store cannot turn itself into a precious-metal seller.
+        mvc.perform(json(put("/api/v1/merchant/store"), profileJson("Muncuq Evi", SellerKind.MIXED))
+                        .with(merchant(userId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("merchant.tax_id_required"));
+        assertThat(jdbc.queryForObject("SELECT tax_id FROM stores WHERE owner_id = ?",
+                String.class, userId)).isNull();
+    }
+
+    @Test
     void onlyMerchantsReachTheMerchantApi() throws Exception {
         mvc.perform(json(post(STORES), storeJson("Ayzər", SellerKind.PRECIOUS)))
                 .andExpect(status().isUnauthorized());

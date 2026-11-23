@@ -26,8 +26,9 @@ import java.time.Instant;
         "id", "slug", "name", "city", "sellerKind", "legalType", "taxId", "status", "sellerStatus", "documentsStatus",
         "ownerName", "createdAt", "productCount", "whatsapp", "address", "geo"})
 public record AdminStoreDto(long id, String slug, String name, String city, SellerKind sellerKind,
-        LegalType legalType, String taxId, StoreStatus status, String statusNote, CheckStatus sellerStatus,
-        CheckStatus documentsStatus, String ownerName, String ownerContact, Instant createdAt, Instant approvedAt,
+        LegalType legalType, @Schema(nullable = true) String taxId, StoreStatus status, String statusNote,
+        CheckStatus sellerStatus, CheckStatus documentsStatus, String ownerName, String ownerContact,
+        Instant createdAt, Instant approvedAt,
         long productCount, String whatsapp, @Schema(nullable = true) String phone, String address,
         @Schema(nullable = true) StoreDto.GeoDto geo, @Schema(nullable = true) Instant legalHoldAt) {
 
