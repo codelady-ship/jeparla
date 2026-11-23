@@ -2,6 +2,13 @@
 
 Qızıl, gümüş və brilyant zərgərlik mağazaları üçün çoxmağazalı kataloq.
 
+**Canlı sayt:** [jeparla.duckdns.org/az](https://jeparla.duckdns.org/az)
+
+<p>
+  <img src="./docs/screenshots/home-desktop.webp" alt="Jeparla ana səhifəsi, kompüter" width="640">
+  <img src="./docs/screenshots/home-mobile.webp" alt="Jeparla ana səhifəsi, telefon" width="180">
+</p>
+
 - Mağaza və kateqoriya üzrə axtarış, əyar, çəki, qiymət və brilyant parametrləri ilə filtrlər
 - AMB-nin gündəlik metal məzənnəsi və metala bağlı avtomatik qiymət
 - Jeparla Verified: satıcı, sənəd və ekspertiza statusları ayrı-ayrılıqda
