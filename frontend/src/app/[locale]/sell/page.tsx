@@ -54,7 +54,14 @@ export default async function SellPage() {
         </div>
         <IntlProvider
           locale={locale}
-          messages={{ Common: m.Common, Errors: m.Errors, Sell: m.Sell, Auth: m.Auth }}
+          messages={{
+            Common: m.Common,
+            Errors: m.Errors,
+            Sell: m.Sell,
+            Auth: m.Auth,
+            // The step 4 photo field is the product form's (#317).
+            Merchant: { form: { images: m.Merchant.form.images } },
+          }}
         >
           {/* The wizard reads ?step=, so it renders on the client inside Suspense. */}
           <Suspense fallback={<Skeleton className="h-96 w-full rounded-lg" />}>

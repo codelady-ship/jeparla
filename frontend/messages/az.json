@@ -1043,7 +1043,8 @@
       },
       "4": {
         "title": "İlk məhsul",
-        "intro": "İlk məhsulun adını, əyarını, çəkisini və qiymətini yazın və ya bu addımı keçib sonra əlavə edin."
+        "intro": "İlk məhsulun adını, əyarını, çəkisini və qiymətini yazın və ya bu addımı keçib sonra əlavə edin.",
+        "introFashion": "Məhsulun şəkillərini indi əlavə edə bilərsiniz; adını, materialını və qiymətini qeydiyyatdan sonra kabinetdə yazırsınız."
       }
     },
     "fields": {
@@ -1062,14 +1063,18 @@
       "fineness": "Əyar",
       "weight": "Çəki (qram)",
       "price": "Qiymət (AZN)",
-      "codeAccepted": "<link>Satıcı davranış kodeksini</link> və <terms>Satıcı şərtlərini</terms> oxudum və qəbul edirəm."
+      "codeAccepted": "<link>Satıcı davranış kodeksini</link> və <terms>Satıcı şərtlərini</terms> oxudum və qəbul edirəm.",
+      "photos": "Məhsul şəkilləri"
     },
     "hints": {
       "phone": "Məsələn 050 123 45 67. SMS təsdiqi sonra əlavə olunacaq.",
       "whatsapp": "Alıcılar bu nömrəyə yazacaq.",
       "social": "@ad və ya https:// ilə başlayan keçid.",
       "taxId": "10 rəqəm.",
-      "fineness": "Məmulatın üzərindəki damğadakı rəqəm, məsələn 585."
+      "fineness": "Məmulatın üzərindəki damğadakı rəqəm, məsələn 585.",
+      "photos": "İlk şəkil əsas şəkildir. Şəkillər qeydiyyatdan dərhal sonra məhsula yüklənir.",
+      "photosFashion": "Şəkillər qeydiyyatdan dərhal sonra kabinetdə qaralama kimi saxlanılır; hər şəkildən bir məhsul yaradırsınız.",
+      "taxIdFashion": "Bijuteriya və əl işi üçün istəyə bağlıdır. VÖEN-iniz varsa, 10 rəqəmlə yazın."
     },
     "examples": {
       "name": "Məsələn: Aysel Məmmədova",
@@ -1139,7 +1144,12 @@
       "dashboard": "Kabinetə keç",
       "home": "Ana səhifə",
       "startOver": "Yeni qeydiyyat başlat",
-      "addPhoto": "Şəkil əlavə et və yoxlamaya göndər"
+      "addPhoto": "Şəkil əlavə et və yoxlamaya göndər",
+      "openDraft": "Qaralamanı aç və yoxlamaya göndər",
+      "openPhotoDrafts": "Şəkillərdən məhsul yarat",
+      "photosOnProduct": "{count, plural, one {# şəkil məhsula yükləndi.} other {# şəkil məhsula yükləndi.}}",
+      "photosAsDrafts": "{count, plural, one {# şəkil kabinetdə qaralama kimi saxlandı.} other {# şəkil kabinetdə qaralama kimi saxlandı.}}",
+      "photosMissing": "{total} şəkildən {saved} yükləndi. Qalanlarını kabinetdən yenidən yükləyin."
     },
     "sellerKind": {
       "question": "Rəsmi zərgərlik məhsulları (qızıl, gümüş, platin, brilyant) satırsınız?",
@@ -1151,7 +1161,7 @@
       "MIXED": "Hər ikisi",
       "MIXEDHint": "Hər məhsulda növü seçirsiniz; qiymətli məhsullar üçün sənəd tələb olunur."
     },
-    "fashionProductLater": "Bijuteriya məhsulunu qeydiyyatdan sonra kabinetdə əlavə edəcəksiniz: orada metal və əyar əvəzinə materialı seçirsiniz. \"Qeydiyyatı bitir\" düyməsini basın."
+    "fashionProductLater": "Bijuteriya məhsulunu qeydiyyatdan sonra kabinetdə tamamlayırsınız: orada materialı, adı və qiyməti yazırsınız. \"Qeydiyyatı bitir\" düyməsini basın."
   },
   "SellLanding": {
     "eyebrow": "Satıcılar üçün",
@@ -1181,6 +1191,11 @@
         "title": "Birbaşa WhatsApp-a",
         "text": "Vasitəçi yoxdur: alıcı məhsulun adı, kodu və linki ilə sizə yazır. Satış və ödəniş sizinlə alıcı arasındadır."
       }
+    },
+    "ai": {
+      "title": "AI ilə model üzərində şəkil",
+      "text": "Məhsul şəklinizdən AI zərgərliyi model üzərində göstərən yeni şəkil yaradır. Nəticəni əvvəlcə siz görürsünüz: təsdiqləsəniz, şəkil məhsula əlavə olunur və alıcıya \"AI ilə yaradılıb\" nişanı ilə göstərilir. Orijinal şəkliniz dəyişmir.",
+      "note": "Bu imkan AI xidməti qoşulu olanda işləyir; qoşulu deyilsə, kabinet bunu açıq deyir."
     },
     "howTitle": "Necə işləyir",
     "steps": {

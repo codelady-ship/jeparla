@@ -123,7 +123,8 @@ export type Store = StoreSummary & {
 export type SellerIdentity = {
   legalName: string;
   legalType: "COMPANY" | "SOLE_TRADER";
-  taxId: string;
+  /** Null for a bijouterie store that applied without a VOEN (#317). */
+  taxId: string | null;
 };
 
 /** The store's own answer (#108): days only with offered = true. */

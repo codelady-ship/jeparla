@@ -16,9 +16,11 @@ import {
   docsStep,
   LEGAL_TYPES,
   normalizePhone,
+  PHOTO_MAX_COUNT,
   productStep,
   storeStep,
 } from "@/lib/seller/schemas";
+import { ImageUpload } from "@/components/merchant/image-upload";
 import { DocUpload } from "./doc-upload";
 import { RadioGroupField, SelectField, TextField } from "./fields";
 import { SellerDone } from "./seller-done";
@@ -133,6 +135,7 @@ export function SellerWizard({
         store: draft.store,
         docs: { docs: draft.docs },
         product: skipProduct ? null : draft.product,
+        photos: draft.photos,
       });
       if (!result.ok) {
         fail(result.errors.form ? result.errors : { form: "server" });
@@ -143,6 +146,7 @@ export function SellerWizard({
         ...d,
         productSkipped: skipProduct,
         productId: result.productId ?? null,
+        photosSaved: result.photosSaved ?? 0,
         done: [1, 2, 3, 4],
         submitted: true,
       }));
@@ -191,6 +195,27 @@ export function SellerWizard({
   const setProduct = (patch: Partial<SellerDraft["product"]>) =>
     update((d) => ({ ...d, product: { ...d.product, ...patch } }));
 
+  // Step 4 photos (#317) for both paths. There is no account or store yet, so they wait in
+  // the draft and are uploaded right after sign-up: onto the first product, or as photo
+  // drafts in the cabinet (bijouterie, or no product).
+  const photoField = (
+    <div className="flex flex-col gap-2">
+      <p id="s-photos-label" className="text-sm font-medium">
+        {t("fields.photos")}{" "}
+        <span className="font-normal text-muted-foreground">({t("optional")})</span>
+      </p>
+      <p id="s-photos-hint" className="text-xs text-muted-foreground">
+        {fashionOnly ? t("hints.photosFashion") : t("hints.photos")}
+      </p>
+      <ImageUpload
+        images={draft.photos}
+        onChange={(photos) => update((d) => ({ ...d, photos }))}
+        maxCount={PHOTO_MAX_COUNT}
+        describedBy="s-photos-label s-photos-hint"
+      />
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <Stepper
@@ -217,8 +242,8 @@ export function SellerWizard({
             {titles[step - 1]}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {step === 3 && fashionOnly
-              ? t("steps.3.introFashion")
+            {(step === 3 || step === 4) && fashionOnly
+              ? t(step === 3 ? "steps.3.introFashion" : "steps.4.introFashion")
               : t(`steps.${STEP_KEYS[step - 1]}.intro`)}
           </p>
         </div>
@@ -350,13 +375,14 @@ export function SellerWizard({
             <TextField
               id="s-tax"
               label={t("fields.taxId")}
+              optional={fashionOnly ? t("optional") : undefined}
               inputMode="numeric"
               maxLength={10}
               placeholder="1234567890"
               value={s.taxId}
               onChange={(e) => setStore({ taxId: e.target.value.replace(/\D/g, "") })}
               error={err(errors.taxId)}
-              hint={t("hints.taxId")}
+              hint={fashionOnly ? t("hints.taxIdFashion") : t("hints.taxId")}
             />
             <div className="flex flex-col gap-1 sm:col-span-2">
               <label htmlFor="s-code" className="flex items-start gap-3 text-sm">
@@ -421,7 +447,10 @@ export function SellerWizard({
         )}
 
         {step === 4 && fashionOnly && (
-          <p className="rounded-lg bg-muted p-4 text-sm">{t("fashionProductLater")}</p>
+          <div className="flex flex-col gap-5">
+            {photoField}
+            <p className="rounded-lg bg-muted p-4 text-sm">{t("fashionProductLater")}</p>
+          </div>
         )}
 
         {step === 4 && !fashionOnly && (
@@ -472,6 +501,7 @@ export function SellerWizard({
               onChange={(e) => setProduct({ price: e.target.value })}
               error={err(errors.price)}
             />
+            <div className="sm:col-span-2">{photoField}</div>
             <p className="text-xs text-muted-foreground sm:col-span-2">{t("productDraft")}</p>
           </div>
         )}

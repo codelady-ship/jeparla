@@ -51,30 +51,43 @@ export const accountStep = z.object({
 
 export const LEGAL_TYPES = ["COMPANY", "SOLE_TRADER"] as const;
 
-export const storeStep = z.object({
-  storeName: z.string().trim().min(2, "storeNameShort").max(80, "nameLong"),
-  whatsapp: phone,
-  city: z.string().trim().min(1, "required"),
-  address: z.string().trim().min(5, "addressShort").max(200, "addressLong"),
-  social: z
-    .string()
-    .trim()
-    .max(200, "socialInvalid")
-    .refine((v) => v === "" || /^(@[\w.]{2,30}|https:\/\/\S+)$/.test(v), "socialInvalid"),
-  legalType: z.enum(LEGAL_TYPES, "required"),
-  /**
-   * "Do you sell official jewellery (gold, silver, platinum, diamonds)?" (#128): PRECIOUS, FASHION
-   * (bijouterie and handmade, no documents) or MIXED. Older drafts without it read as PRECIOUS.
-   */
-  sellerKind: z.enum(["PRECIOUS", "FASHION", "MIXED"], "required").default("PRECIOUS"),
-  /** VOEN: 10 digits, the same for companies and sole traders. */
-  taxId: z
-    .string()
-    .trim()
-    .regex(/^\d{10}$/, "taxIdInvalid"),
-  /** The seller code of conduct (#107, /verified#code) must be accepted to apply. */
-  codeAccepted: z.boolean().refine((v) => v, "codeRequired"),
-});
+export const storeStep = z
+  .object({
+    storeName: z.string().trim().min(2, "storeNameShort").max(80, "nameLong"),
+    whatsapp: phone,
+    city: z.string().trim().min(1, "required"),
+    address: z.string().trim().min(5, "addressShort").max(200, "addressLong"),
+    social: z
+      .string()
+      .trim()
+      .max(200, "socialInvalid")
+      .refine((v) => v === "" || /^(@[\w.]{2,30}|https:\/\/\S+)$/.test(v), "socialInvalid"),
+    legalType: z.enum(LEGAL_TYPES, "required"),
+    /**
+     * "Do you sell official jewellery (gold, silver, platinum, diamonds)?" (#128): PRECIOUS, FASHION
+     * (bijouterie and handmade, no documents) or MIXED. Older drafts without it read as PRECIOUS.
+     */
+    sellerKind: z.enum(["PRECIOUS", "FASHION", "MIXED"], "required").default("PRECIOUS"),
+    /**
+     * VOEN: 10 digits, the same for companies and sole traders. Optional for a bijouterie or
+     * handmade seller (#317), required when the store sells precious jewellery (checked below).
+     */
+    taxId: z
+      .string()
+      .trim()
+      .regex(/^(\d{10})?$/, "taxIdInvalid"),
+    /** The seller code of conduct (#107, /verified#code) must be accepted to apply. */
+    codeAccepted: z.boolean().refine((v) => v, "codeRequired"),
+  })
+  .refine((s) => s.taxId !== "" || !taxIdRequired(s.sellerKind), {
+    message: "taxIdInvalid",
+    path: ["taxId"],
+  });
+
+/** Same rule as the backend (StoreRequest): only a bijouterie-only seller may leave the VOEN out. */
+export function taxIdRequired(sellerKind: string | undefined): boolean {
+  return sellerKind !== "FASHION";
+}
 
 export const DOC_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;
 export const DOC_MAX_BYTES = 10 * 1024 * 1024;
@@ -100,14 +113,34 @@ export const productStep = z.object({
   price: decimal(10_000_000),
 });
 
+/**
+ * Step 4 photos (#317), downscaled in the browser to JPEG data URLs (lib/merchant/images) so
+ * they fit in the draft. They are uploaded right after the account and store exist: onto the
+ * first product, or as photo drafts in the cabinet when there is no product (bijouterie).
+ */
+export const PHOTO_MAX_COUNT = 4;
+/** A 960 px JPEG is far below this; it only stops an oversized request. */
+const PHOTO_MAX_URL = 4 * 1024 * 1024;
+
+export const signupPhoto = z.object({
+  id: z.string().max(100),
+  name: z.string().max(200),
+  url: z
+    .string()
+    .max(PHOTO_MAX_URL)
+    .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/),
+});
+
 export const sellerSignup = z.object({
   account: accountStep,
   store: storeStep,
   docs: docsStep,
   product: productStep.nullable(),
+  photos: z.array(signupPhoto).max(PHOTO_MAX_COUNT).default([]),
 });
 
 export type AccountStep = z.input<typeof accountStep>;
 export type StoreStep = z.input<typeof storeStep>;
 export type DocMeta = z.infer<typeof docSchema>;
 export type ProductStep = z.input<typeof productStep>;
+export type SignupPhoto = z.infer<typeof signupPhoto>;

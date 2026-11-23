@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { fieldErrors } from "@/lib/auth/schemas";
 import { firstOpenStep, sellerDraft } from "./draft";
-import { normalizePhone, productStep, storeStep } from "./schemas";
+import { normalizePhone, PHOTO_MAX_COUNT, productStep, sellerSignup, storeStep } from "./schemas";
 
 beforeEach(() => {
   localStorage.clear();
@@ -41,7 +41,65 @@ describe("store step", () => {
     if (!r.success)
       expect(fieldErrors(r.error)).toEqual({ taxId: "taxIdInvalid", social: "socialInvalid" });
   });
+  it("needs the VOEN only from a seller of precious jewellery (#317)", () => {
+    for (const sellerKind of [undefined, "PRECIOUS", "MIXED"]) {
+      const r = storeStep.safeParse({ ...ok, sellerKind, taxId: "" });
+      expect(r.success).toBe(false);
+      if (!r.success) expect(fieldErrors(r.error)).toEqual({ taxId: "taxIdInvalid" });
+    }
+    expect(storeStep.safeParse({ ...ok, sellerKind: "FASHION", taxId: "" }).success).toBe(true);
+    expect(storeStep.safeParse({ ...ok, sellerKind: "FASHION", taxId: " " }).success).toBe(true);
+    expect(storeStep.safeParse({ ...ok, sellerKind: "FASHION" }).success).toBe(true);
+    // A VOEN that is given is still checked.
+    const r = storeStep.safeParse({ ...ok, sellerKind: "FASHION", taxId: "12345" });
+    expect(r.success).toBe(false);
+    if (!r.success) expect(fieldErrors(r.error)).toEqual({ taxId: "taxIdInvalid" });
+  });
 });
+
+describe("sign-up photos (#317)", () => {
+  const body = {
+    account: { name: "Leyla", phone: "0501234567", password: "parol12345" },
+    store: { ...validStore(), sellerKind: "FASHION", taxId: "" },
+    docs: { docs: [] },
+    product: null,
+  };
+  const photo = (url: string) => ({ id: "p1", name: "uzuk.jpg", url });
+  it("accepts up to four browser-made image data URLs, none by default", () => {
+    const none = sellerSignup.safeParse(body);
+    expect(none.success && none.data.photos).toEqual([]);
+    const four = Array.from({ length: PHOTO_MAX_COUNT }, () =>
+      photo("data:image/jpeg;base64,AAAA"),
+    );
+    expect(sellerSignup.safeParse({ ...body, photos: four }).success).toBe(true);
+    expect(
+      sellerSignup.safeParse({ ...body, photos: [...four, photo("data:image/jpeg;base64,AAAA")] })
+        .success,
+    ).toBe(false);
+  });
+  it("refuses anything that is not an inline JPEG, PNG or WebP", () => {
+    for (const url of [
+      "https://example.com/a.jpg",
+      "data:image/svg+xml;base64,AAAA",
+      "data:text/html;base64,AAAA",
+    ]) {
+      expect(sellerSignup.safeParse({ ...body, photos: [photo(url)] }).success).toBe(false);
+    }
+  });
+});
+
+function validStore() {
+  return {
+    storeName: "Ayzer",
+    whatsapp: "0501234567",
+    city: "Baki",
+    address: "Nizami kuc. 10",
+    social: "",
+    legalType: "SOLE_TRADER",
+    taxId: "1234567890",
+    codeAccepted: true,
+  };
+}
 
 describe("product step", () => {
   it("keeps weight and price as exact strings, accepting a decimal comma", () => {
