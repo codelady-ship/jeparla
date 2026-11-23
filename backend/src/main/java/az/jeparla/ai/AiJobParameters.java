@@ -65,7 +65,8 @@ public class AiJobParameters {
             case WOMEN -> "adult woman";
             case MEN -> "adult man";
             case KIDS -> "child (age-appropriate simple clothing, neutral pose and expression)";
-            case UNISEX -> "adult woman or man";
+            // Owner's decision (2026-11-23): a woman model by default for unisex pieces; MEN stays a man.
+            case UNISEX -> "adult woman";
         };
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class AiPrompts {
 
     private static final Map<String, String> DEFAULTS = Map.of("pose", "the part of the body that wears the item",
-            "audience", "adult woman or man");
+            "audience", "adult woman");
 
     private final Map<AiJobKind, String> templates = new EnumMap<>(AiJobKind.class);
     private final String kidsTryOn;
