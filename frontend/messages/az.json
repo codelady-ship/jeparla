@@ -1301,7 +1301,10 @@
       "fix": "Düzəlt",
       "notCounted": "Baxışlar hələ sayılmır",
       "byQuestion": "WhatsApp sualları",
-      "byQuestionNote": "Son 30 gündə alıcının WhatsApp-dan əvvəl seçdiyi hazır sual. Alıcı haqqında heç nə saxlanılmır."
+      "byQuestionNote": "Son 30 gündə alıcının WhatsApp-dan əvvəl seçdiyi hazır sual. Alıcı haqqında heç nə saxlanılmır.",
+      "aiReviewTitle": "Təsdiq gözləyir",
+      "aiReviewText": "{count, plural, one {# AI nəticəsi sizin təsdiqinizi gözləyir.} other {# AI nəticəsi sizin təsdiqinizi gözləyir.}} Təsdiqləməsəniz heç nə dərc olunmur.",
+      "aiReviewOpen": "AI Studio-da bax"
     },
     "guide": {
       "title": "Mağazanızı 3 addımda hazırlayın",
@@ -1415,7 +1418,9 @@
           "decimalInvalid": "rəqəmlə yazın, məsələn 3,25.",
           "quickNotDraft": "Bu məhsul artıq qaralama deyil; məhsul formasında dəyişin."
         }
-      }
+      },
+      "aiWaiting": "Təsdiq gözləyir",
+      "aiWaitingNamed": "{name}: AI nəticəsi təsdiq gözləyir, AI Studio-da baxın"
     },
     "form": {
       "newTitle": "Yeni məhsul",
@@ -1718,7 +1723,17 @@
         "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
         "same": "Forma artıq bu mətndəki məlumatlarla doludur, heç nə dəyişmədi.",
         "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
-      }
+      },
+      "onModel": {
+        "title": "Model üzərində göstər",
+        "autoNew": "Məhsulu yadda saxlayanda sayt ilk şəkildən model üzərində şəkil özü hazırlamağa başlayır. Hazır olanda bildiriş gələcək; siz təsdiqləməsəniz heç nə dərc olunmur.",
+        "afterSave": "Məhsulu yadda saxlayandan sonra AI Studio-da bu şəkildən model üzərində şəkil hazırlaya bilərsiniz.",
+        "studio": "AI Studio-da bu şəkildən model üzərində şəkil hazırlayın. Təsdiqləməsəniz heç nə dərc olunmur.",
+        "doneAuto": "Model üzərində şəkil hazırlanmağa başladı. Hazır olanda bildiriş gələcək; AI Studio-da baxıb təsdiqləyin.",
+        "doneManual": "Şəkildən model üzərində şəkil hazırlayın: AI Studio-da bir neçə addımdır.",
+        "open": "AI Studio-ya keç"
+      },
+      "aiStudio": "AI Studio"
     },
     "profile": {
       "title": "Mağaza profili",

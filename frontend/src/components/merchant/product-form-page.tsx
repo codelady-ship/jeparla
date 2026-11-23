@@ -1,14 +1,18 @@
-import { FileImage } from "lucide-react";
+import { FileImage, Sparkles } from "lucide-react";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api as publicApi, USING_MOCK } from "@/lib/api";
+import { aiStudioApi, NOT_CONFIGURED } from "@/lib/api/ai";
 import { merchantDrafts } from "@/lib/api/drafts";
 import { suggestAudience } from "@/lib/merchant/audience";
 import { draftFilledFields, draftInput, type DraftOptions } from "@/lib/merchant/from-draft";
+import { aiStudioHref } from "@/lib/merchant/on-model";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
 import { ProductForm } from "./product-form";
@@ -24,9 +28,9 @@ export async function ProductFormPage({
 }) {
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return null;
-  const { api } = await merchantContext();
+  const { api, session } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t, prices, occasions] = await Promise.all([
+  const [store, product, categories, finenesses, t, prices, occasions, ai] = await Promise.all([
     api.store(),
     productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
     publicApi.listCategories(),
@@ -36,6 +40,10 @@ export async function ProductFormPage({
     publicApi.latestMetalPrices().catch(() => []),
     // Occasion tags are optional (#115): without the list the form simply leaves them out.
     publicApi.listCollections().catch(() => []),
+    // Only the "show on a model" hint (#316) reads it: without the AI status the form says "AI Studio".
+    aiStudioApi(session)
+      .status()
+      .catch(() => NOT_CONFIGURED),
   ]);
   const quotes = Object.fromEntries(
     prices.map((q) => [q.metal, { pricePerGram: q.pricePerGram, date: q.date }]),
@@ -76,9 +84,24 @@ export async function ProductFormPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl">{product ? t("editTitle") : t("newTitle")}</h1>
-        <p className="text-muted-foreground">{t("intro")}</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl">{product ? t("editTitle") : t("newTitle")}</h1>
+          <p className="text-muted-foreground">{t("intro")}</p>
+        </div>
+        {product && (
+          <Link
+            href={aiStudioHref(product.id)}
+            className={buttonVariants({
+              variant: "outline",
+              size: "lg",
+              className: "self-start sm:self-auto",
+            })}
+          >
+            <Sparkles aria-hidden />
+            {t("aiStudio")}
+          </Link>
+        )}
       </div>
       <SellerBanner status={store.sellerStatus} />
       {fromDraft && (
@@ -105,6 +128,7 @@ export async function ProductFormPage({
           requireDocs={USING_MOCK}
           sellerKind={store.sellerKind ?? "PRECIOUS"}
           occasions={occasions.map((o) => ({ value: String(o.id), label: o.name[locale] }))}
+          autoTryOn={ai.configured && ai.autoTryOn === true}
         />
       </MerchantIntl>
     </div>

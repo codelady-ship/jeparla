@@ -66,6 +66,8 @@ export type MerchantDashboard = {
   /** The same clicks per ready question (#111); absent in the sample data (no invented split). */
   whatsappClicksByQuestion?: Record<ContactQuestion, number>;
   counts: Record<ProductStatus, number>;
+  /** AI Studio results of the store waiting for the seller's approval (#316); absent in the sample data. */
+  aiReviewCount?: number;
 };
 
 /** One row of /merchant/products. */
@@ -84,6 +86,8 @@ export type MerchantProductRow = {
   materialKind?: "PRECIOUS" | "FASHION";
   /** Admin note when the product came back (RETURNED). */
   reviewNote: string | null;
+  /** AI Studio results of this product waiting for approval (#316); backend only. */
+  aiReviewCount?: number;
 };
 
 /** Who a piece is for (#121): picks the AI model of an on-model image. */

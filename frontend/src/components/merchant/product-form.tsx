@@ -45,6 +45,7 @@ import { AutofillText, type AutofillOutcome } from "./autofill-text";
 import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
+import { OnModelPrompt } from "./on-model-prompt";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
 
@@ -82,7 +83,10 @@ export function ProductForm({
   requireDocs = true,
   sellerKind = "PRECIOUS",
   occasions = [],
+  autoTryOn = false,
 }: {
+  /** The first photo of a new product queues an on-model image by itself (#121, #316). */
+  autoTryOn?: boolean;
   /** Shown occasion collections (#115) the seller can tag the product with; value = id. */
   occasions?: Option[];
   /** What the store sells (#128): FASHION stores add bijouterie, MIXED stores choose per new product. */
@@ -125,6 +129,8 @@ export function ProductForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState<"DRAFT" | "REVIEW" | null>(null);
   const [done, setDone] = useState<"DRAFT" | "IN_REVIEW" | null>(null);
+  // The saved product (#316): the done screen links to its AI Studio.
+  const [savedId, setSavedId] = useState<number | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -163,6 +169,16 @@ export function ProductForm({
           {t(`done.${done}.title`)}
         </h2>
         <p className="max-w-md text-muted-foreground">{t(`done.${done}.text`)}</p>
+        {savedId !== null && (
+          <div className="w-full max-w-xl">
+            <OnModelPrompt
+              place="done"
+              autoTryOn={autoTryOn}
+              creating={creating}
+              productId={savedId}
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link href="/merchant/products" className={buttonVariants({ size: "lg" })}>
             {t("done.toList")}
@@ -170,7 +186,10 @@ export function ProductForm({
           <Link
             href="/merchant/products/new"
             className={buttonVariants({ variant: "outline", size: "lg" })}
-            onClick={() => setDone(null)}
+            onClick={() => {
+              setDone(null);
+              setSavedId(null);
+            }}
           >
             {t("done.another")}
           </Link>
@@ -247,11 +266,12 @@ export function ProductForm({
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result = creating
-      ? await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>("POST", "/api/merchant/products", {
-          intent,
-          product: withKind,
-        })
-      : await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>(
+      ? await sendJson<{ id?: number; status: "DRAFT" | "IN_REVIEW" }>(
+          "POST",
+          "/api/merchant/products",
+          { intent, product: withKind },
+        )
+      : await sendJson<{ id?: number; status: "DRAFT" | "IN_REVIEW" }>(
           "PUT",
           `/api/merchant/products/${draftKey}`,
           { intent, product: withKind },
@@ -263,6 +283,7 @@ export function ProductForm({
     }
     store.clear();
     setStep(null);
+    setSavedId(result.data.id ?? productId ?? null);
     setDone(result.data.status);
   }
 
@@ -337,6 +358,16 @@ export function ProductForm({
               <p id="images-error" className="text-sm text-destructive">
                 {err(errors.images)}
               </p>
+            )}
+            {p.images.length > 0 && (
+              <div className="mt-2">
+                <OnModelPrompt
+                  place="photos"
+                  autoTryOn={autoTryOn}
+                  creating={creating}
+                  productId={productId ?? null}
+                />
+              </div>
             )}
             <div className="mt-4 border-t pt-5">
               <EvidenceUpload
