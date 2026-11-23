@@ -99,7 +99,8 @@ public class AiStudioService {
         int used = stores.findByOwnerId(CurrentUser.id()).map(store -> usage.attempts(store.getId(), today()))
                 .orElse(0);
         return new AiStatusDto(provider.configured(), provider.id(), properties.dailyJobsPerStore(), used,
-                properties.maxAttempts(), providers.studio().configured());
+                properties.maxAttempts(), providers.studio().configured(),
+                properties.autoTryOn() && provider.configured());
     }
 
     /**

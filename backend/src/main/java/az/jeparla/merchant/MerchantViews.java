@@ -55,13 +55,14 @@ class MerchantViews {
                 photo.getCheckNote(), photo.getCheckedAt(), photo.getCreatedAt());
     }
 
-    MerchantProductRowDto row(Product product) {
+    /** One list row; {@code aiReviewCount}: AI Studio results of the product that wait for approval (#316). */
+    MerchantProductRowDto row(Product product, int aiReviewCount) {
         String cover = product.getImages().stream().min(IMAGE_ORDER)
                 .map(image -> imageUrls.url(image.getStorageKey())).orElse(null);
         String priceFrom = product.cheapestVariant().map(variant -> Decimal.of(variant.getPrice())).orElse(null);
         return new MerchantProductRowDto(product.getId(), product.getSlug(), LocalizedTextDto.of(product.getName()),
                 cover, product.getCategory().getId(), product.getStatus(), product.getMaterialKind(), priceFrom,
-                product.getVariants().size(), null, product.getUpdatedAt(), product.getReviewNote());
+                product.getVariants().size(), null, product.getUpdatedAt(), product.getReviewNote(), aiReviewCount);
     }
 
     MerchantVideoDto video(ProductVideo video) {

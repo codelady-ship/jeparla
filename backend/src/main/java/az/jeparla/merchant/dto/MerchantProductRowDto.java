@@ -9,8 +9,9 @@ import java.time.Instant;
 /**
  * One row of /merchant/products ({@code MerchantProductRow} in frontend/src/types/merchant.ts).
  *
- * @param priceFrom the cheapest live variant price, or null without variants
- * @param views     null: product views are not counted yet (see {@link MerchantDashboardDto})
+ * @param priceFrom     the cheapest live variant price, or null without variants
+ * @param views         null: product views are not counted yet (see {@link MerchantDashboardDto})
+ * @param aiReviewCount AI Studio results of this product that wait for the seller's approval (#316)
  */
 @Schema(name = "MerchantProductRow")
 public record MerchantProductRowDto(
@@ -25,5 +26,6 @@ public record MerchantProductRowDto(
         int variantCount,
         @Schema(nullable = true) Long views,
         Instant updatedAt,
-        @Schema(nullable = true) String reviewNote) {
+        @Schema(nullable = true) String reviewNote,
+        int aiReviewCount) {
 }

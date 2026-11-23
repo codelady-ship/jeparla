@@ -22,7 +22,9 @@ public enum NotificationKind {
     SELLER_VERIFIED(false),
     SELLER_REJECTED(true),
     /** A buyer complaint about the seller's product or store was upheld by an admin (#40). */
-    REPORT_RESOLVED(true);
+    REPORT_RESOLVED(true),
+    /** An AI Studio result (e.g. the on-model image made after the first photo, #121) waits for approval (#316). */
+    AI_RESULT_READY(false);
 
     private final boolean supportContact;
 
