@@ -12,7 +12,9 @@ export function problemResponse(e: unknown): Response {
     return Response.json({ errors: { form: "server" } }, { status: 500 });
   }
   if (e.status === 0) return Response.json({ errors: { form: "unavailable" } }, { status: 503 });
-  if (e.status === 401)
+  // A wrong password is also 401: show the backend's sentence ("wrong e-mail, phone or
+  // password"), not "session expired", which sent people looking for the wrong problem.
+  if (e.status === 401 && e.code !== "auth.invalid_credentials")
     return Response.json({ errors: { form: "sessionExpired" } }, { status: 401 });
   const errors: Record<string, string> = {};
   for (const { field, message } of e.fieldErrors) {
