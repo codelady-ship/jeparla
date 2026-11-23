@@ -5,7 +5,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import az from "../../../../messages/az.json";
 import en from "../../../../messages/en.json";
 import { CinematicHero } from "./cinematic-hero";
-import { HERO_PHASES, heroCamera, phase } from "./hero-media";
+import {
+  HERO_MEDIA,
+  HERO_PHASES,
+  HERO_TYPES,
+  heroCamera,
+  phase,
+  pickHeroVideo,
+} from "./hero-media";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...rest }: Omit<ComponentProps<"a">, "href"> & { href: string }) => (
@@ -115,6 +122,42 @@ describe("CinematicHero", () => {
     expect(stage).not.toHaveClass("is-revealed");
     container.querySelector("video")!.dispatchEvent(new Event("ended"));
     expect(stage).toHaveClass("is-revealed");
+  });
+  it("shows the tigers standing instead of a blank backdrop when the film cannot play (#322)", async () => {
+    mockMedia(false);
+    const { container } = renderIn("az", az);
+    const video = container.querySelector("video")!;
+    await waitFor(() => expect(video.getAttribute("src")).toBe("/hero/enter-mobile.mp4"));
+    const frames = container.querySelector<HTMLImageElement>(".hero-frames")!;
+    expect(frames.style.opacity).toBe("0");
+    // jsdom can play neither encoding, so an error goes straight to the fallback.
+    video.dispatchEvent(new Event("error"));
+    expect(container.querySelector(".hero")).toHaveClass("is-revealed");
+    expect(frames.style.opacity).toBe("1");
+  });
+
+  it("starts with the WebM copy where only VP9 plays, and still falls back on an error", async () => {
+    mockMedia(false);
+    vi.spyOn(HTMLMediaElement.prototype, "canPlayType").mockImplementation((type) =>
+      type === HERO_TYPES.webm ? "probably" : "",
+    );
+    const { container } = renderIn("az", az);
+    const video = container.querySelector("video")!;
+    // No H.264 but VP9: the WebM is the first choice already.
+    await waitFor(() => expect(video.getAttribute("src")).toBe("/hero/enter-mobile.webm"));
+    video.dispatchEvent(new Event("error"));
+    expect(container.querySelector<HTMLImageElement>(".hero-frames")!.style.opacity).toBe("1");
+  });
+});
+
+describe("pickHeroVideo", () => {
+  const media = HERO_MEDIA.desktop;
+  it("plays the MP4 wherever H.264 plays, or when the browser does not say", () => {
+    expect(pickHeroVideo(media, () => "probably")).toBe(media.video);
+    expect(pickHeroVideo(media, () => "")).toBe(media.video);
+  });
+  it("plays the WebM copy where only VP9 plays", () => {
+    expect(pickHeroVideo(media, (t) => (t === HERO_TYPES.webm ? "maybe" : ""))).toBe(media.webm);
   });
 });
 
