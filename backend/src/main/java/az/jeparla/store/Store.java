@@ -127,8 +127,8 @@ public class Store extends TimestampedEntity {
     @Column(name = "legal_type", nullable = false)
     private LegalType legalType;
 
-    /** VOEN: 10 digits. */
-    @Column(name = "tax_id", nullable = false)
+    /** VOEN: 10 digits, or null for a bijouterie store that applied without one (#317, V66). */
+    @Column(name = "tax_id")
     private String taxId;
 
     /** Registered name of the seller for the store page (ET 5.3, V59), or null when not provided. */

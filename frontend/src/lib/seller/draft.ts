@@ -1,14 +1,19 @@
-import type { DocMeta, ProductStep, StoreStep } from "./schemas";
+import type { DocMeta, ProductStep, SignupPhoto, StoreStep } from "./schemas";
 
 /**
  * Wizard draft in localStorage so Back, refresh and a closed tab lose nothing.
- * The password and the files themselves are never stored: only the file names.
+ * The password and the documents themselves are never stored: only the file names. Step 4
+ * photos are kept as small downscaled JPEGs (at most PHOTO_MAX_COUNT) until they are sent.
  */
 export type SellerDraft = {
   account: { name: string; phone: string };
   store: StoreStep;
   docs: DocMeta[];
   product: ProductStep;
+  /** Step 4 photos (#317): of the first product, or photo drafts for the cabinet. */
+  photos: SignupPhoto[];
+  /** How many photos the API kept; null before sending (the done screen tells the truth). */
+  photosSaved: number | null;
   /** Steps the seller finished (1-4); the stepper shows them green. */
   done: number[];
   /** Set when step 4 was skipped on purpose. */
@@ -34,6 +39,8 @@ export const EMPTY_DRAFT: SellerDraft = Object.freeze({
   },
   docs: [],
   product: { productName: "", category: "", fineness: "", weight: "", price: "" },
+  photos: [],
+  photosSaved: null,
   done: [],
   productSkipped: false,
   productId: null,
@@ -56,6 +63,7 @@ function read(): SellerDraft {
       store: { ...EMPTY_DRAFT.store, ...parsed.store },
       product: { ...EMPTY_DRAFT.product, ...parsed.product },
       docs: Array.isArray(parsed.docs) ? parsed.docs : [],
+      photos: Array.isArray(parsed.photos) ? parsed.photos : [],
       done: Array.isArray(parsed.done) ? parsed.done.filter((n) => n >= 1 && n <= 4) : [],
     };
   } catch {

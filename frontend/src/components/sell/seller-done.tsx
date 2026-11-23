@@ -40,14 +40,26 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
     { label: t("rows.product"), status: draft.productSkipped ? "none" : "draft" },
   ];
 
-  // The first product is a draft without photos: one tap to its form (#301). Without an id
-  // (sample data, or the product was not saved) the product list is the way there.
-  const draftHref =
-    !fashion && !draft.productSkipped
-      ? draft.productId
-        ? `/merchant/products/${draft.productId}/edit`
-        : "/merchant/products"
+  // Step 4 photos (#317): how many the API kept, never more than it said.
+  const photosGiven = draft.photos.length;
+  const photosSaved = Math.min(draft.photosSaved ?? 0, photosGiven);
+  const withProduct = !fashion && !draft.productSkipped;
+
+  // The first product is a draft: one tap to its form (#301). Without an id (sample data,
+  // or the product was not saved) the product list is the way there. Photos without a
+  // product wait as photo drafts on the import page.
+  const draftHref = withProduct
+    ? draft.productId
+      ? `/merchant/products/${draft.productId}/edit`
+      : "/merchant/products"
+    : photosSaved > 0
+      ? "/merchant/import"
       : null;
+  const draftLink = withProduct
+    ? photosSaved > 0
+      ? t("openDraft")
+      : t("addPhoto")
+    : t("openPhotoDrafts");
 
   return (
     <section className="flex flex-col gap-6 rounded-lg border bg-card p-6 sm:p-10">
@@ -90,8 +102,15 @@ export function SellerDone({ draft }: { draft: SellerDraft }) {
             className="touch-target inline-flex items-center gap-2 self-start link-underline text-sm text-gold-text"
           >
             <ImagePlus aria-hidden className="size-4" />
-            {t("addPhoto")}
+            {draftLink}
           </Link>
+        )}
+        {photosGiven > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {photosSaved === photosGiven
+              ? t(withProduct ? "photosOnProduct" : "photosAsDrafts", { count: photosSaved })
+              : t("photosMissing", { saved: photosSaved, total: photosGiven })}
+          </p>
         )}
       </div>
 

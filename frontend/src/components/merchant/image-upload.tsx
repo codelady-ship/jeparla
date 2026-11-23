@@ -20,11 +20,14 @@ export function ImageUpload({
   onChange,
   invalid,
   describedBy,
+  maxCount = MAX_IMAGES,
 }: {
   images: ProductImageInput[];
   onChange: (images: ProductImageInput[]) => void;
   invalid?: boolean;
   describedBy?: string;
+  /** Fewer photos where they wait in a browser draft (the /sell wizard, #317). */
+  maxCount?: number;
 }) {
   const t = useTranslations("Merchant.form.images");
   const id = useId();
@@ -47,8 +50,8 @@ export function ImageUpload({
         errs.push(t("badType", { name: f.name }));
       } else if (f.size > IMAGE_MAX_BYTES) {
         errs.push(t("tooBig", { name: f.name, max }));
-      } else if (next.length >= MAX_IMAGES) {
-        errs.push(t("tooMany", { max: MAX_IMAGES }));
+      } else if (next.length >= maxCount) {
+        errs.push(t("tooMany", { max: maxCount }));
         break;
       } else {
         try {
@@ -111,7 +114,7 @@ export function ImageUpload({
         )}
         <span className="font-medium">{busy ? t("processing") : t("drop")}</span>
         <span className="text-xs text-muted-foreground">
-          {t("rules", { max, count: MAX_IMAGES })}
+          {t("rules", { max, count: maxCount })}
         </span>
         <input
           id={id}

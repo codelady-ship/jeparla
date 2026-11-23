@@ -16,6 +16,8 @@ import jakarta.validation.constraints.Size;
  *                   (#128): yes = PRECIOUS, no, bijouterie or handmade = FASHION, both = MIXED
  * @param codeAccepted the wizard checkbox "I accept the seller code of conduct" (#107); true records the
  *                   acceptance of the current version, anything else leaves it to the cabinet
+ * @param taxId      the VOEN, 10 digits: required when the store sells precious jewelry (PRECIOUS, MIXED),
+ *                   optional for a bijouterie or handmade seller (FASHION, #317); blank means none
  */
 public record StoreRequest(
         @NotBlank @Size(min = 2, max = 80) String name,
@@ -27,7 +29,12 @@ public record StoreRequest(
         @Size(max = 1000) String description,
         @Size(max = 200) String openingHours,
         @NotNull LegalType legalType,
-        @NotBlank @Pattern(regexp = "^[0-9]{10}$") String taxId,
+        @Pattern(regexp = "^([0-9]{10})?$") String taxId,
         @NotNull SellerKind sellerKind,
         Boolean codeAccepted) {
+
+    /** The VOEN as stored: null when the seller gave none. */
+    public String taxIdOrNull() {
+        return taxId == null || taxId.isEmpty() ? null : taxId;
+    }
 }

@@ -1043,7 +1043,8 @@
       },
       "4": {
         "title": "First product",
-        "intro": "Type the name, fineness, weight and price of your first product, or skip this step and add it later."
+        "intro": "Type the name, fineness, weight and price of your first product, or skip this step and add it later.",
+        "introFashion": "You can add the product photos now; you write the name, material and price in the cabinet after sign-up."
       }
     },
     "fields": {
@@ -1062,14 +1063,18 @@
       "fineness": "Fineness",
       "weight": "Weight (grams)",
       "price": "Price (AZN)",
-      "codeAccepted": "I have read and accept the <link>seller code of conduct</link> and the <terms>Seller terms</terms>."
+      "codeAccepted": "I have read and accept the <link>seller code of conduct</link> and the <terms>Seller terms</terms>.",
+      "photos": "Product photos"
     },
     "hints": {
       "phone": "For example 050 123 45 67. SMS confirmation comes later.",
       "whatsapp": "Buyers will message this number.",
       "social": "@name or a link starting with https://.",
       "taxId": "10 digits.",
-      "fineness": "The number stamped on the piece, for example 585."
+      "fineness": "The number stamped on the piece, for example 585.",
+      "photos": "The first photo is the cover. The photos are uploaded to the product right after sign-up.",
+      "photosFashion": "Right after sign-up the photos are kept as drafts in the cabinet; you turn each photo into a product.",
+      "taxIdFashion": "Optional for bijouterie and handmade. If you have a tax ID, write its 10 digits."
     },
     "examples": {
       "name": "For example: Aysel Mammadova",
@@ -1139,7 +1144,12 @@
       "dashboard": "Go to dashboard",
       "home": "Home",
       "startOver": "Start a new sign-up",
-      "addPhoto": "Add photos and send for review"
+      "addPhoto": "Add photos and send for review",
+      "openDraft": "Open the draft and send it for review",
+      "openPhotoDrafts": "Create products from the photos",
+      "photosOnProduct": "{count, plural, one {# photo was uploaded to the product.} other {# photos were uploaded to the product.}}",
+      "photosAsDrafts": "{count, plural, one {# photo was saved as a draft in the cabinet.} other {# photos were saved as drafts in the cabinet.}}",
+      "photosMissing": "{saved} of {total} photos were uploaded. Upload the rest again in the cabinet."
     },
     "sellerKind": {
       "question": "Do you sell official jewellery (gold, silver, platinum, diamonds)?",
@@ -1151,7 +1161,7 @@
       "MIXED": "Both",
       "MIXEDHint": "You choose the kind for each product; precious products need documents."
     },
-    "fashionProductLater": "You add bijouterie products in the cabinet after sign-up: there you choose the material instead of metal and fineness. Press \"Finish sign-up\"."
+    "fashionProductLater": "You finish bijouterie products in the cabinet after sign-up: there you write the material, name and price. Press \"Finish sign-up\"."
   },
   "SellLanding": {
     "eyebrow": "For sellers",
@@ -1181,6 +1191,11 @@
         "title": "Straight to WhatsApp",
         "text": "No middleman: the buyer writes to you with the product name, code and link. The sale and payment are between you and the buyer."
       }
+    },
+    "ai": {
+      "title": "On-model photos with AI",
+      "text": "From your product photo, AI creates a new image that shows the piece on a model. You see the result first: if you approve it, it is added to the product and buyers see it with a \"Made with AI\" label. Your original photo stays as it is.",
+      "note": "This works when the AI service is switched on; when it is not, the cabinet says so."
     },
     "howTitle": "How it works",
     "steps": {

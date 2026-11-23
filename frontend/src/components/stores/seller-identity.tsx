@@ -22,8 +22,12 @@ export async function SellerIdentity({ seller }: { seller: Identity }) {
         <dd className="font-medium break-words sm:col-span-2">{seller.legalName}</dd>
         <dt className="text-muted-foreground">{t("legalForm")}</dt>
         <dd>{tl(seller.legalType)}</dd>
-        <dt className="text-muted-foreground">{t("taxId")}</dt>
-        <dd className="tabular-nums">{seller.taxId}</dd>
+        {seller.taxId && (
+          <>
+            <dt className="text-muted-foreground">{t("taxId")}</dt>
+            <dd className="tabular-nums">{seller.taxId}</dd>
+          </>
+        )}
       </dl>
       <p className="text-xs text-muted-foreground">{t("note")}</p>
     </section>

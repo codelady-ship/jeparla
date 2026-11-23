@@ -3,26 +3,28 @@ import { apiFetch } from "@/lib/api/http";
 import { problemResponse } from "@/lib/api/problem";
 import { authCall, sessionOf, startSession } from "@/lib/auth/backend";
 import { DEMO_AUTH, readJson, requestLocale, writeSession } from "@/lib/auth/server";
+import { uploadSignupPhotos } from "@/lib/seller/photos";
 import { normalizePhone, sellerSignup } from "@/lib/seller/schemas";
 
 /**
  * Seller sign-up from the /sell wizard:
  * 1. POST /auth/register/merchant (the phone is the login),
  * 2. POST /merchant/stores: the application, PENDING until an admin approves it,
- * 3. the optional first product as a DRAFT (POST /merchant/products).
+ * 3. the optional first product as a DRAFT (POST /merchant/products),
+ * 4. the step 4 photos (#317): onto that product, or as photo drafts when there is none.
  * Documents are uploaded afterwards in the cabinet (private storage, #40): the wizard
  * only lists what the seller will need. With the sample data nothing is stored.
  */
 export async function POST(request: Request) {
   const parsed = sellerSignup.safeParse(await readJson(request));
   if (!parsed.success) return Response.json({ errors: { form: "server" } }, { status: 400 });
-  const { account, store, product } = parsed.data;
+  const { account, store, product, photos } = parsed.data;
   const phone = normalizePhone(account.phone) ?? account.phone;
   if (DEMO_AUTH) {
     // No e-mail in this flow; the phone identifies the seller.
     const session = { name: account.name, email: phone, role: "MERCHANT" as const };
     await writeSession(session);
-    return Response.json({ session }, { status: 201 });
+    return Response.json({ session, photosSaved: photos.length }, { status: 201 });
   }
 
   const locale = requestLocale(request);
@@ -55,7 +57,8 @@ export async function POST(request: Request) {
         address: store.address,
         social: store.social,
         legalType: store.legalType,
-        taxId: store.taxId,
+        // Optional for a bijouterie-only store (#317): empty is sent as none.
+        taxId: store.taxId || null,
         // The wizard question (#128): precious, bijouterie or both.
         sellerKind: store.sellerKind,
         // Required by the schema above, so always true here (#107).
@@ -100,6 +103,15 @@ export async function POST(request: Request) {
     console.error("Seller wizard: store or first product not saved", e);
     return Response.json({ session, partial: true }, { status: 201 });
   }
+  // Photos only now: before the account and the store exist there is nothing to own them.
+  const photosSaved = photos.length
+    ? await uploadSignupPhotos(
+        (path, options) => apiFetch(path, { token, locale, timeoutMs: 15_000, ...options }),
+        photos,
+        productId ?? null,
+        product?.productName ?? "",
+      )
+    : 0;
   // The congratulations screen links straight to the draft (#301).
-  return Response.json({ session, productId }, { status: 201 });
+  return Response.json({ session, productId, photosSaved }, { status: 201 });
 }

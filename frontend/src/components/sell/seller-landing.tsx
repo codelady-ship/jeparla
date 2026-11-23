@@ -6,6 +6,7 @@ import {
   Minus,
   RefreshCw,
   Search,
+  Sparkles,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -90,6 +91,21 @@ export async function SellerLanding({
             </Reveal>
           ))}
         </ul>
+      </section>
+
+      {/* AI on-model photos (#317): generated, labeled, and only while the service is on. */}
+      <section
+        aria-labelledby="ai-photo"
+        className="flex flex-col gap-3 rounded-lg border bg-card p-5 sm:flex-row sm:gap-5 sm:p-6"
+      >
+        <Sparkles aria-hidden className="size-6 shrink-0 text-gold-text" />
+        <div className="flex flex-col gap-2">
+          <h2 id="ai-photo" className="text-xl sm:text-2xl">
+            {t("ai.title")}
+          </h2>
+          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">{t("ai.text")}</p>
+          <p className="text-xs text-muted-foreground">{t("ai.note")}</p>
+        </div>
       </section>
 
       <section aria-labelledby="how-title" id="how" className="scroll-mt-24">

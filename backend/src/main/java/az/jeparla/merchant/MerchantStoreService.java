@@ -69,7 +69,8 @@ public class MerchantStoreService {
     /**
      * The store application of the /sell wizard: a PENDING store whose seller check is PENDING. A second
      * application is 409 {@code merchant.store_exists}, unless it repeats the Idempotency-Key of the first
-     * (a double submit): then the existing store is returned.
+     * (a double submit): then the existing store is returned. A store that sells precious jewelry needs the
+     * VOEN (400 {@code merchant.tax_id_required} without it); a bijouterie store may apply without one (#317).
      */
     @Transactional
     public Created<MerchantStoreDto> create(StoreRequest request, UUID idempotencyKey) {
@@ -82,9 +83,13 @@ public class MerchantStoreService {
             }
             throw new ApiException(HttpStatus.CONFLICT, "merchant.store_exists");
         }
+        String taxId = request.taxIdOrNull();
+        if (taxId == null && request.sellerKind().sellsPrecious()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "merchant.tax_id_required", "taxId");
+        }
         Store store = new Store(users.getReferenceById(userId), uniqueSlug(request.name()), request.name().strip(),
                 request.city().strip(), request.address().strip(), PhoneNumbers.normalize(request.whatsapp()),
-                request.legalType(), request.taxId());
+                request.legalType(), taxId);
         store.setSellerKind(request.sellerKind());
         applyProfile(store, request.phone(), request.social(), request.description(), request.openingHours());
         store.setSellerStatus(CheckStatus.PENDING);
@@ -149,6 +154,10 @@ public class MerchantStoreService {
             }
             if (!kind.sellsPrecious() && store.getDocumentsStatus() != CheckStatus.NONE) {
                 throw new ApiException(HttpStatus.CONFLICT, "merchant.seller_kind_conflict", "sellerKind");
+            }
+            // A bijouterie store that applied without a VOEN (#317) cannot switch to precious jewelry by itself.
+            if (kind.sellsPrecious() && store.getTaxId() == null) {
+                throw new ApiException(HttpStatus.CONFLICT, "merchant.tax_id_required", "sellerKind");
             }
             store.setSellerKind(kind);
         }

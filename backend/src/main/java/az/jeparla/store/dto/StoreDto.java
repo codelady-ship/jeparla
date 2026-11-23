@@ -49,7 +49,7 @@ public record StoreDto(
     /** Who sells: the registered name the seller wrote, the legal form and the VOEN of the store (V3, V59). */
     @Schema(name = "SellerIdentity", requiredProperties = {"legalName", "legalType", "taxId"})
     public record SellerIdentityDto(String legalName, LegalType legalType,
-            @Schema(example = "1234567890") String taxId) {
+            @Schema(example = "1234567890", nullable = true) String taxId) {
     }
 
     /** Coordinates as decimal strings. */
