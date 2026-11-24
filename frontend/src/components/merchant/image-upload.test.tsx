@@ -30,9 +30,11 @@ const done = (url: string): FitState => ({ state: "done", url, blob: new Blob([]
 
 beforeEach(() => {
   runs.length = 0;
+  // A plain stand-in, not an undici Response: on Node 22 wrapping a jsdom Blob in a
+  // Response can make .blob() reject, so the fit would never reach runFit.
   vi.stubGlobal(
     "fetch",
-    vi.fn(async () => new Response(new Blob(["x"]))),
+    vi.fn(async () => ({ blob: async () => new Blob(["x"]) })),
   );
   URL.revokeObjectURL = vi.fn();
 });
