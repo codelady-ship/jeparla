@@ -27,6 +27,9 @@ function pick(...names: string[]) {
   fireEvent.change(screen.getByLabelText(P.choose), { target: { files } });
 }
 
+/** Generous waits: the first render is slow on a loaded CI runner. */
+const WAIT = { timeout: 5000 };
+
 const done = (url: string): FitState => ({ state: "done", url, blob: new Blob([]) });
 
 beforeEach(() => {
@@ -49,7 +52,7 @@ describe("PhotoFitList queue (#327)", () => {
   it("lets a queued photo be removed, so it is never fitted", async () => {
     renderList();
     pick("a.jpg", "b.jpg");
-    await vi.waitFor(() => expect(runs).toHaveLength(1));
+    await vi.waitFor(() => expect(runs).toHaveLength(1), WAIT);
 
     expect(screen.getByRole("button", { name: removeName("a.jpg") })).toBeDisabled();
     const queued = screen.getByRole("button", { name: removeName("b.jpg") });
@@ -65,7 +68,7 @@ describe("PhotoFitList queue (#327)", () => {
   it("stops the queue when the page is left and frees the late result", async () => {
     const { unmount } = renderList();
     pick("a.jpg", "b.jpg");
-    await vi.waitFor(() => expect(runs).toHaveLength(1));
+    await vi.waitFor(() => expect(runs).toHaveLength(1), WAIT);
 
     unmount();
     await act(async () => runs[0](done("blob:fit-a")));

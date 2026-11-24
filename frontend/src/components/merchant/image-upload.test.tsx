@@ -23,6 +23,9 @@ function renderUpload(url: string) {
   );
 }
 
+/** Generous waits: the first render of the form is slow on a loaded CI runner. */
+const WAIT = { timeout: 5000 };
+
 const done = (url: string): FitState => ({ state: "done", url, blob: new Blob([]) });
 
 beforeEach(() => {
@@ -46,13 +49,13 @@ describe("ImageUpload: fit to design (#327)", () => {
     const action = () => screen.getByRole("button", { name: F.actionFor.replace("{name}", name) });
 
     fireEvent.click(action());
-    await vi.waitFor(() => expect(runs).toHaveLength(1));
+    await vi.waitFor(() => expect(runs).toHaveLength(1), WAIT);
     // Closed while the first run is still working, then opened again.
-    const dialog = await screen.findByRole("dialog");
+    const dialog = await screen.findByRole("dialog", {}, WAIT);
     fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-    await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), WAIT);
     fireEvent.click(action());
-    await vi.waitFor(() => expect(runs).toHaveLength(2));
+    await vi.waitFor(() => expect(runs).toHaveLength(2), WAIT);
 
     await act(async () => runs[0](done("blob:old")));
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:old");

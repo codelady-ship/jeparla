@@ -301,8 +301,7 @@ const KIND_OF: Record<number, Kind> = {
  * category with no clean cut-out keeps its `.jpg` photos (docs/credits.md lists the rejected ones).
  */
 const FITTED_PHOTOS: Partial<Record<number, { gold?: string[]; silver?: string[] }>> = {
-  4: { gold: ["earrings-gold-4.webp", "earrings-gold-5.webp", "earrings-gold-6.webp"] },
-  8: { gold: ["bracelet-gold-6.webp"] },
+  4: { gold: ["earrings-gold-6.webp"] },
   12: { gold: ["earrings-gold-6.webp"] },
 };
 

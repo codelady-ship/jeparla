@@ -97,24 +97,30 @@ verir; müəlliflər aşağıdakı kimi qalır.
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
 Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 50 şəkli `/admin/photos` səhifəsindən keçirib,
-4-nü götürüb (qalanlarının kəsimi təmiz çıxmadı və ya məhsul növünə uyğun deyil, aşağıda)
+yalnız 1-ni saxlayıb (qalanlarının kəsimi təmiz çıxmadı və ya məhsul növünə uyğun deyil, aşağıda)
 (`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
 modeli ilə silinib (Apache-2.0, `frontend/public/models/u2netp.onnx`, aşağıda), əşya krem fonda kartın 4:5 kadrına
 qoyulub, yumşaq yaşıl tonlu kölgə, 800x1000 WebP. Generativ AI yoxdur, əşya yenidən çəkilməyib, ona görə "AI ilə
 yaradılıb" nişanı yoxdur (redaktə olunmuş foto, yaradılmış deyil; #119 ilə eyni qərar). Hamısı
 [Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil; 2026-11-24 səhifədə yoxlanılıb),
-`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkillərdə loqo və oxunan brend yazısı yoxdur.
+`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkildə loqo və oxunan brend yazısı yoxdur.
 
 | Fayl | Müəllif | Mənbə | Harada |
 |---|---|---|---|
-| `earrings-gold-4.webp` | Ian Talmacs | https://unsplash.com/photos/PARIuwa_Ssc | qızıl sırğalar |
-| `earrings-gold-5.webp` | Till Kraus | https://unsplash.com/photos/0F7UG5-sHIg | qızıl sırğalar |
 | `earrings-gold-6.webp` | MAYANK GEHLOT | https://unsplash.com/photos/lsxBmX8Hmwc | qızıl sırğalar, qızıl uşaq sırğaları |
-| `bracelet-gold-6.webp` | Khizar Rathore | https://unsplash.com/photos/AoZrJQ80KCc | qızıl qolbaqlar |
 
-Hər şəkil yalnız öz növündə və metalında göstərilir (`FITTED_PHOTOS`, `src/lib/api/mock/fixtures.ts`): toy üzüyü
-kartında soliter, qolbaq kartında dəst olmur. Təmiz kəsim tapılmayan kateqoriyalar köhnə `.jpg` şəkillərində qalıb:
-nişan, toy və kişi üzükləri, zəncirlər (qızıl, gümüş), asqılar, gümüş qolbaqlar, dəstlər, broşlar, gümüş uşaq sırğaları.
+Şəkil yalnız öz növündə və metalında göstərilir (`FITTED_PHOTOS`, `src/lib/api/mock/fixtures.ts`). Təmiz kəsim
+tapılmayan kateqoriyalar köhnə `.jpg` şəkillərində qalıb: nişan, toy və kişi üzükləri, zəncirlər (qızıl, gümüş),
+asqılar, qolbaqlar (qızıl, gümüş), dəstlər, broşlar, gümüş uşaq sırğaları.
+
+PR #328 rəyində (2026-11-24, 5fa974f) götürülüb sonra çıxarılanlar:
+
+- `earrings-gold-4.webp` (Ian Talmacs, https://unsplash.com/photos/PARIuwa_Ssc): 1-2 px ağ kontur, halqaların
+  arasında təmiz ağ boşluqlar, kartın enini cəmi ~60% doldurur.
+- `earrings-gold-5.webp` (Till Kraus, https://unsplash.com/photos/0F7UG5-sHIg): açıq, burulmuş, qarışıq metal
+  manjetlər, qızıl sırğa deyil; sağ manjetdə hale; kadrı az doldurur.
+- `bracelet-gold-6.webp` (Khizar Rathore, https://unsplash.com/photos/AoZrJQ80KCc): hər iki bilərziyin içində qara
+  fon qalıb, yuxarı solda açıq kənar; strazlı bijuteriyaya oxşayır, 585/750 qızıl məhsullara uyğun deyil.
 
 Rədd edilənlər (repoya düşməyib; 2026-11-24, sahibin "yalnız təmiz kəsim" qaydası ilə, 1:1 böyüdüb yoxlanılıb).
 Hamısı Unsplash Lisenziyası ilə pulsuzdur, mənbə `https://unsplash.com/photos/<id>`:
