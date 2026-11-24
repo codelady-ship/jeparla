@@ -96,19 +96,46 @@ verir; müəlliflər aşağıdakı kimi qalır.
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
-Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 9 şəkli `/admin/photos` səhifəsindən keçirib,
-yalnız 1-ni götürüb (qalanlarının kəsimi təmiz çıxmadı, aşağıda) (`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
+Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 50 şəkli `/admin/photos` səhifəsindən keçirib,
+4-nü götürüb (qalanlarının kəsimi təmiz çıxmadı və ya məhsul növünə uyğun deyil, aşağıda)
+(`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
 modeli ilə silinib (Apache-2.0, `frontend/public/models/u2netp.onnx`, aşağıda), əşya krem fonda kartın 4:5 kadrına
 qoyulub, yumşaq yaşıl tonlu kölgə, 800x1000 WebP. Generativ AI yoxdur, əşya yenidən çəkilməyib, ona görə "AI ilə
 yaradılıb" nişanı yoxdur (redaktə olunmuş foto, yaradılmış deyil; #119 ilə eyni qərar). Hamısı
 [Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil; 2026-11-24 səhifədə yoxlanılıb),
-`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkildə loqo və oxunan brend yazısı yoxdur.
+`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkillərdə loqo və oxunan brend yazısı yoxdur.
 
-| Fayl | Müəllif | Mənbə |
-|---|---|---|
-| `earrings-gold-4.webp` | Ian Talmacs | https://unsplash.com/photos/PARIuwa_Ssc |
+| Fayl | Müəllif | Mənbə | Harada |
+|---|---|---|---|
+| `earrings-gold-4.webp` | Ian Talmacs | https://unsplash.com/photos/PARIuwa_Ssc | qızıl sırğalar |
+| `earrings-gold-5.webp` | Till Kraus | https://unsplash.com/photos/0F7UG5-sHIg | qızıl sırğalar |
+| `earrings-gold-6.webp` | MAYANK GEHLOT | https://unsplash.com/photos/lsxBmX8Hmwc | qızıl sırğalar, qızıl uşaq sırğaları |
+| `bracelet-gold-6.webp` | Khizar Rathore | https://unsplash.com/photos/AoZrJQ80KCc | qızıl qolbaqlar |
 
-Rədd edilənlər (repoya düşməyib; PR #328 rəyi, 2026-11-24):
+Hər şəkil yalnız öz növündə və metalında göstərilir (`FITTED_PHOTOS`, `src/lib/api/mock/fixtures.ts`): toy üzüyü
+kartında soliter, qolbaq kartında dəst olmur. Təmiz kəsim tapılmayan kateqoriyalar köhnə `.jpg` şəkillərində qalıb:
+nişan, toy və kişi üzükləri, zəncirlər (qızıl, gümüş), asqılar, gümüş qolbaqlar, dəstlər, broşlar, gümüş uşaq sırğaları.
+
+Rədd edilənlər (repoya düşməyib; 2026-11-24, sahibin "yalnız təmiz kəsim" qaydası ilə, 1:1 böyüdüb yoxlanılıb).
+Hamısı Unsplash Lisenziyası ilə pulsuzdur, mənbə `https://unsplash.com/photos/<id>`:
+
+- Qalan fon: `-_12be3InkQ`, `H8c0XcyN_PA`, `b2phn4twtZ4` (broşların arasında qara parça), `4DJC-MeTLxE` (gümüş
+  halqanın içi qara), `wOfSP_0MO_g` (üzüyün içi qara), `O7YCeE_65TE`, `mkqraXkMPSE` (içində fon), `oO0JAOJhquk`
+  (jurnal), `hNo86T4HMZM` (halqanın içində parça), `AKbE5xlIZXA` (tünd kənar), `ZArlyfDRcw0` (əlcək),
+  `DRbPrVTyTyA` (sırğanın yanında boz ləkə), `SAGRtyL5L_Y` (büst qalıb), `Q_bHwNAueHA` (ürəyin altında qara kölgə).
+- Əks (refleksiya) şəkilə qoşulub: `wTIZBpzHcmU`, `R_pIyT1KF80`, `QbJ1Y359tIk`, `W08Y9Td9IeM`.
+- Rəng sızması və ya solğun kənar: `mgHfJ5q02Jw` (bənövşəyi), `oWFPDjxuyUM` (çəhrayı), `yrGQYb9heTY` (göy),
+  `JRmm5RIg1xE` (zəncirin ucu solur), `1BBlGVr2_Yw` (kiçik və solğun), `YmFdZ8NkS2A` (bulanıq, ləkə).
+- Yanlış kəsim: `ILhzd7TbcWs` (yalnız daş), `GkTLP8m-qjI` (yalnız asqı).
+- Məhsul növünə və ya metala uyğun deyil: `K0rQ59zmomw`, `wf06v3VPr4A` (qızılı broş, broş məhsulları gümüşdür),
+  `RuCUa6CtfFE` (ağ metal dəst, dəstlər qızıldır), `RIqNLZ_h2X8` (gümüş sırğa, sırğa məhsulları qızıldır),
+  `B9Jo-V2kpOg` (ajur halqa, sadə toy halqası deyil), `jC_S0BH_HkQ` (qızılı halqalar, gümüş toy üzüyü üçün),
+  `tUCYTL59cA0`, `zZLhoEwGCeM`, `Z4BJfx59yqY` (nişan üzüyü deyil və ya içində oxunan yazı),
+  `pWVNg9B9NLI` (zəncir kadrın kənarına çıxır, `docs/DESIGN.md`-in "zəncir kənara toxunmur" qaydası).
+- Clean-room: `qUgVvJHS9Dc` (içindəki yazı məşhur filmdəki üzüyün yazısının surətidir), `sVlV2lPNrDU` (tanınmış
+  ustanın üslubunda antik asqı), `10eeEq7OxSI` (tanınmış brendin ilan qolbağına bənzəyir, emal edilmədi).
+
+Əvvəlki rədd edilənlər (PR #328 rəyi, 2026-11-24):
 
 - Gümüş üzüklər (https://unsplash.com/photos/IdU1Si3wJ-I üç üzük, Alyssa Hurley;
   https://unsplash.com/photos/wh_rZqPiCuw və https://unsplash.com/photos/kuko1hX_kXw, Sabrianna) və gümüş ürək
