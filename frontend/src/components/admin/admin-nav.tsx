@@ -5,6 +5,7 @@ import {
   Flag,
   FolderTree,
   History,
+  ImagePlus,
   LayoutDashboard,
   PackageCheck,
   ShieldAlert,
@@ -28,6 +29,7 @@ const ITEMS = [
   { href: "/admin/prices", key: "prices", icon: Coins },
   { href: "/admin/catalog", key: "catalog", icon: FolderTree },
   { href: "/admin/ai-models", key: "aiModels", icon: UserRound },
+  { href: "/admin/photos", key: "photos", icon: ImagePlus },
   { href: "/admin/users", key: "users", icon: Users },
   { href: "/admin/audit", key: "audit", icon: History },
 ] as const;

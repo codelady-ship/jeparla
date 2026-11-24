@@ -33,7 +33,15 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"]),
+  // public/ort/: ONNX Runtime files copied from node_modules (scripts/copy-ort.mjs).
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "next-env.d.ts",
+    "public/ort/**",
+  ]),
 ]);
 
 export default eslintConfig;
