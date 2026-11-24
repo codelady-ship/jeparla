@@ -1,13 +1,39 @@
 /**
  * Hero scene assets, rendered from the Remotion project in /video
  * (`cd video && sh scripts/export.sh`). Act 1 is a short video (three tigers
- * walk in and stop); act 2 is a frame sequence that scroll scrubs (a gold light
- * sweep turns each tiger into a model). Both share one backdrop colour.
+ * walk in and stop; MP4, with a WebM copy for browsers without H.264); act 2
+ * is a frame sequence that scroll scrubs (a gold light sweep turns each tiger
+ * into a model). Both share one backdrop colour.
  */
 export const HERO_MEDIA = {
-  desktop: { video: "/hero/enter-desktop.mp4", frames: "/hero/tf-desktop" },
-  mobile: { video: "/hero/enter-mobile.mp4", frames: "/hero/tf-mobile" },
+  desktop: {
+    video: "/hero/enter-desktop.mp4",
+    webm: "/hero/enter-desktop.webm",
+    frames: "/hero/tf-desktop",
+  },
+  mobile: {
+    video: "/hero/enter-mobile.mp4",
+    webm: "/hero/enter-mobile.webm",
+    frames: "/hero/tf-mobile",
+  },
 } as const;
+
+/** Codec strings of the two encodings (H.264 High 5.0; VP9), for canPlayType. */
+export const HERO_TYPES = {
+  mp4: 'video/mp4; codecs="avc1.640032"',
+  webm: 'video/webm; codecs="vp9"',
+} as const;
+
+/**
+ * Which file of a cut to play (#322): the MP4, unless the browser says it cannot
+ * decode H.264 but can decode VP9 (then the WebM copy of the same film).
+ */
+export function pickHeroVideo(
+  media: { video: string; webm: string },
+  canPlay: (type: string) => string,
+) {
+  return !canPlay(HERO_TYPES.mp4) && canPlay(HERO_TYPES.webm) ? media.webm : media.video;
+}
 
 /**
  * Poster of the entrance video: its first frame, which is the plain backdrop in

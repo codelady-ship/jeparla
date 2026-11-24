@@ -423,7 +423,7 @@
   position: relative;
   flex: 1 1 0;
   min-height: 0;
-  /* First in the DOM (painted under the copy), shown below it. */
+  /* After the copy in the DOM (painted under it: the overlays have z-index 2), shown below it. */
   order: 1;
 }
 /* The figures fill the bottom 41% of the 9:16 footage (heads at 59%; the rest is the
