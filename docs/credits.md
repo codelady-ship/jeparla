@@ -96,6 +96,36 @@ verir; müəlliflər aşağıdakı kimi qalır.
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
+Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 7 şəkli `/admin/photos` səhifəsindən keçirib,
+5-ni götürüb (2-sinin kəsimi pis çıxdı, aşağıda) (`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
+modeli ilə silinib (Apache-2.0, `frontend/public/models/u2netp.onnx`, aşağıda), əşya krem fonda kartın 4:5 kadrına
+qoyulub, yumşaq yaşıl tonlu kölgə, 800x1000 WebP. Generativ AI yoxdur, əşya yenidən çəkilməyib, ona görə "AI ilə
+yaradılıb" nişanı yoxdur (redaktə olunmuş foto, yaradılmış deyil; #119 ilə eyni qərar). Hamısı
+[Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil; 2026-11-24 səhifədə yoxlanılıb),
+`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkillərdə loqo və oxunan brend yazısı yoxdur
+(`ring-gold-2`-nin içində əyar damğası "18K" görünür).
+
+| Fayl | Müəllif | Mənbə |
+|---|---|---|
+| `ring-gold-2.webp` | Sabrianna | https://unsplash.com/photos/NhrcL_C0sFA |
+| `ring-silver-2.webp` | Alyssa Hurley | https://unsplash.com/photos/IdU1Si3wJ-I |
+| `earrings-gold-4.webp` | Ian Talmacs | https://unsplash.com/photos/PARIuwa_Ssc |
+| `necklace-silver-4.webp` | Sabrianna | https://unsplash.com/photos/ZoDgJpXzDB8 |
+| `bracelet-gold-5.webp` | Syed F Hashemi | https://unsplash.com/photos/aldDZePniqg |
+
+Rədd edilənlər (repoya düşməyib): COPPERTIST WU-nun gümüş zənciri (https://unsplash.com/photos/kX79F-UsSNU):
+model zəncirin içindəki boz fonu da əşya sayıb; Philippe Van Doninck-in qolbağı
+(https://unsplash.com/photos/hoC_u_9yJ_Y): kənarda ağ hale və köhnə kölgə qalıb. Orijinallar krem dizayna uyğun
+olmadığı üçün onları da əlavə etmədik.
+
+Bu fayllar yalnız nümunə məlumat rejimində (`NEXT_PUBLIC_USE_MOCK=true`, `src/lib/api/mock/fixtures.ts`) görünür;
+backend demo seed-i (`R__demo_seed.sql`) hələ yalnız JPEG şəkilləri göstərir.
+
+Fon silmə modeli (`frontend/public/models/u2netp.onnx`): U2-Net-p, Xuebin Qin və başqaları,
+https://github.com/xuebinqin/U-2-Net, Apache License 2.0. ONNX faylı rembg layihəsinin (MIT) `v0.0.0` release
+asset-idir, SHA-256 `309c8469258d...` (backend-dəki `SegmentationModel.U2NETP` ilə eyni). İcra: ONNX Runtime Web
+1.22.0 (MIT), yalnız admin və satıcı kabinetində düyməyə basanda yüklənir.
+
 Damğa və etiket nümunələri (#106, 2026-11-18): `hallmark-gold-585.jpg` və `tag-gold-585.jpg` foto deyil,
 AI deyil: Jeparla üçün SVG ilə çəkilib (sharp ilə JPEG-ə çevrilib), 800x800. Demo məhsul 13-ün qalereyasında
 "Damğa" və "Etiket" kadrlarının və admin növbəsinin görünməsi üçündür; real damğanın şəkli deyil, etiketdə

@@ -260,19 +260,37 @@ function diamond(i: number): Stone {
 /**
  * Free Unsplash photos (public/demo, authors in docs/credits.md) so the demo catalog looks
  * like jewelry. Real photos, not AI, and not of these products: the description says so.
+ * The `.webp` ones were added by the demo admin through /admin/photos ("fit to design": background
+ * removed on the device, cream background, card frame; edited, not generated).
  */
 type Kind = "ring" | "earrings" | "necklace" | "bracelet";
 const DEMO_PHOTOS: Record<Kind, { gold: string[]; silver: string[] }> = {
-  ring: { gold: ["ring-gold-1"], silver: ["ring-silver-1", "ring-silver-3"] },
+  ring: {
+    gold: ["ring-gold-1.jpg", "ring-gold-2.webp"],
+    silver: ["ring-silver-1.jpg", "ring-silver-3.jpg", "ring-silver-2.webp"],
+  },
   earrings: {
-    gold: ["earrings-gold-1", "earrings-gold-2", "earrings-gold-3"],
-    silver: ["earrings-silver-1"],
+    gold: [
+      "earrings-gold-1.jpg",
+      "earrings-gold-2.jpg",
+      "earrings-gold-3.jpg",
+      "earrings-gold-4.webp",
+    ],
+    silver: ["earrings-silver-1.jpg"],
   },
   necklace: {
-    gold: ["necklace-gold-1", "necklace-gold-2", "necklace-gold-3"],
-    silver: ["necklace-silver-1", "necklace-silver-2", "necklace-silver-3"],
+    gold: ["necklace-gold-1.jpg", "necklace-gold-2.jpg", "necklace-gold-3.jpg"],
+    silver: [
+      "necklace-silver-1.jpg",
+      "necklace-silver-2.jpg",
+      "necklace-silver-3.jpg",
+      "necklace-silver-4.webp",
+    ],
   },
-  bracelet: { gold: ["bracelet-gold-2", "bracelet-gold-3"], silver: ["bracelet-silver-1"] },
+  bracelet: {
+    gold: ["bracelet-gold-2.jpg", "bracelet-gold-3.jpg", "bracelet-gold-5.webp"],
+    silver: ["bracelet-silver-1.jpg"],
+  },
 };
 /** Leaf category -> photo kind (brooches and sets borrow necklaces, kids' jewelry earrings). */
 const KIND_OF: Record<number, Kind> = {
@@ -291,7 +309,7 @@ const KIND_OF: Record<number, Kind> = {
 function demoPhotos(i: number, categoryId: number, metal: MetalType, alt: LocalizedText) {
   const pool = DEMO_PHOTOS[KIND_OF[categoryId] ?? "necklace"][metal === "GOLD" ? "gold" : "silver"];
   const pick = (n: number) => ({
-    url: `/demo/${pool[n % pool.length]}.jpg`,
+    url: `/demo/${pool[n % pool.length]}`,
     alt,
     width: 800,
     height: 1000,
