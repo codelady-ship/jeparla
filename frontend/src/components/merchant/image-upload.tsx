@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useId, useState, type DragEvent } from "react";
+import { useId, useRef, useState, type DragEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +56,8 @@ export function ImageUpload({
   const [status, setStatus] = useState("");
   const tf = useTranslations("Merchant.imageFit");
   const [fitting, setFitting] = useState<Fitting | null>(null);
+  /** Number of the current fit run: a result of an older run (dialog closed or reopened) is dropped. */
+  const fitRun = useRef(0);
   /**
    * Originals of fitted photos, by the fitted photo's id, so the seller can go back to them. The
    * fitted photo gets a new id: a photo already saved on the server is then replaced on save
@@ -64,22 +66,28 @@ export function ImageUpload({
   const [originals, setOriginals] = useState<Record<string, ProductImageInput>>({});
   const max = IMAGE_MAX_BYTES / 1024 / 1024;
 
-  /** "Fit to design" (cut out, cream background, card frame): runs on this device. */
+  /**
+   * "Fit to design" (cut out, cream background, card frame): runs on this device. Offered only for
+   * photos picked in this form (data: URLs): a saved photo is on the public R2 bucket, which does
+   * not answer cross-origin GET, so it cannot be read back into the page.
+   */
   async function fit(img: ProductImageInput, name: string) {
+    const run = ++fitRun.current;
     setFitting({ id: img.id, name, original: img.url, fit: { state: "working" } });
     const source = await fetch(img.url)
       .then((r) => r.blob())
       .catch(() => null);
     const result: FitState = source ? await runFit(source) : { state: "failed", reason: "failed" };
-    setFitting((f) => {
-      if (f?.id === img.id) return { ...f, fit: result };
-      // The dialog was closed while the photo was processed.
+    if (run !== fitRun.current) {
+      // The dialog was closed (or opened again) while this photo was processed.
       if (result.state === "done") URL.revokeObjectURL(result.url);
-      return f;
-    });
+      return;
+    }
+    setFitting((f) => (f ? { ...f, fit: result } : f));
   }
 
   function closeFit() {
+    fitRun.current++;
     if (fitting?.fit.state === "done") URL.revokeObjectURL(fitting.fit.url);
     setFitting(null);
   }
@@ -269,7 +277,7 @@ export function ImageUpload({
                     >
                       <Undo2 aria-hidden className="size-4" />
                     </button>
-                  ) : (
+                  ) : img.url.startsWith("data:") ? (
                     <button
                       type="button"
                       onClick={() => void fit(img, name)}
@@ -280,7 +288,7 @@ export function ImageUpload({
                     >
                       <Wand2 aria-hidden className="size-4" />
                     </button>
-                  )}
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => onChange(images.filter((x) => x.id !== img.id))}

@@ -260,14 +260,14 @@ function diamond(i: number): Stone {
 /**
  * Free Unsplash photos (public/demo, authors in docs/credits.md) so the demo catalog looks
  * like jewelry. Real photos, not AI, and not of these products: the description says so.
- * The `.webp` ones were added by the demo admin through /admin/photos ("fit to design": background
+ * The `.webp` one was added by the demo admin through /admin/photos ("fit to design": background
  * removed on the device, cream background, card frame; edited, not generated).
  */
 type Kind = "ring" | "earrings" | "necklace" | "bracelet";
 const DEMO_PHOTOS: Record<Kind, { gold: string[]; silver: string[] }> = {
   ring: {
-    gold: ["ring-gold-1.jpg", "ring-gold-2.webp"],
-    silver: ["ring-silver-1.jpg", "ring-silver-3.jpg", "ring-silver-2.webp"],
+    gold: ["ring-gold-1.jpg"],
+    silver: ["ring-silver-1.jpg", "ring-silver-3.jpg"],
   },
   earrings: {
     gold: [
@@ -280,15 +280,10 @@ const DEMO_PHOTOS: Record<Kind, { gold: string[]; silver: string[] }> = {
   },
   necklace: {
     gold: ["necklace-gold-1.jpg", "necklace-gold-2.jpg", "necklace-gold-3.jpg"],
-    silver: [
-      "necklace-silver-1.jpg",
-      "necklace-silver-2.jpg",
-      "necklace-silver-3.jpg",
-      "necklace-silver-4.webp",
-    ],
+    silver: ["necklace-silver-1.jpg", "necklace-silver-2.jpg", "necklace-silver-3.jpg"],
   },
   bracelet: {
-    gold: ["bracelet-gold-2.jpg", "bracelet-gold-3.jpg", "bracelet-gold-5.webp"],
+    gold: ["bracelet-gold-2.jpg", "bracelet-gold-3.jpg"],
     silver: ["bracelet-silver-1.jpg"],
   },
 };

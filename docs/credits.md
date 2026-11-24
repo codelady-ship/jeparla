@@ -96,27 +96,33 @@ verir; müəlliflər aşağıdakı kimi qalır.
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
-Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 7 şəkli `/admin/photos` səhifəsindən keçirib,
-5-ni götürüb (2-sinin kəsimi pis çıxdı, aşağıda) (`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
+Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 9 şəkli `/admin/photos` səhifəsindən keçirib,
+yalnız 1-ni götürüb (qalanlarının kəsimi təmiz çıxmadı, aşağıda) (`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
 modeli ilə silinib (Apache-2.0, `frontend/public/models/u2netp.onnx`, aşağıda), əşya krem fonda kartın 4:5 kadrına
 qoyulub, yumşaq yaşıl tonlu kölgə, 800x1000 WebP. Generativ AI yoxdur, əşya yenidən çəkilməyib, ona görə "AI ilə
 yaradılıb" nişanı yoxdur (redaktə olunmuş foto, yaradılmış deyil; #119 ilə eyni qərar). Hamısı
 [Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil; 2026-11-24 səhifədə yoxlanılıb),
-`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkillərdə loqo və oxunan brend yazısı yoxdur
-(`ring-gold-2`-nin içində əyar damğası "18K" görünür).
+`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkildə loqo və oxunan brend yazısı yoxdur.
 
 | Fayl | Müəllif | Mənbə |
 |---|---|---|
-| `ring-gold-2.webp` | Sabrianna | https://unsplash.com/photos/NhrcL_C0sFA |
-| `ring-silver-2.webp` | Alyssa Hurley | https://unsplash.com/photos/IdU1Si3wJ-I |
 | `earrings-gold-4.webp` | Ian Talmacs | https://unsplash.com/photos/PARIuwa_Ssc |
-| `necklace-silver-4.webp` | Sabrianna | https://unsplash.com/photos/ZoDgJpXzDB8 |
-| `bracelet-gold-5.webp` | Syed F Hashemi | https://unsplash.com/photos/aldDZePniqg |
 
-Rədd edilənlər (repoya düşməyib): COPPERTIST WU-nun gümüş zənciri (https://unsplash.com/photos/kX79F-UsSNU):
-model zəncirin içindəki boz fonu da əşya sayıb; Philippe Van Doninck-in qolbağı
-(https://unsplash.com/photos/hoC_u_9yJ_Y): kənarda ağ hale və köhnə kölgə qalıb. Orijinallar krem dizayna uyğun
-olmadığı üçün onları da əlavə etmədik.
+Rədd edilənlər (repoya düşməyib; PR #328 rəyi, 2026-11-24):
+
+- Gümüş üzüklər (https://unsplash.com/photos/IdU1Si3wJ-I üç üzük, Alyssa Hurley;
+  https://unsplash.com/photos/wh_rZqPiCuw və https://unsplash.com/photos/kuko1hX_kXw, Sabrianna) və gümüş ürək
+  asqı (https://unsplash.com/photos/ZoDgJpXzDB8, Sabrianna): ağ fonda ağ metal; kənarda ağ hale, solğun zolaq və ya
+  fona qarışan zolaq qalır. U2-Net-p-nin zəif yeri budur: ağ fonda gümüş üçün təmiz kəsim alınmır.
+- Qızıl soliter üzük (https://unsplash.com/photos/NhrcL_C0sFA, Sabrianna): açıq kontur, kadrı digər üzük
+  şəkillərindən çox doldurur, nişan üzüyüdür, amma halqa havuzu toy üzüyü kartlarına da düşür.
+- Qızıl zəncir dəsti (https://unsplash.com/photos/aldDZePniqg, Syed F Hashemi): ağ qırıntı qalıb, qolbaq
+  məhsulunda qarışıq dəst göstərir.
+- COPPERTIST WU-nun gümüş zənciri (https://unsplash.com/photos/kX79F-UsSNU): model zəncirin içindəki boz fonu da
+  əşya sayıb; Philippe Van Doninck-in qolbağı (https://unsplash.com/photos/hoC_u_9yJ_Y): kənarda ağ hale və köhnə
+  kölgə qalıb.
+
+Orijinallar krem dizayna uyğun olmadığı üçün onları da əlavə etmədik.
 
 Bu fayllar yalnız nümunə məlumat rejimində (`NEXT_PUBLIC_USE_MOCK=true`, `src/lib/api/mock/fixtures.ts`) görünür;
 backend demo seed-i (`R__demo_seed.sql`) hələ yalnız JPEG şəkilləri göstərir.

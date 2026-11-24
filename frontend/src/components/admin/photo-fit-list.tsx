@@ -33,36 +33,46 @@ export function PhotoFitList() {
   const t = useTranslations("Admin.photos");
   const [items, setItems] = useState<Item[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
+  /** Key of the photo being fitted now; the others with state "working" are only queued. */
+  const [processing, setProcessing] = useState<number | null>(null);
   const nextKey = useRef(1);
   const running = useRef(false);
+  const unmounted = useRef(false);
   const live = useRef(items);
   useEffect(() => {
     live.current = items;
   }, [items]);
 
-  // Object URLs live as long as the page.
-  useEffect(
-    () => () => {
+  // The queue stops when the page is left; object URLs live as long as the page.
+  useEffect(() => {
+    unmounted.current = false;
+    return () => {
+      unmounted.current = true;
       for (const it of live.current) {
         URL.revokeObjectURL(it.original);
         if (it.fit.state === "done") URL.revokeObjectURL(it.fit.url);
       }
-    },
-    [],
-  );
+    };
+  }, []);
 
   /** Fits waiting photos one at a time (the model runs on the main device CPU). */
   async function drain() {
     if (running.current) return;
     running.current = true;
-    for (;;) {
+    while (!unmounted.current) {
       const next = live.current.find((i) => i.fit.state === "working");
       if (!next) break;
+      setProcessing(next.key);
       const fit = await runFit(next.file);
+      if (unmounted.current || !live.current.some((i) => i.key === next.key)) {
+        if (fit.state === "done") URL.revokeObjectURL(fit.url);
+        continue;
+      }
       setItems((list) => list.map((i) => (i.key === next.key ? { ...i, fit } : i)));
       live.current = live.current.map((i) => (i.key === next.key ? { ...i, fit } : i));
     }
     running.current = false;
+    if (!unmounted.current) setProcessing(null);
   }
 
   function onPick(e: ChangeEvent<HTMLInputElement>) {
@@ -101,7 +111,9 @@ export function PhotoFitList() {
   function remove(item: Item) {
     URL.revokeObjectURL(item.original);
     if (item.fit.state === "done") URL.revokeObjectURL(item.fit.url);
-    setItems((list) => list.filter((i) => i.key !== item.key));
+    // Also out of the queue: a queued photo is then never fitted.
+    live.current = live.current.filter((i) => i.key !== item.key);
+    setItems(live.current);
   }
 
   const pick =
@@ -177,7 +189,7 @@ export function PhotoFitList() {
                     variant="ghost"
                     size="sm"
                     className="ml-auto"
-                    disabled={item.fit.state === "working"}
+                    disabled={item.key === processing}
                     aria-label={t("remove", { name: item.file.name })}
                     onClick={() => remove(item)}
                   >

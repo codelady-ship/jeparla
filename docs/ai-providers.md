@@ -149,7 +149,12 @@ yoxlamasıdır (#282). Tapşırıq asinxrondur (`attempt-timeout` 5 dəq.), sat�
 Eyni studiya görünüşü, amma serversiz və növbəsiz: yükləmə anında, admin və ya satıcının öz brauzerində.
 
 - Harada: məhsul formasında hər şəklin altında sehrli çubuq düyməsi (`ImageUpload`), admin panelində
-  `/admin/photos` ("Məhsul şəkilləri": bir neçə şəkli emal edib endirmək, demo kataloq üçün).
+  `/admin/photos` ("Məhsul şəkilləri": bir neçə şəkli emal edib endirmək, demo kataloq üçün). Formada düymə
+  yalnız bu formada yeni seçilmiş (hələ saxlanmamış, `data:`) şəkillərdə görünür: saxlanmış şəkil R2 public
+  bucket-dədir, bucket-də GET üçün CORS qaydası yoxdur, ona görə brauzer onu yenidən oxuya bilmir. Saxlanmış
+  şəkli uyğunlaşdırmaq üçün satıcı onu yenidən seçir.
+- Ağ fonda gümüş və ağ qızıl: U2-Net-p kənarda ağ hale və solğun zolaq qoyur (PR #328 rəyi); nəticə heç vaxt
+  avtomatik tətbiq olunmur, belə şəkildə "Orijinalı saxla" seçilir.
 - Nə edir (`frontend/src/lib/image-fit/`): `compose.ts` backend-dəki `StudioComposer`-in TypeScript surətidir
   (maska təmizlənir, köhnə fonun rəngi kənarlardan çıxarılır, bir ümumi parlaqlıq əmsalı 0.92-1.15, krem fonda
   4:5 kadrın ~70%-i, kölgə). Fon `docs/design/tokens.json`-un `light.bg` (krem), kölgə `scene.green` (tünd yaşıl)
