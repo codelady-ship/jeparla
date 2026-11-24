@@ -150,6 +150,29 @@ describe("CinematicHero", () => {
   });
 });
 
+describe("CinematicHero on a slow connection (#322)", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("shows the standing tigers after the timeout, then the film once it does start", async () => {
+    vi.useFakeTimers();
+    mockMedia(false);
+    const { container } = renderIn("az", az);
+    const video = container.querySelector("video")!;
+    const frames = container.querySelector<HTMLImageElement>(".hero-frames")!;
+    // First paint, then the task that requests the film.
+    await vi.advanceTimersByTimeAsync(50);
+    expect(video.getAttribute("src")).toBe("/hero/enter-mobile.mp4");
+    // Six seconds and the film is still on its first frame: the stand-in and the copy.
+    await vi.advanceTimersByTimeAsync(6000);
+    expect(container.querySelector(".hero")).toHaveClass("is-revealed");
+    expect(frames.style.opacity).toBe("1");
+    // The film starts after all: it is shown again, not hidden under the frames.
+    video.dispatchEvent(new Event("playing"));
+    await vi.advanceTimersByTimeAsync(50);
+    expect(frames.style.opacity).toBe("0");
+  });
+});
+
 describe("pickHeroVideo", () => {
   const media = HERO_MEDIA.desktop;
   it("plays the MP4 wherever H.264 plays, or when the browser does not say", () => {

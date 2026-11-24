@@ -196,6 +196,12 @@ export function HeroMotion({
       }
       fallback();
     };
+    /** A slow film that starts after all (after the timeout): show it again, not the stand-in. */
+    const onPlaying = () => {
+      if (!failed) return;
+      failed = false;
+      onScroll();
+    };
 
     const render = () => {
       frame = 0;
@@ -250,6 +256,7 @@ export function HeroMotion({
       track.dataset.mode = "motion";
       video.addEventListener("ended", land);
       video.addEventListener("error", onError);
+      video.addEventListener("playing", onPlaying);
       video.muted = true;
       // The film is requested only after the first frame with the headline is painted
       // (one frame, then a task): fetched with the page it took the phone's bandwidth from
@@ -267,7 +274,7 @@ export function HeroMotion({
           return;
         }
         video.play()?.catch(fallback);
-        // Still on its first frame after the timeout: it is not going to play.
+        // Still on its first frame after the timeout: show the stand-in until it plays.
         timer = window.setTimeout(
           () => (video.currentTime > 0 ? land() : fallback()),
           REVEAL_TIMEOUT,
@@ -295,6 +302,7 @@ export function HeroMotion({
       for (const type of FIRST_INPUT) window.removeEventListener(type, sampleBackdrop);
       video.removeEventListener("ended", land);
       video.removeEventListener("error", onError);
+      video.removeEventListener("playing", onPlaying);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       if (frame) cancelAnimationFrame(frame);
