@@ -5,6 +5,7 @@ import {
   Flag,
   FolderTree,
   History,
+  ImagePlus,
   LayoutDashboard,
   PackageCheck,
   ShieldAlert,
@@ -14,6 +15,7 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "cn";
 
@@ -28,6 +30,7 @@ const ITEMS = [
   { href: "/admin/prices", key: "prices", icon: Coins },
   { href: "/admin/catalog", key: "catalog", icon: FolderTree },
   { href: "/admin/ai-models", key: "aiModels", icon: UserRound },
+  { href: "/admin/photos", key: "photos", icon: ImagePlus },
   { href: "/admin/users", key: "users", icon: Users },
   { href: "/admin/audit", key: "audit", icon: History },
 ] as const;
@@ -43,8 +46,20 @@ export function AdminNav({
   labels: Record<AdminNavKey, string>;
 }) {
   const pathname = usePathname();
+  const nav = useRef<HTMLElement>(null);
+  // The tabs are wider than the screen: bring the current one into view (only the tab row
+  // scrolls sideways, the page does not move).
+  useEffect(() => {
+    const box = nav.current;
+    const tab = box?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!box || !tab) return;
+    const b = box.getBoundingClientRect();
+    const r = tab.getBoundingClientRect();
+    if (r.left < b.left) box.scrollLeft -= b.left - r.left;
+    else if (r.right > b.right) box.scrollLeft += r.right - b.right;
+  }, [pathname]);
   return (
-    <nav aria-label={label} className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+    <nav ref={nav} aria-label={label} className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
       <ul className="flex min-w-max gap-1 border-b">
         {ITEMS.map(({ href, key, icon: Icon }) => {
           const current = href === "/admin" ? pathname === href : pathname.startsWith(href);

@@ -1,14 +1,35 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Camera, ImagePlus, Loader2, TriangleAlert, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Camera,
+  ImagePlus,
+  Loader2,
+  TriangleAlert,
+  Undo2,
+  Wand2,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useId, useState, type DragEvent } from "react";
+import { useId, useRef, useState, type DragEvent } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { downscale, IMAGE_MAX_BYTES, IMAGE_TYPES, move } from "@/lib/merchant/images";
 import { checkPhoto } from "@/lib/merchant/photo-quality";
 import { MAX_IMAGES } from "@/lib/merchant/schemas";
 import type { ProductImageInput } from "@/types/merchant";
 import { cn } from "cn";
+import { FitCompare, runFit, toDataUrl, type FitState } from "./image-fit";
+
+/** The photo being fitted in the dialog. */
+type Fitting = { id: string; name: string; original: string; fit: FitState };
 
 /**
  * Drag and drop or pick photos (the phone camera opens through the picker).
@@ -33,7 +54,63 @@ export function ImageUpload({
   const [problems, setProblems] = useState<string[]>([]);
   const [hints, setHints] = useState<string[]>([]);
   const [status, setStatus] = useState("");
+  const tf = useTranslations("Merchant.imageFit");
+  const [fitting, setFitting] = useState<Fitting | null>(null);
+  /** Number of the current fit run: a result of an older run (dialog closed or reopened) is dropped. */
+  const fitRun = useRef(0);
+  /**
+   * Originals of fitted photos, by the fitted photo's id, so the seller can go back to them. The
+   * fitted photo gets a new id: a photo already saved on the server is then replaced on save
+   * (uploaded as a new one, the old one deleted) instead of being kept as it was.
+   */
+  const [originals, setOriginals] = useState<Record<string, ProductImageInput>>({});
   const max = IMAGE_MAX_BYTES / 1024 / 1024;
+
+  /**
+   * "Fit to design" (cut out, cream background, card frame): runs on this device. Offered only for
+   * photos picked in this form (data: URLs): a saved photo is on the public R2 bucket, which does
+   * not answer cross-origin GET, so it cannot be read back into the page.
+   */
+  async function fit(img: ProductImageInput, name: string) {
+    const run = ++fitRun.current;
+    setFitting({ id: img.id, name, original: img.url, fit: { state: "working" } });
+    const source = await fetch(img.url)
+      .then((r) => r.blob())
+      .catch(() => null);
+    const result: FitState = source ? await runFit(source) : { state: "failed", reason: "failed" };
+    if (run !== fitRun.current) {
+      // The dialog was closed (or opened again) while this photo was processed.
+      if (result.state === "done") URL.revokeObjectURL(result.url);
+      return;
+    }
+    setFitting((f) => (f ? { ...f, fit: result } : f));
+  }
+
+  function closeFit() {
+    fitRun.current++;
+    if (fitting?.fit.state === "done") URL.revokeObjectURL(fitting.fit.url);
+    setFitting(null);
+  }
+
+  async function acceptFitted() {
+    if (!fitting || fitting.fit.state !== "done") return;
+    const url = await toDataUrl(fitting.fit.blob);
+    const before = images.find((x) => x.id === fitting.id);
+    if (!before) return closeFit();
+    const fitted = { ...before, id: `fit-${Date.now().toString(36)}`, url };
+    setOriginals((o) => ({ ...o, [fitted.id]: before }));
+    onChange(images.map((x) => (x.id === before.id ? fitted : x)));
+    setStatus(tf("used", { name: fitting.name }));
+    closeFit();
+  }
+
+  function restore(id: string, name: string) {
+    const original = originals[id];
+    if (!original) return;
+    onChange(images.map((x) => (x.id === id ? original : x)));
+    setOriginals((o) => Object.fromEntries(Object.entries(o).filter(([k]) => k !== id)));
+    setStatus(tf("restored", { name }));
+  }
 
   async function add(files: FileList | null) {
     if (!files?.length) return;
@@ -190,6 +267,28 @@ export function ImageUpload({
                   >
                     <ArrowRight aria-hidden className="size-4" />
                   </button>
+                  {originals[img.id] ? (
+                    <button
+                      type="button"
+                      onClick={() => restore(img.id, name)}
+                      aria-label={tf("restore", { name })}
+                      title={tf("restore", { name })}
+                      className="inline-flex size-9 items-center justify-center rounded-md outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    >
+                      <Undo2 aria-hidden className="size-4" />
+                    </button>
+                  ) : img.url.startsWith("data:") ? (
+                    <button
+                      type="button"
+                      onClick={() => void fit(img, name)}
+                      disabled={fitting !== null}
+                      aria-label={tf("actionFor", { name })}
+                      title={tf("actionFor", { name })}
+                      className="inline-flex size-9 items-center justify-center rounded-md text-gold-text outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-40"
+                    >
+                      <Wand2 aria-hidden className="size-4" />
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => onChange(images.filter((x) => x.id !== img.id))}
@@ -204,6 +303,24 @@ export function ImageUpload({
           })}
         </ol>
       )}
+
+      <Dialog open={fitting !== null} onOpenChange={(open) => !open && closeFit()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{tf("title", { name: fitting?.name ?? "" })}</DialogTitle>
+            <DialogDescription>{tf("note")}</DialogDescription>
+          </DialogHeader>
+          {fitting && (
+            <FitCompare
+              name={fitting.name}
+              original={fitting.original}
+              fit={fitting.fit}
+              onUse={() => void acceptFitted()}
+              onKeep={closeFit}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

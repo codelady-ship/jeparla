@@ -144,6 +144,36 @@ yoxlamasıdır (#282). Tapşırıq asinxrondur (`attempt-timeout` 5 dəq.), sat�
 - Eyni pipeline komanda sətrindən: `./gradlew studioLook --args="--size 800x1000 --out build/studio <fayllar>"`
   (demo fotolar belə hazırlanıb, `docs/credits.md`).
 
+#### Brauzerdə: "dizayna uyğunlaşdır" (2026-11-24)
+
+Eyni studiya görünüşü, amma serversiz və növbəsiz: yükləmə anında, admin və ya satıcının öz brauzerində.
+
+- Harada: məhsul formasında hər şəklin altında sehrli çubuq düyməsi (`ImageUpload`), admin panelində
+  `/admin/photos` ("Məhsul şəkilləri": bir neçə şəkli emal edib endirmək, demo kataloq üçün). Formada düymə
+  yalnız bu formada yeni seçilmiş (hələ saxlanmamış, `data:`) şəkillərdə görünür: saxlanmış şəkil R2 public
+  bucket-dədir, bucket-də GET üçün CORS qaydası yoxdur, ona görə brauzer onu yenidən oxuya bilmir. Saxlanmış
+  şəkli uyğunlaşdırmaq üçün satıcı onu yenidən seçir.
+- Ağ fonda gümüş və ağ qızıl: U2-Net-p kənarda ağ hale və solğun zolaq qoyur (PR #328 rəyi); nəticə heç vaxt
+  avtomatik tətbiq olunmur, belə şəkildə "Orijinalı saxla" seçilir.
+- Nə edir (`frontend/src/lib/image-fit/`): `compose.ts` backend-dəki `StudioComposer`-in TypeScript surətidir
+  (maska təmizlənir, köhnə fonun rəngi kənarlardan çıxarılır, bir ümumi parlaqlıq əmsalı 0.92-1.15, krem fonda
+  4:5 kadrın ~70%-i, kölgə). Fon `docs/design/tokens.json`-un `light.bg` (krem), kölgə `scene.green` (tünd yaşıl)
+  rəngindədir (`brand-colors.json`). Nəticə 800x1000 WebP (WebP kodlayıcısı olmayan brauzerdə JPEG).
+- Model: U2-Net-p (Apache-2.0, 4.6 MB), `frontend/public/models/u2netp.onnx`, backend ilə eyni SHA-256; brauzer
+  faylı yükləyəndən sonra hash-i yoxlayır, uyğun deyilsə işləmir. ONNX Runtime Web 1.22.0 (MIT), WebAssembly, bir
+  thread. IS-Net (179 MB) brauzer üçün çox böyükdür.
+- Seçilməyən: `@imgly/background-removal` (AGPL-3.0: bütün saytın mənbəyini açmağı tələb edə bilər; model də
+  onların CDN-indən gəlir), pullu API-lər (remove.bg və s.), qeyri-kommersiya lisenziyalı modellər (RMBG-1.4).
+- Yükləmə: model və runtime yalnız düyməyə basanda `import()` ilə gəlir; ictimai səhifələrin skript büdcəsinə
+  düşmür.
+- Seçim istifadəçinindir: əvvəl/sonra yan-yana göstərilir, "Uyğunlaşdırılmışı götür" və ya "Orijinalı saxla".
+  Götürüləndən sonra da şəklin altındakı düymə ilə orijinal qaytarılır (form saxlanana qədər).
+- Dürüstlük: redaktədir, generasiya deyil (yuxarıdakı #119 qərarı ilə eyni), ona görə `aiGenerated=false`, nişan
+  yoxdur. `CLAUDE.md` qaydası "AI ilə yaradılmış" şəkillər üçündür; fon silmə əşyanın forma, rəng və daşlarını
+  dəyişmir.
+- Keyfiyyət: U2-Net-p kobud modeldir; nazik zəncir və sapda kənarlar yumşaq ola bilər. Ona görə nəticə heç vaxt
+  avtomatik qoyulmur.
+
 ### Dürüstlük
 
 - Provayder qoşulmayanda heç bir nümunə AI şəkil göstərilmir.

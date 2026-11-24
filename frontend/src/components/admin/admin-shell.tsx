@@ -18,7 +18,8 @@ export type AdminPage =
   | "prices"
   | "aiModels"
   | "suspensions"
-  | "evidence";
+  | "evidence"
+  | "photos";
 
 /** Private area: titled per page, never indexed. */
 export async function adminMetadata(page: AdminPage): Promise<Metadata> {
@@ -39,7 +40,10 @@ export async function AdminIntl({ children }: { children: ReactNode }) {
   return (
     <IntlProvider
       locale={locale}
-      messages={{ Admin: m.Admin, Merchant: { status: m.Merchant.status } }}
+      messages={{
+        Admin: m.Admin,
+        Merchant: { status: m.Merchant.status, imageFit: m.Merchant.imageFit },
+      }}
     >
       {children}
     </IntlProvider>

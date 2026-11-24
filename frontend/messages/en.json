@@ -2081,6 +2081,26 @@
         "LINK": "Link without a source",
         "OTHER": "Other"
       }
+    },
+    "imageFit": {
+      "actionFor": "Fit {name} to the design",
+      "title": "Fit to design: {name}",
+      "note": "The background is removed on this device with an open model (U2-Net-p) and the item is placed on the cream background in the card frame (4:5). The item is not redrawn, so no \"AI-generated\" label is added. Check the edges before you use it.",
+      "working": "Removing the background (the 4.6 MB model loads the first time)",
+      "before": "Original",
+      "after": "Fitted to design",
+      "beforeAlt": "{name}: original photo",
+      "afterAlt": "{name}: photo fitted to the design",
+      "useFitted": "Use the fitted photo",
+      "keepOriginal": "Keep the original",
+      "restore": "Restore the original of {name}",
+      "used": "{name}: the fitted photo is used.",
+      "restored": "{name}: the original photo is back.",
+      "errors": {
+        "noItem": "No item was found in the photo. Keep the original.",
+        "model": "The background model could not be loaded. Try again a little later.",
+        "failed": "The photo could not be fitted. Keep the original."
+      }
     }
   },
   "Admin": {
@@ -2706,6 +2726,25 @@
       "since": "Placed",
       "placed": "{name}: legal hold placed.",
       "released": "{name}: legal hold released."
+    },
+    "photos": {
+      "title": "Product photos",
+      "intro": "Fit product photos to the site design: the background is removed and the item is placed on the cream background in the card frame. Compare the result with the original and download one of them.",
+      "rules": {
+        "local": "Everything runs in this browser: the photo is not sent anywhere, no paid service or key.",
+        "frame": "Result: 800 x 1000 WebP (the card's 4:5 frame), cream background, soft shadow, the item about 70% of the frame.",
+        "honesty": "Background removal edits a photo, it does not generate one: the item's shape, colour and stones stay as they are, so no \"AI-generated\" label is added. Keep the original if the cut-out is bad.",
+        "licence": "Only photos you may use (the store's own photo, Unsplash or Pexels licence). Record the source in docs/credits.md."
+      },
+      "choose": "Choose photos",
+      "list": "Photos being fitted",
+      "empty": "No photos chosen yet.",
+      "pickFirst": "Pick a version first.",
+      "download": "Download {name}",
+      "remove": "Remove {name} from the list",
+      "badType": "{name}: only JPG, PNG and WebP are accepted.",
+      "tooBig": "{name}: the file is larger than {max} MB.",
+      "tooMany": "At most {max} photos at once."
     }
   },
   "MetalPrices": {

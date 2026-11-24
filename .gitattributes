@@ -13,3 +13,5 @@
 *.ai binary
 *.pdf binary
 *.psd binary
+*.webp binary
+*.onnx binary

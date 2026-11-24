@@ -132,7 +132,7 @@ test.describe("v1 pages: axe and 390px", () => {
     });
   }
 
-  for (const path of ["/az/admin/evidence", "/az/admin/stores"]) {
+  for (const path of ["/az/admin/evidence", "/az/admin/stores", "/az/admin/photos"]) {
     test(`admin ${path}`, async ({ page }) => {
       await signIn(page, "admin");
       await check(page, path);

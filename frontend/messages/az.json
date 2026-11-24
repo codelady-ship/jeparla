@@ -2081,6 +2081,26 @@
         "LINK": "Mənbəsiz link",
         "OTHER": "Digər"
       }
+    },
+    "imageFit": {
+      "actionFor": "{name}: dizayna uyğunlaşdır",
+      "title": "Dizayna uyğunlaşdırma: {name}",
+      "note": "Fon bu cihazda açıq model (U2-Net-p) ilə silinir, əşya krem fonda kartın kadrına (4:5) qoyulur. Əşya yenidən çəkilmir, ona görə \"AI ilə yaradılıb\" nişanı qoyulmur. İşlətməzdən əvvəl kənarlarına baxın.",
+      "working": "Fon silinir (ilk dəfə 4.6 MB model yüklənir)",
+      "before": "Orijinal",
+      "after": "Dizayna uyğun",
+      "beforeAlt": "{name}: orijinal şəkil",
+      "afterAlt": "{name}: dizayna uyğunlaşdırılmış şəkil",
+      "useFitted": "Uyğunlaşdırılmışı götür",
+      "keepOriginal": "Orijinalı saxla",
+      "restore": "{name}: orijinal şəkli qaytar",
+      "used": "{name}: dizayna uyğunlaşdırılmış şəkil götürüldü.",
+      "restored": "{name}: orijinal şəkil qaytarıldı.",
+      "errors": {
+        "noItem": "Şəkildə əşya tapılmadı. Orijinalı saxlayın.",
+        "model": "Fon silmə modeli yüklənmədi. Bir az sonra yenidən cəhd edin.",
+        "failed": "Şəkil uyğunlaşdırılmadı. Orijinalı saxlayın."
+      }
     }
   },
   "Admin": {
@@ -2706,6 +2726,25 @@
       "since": "Qoyulub",
       "placed": "{name}: hüquqi saxlama qoyuldu.",
       "released": "{name}: hüquqi saxlama götürüldü."
+    },
+    "photos": {
+      "title": "Məhsul şəkilləri",
+      "intro": "Məhsul şəkillərini saytın dizaynına uyğunlaşdırın: fon silinir, əşya krem fonda kartın kadrına qoyulur. Nəticəni orijinalla müqayisə edib birini endirin.",
+      "rules": {
+        "local": "Hər şey bu brauzerdə işləyir: şəkil heç yerə göndərilmir, pullu xidmət və açar yoxdur.",
+        "frame": "Nəticə: 800 x 1000 WebP (kartın 4:5 kadrı), krem fon, yumşaq kölgə, əşya kadrın təxminən 70%-i.",
+        "honesty": "Fon silmə şəkli redaktə edir, yaratmır: əşyanın forması, rəngi və daşları dəyişmir, ona görə \"AI ilə yaradılıb\" nişanı qoyulmur. Kəsim pisdirsə orijinalı saxlayın.",
+        "licence": "Yalnız icazəsi olan şəkillər (mağazanın öz şəkli, Unsplash və ya Pexels lisenziyası). Mənbəni docs/credits.md-yə yazın."
+      },
+      "choose": "Şəkilləri seçin",
+      "list": "Emal olunan şəkillər",
+      "empty": "Hələ şəkil seçilməyib.",
+      "pickFirst": "Əvvəl versiyanı seçin.",
+      "download": "Endir: {name}",
+      "remove": "{name}: siyahıdan sil",
+      "badType": "{name}: yalnız JPG, PNG və WebP qəbul olunur.",
+      "tooBig": "{name}: fayl {max} MB-dan böyükdür.",
+      "tooMany": "Bir dəfəyə ən çox {max} şəkil."
     }
   },
   "MetalPrices": {

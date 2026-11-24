@@ -96,6 +96,75 @@ verir; müəlliflər aşağıdakı kimi qalır.
 | `bracelet-gold-3.jpg` | Diego Castañeda | https://unsplash.com/photos/y7xmVsIXNUI |
 | `bracelet-silver-1.jpg` | César O'neill | https://unsplash.com/photos/St60rvtQJpM |
 
+Admin şəkilləri, "dizayna uyğunlaşdır" (2026-11-24): demo admin 50 şəkli `/admin/photos` səhifəsindən keçirib,
+yalnız 1-ni saxlayıb (qalanlarının kəsimi təmiz çıxmadı və ya məhsul növünə uyğun deyil, aşağıda)
+(`frontend/scripts/fit-demo-photos.mjs`, yerli sample data, real hesab yox). Fon brauzerdə açıq U2-Net-p
+modeli ilə silinib (Apache-2.0, `frontend/public/models/u2netp.onnx`, aşağıda), əşya krem fonda kartın 4:5 kadrına
+qoyulub, yumşaq yaşıl tonlu kölgə, 800x1000 WebP. Generativ AI yoxdur, əşya yenidən çəkilməyib, ona görə "AI ilə
+yaradılıb" nişanı yoxdur (redaktə olunmuş foto, yaradılmış deyil; #119 ilə eyni qərar). Hamısı
+[Unsplash Lisenziyası](https://unsplash.com/license) ilə pulsuzdur (Unsplash+ deyil; 2026-11-24 səhifədə yoxlanılıb),
+`unsplash.com/photos/<id>/download` düyməsi ilə endirilib. Şəkildə loqo və oxunan brend yazısı yoxdur.
+
+| Fayl | Müəllif | Mənbə | Harada |
+|---|---|---|---|
+| `earrings-gold-6.webp` | MAYANK GEHLOT | https://unsplash.com/photos/lsxBmX8Hmwc | qızıl sırğalar, qızıl uşaq sırğaları |
+
+Şəkil yalnız öz növündə və metalında göstərilir (`FITTED_PHOTOS`, `src/lib/api/mock/fixtures.ts`). Təmiz kəsim
+tapılmayan kateqoriyalar köhnə `.jpg` şəkillərində qalıb: nişan, toy və kişi üzükləri, zəncirlər (qızıl, gümüş),
+asqılar, qolbaqlar (qızıl, gümüş), dəstlər, broşlar, gümüş uşaq sırğaları.
+
+PR #328 rəyində (2026-11-24, 5fa974f) götürülüb sonra çıxarılanlar:
+
+- `earrings-gold-4.webp` (Ian Talmacs, https://unsplash.com/photos/PARIuwa_Ssc): 1-2 px ağ kontur, halqaların
+  arasında təmiz ağ boşluqlar, kartın enini cəmi ~60% doldurur.
+- `earrings-gold-5.webp` (Till Kraus, https://unsplash.com/photos/0F7UG5-sHIg): açıq, burulmuş, qarışıq metal
+  manjetlər, qızıl sırğa deyil; sağ manjetdə hale; kadrı az doldurur.
+- `bracelet-gold-6.webp` (Khizar Rathore, https://unsplash.com/photos/AoZrJQ80KCc): hər iki bilərziyin içində qara
+  fon qalıb, yuxarı solda açıq kənar; strazlı bijuteriyaya oxşayır, 585/750 qızıl məhsullara uyğun deyil.
+
+Rədd edilənlər (repoya düşməyib; 2026-11-24, sahibin "yalnız təmiz kəsim" qaydası ilə, 1:1 böyüdüb yoxlanılıb).
+Hamısı Unsplash Lisenziyası ilə pulsuzdur, mənbə `https://unsplash.com/photos/<id>`:
+
+- Qalan fon: `-_12be3InkQ`, `H8c0XcyN_PA`, `b2phn4twtZ4` (broşların arasında qara parça), `4DJC-MeTLxE` (gümüş
+  halqanın içi qara), `wOfSP_0MO_g` (üzüyün içi qara), `O7YCeE_65TE`, `mkqraXkMPSE` (içində fon), `oO0JAOJhquk`
+  (jurnal), `hNo86T4HMZM` (halqanın içində parça), `AKbE5xlIZXA` (tünd kənar), `ZArlyfDRcw0` (əlcək),
+  `DRbPrVTyTyA` (sırğanın yanında boz ləkə), `SAGRtyL5L_Y` (büst qalıb), `Q_bHwNAueHA` (ürəyin altında qara kölgə).
+- Əks (refleksiya) şəkilə qoşulub: `wTIZBpzHcmU`, `R_pIyT1KF80`, `QbJ1Y359tIk`, `W08Y9Td9IeM`.
+- Rəng sızması və ya solğun kənar: `mgHfJ5q02Jw` (bənövşəyi), `oWFPDjxuyUM` (çəhrayı), `yrGQYb9heTY` (göy),
+  `JRmm5RIg1xE` (zəncirin ucu solur), `1BBlGVr2_Yw` (kiçik və solğun), `YmFdZ8NkS2A` (bulanıq, ləkə).
+- Yanlış kəsim: `ILhzd7TbcWs` (yalnız daş), `GkTLP8m-qjI` (yalnız asqı).
+- Məhsul növünə və ya metala uyğun deyil: `K0rQ59zmomw`, `wf06v3VPr4A` (qızılı broş, broş məhsulları gümüşdür),
+  `RuCUa6CtfFE` (ağ metal dəst, dəstlər qızıldır), `RIqNLZ_h2X8` (gümüş sırğa, sırğa məhsulları qızıldır),
+  `B9Jo-V2kpOg` (ajur halqa, sadə toy halqası deyil), `jC_S0BH_HkQ` (qızılı halqalar, gümüş toy üzüyü üçün),
+  `tUCYTL59cA0`, `zZLhoEwGCeM`, `Z4BJfx59yqY` (nişan üzüyü deyil və ya içində oxunan yazı),
+  `pWVNg9B9NLI` (zəncir kadrın kənarına çıxır, `docs/DESIGN.md`-in "zəncir kənara toxunmur" qaydası).
+- Clean-room: `qUgVvJHS9Dc` (içindəki yazı məşhur filmdəki üzüyün yazısının surətidir), `sVlV2lPNrDU` (tanınmış
+  ustanın üslubunda antik asqı), `10eeEq7OxSI` (tanınmış brendin ilan qolbağına bənzəyir, emal edilmədi).
+
+Əvvəlki rədd edilənlər (PR #328 rəyi, 2026-11-24):
+
+- Gümüş üzüklər (https://unsplash.com/photos/IdU1Si3wJ-I üç üzük, Alyssa Hurley;
+  https://unsplash.com/photos/wh_rZqPiCuw və https://unsplash.com/photos/kuko1hX_kXw, Sabrianna) və gümüş ürək
+  asqı (https://unsplash.com/photos/ZoDgJpXzDB8, Sabrianna): ağ fonda ağ metal; kənarda ağ hale, solğun zolaq və ya
+  fona qarışan zolaq qalır. U2-Net-p-nin zəif yeri budur: ağ fonda gümüş üçün təmiz kəsim alınmır.
+- Qızıl soliter üzük (https://unsplash.com/photos/NhrcL_C0sFA, Sabrianna): açıq kontur, kadrı digər üzük
+  şəkillərindən çox doldurur, nişan üzüyüdür, amma halqa havuzu toy üzüyü kartlarına da düşür.
+- Qızıl zəncir dəsti (https://unsplash.com/photos/aldDZePniqg, Syed F Hashemi): ağ qırıntı qalıb, qolbaq
+  məhsulunda qarışıq dəst göstərir.
+- COPPERTIST WU-nun gümüş zənciri (https://unsplash.com/photos/kX79F-UsSNU): model zəncirin içindəki boz fonu da
+  əşya sayıb; Philippe Van Doninck-in qolbağı (https://unsplash.com/photos/hoC_u_9yJ_Y): kənarda ağ hale və köhnə
+  kölgə qalıb.
+
+Orijinallar krem dizayna uyğun olmadığı üçün onları da əlavə etmədik.
+
+Bu fayllar yalnız nümunə məlumat rejimində (`NEXT_PUBLIC_USE_MOCK=true`, `src/lib/api/mock/fixtures.ts`) görünür;
+backend demo seed-i (`R__demo_seed.sql`) hələ yalnız JPEG şəkilləri göstərir.
+
+Fon silmə modeli (`frontend/public/models/u2netp.onnx`): U2-Net-p, Xuebin Qin və başqaları,
+https://github.com/xuebinqin/U-2-Net, Apache License 2.0. ONNX faylı rembg layihəsinin (MIT) `v0.0.0` release
+asset-idir, SHA-256 `309c8469258d...` (backend-dəki `SegmentationModel.U2NETP` ilə eyni). İcra: ONNX Runtime Web
+1.22.0 (MIT), yalnız admin və satıcı kabinetində düyməyə basanda yüklənir.
+
 Damğa və etiket nümunələri (#106, 2026-11-18): `hallmark-gold-585.jpg` və `tag-gold-585.jpg` foto deyil,
 AI deyil: Jeparla üçün SVG ilə çəkilib (sharp ilə JPEG-ə çevrilib), 800x800. Demo məhsul 13-ün qalereyasında
 "Damğa" və "Etiket" kadrlarının və admin növbəsinin görünməsi üçündür; real damğanın şəkli deyil, etiketdə
