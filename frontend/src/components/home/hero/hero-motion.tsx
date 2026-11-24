@@ -313,6 +313,11 @@ export function HeroMotion({
   return (
     <section ref={trackRef} aria-label={label} data-hero data-mode="pending" className="hero-track">
       <div className="hero">
+        {/* The copy comes first in the DOM: the stage takes the height the copy leaves free,
+            so a first paint of a half-loaded page (copy not parsed yet) gave the film the
+            whole screen and then shifted it down (CLS 0.94 on phones, #322). The overlays
+            sit above it by z-index, so what is painted is unchanged. */}
+        {children}
         <div className="hero-media" role="img" aria-label={scene}>
           <video
             ref={videoRef}
@@ -328,7 +333,6 @@ export function HeroMotion({
           {/* eslint-disable-next-line @next/next/no-img-element -- a frame sequence, src swapped per scroll step */}
           <img ref={framesRef} className="hero-frames" alt="" aria-hidden decoding="sync" />
         </div>
-        {children}
       </div>
     </section>
   );

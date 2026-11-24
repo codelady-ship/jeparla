@@ -92,6 +92,14 @@ describe("CinematicHero", () => {
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
   });
 
+  it("puts the copy before the stage in the DOM, so a half-loaded page cannot shift the film (#322)", () => {
+    mockMedia(true);
+    const { container } = renderIn("az", az);
+    const copy = container.querySelector(".hero-copy")!;
+    const media = container.querySelector(".hero-media")!;
+    expect(copy.compareDocumentPosition(media) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("never requests the film under reduced motion", async () => {
     mockMedia(true);
     const { container } = renderIn("az", az);
