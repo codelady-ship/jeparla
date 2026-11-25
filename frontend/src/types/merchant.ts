@@ -169,6 +169,11 @@ export type DimensionsInput = Partial<Record<(typeof DIMENSION_KEYS)[number], st
 /** What the product form edits; also the body of POST/PUT /api/v1/merchant/products. */
 export type ProductInput = {
   images: ProductImageInput[];
+  /**
+   * AI model of the library (#130) the seller picked to show the piece on (#315): sent with the
+   * first photo, the API then queues an on-model image with it. Absent or null: none picked.
+   */
+  tryOnModelId?: number | null;
   name: string;
   category: string;
   audience: ProductAudience;
