@@ -55,7 +55,9 @@ export async function saveProduct(
     return upload;
   };
 
-  // Photos.
+  // Photos. The picked AI model (#315) goes with every new photo; the API acts on it only for the
+  // product's first original photo and queues the on-model image after that photo is saved.
+  const tryOn = input.tryOnModelId ? { tryOnModelId: input.tryOnModelId } : {};
   const keep = new Set(input.images.map((img) => backendImageId(img.id)).filter((v) => v !== null));
   for (const img of saved.images) {
     if (!keep.has(img.id))
@@ -73,7 +75,7 @@ export async function saveProduct(
     if (draftId !== null) {
       const attached = await call<{ id: number }>(
         `/merchant/products/${saved.id}/images/from-draft`,
-        { method: "POST", body: { draftId, altAz: input.name.trim().slice(0, 200) } },
+        { method: "POST", body: { draftId, altAz: input.name.trim().slice(0, 200), ...tryOn } },
       );
       order.push(attached.id);
       continue;
@@ -83,7 +85,7 @@ export async function saveProduct(
     const upload = await putFile(`/merchant/products/${saved.id}/images/uploads`, file);
     const attached = await call<{ id: number }>(`/merchant/products/${saved.id}/images`, {
       method: "POST",
-      body: { key: upload.key, altAz: input.name.trim().slice(0, 200) },
+      body: { key: upload.key, altAz: input.name.trim().slice(0, 200), ...tryOn },
     });
     order.push(attached.id);
   }

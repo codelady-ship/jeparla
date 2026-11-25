@@ -27,6 +27,7 @@ import {
   stonesStep,
 } from "@/lib/merchant/schemas";
 import type { DocMeta } from "@/lib/seller/schemas";
+import type { AiModel } from "@/types/ai";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
 import {
   DIMENSION_KEYS,
@@ -45,6 +46,7 @@ import { AutofillText, type AutofillOutcome } from "./autofill-text";
 import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
+import { modelFits, TryOnModelPicker } from "./try-on-model-picker";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
 
@@ -82,7 +84,13 @@ export function ProductForm({
   requireDocs = true,
   sellerKind = "PRECIOUS",
   occasions = [],
+  tryOnModels = [],
 }: {
+  /**
+   * AI models the seller may pick at upload (#315); empty when AI Studio is off or the library
+   * is empty, and then no picker is shown.
+   */
+  tryOnModels?: AiModel[];
   /** Shown occasion collections (#115) the seller can tag the product with; value = id. */
   occasions?: Option[];
   /** What the store sells (#128): FASHION stores add bijouterie, MIXED stores choose per new product. */
@@ -183,7 +191,11 @@ export function ProductForm({
   const kind: MaterialKind = p.materialKind ?? (sellerKind === "FASHION" ? "FASHION" : "PRECIOUS");
   const fashion = kind === "FASHION";
   const chooseKind = sellerKind === "MIXED" && creating;
-  const withKind = { ...p, materialKind: kind };
+  // A picked model that no longer fits the audience (#315) is not sent: the API would refuse it.
+  const pickedModel = tryOnModels.find(
+    (m) => m.id === p.tryOnModelId && modelFits(p.audience, m.audience),
+  );
+  const withKind = { ...p, materialKind: kind, tryOnModelId: pickedModel?.id ?? null };
   const update = (fn: (d: ProductDraft) => ProductDraft) => store.update(fn);
   const set = (patch: Partial<ProductInput>) =>
     update((d) => ({ ...d, input: { ...d.input, ...patch } }));
@@ -337,6 +349,17 @@ export function ProductForm({
               <p id="images-error" className="text-sm text-destructive">
                 {err(errors.images)}
               </p>
+            )}
+            {/* Only before the product has a photo: the API queues the image with the first one. */}
+            {(creating || (initial?.images.length ?? 0) === 0) && (
+              <div className="mt-4 border-t pt-5">
+                <TryOnModelPicker
+                  models={tryOnModels}
+                  audience={p.audience}
+                  value={p.tryOnModelId ?? null}
+                  onChange={(tryOnModelId) => set({ tryOnModelId })}
+                />
+              </div>
             )}
             <div className="mt-4 border-t pt-5">
               <EvidenceUpload
