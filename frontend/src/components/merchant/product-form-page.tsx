@@ -9,8 +9,10 @@ import { api as publicApi, USING_MOCK } from "@/lib/api";
 import { merchantDrafts } from "@/lib/api/drafts";
 import { suggestAudience } from "@/lib/merchant/audience";
 import { draftFilledFields, draftInput, type DraftOptions } from "@/lib/merchant/from-draft";
+import { metalSiblings } from "@/lib/merchant/metal-sibling";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
+import { MetalSiblingPicker } from "./metal-sibling-picker";
 import { ProductForm } from "./product-form";
 
 /** Server part of /merchant/products/new and /[id]/edit: options, seller status, product. */
@@ -26,17 +28,21 @@ export async function ProductFormPage({
   if (!hasLocale(routing.locales, locale)) return null;
   const { api } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t, prices, occasions] = await Promise.all([
-    api.store(),
-    productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
-    publicApi.listCategories(),
-    publicApi.listFinenesses(),
-    getTranslations("Merchant.form"),
-    // Without a quote the form still works; the preview says the rate is missing.
-    publicApi.latestMetalPrices().catch(() => []),
-    // Occasion tags are optional (#115): without the list the form simply leaves them out.
-    publicApi.listCollections().catch(() => []),
-  ]);
+  const [store, product, categories, finenesses, t, prices, occasions, siblings, tm] =
+    await Promise.all([
+      api.store(),
+      productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
+      publicApi.listCategories(),
+      publicApi.listFinenesses(),
+      getTranslations("Merchant.form"),
+      // Without a quote the form still works; the preview says the rate is missing.
+      publicApi.latestMetalPrices().catch(() => []),
+      // Occasion tags are optional (#115): without the list the form simply leaves them out.
+      publicApi.listCollections().catch(() => []),
+      // Same design in another metal (V70): edit page only; without it the section is left out.
+      productId !== null && Number.isInteger(productId) ? metalSiblings(productId) : null,
+      getTranslations("Product.metal"),
+    ]);
   const quotes = Object.fromEntries(
     prices.map((q) => [q.metal, { pricePerGram: q.pricePerGram, date: q.date }]),
   );
@@ -106,6 +112,18 @@ export async function ProductFormPage({
           sellerKind={store.sellerKind ?? "PRECIOUS"}
           occasions={occasions.map((o) => ({ value: String(o.id), label: o.name[locale] }))}
         />
+        {product && siblings && (
+          <MetalSiblingPicker
+            productId={product.id}
+            initial={siblings}
+            metalNames={{
+              GOLD: tm("GOLD"),
+              SILVER: tm("SILVER"),
+              PLATINUM: tm("PLATINUM"),
+              PALLADIUM: tm("PALLADIUM"),
+            }}
+          />
+        )}
       </MerchantIntl>
     </div>
   );

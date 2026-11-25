@@ -26,6 +26,7 @@ import az.jeparla.product.dto.CategoryDto;
 import az.jeparla.product.dto.CompareItemDto;
 import az.jeparla.product.dto.FinenessDto;
 import az.jeparla.product.dto.ProductDto;
+import az.jeparla.store.StoreStatus;
 import az.jeparla.product.dto.ProductQuery;
 import az.jeparla.product.dto.ProductSummaryDto;
 import az.jeparla.common.dto.LocalizedTextDto;
@@ -128,8 +129,22 @@ public class ProductCatalogService {
         CategoryTree tree = categoryTree();
         return products.findPublicBySlug(slug)
                 .filter(product -> tree.isVisible(product.getCategory().getId()) && !product.getVariants().isEmpty())
-                .map(mapper::detail)
+                .map(product -> mapper.detail(product, metalSibling(product, tree)))
                 .orElseThrow(ApiException::notFound);
+    }
+
+    /** The linked product in another metal (V69) when the public sees it too: listed, same store, other metal. */
+    private Product metalSibling(Product product, CategoryTree tree) {
+        Long id = product.getMetalSiblingId();
+        if (id == null) {
+            return null;
+        }
+        return products.findById(id)
+                .filter(other -> other.isPublic() && other.getStore().getStatus() == StoreStatus.APPROVED
+                        && other.getStore().getId().equals(product.getStore().getId())
+                        && other.getMetal() != null && other.getMetal() != product.getMetal()
+                        && tree.isVisible(other.getCategory().getId()) && !other.getVariants().isEmpty())
+                .orElse(null);
     }
 
     /** {@code GET /variants?ids=} (compare): live variants of listed products, in the order asked. */

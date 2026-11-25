@@ -94,6 +94,10 @@ public class Product extends TimestampedEntity {
     @Column(name = "metal")
     private Metal metal;
 
+    /** The same design in another metal of the same store (V69), or null; set by MerchantMetalSiblings. */
+    @Column(name = "metal_sibling_id")
+    private Long metalSiblingId;
+
     /** Main material of a FASHION product; null for PRECIOUS. */
     @Enumerated(EnumType.STRING)
     @Column(name = "material")
@@ -515,6 +519,15 @@ public class Product extends TimestampedEntity {
 
     public Metal getMetal() {
         return metal;
+    }
+
+    public Long getMetalSiblingId() {
+        return metalSiblingId;
+    }
+
+    /** Links (or with null unlinks) the same design in another metal; the caller keeps both sides in step. */
+    public void setMetalSiblingId(Long metalSiblingId) {
+        this.metalSiblingId = metalSiblingId;
     }
 
     /**

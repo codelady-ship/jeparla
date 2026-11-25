@@ -286,6 +286,11 @@ export type Product = ProductSummary & {
   dimensions?: Dimensions | null;
   /** Up to 5 key features the seller wrote (#174); absent when none. */
   keyFeatures?: string[];
+  /**
+   * The same design in another metal of the same store (V69), when that product is public too;
+   * absent otherwise. The product page shows a Qızıl / Gümüş switch to it.
+   */
+  metalSibling?: { slug: string; metal: MetalType } | null;
 };
 
 /** One column of /compare: comparison is per variant (weight, fineness, price differ). */

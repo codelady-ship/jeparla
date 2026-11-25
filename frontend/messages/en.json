@@ -469,7 +469,8 @@
       "RETURNS": "Returns",
       "returnPolicy": "Return terms",
       "note": "This is the store's own statement; Jeparla does not check these services. Ask for the exact terms on WhatsApp."
-    }
+    },
+    "metalSwitch": "This design in another metal"
   },
   "Stores": {
     "title": "Stores",
@@ -1718,6 +1719,17 @@
         "nothing": "Nothing recognisable was found in the text. Fill in the form by hand.",
         "same": "The form already has the details from this text; nothing changed.",
         "kept": "Fields you had already filled were not changed: {fields}."
+      },
+      "metalSibling": {
+        "title": "This design in another metal",
+        "hint": "If your store has the same design in another metal, link it here. The product page then shows a Gold / Silver switch; each product keeps its own photos, price and on-model image.",
+        "label": "Product in the other metal",
+        "none": "Not linked",
+        "linkedElsewhere": "linked to another product",
+        "save": "Save",
+        "saved": "Linked. The switch shows on both product pages.",
+        "removed": "Link removed.",
+        "error": "Could not save. Please try again shortly."
       }
     },
     "profile": {

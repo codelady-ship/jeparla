@@ -469,7 +469,8 @@
       "RETURNS": "Qaytarma",
       "returnPolicy": "Qaytarma şərtləri",
       "note": "Mağazanın öz bəyanatıdır; Jeparla bu xidmətləri yoxlamır. Dəqiq şərtləri WhatsApp ilə soruşun."
-    }
+    },
+    "metalSwitch": "Bu dizayn başqa metalda"
   },
   "Stores": {
     "title": "Mağazalar",
@@ -1718,6 +1719,17 @@
         "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
         "same": "Forma artıq bu mətndəki məlumatlarla doludur, heç nə dəyişmədi.",
         "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
+      },
+      "metalSibling": {
+        "title": "Bu dizayn başqa metalda",
+        "hint": "Mağazanızda eyni dizaynın başqa metaldan məhsulu varsa, burada bağlayın. Məhsul səhifəsində Qızıl / Gümüş keçidi görünəcək; hər məhsulun öz şəkilləri, qiyməti və modeldə şəkli qalır.",
+        "label": "Digər metaldakı məhsul",
+        "none": "Bağlı deyil",
+        "linkedElsewhere": "başqa məhsula bağlıdır",
+        "save": "Yadda saxla",
+        "saved": "Bağlandı. Keçid hər iki məhsulun səhifəsində görünür.",
+        "removed": "Bağlantı silindi.",
+        "error": "Yadda saxlamaq olmadı. Bir az sonra yenidən cəhd edin."
       }
     },
     "profile": {

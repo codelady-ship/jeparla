@@ -52,15 +52,18 @@ public record ProductDto(
         @Schema(description = "Up to 5 key features the seller wrote (#174); left out when none")
         @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> keyFeatures,
         @Schema(nullable = true, description = "The short video (#117); left out when the product has none")
-        @JsonInclude(JsonInclude.Include.NON_NULL) ProductVideoDto video) {
+        @JsonInclude(JsonInclude.Include.NON_NULL) ProductVideoDto video,
+        @Schema(nullable = true, description = "The same design in another metal of the store, when it is public too;"
+                + " left out otherwise")
+        @JsonInclude(JsonInclude.Include.NON_NULL) MetalSiblingDto metalSibling) {
 
     public static ProductDto of(ProductSummaryDto summary, LocalizedTextDto description, List<VariantDto> variants,
             List<StoneDto> stones, ProductStatus status, List<EvidencePhotoDto> evidencePhotos,
-            DimensionsDto dimensions, List<String> keyFeatures) {
+            DimensionsDto dimensions, List<String> keyFeatures, MetalSiblingDto metalSibling) {
         return new ProductDto(summary.id(), summary.slug(), summary.name(), summary.categoryId(), summary.store(),
                 summary.materialKind(), summary.material(), summary.metal(), summary.priceFrom(), summary.defaultVariantId(), summary.pricingMode(),
                 summary.fineness(), summary.weightGrams(), summary.images(), summary.hasStones(),
                 summary.verification(), summary.stockStatus(), summary.publishedAt(), description, variants, stones,
-                status, evidencePhotos, dimensions, keyFeatures, summary.video());
+                status, evidencePhotos, dimensions, keyFeatures, summary.video(), metalSibling);
     }
 }

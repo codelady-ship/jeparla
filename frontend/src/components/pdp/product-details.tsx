@@ -40,6 +40,7 @@ import { PriceBreakdownBlock } from "./price-breakdown";
 import { RecentlyViewed } from "./recently-viewed";
 import { ReportDialog } from "./report-dialog";
 import { TermHint } from "./term-hint";
+import { MetalSwitch } from "./metal-switch";
 import { VariantPanel, type VariantView } from "./variant-panel";
 
 const STATUS_ICON: Record<CheckStatus, typeof CircleCheck> = {
@@ -306,6 +307,20 @@ export async function ProductDetails({
             </div>
             <ShareButton labels={share} url={url} title={name} className="shrink-0" />
           </div>
+
+          {p.metal && p.metalSibling && (
+            <MetalSwitch
+              metal={p.metal}
+              sibling={p.metalSibling}
+              label={t("metalSwitch")}
+              names={{
+                GOLD: tp("metal.GOLD"),
+                SILVER: tp("metal.SILVER"),
+                PLATINUM: tp("metal.PLATINUM"),
+                PALLADIUM: tp("metal.PALLADIUM"),
+              }}
+            />
+          )}
 
           <VariantPanel
             productId={p.id}
