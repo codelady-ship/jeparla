@@ -17,7 +17,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param costPerImage    expected price of one output image, in {@code jeparla.ai.cost-currency}; counted against
  *                        the monthly limit before each call
  * @param timeout         connect and whole-answer timeout of one generateContent call
- * @param downloadTimeout timeout of downloading one input image (product photo, model reference)
+ * @param downloadTimeout connect timeout cap of the HTTP client (input images are read from our storage, not downloaded)
  * @param maxInputBytes   size limit of one input image
  * @param maxReferenceImages reference photos of the AI model sent per call; further ones are skipped
  */
