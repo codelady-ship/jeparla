@@ -1716,6 +1716,7 @@
         "fill": "Formanı doldur",
         "filled": "Dolduruldu: {fields}. Addımlarda hər sahəni yoxlayın.",
         "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
+        "same": "Forma artıq bu mətndəki məlumatlarla doludur, heç nə dəyişmədi.",
         "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
       }
     },

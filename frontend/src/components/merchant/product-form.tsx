@@ -268,9 +268,9 @@ export function ProductForm({
 
   /** "Fill from text" (#329): only empty fields change; the panel lists what was kept. */
   function autofill(a: Autofill): AutofillOutcome {
-    const { patch, filled, kept } = applyAutofill(p, a, categories, fashion);
+    const { patch, filled, kept, same } = applyAutofill(p, a, categories, fashion);
     if (filled.length > 0) set(patch);
-    return { filled, kept };
+    return { filled, kept, same };
   }
 
   const time = draft.savedAt ? new Date(draft.savedAt).toTimeString().slice(0, 5) : null;

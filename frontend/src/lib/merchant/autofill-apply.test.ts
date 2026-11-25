@@ -98,3 +98,30 @@ describe("filling the product form from a reading", () => {
     expect(r.patch).toEqual({});
   });
 });
+
+describe("pressing fill again", () => {
+  it("counts fields that already hold the value read as neither filled nor kept", () => {
+    const first = applyAutofill(form(), reading, categories, false);
+    const again = applyAutofill(form(first.patch), reading, categories, false);
+    expect(again.filled).toEqual([]);
+    expect(again.kept).toEqual([]);
+    expect(again.same).toEqual([
+      "name",
+      "category",
+      "metal",
+      "fineness",
+      "weight",
+      "price",
+      "description",
+    ]);
+    expect(again.patch).toEqual({});
+  });
+
+  it("still keeps a field the seller changed after the first fill", () => {
+    const first = applyAutofill(form(), reading, categories, false);
+    const edited = form({ ...first.patch, name: "Öz adım" });
+    const again = applyAutofill(edited, reading, categories, false);
+    expect(again.kept).toEqual(["name"]);
+    expect(again.same).toContain("description");
+  });
+});

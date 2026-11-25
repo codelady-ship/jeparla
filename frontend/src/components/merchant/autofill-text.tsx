@@ -15,8 +15,15 @@ import {
 
 const MAX_TEXT = 4000;
 
-/** What the form did with a reading: fields it filled, and fields kept because the seller had typed them. */
-export type AutofillOutcome = { filled: AutofillField[]; kept: AutofillField[] };
+/**
+ * What the form did with a reading: fields it filled, fields kept because the seller had typed
+ * something else, and fields that already hold the value read (a second press).
+ */
+export type AutofillOutcome = {
+  filled: AutofillField[];
+  kept: AutofillField[];
+  same?: AutofillField[];
+};
 
 /**
  * "Fill from text" above the new product form (#329): the seller pastes what she already has
@@ -83,7 +90,7 @@ export function AutofillText({
         <div aria-live="polite" className="flex flex-col gap-1 text-sm">
           {result &&
             (result.filled.length === 0 && result.kept.length === 0 ? (
-              <p>{t("autofill.nothing")}</p>
+              <p>{result.same?.length ? t("autofill.same") : t("autofill.nothing")}</p>
             ) : (
               <>
                 {result.filled.length > 0 && (
