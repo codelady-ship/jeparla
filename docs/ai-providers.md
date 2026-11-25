@@ -67,8 +67,8 @@ daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir. Xərc və lise
 
 Kod: `az.jeparla.ai.provider.GeminiImageProvider` (id `gemini`). Hər çıxış şəkli üçün Gemini API-yə bir
 `generateContent` sorğusu gedir (`x-goog-api-key` başlığı ilə): repodakı prompt, məhsulun orijinal şəkli və AI
-modelin istinad şəkilləri (ən çox 3). Şəkillər bizim public bucket-dəndirsə birbaşa storage-dən oxunur, yoxsa
-yalnız http(s) ilə, 10 MB və 20 san. limiti ilə endirilir; yalnız JPEG, PNG, WebP göndərilir. Cavabda şəkil
+modelin istinad şəkilləri (ən çox 3). Şəkillər yalnız bizim public bucket-dən (storage-dən birbaşa) oxunur;
+başqa ünvan rədd olunur, kənar URL heç vaxt endirilmir. Yalnız 10 MB-a qədər JPEG, PNG, WebP göndərilir. Cavabda şəkil
 yoxdursa və ya Google təhlükəsizlik səbəbi ilə bloklayıbsa tapşırıq `ai.provider_refused` (təkrar yoxdur),
 HTTP xətası `ai.provider_error`, 120 san.-dən uzun gözləmə `ai.timeout` olur. Google-un mətni satıcıya getmir,
 açar loga yazılmır.

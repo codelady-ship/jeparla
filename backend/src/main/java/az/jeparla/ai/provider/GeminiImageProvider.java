@@ -42,9 +42,9 @@ import tools.jackson.databind.node.ObjectNode;
  * One {@code generateContent} call per requested output: the repository prompt, the product photo and the AI model's
  * reference photos go as inline images, the answer's first inline image is the result.
  *
- * <p>Input images are read from the public bucket when the URL is one of ours (no hairpin request through the
- * VM's own domain), otherwise downloaded over http(s) with a size and time limit; only JPEG, PNG and WebP (by magic
- * number) are sent. Failures become {@link ImageGenerationException} codes; the provider's own text is never passed
+ * <p>Input images are read only from our own public bucket (product photos and model reference photos); any other
+ * URL is refused, so the provider never fetches an outside address. Only JPEG, PNG and WebP (by magic number) within
+ * the size limit are sent. Failures become {@link ImageGenerationException} codes; the provider's own text is never passed
  * on, and the key is sent only in the {@code x-goog-api-key} header, never logged.
  */
 @Component
@@ -72,7 +72,8 @@ public class GeminiImageProvider implements ImageGenerationProvider {
     }
 
     /**
-     * @param fromStorage reads an input image URL from our own storage, or empty to download it
+     * @param fromStorage reads an input image URL from our own public storage; empty for any other URL, which is
+     *                    refused (no download of outside URLs)
      */
     GeminiImageProvider(GeminiProperties properties, Function<String, Optional<byte[]>> fromStorage) {
         this.properties = properties;
@@ -159,7 +160,9 @@ public class GeminiImageProvider implements ImageGenerationProvider {
     }
 
     private InputImage input(String url) {
-        byte[] bytes = fromStorage.apply(url).orElseGet(() -> download(url));
+        // Only our own public bucket (product photos, model reference photos): never a fetch of an outside URL.
+        byte[] bytes = fromStorage.apply(url).orElseThrow(() -> new ImageGenerationException(
+                ImageGenerationException.PROVIDER_ERROR, "Gemini input image is not in our public storage"));
         if (bytes.length > properties.maxInputBytes()) {
             throw new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR,
                     "Gemini input image is over the size limit");
@@ -168,35 +171,6 @@ public class GeminiImageProvider implements ImageGenerationProvider {
                 .orElseThrow(() -> new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR,
                         "Gemini input is not a JPEG, PNG or WebP image"));
         return new InputImage(type, bytes);
-    }
-
-    private byte[] download(String url) {
-        URI uri;
-        try {
-            uri = URI.create(url);
-        } catch (IllegalArgumentException e) {
-            throw new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR, "Gemini input URL is invalid");
-        }
-        if (!("https".equals(uri.getScheme()) || "http".equals(uri.getScheme())) || uri.getHost() == null) {
-            throw new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR,
-                    "Gemini input URL is not an absolute http(s) URL");
-        }
-        HttpRequest request = HttpRequest.newBuilder(uri).GET().timeout(properties.downloadTimeout())
-                .header("Accept", "image/jpeg, image/png, image/webp").build();
-        // The future bounds the whole answer (headers and body); the handler bounds its size.
-        HttpResponse<byte[]> response = await(http.sendAsync(request, limited(properties.maxInputBytes())),
-                properties.downloadTimeout(), "input image");
-        if (response.statusCode() != 200) {
-            throw new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR,
-                    "Gemini input image answered HTTP " + response.statusCode());
-        }
-        String contentType = response.headers().firstValue("Content-Type").orElse("");
-        if (!contentType.isEmpty() && !contentType.startsWith("image/")
-                && !contentType.startsWith("application/octet-stream")) {
-            throw new ImageGenerationException(ImageGenerationException.PROVIDER_ERROR,
-                    "Gemini input image has a non-image type");
-        }
-        return response.body();
     }
 
     // ------------------------------------------------------------------ call

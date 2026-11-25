@@ -59,8 +59,15 @@ class GeminiImageProviderTests {
         model = png(30, 30);
         generated = png(80, 100);
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
-        server.createContext("/img/product.png", exchange -> send(exchange, 200, "image/png", product));
-        server.createContext("/img/model.png", exchange -> send(exchange, 200, "image/png", model));
+        // Image paths record a request too: a download of an input would show in {@code requests}.
+        server.createContext("/img/product.png", exchange -> {
+            requests.add("GET /img/product.png");
+            send(exchange, 200, "image/png", product);
+        });
+        server.createContext("/img/model.png", exchange -> {
+            requests.add("GET /img/model.png");
+            send(exchange, 200, "image/png", model);
+        });
         server.createContext("/img/page.html", exchange -> send(exchange, 200, "text/html",
                 "<html></html>".getBytes(StandardCharsets.UTF_8)));
         server.createContext("/img/huge.png", exchange -> send(exchange, 200, "image/png", new byte[4096]));
@@ -112,8 +119,16 @@ class GeminiImageProviderTests {
                 timeout, Duration.ofSeconds(5), maxInputBytes, 3);
     }
 
+    /** Our public storage as the provider sees it: the stub product and model photos. */
+    private Optional<byte[]> stored(String url) {
+        if (url.equals(base + "/img/product.png")) {
+            return Optional.of(product);
+        }
+        return url.equals(base + "/img/model.png") ? Optional.of(model) : Optional.empty();
+    }
+
     private GeminiImageProvider provider() {
-        return new GeminiImageProvider(properties(KEY, Duration.ofSeconds(5), 1024 * 1024), url -> Optional.empty());
+        return new GeminiImageProvider(properties(KEY, Duration.ofSeconds(5), 1024 * 1024), this::stored);
     }
 
     private GenerationRequest request(int outputs, List<String> references) {
@@ -244,17 +259,21 @@ class GeminiImageProviderTests {
     void noAnswerInTimeIsATimeout() {
         answer.set(new Answer(200, imageAnswer(generated), 3000));
         GeminiImageProvider slow = new GeminiImageProvider(properties(KEY, Duration.ofMillis(300), 1024 * 1024),
-                url -> Optional.empty());
+                this::stored);
         assertCode(() -> slow.generate(request(1, List.of())), ImageGenerationException.TIMEOUT);
     }
 
     @Test
-    void inputsMustBeHttpImagesWithinTheLimit() {
+    void inputsMustBeImagesOfOurStorageWithinTheLimit() {
         answer.set(new Answer(200, imageAnswer(generated), 0));
+        String html = base + "/img/page.html";
+        String huge = base + "/img/huge.png";
         GeminiImageProvider provider = new GeminiImageProvider(properties(KEY, Duration.ofSeconds(5), 2048),
-                url -> Optional.empty());
-        for (String url : List.of("file:///etc/passwd", "/demo/ring.jpg", base + "/img/page.html",
-                base + "/img/huge.png", base + "/img/missing.png")) {
+                url -> url.equals(html) ? Optional.of("<html></html>".getBytes(StandardCharsets.UTF_8))
+                        : url.equals(huge) ? Optional.of(new byte[4096]) : Optional.empty());
+        // Outside URLs are refused without a request, even a reachable image (review of #334).
+        for (String url : List.of("file:///etc/passwd", "/demo/ring.jpg", html, huge, base + "/img/product.png",
+                "https://example.org/ring.png")) {
             assertCode(() -> provider.generate(new GenerationRequest(1, "AI_PHOTOSHOOT", url, "p", List.of(), 1, "4:5",
                     Map.of())), ImageGenerationException.PROVIDER_ERROR);
         }
