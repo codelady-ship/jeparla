@@ -1707,6 +1707,16 @@
         "weight": "weight",
         "price": "price",
         "description": "description"
+      },
+      "autofill": {
+        "title": "Fill automatically from text",
+        "hint": "Paste the text about the product (a catalog caption, an Instagram or WhatsApp message): the empty form fields (name, category, metal, fineness, weight, price, description) are filled, and what you already typed is not changed. The text is not sent anywhere. Check every field afterwards.",
+        "label": "Text about the product",
+        "placeholder": "For example:\nLeyla gold engagement ring\n585, 3.2 g\nPrice: 1250 AZN\nClassic ring with a white diamond.",
+        "fill": "Fill the form",
+        "filled": "Filled: {fields}. Check every field in the steps.",
+        "nothing": "Nothing recognisable was found in the text. Fill in the form by hand.",
+        "kept": "Fields you had already filled were not changed: {fields}."
       }
     },
     "profile": {
