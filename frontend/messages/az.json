@@ -1710,12 +1710,13 @@
       },
       "autofill": {
         "title": "Mətndən avtomatik doldur",
-        "hint": "Məhsul haqqında mətni (kataloq yazısı, Instagram və ya WhatsApp mesajı) bura yapışdırın: ad, kateqoriya, metal, əyar, çəki, qiymət və təsvir formaya yazılacaq. Mətn heç yerə göndərilmir. Hər sahəni sonra yoxlayın.",
+        "hint": "Məhsul haqqında mətni (kataloq yazısı, Instagram və ya WhatsApp mesajı) bura yapışdırın: formanın boş sahələri (ad, kateqoriya, metal, əyar, çəki, qiymət, təsvir) doldurulacaq, artıq yazdıqlarınız dəyişməyəcək. Mətn heç yerə göndərilmir. Hər sahəni sonra yoxlayın.",
         "label": "Məhsul haqqında mətn",
-        "placeholder": "Məsələn: Leyla — qızıl nişan üzüyü, 585 əyar, 3,2 q, 1 250 AZN",
+        "placeholder": "Məsələn:\nLeyla — qızıl nişan üzüyü\n585 əyar, 3,2 q\nQiymət: 1 250 AZN\nAğ brilyantlı klassik üzük.",
         "fill": "Formanı doldur",
         "filled": "Dolduruldu: {fields}. Addımlarda hər sahəni yoxlayın.",
-        "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun."
+        "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
+        "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
       }
     },
     "profile": {
