@@ -147,6 +147,11 @@ export type ProductImage = {
   height: number;
   /** AI-generated or AI-edited images must carry a visible label (CLAUDE.md, honesty). */
   aiGenerated: boolean;
+  /**
+   * The product shown on an AI model (an approved try-on, V68); absent when not. Only these are
+   * offered behind "Modeldə bax": a photoshoot or an AI-edited photo is aiGenerated only.
+   */
+  onModel?: boolean;
 };
 
 /**

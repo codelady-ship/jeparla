@@ -256,6 +256,7 @@ export async function ProductDetails({
               url: img.url,
               alt: img.alt[locale],
               aiGenerated: img.aiGenerated,
+              onModel: img.onModel === true,
             })),
             // Hallmark and label shots after the product photos, each with its own badge (#106).
             ...evidence.map((e) => ({

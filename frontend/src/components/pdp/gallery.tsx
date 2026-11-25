@@ -18,7 +18,14 @@ import { cn } from "cn";
 import { VideoSlide, type GalleryVideo, type VideoLabels } from "./video-slide";
 
 /** `badge` names a hallmark or label shot (#106); otherwise AI images carry the AI label. */
-export type GalleryImage = { url: string; alt: string; aiGenerated: boolean; badge?: string };
+export type GalleryImage = {
+  url: string;
+  alt: string;
+  aiGenerated: boolean;
+  badge?: string;
+  /** The product on an AI model (an approved try-on, V68): the only target of "Modeldə bax". */
+  onModel?: boolean;
+};
 
 type Labels = {
   prev: string;
@@ -97,25 +104,35 @@ export function Gallery({
     setZoom(true);
   };
 
-  // "On a model" (#315): the first AI image among the photos, when there is also a plain one.
-  const modelShot = images.findIndex((img) => img.aiGenerated && !img.badge);
+  // "On a model" (#315): the first on-model image (never a photoshoot or an AI-edited photo),
+  // when there is also a plain photo before it.
+  const modelShot = images.findIndex((img) => img.onModel === true && img.aiGenerated);
   const hasModel = modelShot > 0 && Boolean(labels.onModel);
   const modelFrame = slides.findIndex((s) => s.kind === "image" && s.n === modelShot);
   const onModelNow = hasModel && index === modelFrame;
-  const gridRef = useRef<HTMLUListElement>(null);
-  function jumpToModel() {
-    // Desktop shows every photo in a grid: scroll to the on-model one and focus it.
-    if (window.matchMedia("(min-width: 1024px)").matches) {
-      const target = gridRef.current?.querySelector<HTMLElement>(`[data-shot="${modelShot}"]`);
-      if (!target) return;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-      target.focus({ preventScroll: true });
-      return;
-    }
-    // Phones and tablets: the carousel goes to that frame, or back to the first photo.
-    show(onModelNow ? 0 : modelFrame);
+  /** Desktop grid: scroll to the on-model photo and focus it. */
+  function scrollToModel() {
+    const target = document.querySelector<HTMLElement>(
+      `[data-gallery="${productId}"] [data-shot="${modelShot}"]`,
+    );
+    if (!target) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    target.focus({ preventScroll: true });
   }
+  /** The button over the cover photo; no layout below it moves. */
+  const modelButton = (onClick: () => void, text: string) => (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={onClick}
+      className="touch-target absolute top-3 right-3 z-20 rounded-full bg-background/90 shadow-sm"
+    >
+      <UserRound aria-hidden />
+      {text}
+    </Button>
+  );
 
   useEffect(() => {
     const load = () => setRest(true);
@@ -172,7 +189,7 @@ export function Gallery({
   );
 
   return (
-    <div data-gallery>
+    <div data-gallery={productId}>
       {/* Phones and tablets: swipe carousel. */}
       <div
         className="relative aspect-[4/5] touch-pan-y overflow-hidden rounded-lg bg-muted select-none lg:hidden"
@@ -291,27 +308,20 @@ export function Gallery({
             )}
           </>
         )}
+        {/* Phones and tablets: the carousel goes to the on-model frame, or back to the first photo. */}
+        {hasModel &&
+          labels.onModel &&
+          modelButton(
+            () => show(onModelNow ? 0 : modelFrame),
+            onModelNow ? labels.onModel.back : labels.onModel.show,
+          )}
         <p className="sr-only" aria-live="polite">
           {position}
         </p>
       </div>
 
-      {hasModel && labels.onModel && (
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          onClick={jumpToModel}
-          className="touch-target mt-3 lg:mt-0 lg:mb-3"
-        >
-          <UserRound aria-hidden className="size-4" />
-          {/* The desktop grid never moves the carousel, so there it always says "show". */}
-          {onModelNow ? labels.onModel.back : labels.onModel.show}
-        </Button>
-      )}
-
       {/* Desktop: large grid with a magnifier; a click opens the full view. */}
-      <ul ref={gridRef} className="hidden grid-cols-2 gap-3 lg:grid">
+      <ul className="hidden grid-cols-2 gap-3 lg:grid">
         {slides.map((slide) => {
           if (slide.kind === "video") {
             return (
@@ -338,7 +348,7 @@ export function Gallery({
             />
           );
           return (
-            <li key={img.url + n} className={cn(n === 0 && "col-span-2")}>
+            <li key={img.url + n} className={cn("relative", n === 0 && "col-span-2")}>
               <button
                 type="button"
                 data-shot={n}
@@ -368,6 +378,11 @@ export function Gallery({
                 {n === 0 ? morph(image) : image}
                 {aiBadge(img)}
               </button>
+              {/* Over the cover photo, beside (not inside) its zoom button. */}
+              {n === 0 &&
+                hasModel &&
+                labels.onModel &&
+                modelButton(scrollToModel, labels.onModel.show)}
             </li>
           );
         })}

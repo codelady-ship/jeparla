@@ -58,39 +58,41 @@ describe("Gallery", () => {
 
   describe("on-model jump (#315)", () => {
     const withModel = { ...labels, onModel: { show: "Modeldə bax", back: "Orijinal şəklə bax" } };
-    const media = (desktop: boolean) =>
-      Object.defineProperty(window, "matchMedia", {
-        configurable: true,
-        value: (q: string) => ({ matches: q.includes("min-width") ? desktop : false }),
-      });
+    const onModel = images.map((img, n) => (n === 1 ? { ...img, onModel: true } : img));
+    // jsdom renders both layouts: the carousel (phones) comes first, the desktop grid second.
+    const buttons = (name: string) => screen.getAllByRole("button", { name });
 
-    it("moves the carousel to the AI on-model photo and back", () => {
-      media(false);
-      render(<Gallery productId={1} images={images} labels={withModel} />);
-      const button = screen.getByRole("button", { name: "Modeldə bax" });
-      fireEvent.click(button);
+    it("moves the carousel to the on-model photo and back, as an overlay", () => {
+      render(<Gallery productId={1} images={onModel} labels={withModel} />);
+      const [carousel] = buttons("Modeldə bax");
+      fireEvent.click(carousel);
       expect(screen.getByText("2 / 3")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Orijinal şəklə bax" })).toBe(button);
-      fireEvent.click(button);
+      expect(buttons("Orijinal şəklə bax")[0]).toBe(carousel);
+      fireEvent.click(carousel);
       expect(screen.getByText("1 / 3")).toBeInTheDocument();
     });
 
-    it("on the desktop grid focuses the on-model photo", () => {
-      media(true);
+    it("on the desktop grid sits on the cover photo and focuses the on-model photo", () => {
+      Object.defineProperty(window, "matchMedia", {
+        configurable: true,
+        value: () => ({ matches: false }),
+      });
       Element.prototype.scrollIntoView = () => {};
-      render(<Gallery productId={1} images={images} labels={withModel} />);
-      fireEvent.click(screen.getByRole("button", { name: "Modeldə bax" }));
+      render(<Gallery productId={1} images={onModel} labels={withModel} />);
+      const desktop = buttons("Modeldə bax")[1];
+      expect(desktop.closest("li")).toBe(screen.getAllByRole("listitem")[0]);
+      fireEvent.click(desktop);
       expect(
         screen.getByRole("button", { name: "AI şəkli. Şəkli böyüt: Şəkil 2 / 3" }),
       ).toHaveFocus();
     });
 
-    it("is absent without an AI photo or when the only photo is AI", () => {
-      const plain = images.map((i) => ({ ...i, aiGenerated: false }));
-      const { unmount } = render(<Gallery productId={1} images={plain} labels={withModel} />);
+    // Honesty (review of #336): an AI photo that is not on a model never gets the button.
+    it("is absent for AI photos without a model, and when the only photo is on a model", () => {
+      const { unmount } = render(<Gallery productId={1} images={images} labels={withModel} />);
       expect(screen.queryByText("Modeldə bax")).toBeNull();
       unmount();
-      render(<Gallery productId={1} images={[images[1]]} labels={withModel} />);
+      render(<Gallery productId={1} images={[onModel[1]]} labels={withModel} />);
       expect(screen.queryByText("Modeldə bax")).toBeNull();
     });
   });
