@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand, UserRound } from "lucide-react";
 import Image from "next/image";
 import {
   useEffect,
@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
 import { VideoSlide, type GalleryVideo, type VideoLabels } from "./video-slide";
@@ -29,6 +30,8 @@ type Labels = {
   position: string;
   /** Only read when the product has a video (#117). */
   video?: VideoLabels;
+  /** "On a model" jump (#315): only read when the photos include an AI on-model image. */
+  onModel?: { show: string; back: string };
 };
 
 /** A frame of the gallery: a photo (with its number among the photos) or the video. */
@@ -93,6 +96,26 @@ export function Gallery({
     setShot(n);
     setZoom(true);
   };
+
+  // "On a model" (#315): the first AI image among the photos, when there is also a plain one.
+  const modelShot = images.findIndex((img) => img.aiGenerated && !img.badge);
+  const hasModel = modelShot > 0 && Boolean(labels.onModel);
+  const modelFrame = slides.findIndex((s) => s.kind === "image" && s.n === modelShot);
+  const onModelNow = hasModel && index === modelFrame;
+  const gridRef = useRef<HTMLUListElement>(null);
+  function jumpToModel() {
+    // Desktop shows every photo in a grid: scroll to the on-model one and focus it.
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      const target = gridRef.current?.querySelector<HTMLElement>(`[data-shot="${modelShot}"]`);
+      if (!target) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+      target.focus({ preventScroll: true });
+      return;
+    }
+    // Phones and tablets: the carousel goes to that frame, or back to the first photo.
+    show(onModelNow ? 0 : modelFrame);
+  }
 
   useEffect(() => {
     const load = () => setRest(true);
@@ -273,8 +296,22 @@ export function Gallery({
         </p>
       </div>
 
+      {hasModel && labels.onModel && (
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={jumpToModel}
+          className="touch-target mt-3 lg:mt-0 lg:mb-3"
+        >
+          <UserRound aria-hidden className="size-4" />
+          {/* The desktop grid never moves the carousel, so there it always says "show". */}
+          {onModelNow ? labels.onModel.back : labels.onModel.show}
+        </Button>
+      )}
+
       {/* Desktop: large grid with a magnifier; a click opens the full view. */}
-      <ul className="hidden grid-cols-2 gap-3 lg:grid">
+      <ul ref={gridRef} className="hidden grid-cols-2 gap-3 lg:grid">
         {slides.map((slide) => {
           if (slide.kind === "video") {
             return (
@@ -304,6 +341,7 @@ export function Gallery({
             <li key={img.url + n} className={cn(n === 0 && "col-span-2")}>
               <button
                 type="button"
+                data-shot={n}
                 onClick={() => open(n)}
                 onPointerMove={(e) => {
                   if (e.pointerType !== "mouse") return;

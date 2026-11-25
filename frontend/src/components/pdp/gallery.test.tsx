@@ -55,4 +55,43 @@ describe("Gallery", () => {
     fireEvent.keyDown(dialog, { key: "ArrowRight" });
     expect(within(dialog).getByText("Şəkil 1 / 3")).toBeInTheDocument();
   });
+
+  describe("on-model jump (#315)", () => {
+    const withModel = { ...labels, onModel: { show: "Modeldə bax", back: "Orijinal şəklə bax" } };
+    const media = (desktop: boolean) =>
+      Object.defineProperty(window, "matchMedia", {
+        configurable: true,
+        value: (q: string) => ({ matches: q.includes("min-width") ? desktop : false }),
+      });
+
+    it("moves the carousel to the AI on-model photo and back", () => {
+      media(false);
+      render(<Gallery productId={1} images={images} labels={withModel} />);
+      const button = screen.getByRole("button", { name: "Modeldə bax" });
+      fireEvent.click(button);
+      expect(screen.getByText("2 / 3")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Orijinal şəklə bax" })).toBe(button);
+      fireEvent.click(button);
+      expect(screen.getByText("1 / 3")).toBeInTheDocument();
+    });
+
+    it("on the desktop grid focuses the on-model photo", () => {
+      media(true);
+      Element.prototype.scrollIntoView = () => {};
+      render(<Gallery productId={1} images={images} labels={withModel} />);
+      fireEvent.click(screen.getByRole("button", { name: "Modeldə bax" }));
+      expect(
+        screen.getByRole("button", { name: "AI şəkli. Şəkli böyüt: Şəkil 2 / 3" }),
+      ).toHaveFocus();
+    });
+
+    it("is absent without an AI photo or when the only photo is AI", () => {
+      const plain = images.map((i) => ({ ...i, aiGenerated: false }));
+      const { unmount } = render(<Gallery productId={1} images={plain} labels={withModel} />);
+      expect(screen.queryByText("Modeldə bax")).toBeNull();
+      unmount();
+      render(<Gallery productId={1} images={[images[1]]} labels={withModel} />);
+      expect(screen.queryByText("Modeldə bax")).toBeNull();
+    });
+  });
 });

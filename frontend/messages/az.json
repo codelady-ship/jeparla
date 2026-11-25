@@ -469,6 +469,10 @@
       "RETURNS": "Qaytarma",
       "returnPolicy": "Qaytarma şərtləri",
       "note": "Mağazanın öz bəyanatıdır; Jeparla bu xidmətləri yoxlamır. Dəqiq şərtləri WhatsApp ilə soruşun."
+    },
+    "onModel": {
+      "show": "Modeldə bax",
+      "back": "Orijinal şəklə bax"
     }
   },
   "Stores": {
