@@ -196,6 +196,10 @@ public class AiStudioService {
         ProductImage image = new ProductImage(publicKey, chosen.getWidth(), chosen.getHeight(),
                 chosen.getContentType(), chosen.getSizeBytes(), chosen.isAiGenerated(), sortOrder);
         image.setAlt(LocalizedText.of(product.getName().az(), null, null));
+        if (job.getKind() == AiJobKind.VIRTUAL_TRY_ON && chosen.isAiGenerated()) {
+            // Only a try-on result shows the piece on a model ("Modeldə bax", V68); a photoshoot does not.
+            image.markOnModel(job.getModelId());
+        }
         product.addImage(image);
         products.afterChange(product, true, now);
         products.flush();

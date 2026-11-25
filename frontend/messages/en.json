@@ -469,6 +469,10 @@
       "RETURNS": "Returns",
       "returnPolicy": "Return terms",
       "note": "This is the store's own statement; Jeparla does not check these services. Ask for the exact terms on WhatsApp."
+    },
+    "onModel": {
+      "show": "See it on a model",
+      "back": "See the original photo"
     }
   },
   "Stores": {

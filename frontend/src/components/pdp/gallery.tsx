@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand, UserRound } from "lucide-react";
 import Image from "next/image";
 import {
   useEffect,
@@ -12,12 +12,20 @@ import {
   type ReactNode,
 } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "cn";
 import { VideoSlide, type GalleryVideo, type VideoLabels } from "./video-slide";
 
 /** `badge` names a hallmark or label shot (#106); otherwise AI images carry the AI label. */
-export type GalleryImage = { url: string; alt: string; aiGenerated: boolean; badge?: string };
+export type GalleryImage = {
+  url: string;
+  alt: string;
+  aiGenerated: boolean;
+  badge?: string;
+  /** The product on an AI model (an approved try-on, V68): the only target of "Modeldə bax". */
+  onModel?: boolean;
+};
 
 type Labels = {
   prev: string;
@@ -29,6 +37,8 @@ type Labels = {
   position: string;
   /** Only read when the product has a video (#117). */
   video?: VideoLabels;
+  /** "On a model" jump (#315): only read when the photos include an AI on-model image. */
+  onModel?: { show: string; back: string };
 };
 
 /** A frame of the gallery: a photo (with its number among the photos) or the video. */
@@ -94,6 +104,36 @@ export function Gallery({
     setZoom(true);
   };
 
+  // "On a model" (#315): the first on-model image (never a photoshoot or an AI-edited photo),
+  // when there is also a plain photo before it.
+  const modelShot = images.findIndex((img) => img.onModel === true && img.aiGenerated);
+  const hasModel = modelShot > 0 && Boolean(labels.onModel);
+  const modelFrame = slides.findIndex((s) => s.kind === "image" && s.n === modelShot);
+  const onModelNow = hasModel && index === modelFrame;
+  /** Desktop grid: scroll to the on-model photo and focus it. */
+  function scrollToModel() {
+    const target = document.querySelector<HTMLElement>(
+      `[data-gallery="${productId}"] [data-shot="${modelShot}"]`,
+    );
+    if (!target) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    target.focus({ preventScroll: true });
+  }
+  /** The button over the cover photo; no layout below it moves. */
+  const modelButton = (onClick: () => void, text: string) => (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={onClick}
+      className="touch-target absolute top-3 right-3 z-20 rounded-full bg-background/90 shadow-sm"
+    >
+      <UserRound aria-hidden />
+      {text}
+    </Button>
+  );
+
   useEffect(() => {
     const load = () => setRest(true);
     if (document.readyState === "complete") return load();
@@ -149,7 +189,7 @@ export function Gallery({
   );
 
   return (
-    <div data-gallery>
+    <div data-gallery={productId}>
       {/* Phones and tablets: swipe carousel. */}
       <div
         className="relative aspect-[4/5] touch-pan-y overflow-hidden rounded-lg bg-muted select-none lg:hidden"
@@ -268,6 +308,13 @@ export function Gallery({
             )}
           </>
         )}
+        {/* Phones and tablets: the carousel goes to the on-model frame, or back to the first photo. */}
+        {hasModel &&
+          labels.onModel &&
+          modelButton(
+            () => show(onModelNow ? 0 : modelFrame),
+            onModelNow ? labels.onModel.back : labels.onModel.show,
+          )}
         <p className="sr-only" aria-live="polite">
           {position}
         </p>
@@ -301,9 +348,10 @@ export function Gallery({
             />
           );
           return (
-            <li key={img.url + n} className={cn(n === 0 && "col-span-2")}>
+            <li key={img.url + n} className={cn("relative", n === 0 && "col-span-2")}>
               <button
                 type="button"
+                data-shot={n}
                 onClick={() => open(n)}
                 onPointerMove={(e) => {
                   if (e.pointerType !== "mouse") return;
@@ -330,6 +378,11 @@ export function Gallery({
                 {n === 0 ? morph(image) : image}
                 {aiBadge(img)}
               </button>
+              {/* Over the cover photo, beside (not inside) its zoom button. */}
+              {n === 0 &&
+                hasModel &&
+                labels.onModel &&
+                modelButton(scrollToModel, labels.onModel.show)}
             </li>
           );
         })}

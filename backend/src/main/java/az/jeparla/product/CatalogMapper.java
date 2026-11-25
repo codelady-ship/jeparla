@@ -103,7 +103,7 @@ public class CatalogMapper {
         return product.getImages().stream()
                 .map(image -> new ProductImageDto(imageUrls.url(image.getStorageKey()),
                         LocalizedTextDto.of(image.getAlt(), product.getName()), image.getWidth(), image.getHeight(),
-                        image.isAiGenerated()))
+                        image.isAiGenerated(), image.isOnModel()))
                 .toList();
     }
 

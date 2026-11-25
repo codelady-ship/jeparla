@@ -55,6 +55,14 @@ public class ProductImage extends CreatedEntity {
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
+    /** An approved on-model image (VIRTUAL_TRY_ON, V68): offered behind "Modeldə bax". Always aiGenerated. */
+    @Column(name = "on_model", nullable = false)
+    private boolean onModel;
+
+    /** The library model it shows (#130), or null for the default model of the prompt. */
+    @Column(name = "ai_model_id")
+    private Long aiModelId;
+
     protected ProductImage() {
     }
 
@@ -107,6 +115,23 @@ public class ProductImage extends CreatedEntity {
 
     public boolean isAiGenerated() {
         return aiGenerated;
+    }
+
+    public boolean isOnModel() {
+        return onModel;
+    }
+
+    public Long getAiModelId() {
+        return aiModelId;
+    }
+
+    /** Marks an approved AI result as the product on a model (V68); only for an AI-generated image. */
+    public void markOnModel(Long aiModelId) {
+        if (!aiGenerated) {
+            throw new IllegalStateException("Only an AI-generated image is an on-model image");
+        }
+        this.onModel = true;
+        this.aiModelId = aiModelId;
     }
 
     public int getSortOrder() {

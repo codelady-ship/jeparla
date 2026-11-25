@@ -136,6 +136,9 @@ class AiStudioApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.images[0].id").value((int) ready.imageId()))
                 .andExpect(jsonPath("$.images[0].aiGenerated").value(false))
                 .andExpect(jsonPath("$.images[1].aiGenerated").value(true));
+        // A photoshoot shows the product alone: AI-generated, but not an on-model image (V68).
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM product_images WHERE product_id = ? AND on_model",
+                Integer.class, ready.productId())).isZero();
 
         // An AI image is never the source of another job.
         MvcResult product = mvc.perform(get("/api/v1/merchant/products/" + ready.productId())
@@ -144,6 +147,32 @@ class AiStudioApiTests extends MerchantApiTestBase {
         MvcResult refused = queue(ready, aiImageId);
         assertThat(refused.getResponse().getStatus()).isEqualTo(400);
         assertThat(body(refused)).contains("ai.source_ai_generated");
+    }
+
+    @Test
+    void anApprovedTryOnIsAnOnModelPhotoOnTheProductPage() throws Exception {
+        Ready ready = product();
+        MvcResult created = mvc.perform(json(post("/api/v1/merchant/ai/jobs"),
+                "{\"productId\": %d, \"sourceImageId\": %d, \"kind\": \"VIRTUAL_TRY_ON\"}".formatted(
+                        ready.productId(), ready.imageId())).with(ready.seller().token())).andReturn();
+        assertThat(created.getResponse().getStatus()).isEqualTo(202);
+        long jobId = id(created);
+        assertThat(worker.run()).isPositive();
+        MvcResult job = mvc.perform(get("/api/v1/merchant/ai/jobs/" + jobId).with(ready.seller().token())).andReturn();
+        long assetId = ((Number) JsonPath.read(body(job), "$.assets[0].id")).longValue();
+        mvc.perform(json(post("/api/v1/merchant/ai/jobs/" + jobId + "/approve"), "{\"assetId\": " + assetId + "}")
+                .with(ready.seller().token())).andExpect(status().isOk());
+
+        assertThat(jdbc.queryForObject("SELECT on_model FROM product_images WHERE product_id = ? AND ai_generated",
+                Boolean.class, ready.productId())).isTrue();
+        jdbc.update("UPDATE products SET status = 'APPROVED', submitted_at = now(), published_at = now() WHERE id = ?",
+                ready.productId());
+        String slug = jdbc.queryForObject("SELECT slug FROM products WHERE id = ?", String.class, ready.productId());
+        mvc.perform(get("/api/v1/products/" + slug))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.images[0].onModel").doesNotExist())
+                .andExpect(jsonPath("$.images[1].aiGenerated").value(true))
+                .andExpect(jsonPath("$.images[1].onModel").value(true));
     }
 
     @Test
