@@ -39,6 +39,9 @@ import {
   type StoneInput,
   type VariantInput,
 } from "@/types/merchant";
+import type { Autofill } from "@/lib/merchant/autofill";
+import { applyAutofill } from "@/lib/merchant/autofill-apply";
+import { AutofillText, type AutofillOutcome } from "./autofill-text";
 import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
@@ -263,6 +266,13 @@ export function ProductForm({
     setDone(result.data.status);
   }
 
+  /** "Fill from text" (#329): only empty fields change; the panel lists what was kept. */
+  function autofill(a: Autofill): AutofillOutcome {
+    const { patch, filled, kept } = applyAutofill(p, a, categories, fashion);
+    if (filled.length > 0) set(patch);
+    return { filled, kept };
+  }
+
   const time = draft.savedAt ? new Date(draft.savedAt).toTimeString().slice(0, 5) : null;
   const metalFinenesses = finenesses.filter((f) => f.metal === p.metal);
   const finenessValue = finenesses.find((f) => f.value === p.fineness)?.fineness ?? null;
@@ -282,6 +292,10 @@ export function ProductForm({
       <p className="sr-only" aria-live="polite">
         {t("stepStatus", { step: current, total: STEPS, title: titles[current - 1] })}
       </p>
+
+      {creating && (
+        <AutofillText categories={categories} finenesses={finenesses} onFill={autofill} />
+      )}
 
       <form
         ref={formRef}

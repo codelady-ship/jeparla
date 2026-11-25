@@ -11,10 +11,12 @@ import {
   HERO_MODELS,
   HERO_POSTER,
   HERO_PHASES,
+  HERO_TYPES,
   HERO_ZOOM,
   frameUrl,
   heroCamera,
   phase,
+  pickHeroVideo,
 } from "./hero-media";
 
 export type HeroMode = "pending" | "motion" | "static";
@@ -33,7 +35,9 @@ const REVEAL_TIMEOUT = 6000;
  *   share one continuous cream whatever the encoder did to it.
  * - Reduced motion: no autoplay and no pin; the final frame (the three models)
  *   is shown at once. Never blank: the copy is revealed on end, error, a failed
- *   play() and after a timeout.
+ *   play() and after a timeout; when the film cannot play at all (no decoder,
+ *   blocked autoplay, it never started) the tigers standing, the first frame of
+ *   act 2, replace it (#322). An MP4 error tries the WebM copy once first.
  */
 export function HeroMotion({
   label,
@@ -73,6 +77,8 @@ export function HeroMotion({
 
     let started = false;
     let landed = false;
+    let failed = false;
+    let triedWebm = false;
     let frame = 0;
     let active = -1;
     // Camera geometry in the media box's own pixels, measured without the camera applied.
@@ -175,6 +181,27 @@ export function HeroMotion({
       stage.classList.add("is-revealed");
       startFrames();
     };
+    /** The film will not play: show the frame it ends on instead of the plain backdrop. */
+    const fallback = () => {
+      failed = true;
+      frames.style.opacity = "1";
+      land();
+    };
+    const onError = () => {
+      if (!triedWebm && video.src.endsWith(".mp4") && video.canPlayType(HERO_TYPES.webm)) {
+        triedWebm = true;
+        video.src = media.webm;
+        if (!landed) video.play()?.catch(fallback);
+        return;
+      }
+      fallback();
+    };
+    /** A slow film that starts after all (after the timeout): show it again, not the stand-in. */
+    const onPlaying = () => {
+      if (!failed) return;
+      failed = false;
+      onScroll();
+    };
 
     const render = () => {
       frame = 0;
@@ -196,7 +223,7 @@ export function HeroMotion({
         brand.style.setProperty("--write", String(b));
       }
       const tf = phase(p, HERO_PHASES.transform);
-      frames.style.opacity = p > 0.005 ? "1" : "0";
+      frames.style.opacity = p > 0.005 || failed ? "1" : "0";
       player.show(tf);
       camera(p);
       scenes(p);
@@ -228,14 +255,15 @@ export function HeroMotion({
     } else {
       track.dataset.mode = "motion";
       video.addEventListener("ended", land);
-      video.addEventListener("error", land);
+      video.addEventListener("error", onError);
+      video.addEventListener("playing", onPlaying);
       video.muted = true;
       // The film is requested only after the first frame with the headline is painted
       // (one frame, then a task): fetched with the page it took the phone's bandwidth from
       // the scripts and fonts the first screen waits for (#62). The poster is the same
       // plain backdrop the film starts on, so nothing visible changes while it loads.
       const begin = () => {
-        video.src = media.video;
+        video.src = pickHeroVideo(media, (type) => video.canPlayType(type));
         if (landed) {
           // Scrolled before the film began: hold its last frame (the tigers standing).
           const toEnd = () => {
@@ -245,8 +273,12 @@ export function HeroMotion({
           video.load();
           return;
         }
-        video.play()?.catch(land);
-        timer = window.setTimeout(land, REVEAL_TIMEOUT);
+        video.play()?.catch(fallback);
+        // Still on its first frame after the timeout: show the stand-in until it plays.
+        timer = window.setTimeout(
+          () => (video.currentTime > 0 ? land() : fallback()),
+          REVEAL_TIMEOUT,
+        );
       };
       raf = requestAnimationFrame(() => {
         raf = 0;
@@ -269,7 +301,8 @@ export function HeroMotion({
       }
       for (const type of FIRST_INPUT) window.removeEventListener(type, sampleBackdrop);
       video.removeEventListener("ended", land);
-      video.removeEventListener("error", land);
+      video.removeEventListener("error", onError);
+      video.removeEventListener("playing", onPlaying);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       if (frame) cancelAnimationFrame(frame);
@@ -280,6 +313,11 @@ export function HeroMotion({
   return (
     <section ref={trackRef} aria-label={label} data-hero data-mode="pending" className="hero-track">
       <div className="hero">
+        {/* The copy comes first in the DOM: the stage takes the height the copy leaves free,
+            so a first paint of a half-loaded page (copy not parsed yet) gave the film the
+            whole screen and then shifted it down (CLS 0.94 on phones, #322). The overlays
+            sit above it by z-index, so what is painted is unchanged. */}
+        {children}
         <div className="hero-media" role="img" aria-label={scene}>
           <video
             ref={videoRef}
@@ -295,7 +333,6 @@ export function HeroMotion({
           {/* eslint-disable-next-line @next/next/no-img-element -- a frame sequence, src swapped per scroll step */}
           <img ref={framesRef} className="hero-frames" alt="" aria-hidden decoding="sync" />
         </div>
-        {children}
       </div>
     </section>
   );

@@ -1698,7 +1698,26 @@
         "diameterMm": "Diametr (sırğa, asma)"
       },
       "fromDraft": "Forma qaralamanın şəkli ilə başlayır. Qalan sahələri doldurun: şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir.",
-      "fromDraftSuggested": "Forma qaralamanın şəkli və kataloq səhifəsindən oxunan ad, qiymət və çəki ilə başlayır. Bunlar yalnız təklifdir: hər sahəni yoxlayın. Şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir."
+      "fromDraftSuggested": "Forma qaralamanın şəkli və kataloq səhifəsindən avtomatik oxunan sahələrlə başlayır: {fields}. Bunlar yalnız təklifdir: hər sahəni yoxlayın. Şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir.",
+      "autofillFields": {
+        "name": "ad",
+        "category": "kateqoriya",
+        "metal": "metal",
+        "fineness": "əyar",
+        "weight": "çəki",
+        "price": "qiymət",
+        "description": "təsvir"
+      },
+      "autofill": {
+        "title": "Mətndən avtomatik doldur",
+        "hint": "Məhsul haqqında mətni (kataloq yazısı, Instagram və ya WhatsApp mesajı) bura yapışdırın: formanın boş sahələri (ad, kateqoriya, metal, əyar, çəki, qiymət, təsvir) doldurulacaq, artıq yazdıqlarınız dəyişməyəcək. Mətn heç yerə göndərilmir. Hər sahəni sonra yoxlayın.",
+        "label": "Məhsul haqqında mətn",
+        "placeholder": "Məsələn:\nLeyla — qızıl nişan üzüyü\n585 əyar, 3,2 q\nQiymət: 1 250 AZN\nAğ brilyantlı klassik üzük.",
+        "fill": "Formanı doldur",
+        "filled": "Dolduruldu: {fields}. Addımlarda hər sahəni yoxlayın.",
+        "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
+        "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
+      }
     },
     "profile": {
       "title": "Mağaza profili",
