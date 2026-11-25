@@ -1698,7 +1698,16 @@
         "diameterMm": "Diametr (sırğa, asma)"
       },
       "fromDraft": "Forma qaralamanın şəkli ilə başlayır. Qalan sahələri doldurun: şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir.",
-      "fromDraftSuggested": "Forma qaralamanın şəkli və kataloq səhifəsindən oxunan ad, qiymət və çəki ilə başlayır. Bunlar yalnız təklifdir: hər sahəni yoxlayın. Şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir."
+      "fromDraftSuggested": "Forma qaralamanın şəkli və kataloq səhifəsindən avtomatik oxunan sahələrlə başlayır: {fields}. Bunlar yalnız təklifdir: hər sahəni yoxlayın. Şəkil məhsula yalnız yadda saxlayanda əlavə olunur və qaralama siyahıdan silinir.",
+      "autofillFields": {
+        "name": "ad",
+        "category": "kateqoriya",
+        "metal": "metal",
+        "fineness": "əyar",
+        "weight": "çəki",
+        "price": "qiymət",
+        "description": "təsvir"
+      }
     },
     "profile": {
       "title": "Mağaza profili",

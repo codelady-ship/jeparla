@@ -8,7 +8,7 @@ import { routing } from "@/i18n/routing";
 import { api as publicApi, USING_MOCK } from "@/lib/api";
 import { merchantDrafts } from "@/lib/api/drafts";
 import { suggestAudience } from "@/lib/merchant/audience";
-import { draftInput } from "@/lib/merchant/from-draft";
+import { draftFilledFields, draftInput, type DraftOptions } from "@/lib/merchant/from-draft";
 import { merchantContext } from "@/lib/merchant/server";
 import { MerchantIntl, SellerBanner } from "./merchant-shell";
 import { ProductForm } from "./product-form";
@@ -47,7 +47,6 @@ export async function ProductFormPage({
   const fromDraft = Number.isInteger(draftId)
     ? ((await merchantDrafts().catch(() => [])).find((d) => d.id === draftId) ?? null)
     : null;
-  const initial = product?.input ?? (fromDraft ? draftInput(fromDraft) : undefined);
 
   // Leaf categories only: a product sits in the most specific one.
   const parents = new Set(categories.map((c) => c.parentId).filter((v) => v !== null));
@@ -58,6 +57,22 @@ export async function ProductFormPage({
       label: c.name[locale],
       audience: suggestAudience(c.id, categories),
     }));
+  const fineOptions = finenesses.map((f) => ({
+    value: String(f.id),
+    label: f.label,
+    metal: f.metal,
+    fineness: f.value,
+  }));
+
+  // The PDF page text (catalog auto-fill) is read against what the form offers.
+  const draftOptions: DraftOptions = { categories: options, finenesses: fineOptions };
+  const fromDraftInput = fromDraft ? draftInput(fromDraft, draftOptions) : undefined;
+  if (fromDraftInput?.category) {
+    const audience = options.find((o) => o.value === fromDraftInput.category)?.audience;
+    if (audience) fromDraftInput.audience = audience;
+  }
+  const initial = product?.input ?? fromDraftInput;
+  const filled = fromDraft ? draftFilledFields(fromDraft, draftOptions) : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,8 +84,10 @@ export async function ProductFormPage({
       {fromDraft && (
         <p className="flex items-start gap-2 rounded-lg border bg-card p-3 text-sm">
           <FileImage aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-text" />
-          {fromDraft.suggestedName || fromDraft.suggestedPrice || fromDraft.suggestedWeight
-            ? t("fromDraftSuggested")
+          {filled.length > 0
+            ? t("fromDraftSuggested", {
+                fields: filled.map((f) => t(`autofillFields.${f}`)).join(", "),
+              })
             : t("fromDraft")}
         </p>
       )}
@@ -82,12 +99,7 @@ export async function ProductFormPage({
           productId={product?.id}
           video={product?.video}
           categories={options}
-          finenesses={finenesses.map((f) => ({
-            value: String(f.id),
-            label: f.label,
-            metal: f.metal,
-            fineness: f.value,
-          }))}
+          finenesses={fineOptions}
           quotes={quotes}
           sellerApproved={store.sellerStatus === "VERIFIED"}
           requireDocs={USING_MOCK}

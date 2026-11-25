@@ -40,7 +40,9 @@ public final class DraftDtos {
     public record DraftDto(long id, String source, String imageUrl, Instant imageUrlExpiresAt, int width, int height,
             @Schema(nullable = true) Integer pdfPage, @Schema(nullable = true) String suggestedName,
             @Schema(nullable = true, example = "1250.50") String suggestedPrice,
-            @Schema(nullable = true, example = "4.200") String suggestedWeight, Instant createdAt) {
+            @Schema(nullable = true, example = "4.200") String suggestedWeight,
+            @Schema(nullable = true, description = "Cleaned text of a PDF page with one photo (at most 4000 characters)")
+            String pageText, Instant createdAt) {
     }
 
     /** The drafts a PDF gave; {@code limited} when the daily draft limit or the image limit cut it short. */
