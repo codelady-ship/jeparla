@@ -56,6 +56,13 @@ class OnModelTests {
                 .doesNotContain("{");
         String adult = prompts.prompt(AiJobKind.VIRTUAL_TRY_ON, Map.of(AiJobParameters.AUDIENCE_CODE, "WOMEN"));
         assertThat(adult).contains("adult model").doesNotContain("child");
+        // Owner's decision (2026-11-23): a unisex piece, or one without parameters, gets a woman by default; a men's
+        // piece keeps a man.
+        assertThat(AiJobParameters.audienceText(Audience.UNISEX)).isEqualTo("adult woman");
+        assertThat(prompts.prompt(AiJobKind.VIRTUAL_TRY_ON, Map.of())).contains("Model: adult woman.")
+                .contains("warm cream").contains("slightly golden").contains("calm premium");
+        assertThat(prompts.prompt(AiJobKind.VIRTUAL_TRY_ON, Map.of(AiJobParameters.AUDIENCE_CODE, "MEN",
+                "audience", AiJobParameters.audienceText(Audience.MEN)))).contains("Model: adult man.");
         // The photoshoot has no model, so it has no child variant.
         assertThat(prompts.prompt(AiJobKind.AI_PHOTOSHOOT, Map.of(AiJobParameters.AUDIENCE_CODE, "KIDS")))
                 .doesNotContain("child model");

@@ -1,12 +1,14 @@
 # AI provayderləri: necə qoşulur
 
-Jeparla AI funksiyalarının kodu provayderdən asılı deyil. Repoda **heç bir real provayder, açar və ya
-ödənişli API çağırışı yoxdur** (sahibin qərarı, 2026-11-14). Hər funksiya interfeys arxasındadır və standart
-olaraq söndürülüb: UI və API açıq şəkildə "qoşulmayıb" deyir, heç vaxt nümunə və ya saxta nəticə göstərmir.
+Jeparla AI funksiyalarının kodu provayderdən asılı deyil. Repoda **heç bir açar yoxdur** və heç bir ödənişli API
+standart olaraq çağırılmır (sahibin qərarı, 2026-11-14). Tək real provayder kodu Google Gemini-dir (#313, sahibin
+qərarı, 2026-11-23): o da açar, `JEPARLA_AI_IMAGE_PROVIDER=gemini` və sıfırdan böyük aylıq limit olmadan işə
+düşmür. Hər funksiya interfeys arxasındadır və standart olaraq söndürülüb: UI və API açıq şəkildə "qoşulmayıb"
+deyir, heç vaxt nümunə və ya saxta nəticə göstərmir.
 
 | Funksiya | Issue | Interfeys | Seçim (env) | Standart |
 | --- | --- | --- | --- | --- |
-| AI Studio: studiya şəkli, model üzərində görünüş | #55, #121, #130 | `az.jeparla.ai.provider.ImageGenerationProvider` | `JEPARLA_AI_IMAGE_PROVIDER` | `none` |
+| AI Studio: studiya şəkli, model üzərində görünüş | #55, #121, #130, #313 | `az.jeparla.ai.provider.ImageGenerationProvider` | `JEPARLA_AI_IMAGE_PROVIDER` (`none`, `gemini`) | `none` |
 
 Sonrakı PR-lar bu cədvələ öz interfeyslərini əlavə edir (şəkillə axtarış #163, studiya görünüşü #119).
 
@@ -60,6 +62,44 @@ Orijinal şəkil heç vaxt dəyişmir; AI şəkildən yeni AI şəkil yaratmaq o
 
 Namizədlər və pilot: aşağıda "Provayder müqayisəsi və pilot (#54)". Seçim meyarı: əşyanın forması, rəngi və
 daşları dəyişməməlidir; dəyişirsə nəticə rədd edilir. Xərc və lisenziya seçiləndə bu sənədə yazılır.
+
+### Gemini qoşmaq (#313)
+
+Kod: `az.jeparla.ai.provider.GeminiImageProvider` (id `gemini`). Hər çıxış şəkli üçün Gemini API-yə bir
+`generateContent` sorğusu gedir (`x-goog-api-key` başlığı ilə): repodakı prompt, məhsulun orijinal şəkli və AI
+modelin istinad şəkilləri (ən çox 3). Şəkillər bizim public bucket-dəndirsə birbaşa storage-dən oxunur, yoxsa
+yalnız http(s) ilə, 10 MB və 20 san. limiti ilə endirilir; yalnız JPEG, PNG, WebP göndərilir. Cavabda şəkil
+yoxdursa və ya Google təhlükəsizlik səbəbi ilə bloklayıbsa tapşırıq `ai.provider_refused` (təkrar yoxdur),
+HTTP xətası `ai.provider_error`, 120 san.-dən uzun gözləmə `ai.timeout` olur. Google-un mətni satıcıya getmir,
+açar loga yazılmır.
+
+Sahibin addımları:
+
+1. **Açar.** [Google AI Studio](https://aistudio.google.com/)-da Jeparla üçün ayrıca layihədə API açarı yaradın.
+   Şəkil generasiyası pulsuz səviyyədə məhdud və ya yoxdur; billing açmaq **ödənişli addımdır** və yalnız sahibin
+   qərarı ilə edilir. Pulsuz səviyyədə göndərilən məlumat Google-un modellərinin təkmilləşdirilməsində istifadə
+   oluna bilər: real satıcı şəkilləri yalnız ödənişli səviyyədə göndərilir (yuxarıdakı cədvəl).
+2. **Google tərəfində xərc limiti.** Layihənin billing hesabında aylıq büdcə və xəbərdarlıq qoyun (Google Cloud
+   Billing, "Budgets & alerts"), mümkünsə AI Studio-da layihənin xərc limitini də. Bu, API-nin öz limitindən
+   əlavədir.
+3. **VM-də env** (`deploy/.env`, `chmod 600`; repoya heç vaxt):
+   ```
+   JEPARLA_AI_IMAGE_PROVIDER=gemini
+   JEPARLA_GEMINI_API_KEY=<açar>
+   JEPARLA_AI_MONTHLY_COST_LIMIT=10
+   ```
+   Sonra `deploy/scripts/deploy.sh` (yenidən başlatma kifayətdir).
+4. **Aylıq limit.** `JEPARLA_AI_MONTHLY_COST_LIMIT` USD ilə bütün mağazalar üçün sərt limitdir; `0` olanda heç
+   nə işə düşmür. Hər şəkil `JEPARLA_GEMINI_COST_PER_IMAGE` (standart `0.039` USD, `gemini-2.5-flash-image`)
+   qədər sayılır; məsələn 10 USD təxminən 256 şəkildir. Qiyməti Google-un rəsmi qiymət səhifəsində yoxlayın və
+   fərqlidirsə env-də dəyişin. Model `JEPARLA_GEMINI_MODEL` ilə dəyişir.
+5. **Avtomatik model üzərində şəkil.** İstəsəniz `JEPARLA_AI_AUTO_TRY_ON=true`: məhsulun ilk orijinal şəkli
+   əlavə olunanda `VIRTUAL_TRY_ON` tapşırığı növbəyə düşür (gündəlik kvota və aylıq limit tətbiq olunur), nəticə
+   yenə satıcının təsdiqini gözləyir.
+
+Model seçilməyəndə (kitabxanada uyğun model yoxdursa) prompt standart olaraq **yetkin qadın** model istəyir:
+qadın və unisex əşyalar üçün (sahibin qərarı, 2026-11-23), saytın üslubunda: isti krem fon, yumşaq qızılı işıq,
+sakit premium görünüş. Kişi zərgərliyi kişi modeldə, uşaq zərgərliyi ayrıca uşaq promptu ilə qalır.
 
 ### AI model kitabxanası (#130)
 
@@ -193,5 +233,7 @@ məlumata əsaslanan təxmindir, 2026-11-18-də yoxlanılmayıb: istifadədən �
 
 ### Qərar
 
-Hələ yoxdur. Pilotdan sonra: provayder, məhsul növü, aylıq büdcə (`JEPARLA_AI_MONTHLY_COST_LIMIT`), yoxlama
-tarixi.
+2026-11-23, sahib: AI Studio-nun (model üzərində görünüş və AI fotosessiya) provayderi Google Gemini-dir
+(`gemini-2.5-flash-image`), yuxarıda "Gemini qoşmaq" (#313). Aylıq büdcə (`JEPARLA_AI_MONTHLY_COST_LIMIT`) və
+qiymətin yoxlama tarixi sahib təyin edəndə bura yazılır. Yuxarıdakı pilot protokolu ilk real nəticələrin
+yoxlanmasında yenə tətbiq olunur.
