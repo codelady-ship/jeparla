@@ -88,6 +88,7 @@ class CatalogPdfTests {
         assertThat(suggestions.name()).isEqualTo("Lale ring");
         assertThat(suggestions.price()).isEqualByComparingTo("1250.50");
         assertThat(suggestions.weight()).isEqualByComparingTo("4.200");
+        assertThat(suggestions.text()).isEqualTo("Lale ring\n4,20 gr\n1 250,50 AZN");
     }
 
     /**
@@ -227,5 +228,17 @@ class CatalogPdfTests {
         assertThat(DraftSuggestions.price("Model 585, ölçü 17")).isEmpty();
         assertThat(DraftSuggestions.weight("Qızıl üzük 585")).isEmpty();
         assertThat(DraftSuggestions.of("").name()).isNull();
+        assertThat(DraftSuggestions.of("").text()).isNull();
+    }
+
+    @Test
+    void pageTextIsCleanedAndCut() {
+        assertThat(DraftSuggestions.text("  Qızıl   üzük \u0000585 \r\n\n\t\nÇəki 3,2 q  "))
+                .isEqualTo("Qızıl üzük 585\nÇəki 3,2 q");
+        assertThat(DraftSuggestions.text(" \n \u0000 ")).isNull();
+        String line = "a".repeat(999);
+        String cut = DraftSuggestions.text((line + "\n").repeat(10));
+        assertThat(cut).hasSize(4 * 999 + 3);
+        assertThat(cut.length()).isLessThanOrEqualTo(DraftSuggestions.MAX_TEXT);
     }
 }

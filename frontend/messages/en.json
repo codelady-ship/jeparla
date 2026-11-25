@@ -1698,7 +1698,16 @@
         "diameterMm": "Diameter (earring, pendant)"
       },
       "fromDraft": "The form starts with the photo of your draft. Fill in the other fields: the photo is added to the product only when you save, and the draft then leaves the list.",
-      "fromDraftSuggested": "The form starts with the photo of your draft and the name, price and weight read from the catalog page. These are only suggestions: check every field. The photo is added to the product only when you save, and the draft then leaves the list."
+      "fromDraftSuggested": "The form starts with the photo of your draft and the fields read automatically from the catalog page: {fields}. These are only suggestions: check every field. The photo is added to the product only when you save, and the draft then leaves the list.",
+      "autofillFields": {
+        "name": "name",
+        "category": "category",
+        "metal": "metal",
+        "fineness": "fineness",
+        "weight": "weight",
+        "price": "price",
+        "description": "description"
+      }
     },
     "profile": {
       "title": "Store profile",

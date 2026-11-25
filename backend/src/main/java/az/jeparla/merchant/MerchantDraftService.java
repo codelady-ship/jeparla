@@ -234,7 +234,7 @@ public class MerchantDraftService {
                 draft.getHeight(), draft.getPdfPage(), draft.getSuggestedName(),
                 draft.getSuggestedPrice() == null ? null : draft.getSuggestedPrice().toPlainString(),
                 draft.getSuggestedWeight() == null ? null : draft.getSuggestedWeight().toPlainString(),
-                draft.getCreatedAt());
+                draft.getPageText(), draft.getCreatedAt());
     }
 
     private long writableStoreId() {

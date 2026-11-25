@@ -71,7 +71,8 @@ class DraftApiTests extends MerchantApiTestBase {
                 .andExpect(jsonPath("$.drafts[0].pdfPage").value(1))
                 .andExpect(jsonPath("$.drafts[0].suggestedName").value("Lale ring"))
                 .andExpect(jsonPath("$.drafts[0].suggestedPrice").value("1250.50"))
-                .andExpect(jsonPath("$.drafts[0].suggestedWeight").value("4.200"));
+                .andExpect(jsonPath("$.drafts[0].suggestedWeight").value("4.200"))
+                .andExpect(jsonPath("$.drafts[0].pageText").value("Lale ring\n4,20 gr\n1 250,50 AZN"));
         assertThat(storage.isStaged(key)).isFalse();
         assertThat(jdbc.queryForObject("SELECT suggested_price::text FROM product_drafts WHERE store_id = ?"
                 + " AND pdf_page = 1", String.class, seller.storeId())).isEqualTo("1250.50");

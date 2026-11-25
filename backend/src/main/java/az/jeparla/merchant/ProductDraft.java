@@ -54,6 +54,10 @@ public class ProductDraft extends LongIdEntity {
     @Column(name = "suggested_weight", updatable = false)
     private BigDecimal suggestedWeight;
 
+    /** The cleaned text of the PDF page (V67): the form reads category, metal, fineness and description from it. */
+    @Column(name = "page_text", updatable = false)
+    private String pageText;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -73,6 +77,7 @@ public class ProductDraft extends LongIdEntity {
             this.suggestedName = suggestions.name();
             this.suggestedPrice = suggestions.price();
             this.suggestedWeight = suggestions.weight();
+            this.pageText = suggestions.text();
         }
         this.createdAt = createdAt;
     }
@@ -115,6 +120,10 @@ public class ProductDraft extends LongIdEntity {
 
     public BigDecimal getSuggestedWeight() {
         return suggestedWeight;
+    }
+
+    public String getPageText() {
+        return pageText;
     }
 
     public Instant getCreatedAt() {

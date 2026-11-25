@@ -20,6 +20,8 @@ export type MerchantDraft = {
   suggestedName: string | null;
   suggestedPrice: Decimal | null;
   suggestedWeight: Decimal | null;
+  /** Cleaned text of a PDF page with one photo; absent from older backends. */
+  pageText?: string | null;
   createdAt: string;
 };
 
