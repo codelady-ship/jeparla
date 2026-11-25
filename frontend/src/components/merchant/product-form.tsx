@@ -39,6 +39,8 @@ import {
   type StoneInput,
   type VariantInput,
 } from "@/types/merchant";
+import type { Autofill } from "@/lib/merchant/autofill";
+import { AutofillText } from "./autofill-text";
 import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
@@ -263,6 +265,29 @@ export function ProductForm({
     setDone(result.data.status);
   }
 
+  /** "Fill from text" (#329): only the fields the text names change; the rest stays as typed. */
+  function autofill(a: Autofill) {
+    const patch: Partial<ProductInput> = {};
+    if (a.name) patch.name = a.name;
+    if (a.category) {
+      patch.category = a.category;
+      const audience = categories.find((c) => c.value === a.category)?.audience;
+      if (audience) patch.audience = audience;
+    }
+    if (a.description) patch.description = a.description;
+    if (!fashion && a.metal) {
+      patch.metal = a.metal;
+      // A fineness of another metal would be invalid: it is cleared unless the text names one.
+      patch.fineness = a.fineness ?? (a.metal === p.metal ? p.fineness : "");
+    }
+    if (a.weight || a.price) {
+      patch.variants = p.variants.map((v, i) =>
+        i === 0 ? { ...v, weightGrams: a.weight ?? v.weightGrams, price: a.price ?? v.price } : v,
+      );
+    }
+    set(patch);
+  }
+
   const time = draft.savedAt ? new Date(draft.savedAt).toTimeString().slice(0, 5) : null;
   const metalFinenesses = finenesses.filter((f) => f.metal === p.metal);
   const finenessValue = finenesses.find((f) => f.value === p.fineness)?.fineness ?? null;
@@ -282,6 +307,10 @@ export function ProductForm({
       <p className="sr-only" aria-live="polite">
         {t("stepStatus", { step: current, total: STEPS, title: titles[current - 1] })}
       </p>
+
+      {creating && (
+        <AutofillText categories={categories} finenesses={finenesses} onFill={autofill} />
+      )}
 
       <form
         ref={formRef}
