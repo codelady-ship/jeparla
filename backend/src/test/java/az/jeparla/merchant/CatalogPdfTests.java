@@ -271,6 +271,14 @@ class CatalogPdfTests {
     }
 
     @Test
+    void aPriceLineIsNeverTheName() {
+        assertThat(DraftSuggestions.name("12.450 AZN\nLale ring")).isEqualTo("Lale ring");
+        assertThat(DraftSuggestions.name("₼ 12.450\n1 200,500 манат\nSəma sırğası")).isEqualTo("Səma sırğası");
+        assertThat(DraftSuggestions.name("12.450 AZN")).isNull();
+        assertThat(DraftSuggestions.name("Azalea ring")).isEqualTo("Azalea ring");
+    }
+
+    @Test
     void labelledPricesAndWeights() {
         DraftSuggestions s = DraftSuggestions.of("Qiymət: 375\nQolbaq\nÇəki: 7,4\n1,5 q");
         assertThat(s.price()).isEqualByComparingTo("375");

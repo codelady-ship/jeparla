@@ -222,6 +222,10 @@ function isDataLine(line: string): boolean {
   );
 }
 
+/** Words a one-line head may not start with: labels, not names. */
+const NOT_A_NAME =
+  /^(?:ceki|weight|вес|масса|qiymet|price|цена|стоимость|model|модель|proba|проба|eyar|ayar|fineness)(?![\p{L}])/u;
+
 const fitsName = (l: string) => l.length >= NAME_MIN && l.length <= NAME_MAX;
 
 /**
@@ -236,8 +240,11 @@ function name(all: string[]): string | null {
   const head = first
     ?.split(/[,;\d]/u)[0]
     .replace(/[\s\-–—:.]+$/u, "")
+    .replace(/\s+(?:proba|проба|əyar|eyar|ayar)$/iu, "")
     .trim();
-  return head && fitsName(head) && /\p{L}{2}/u.test(head) && !isDataLine(head) ? head : null;
+  // One word ("Gold", "Model") or a label ("Çəki: ...") is not a product name.
+  if (!head || !/\s/u.test(head) || NOT_A_NAME.test(fold(head))) return null;
+  return fitsName(head) && /\p{L}{2}/u.test(head) && !isDataLine(head) ? head : null;
 }
 
 /** The rest of the text as sentences: lines other than the name, data and contact lines. */
@@ -258,7 +265,14 @@ export function readProductText(
   const all = lines(text ?? "");
   const title = name(all);
   // Phone numbers and years are removed before any number is read.
-  const folded = fold(all.map((l) => l.replace(PHONE, " ").replace(YEAR, " ")).join("\n"));
+  // Hashtag-only lines ("#qizil #uzuk") are tags, not a description of this piece: they never
+  // decide the metal or the category.
+  const folded = fold(
+    all
+      .filter((l) => !HASHTAGS.test(l.trim()))
+      .map((l) => l.replace(PHONE, " ").replace(YEAR, " "))
+      .join("\n"),
+  );
   const { metal, fineness } = metalAndFineness(folded, options.finenesses);
   return {
     name: title,

@@ -67,6 +67,14 @@ describe("fill the product form from text", () => {
     expect(await screen.findByText(line)).toBeTruthy();
   });
 
+  it("says the form already has the values when a press changes nothing", async () => {
+    setup(() => ({ filled: [], kept: [], same: ["name", "price"] }));
+    paste("Gümüş sırğa\n180 AZN");
+    press();
+    expect(await screen.findByText(t.same)).toBeTruthy();
+    expect(screen.queryByText(/Artıq yazdığınız/)).toBeNull();
+  });
+
   it("says so when the text has nothing it knows", async () => {
     setup(() => ({ filled: [], kept: [] }));
     paste("12");

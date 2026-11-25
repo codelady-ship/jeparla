@@ -1716,6 +1716,7 @@
         "fill": "Fill the form",
         "filled": "Filled: {fields}. Check every field in the steps.",
         "nothing": "Nothing recognisable was found in the text. Fill in the form by hand.",
+        "same": "The form already has the details from this text; nothing changed.",
         "kept": "Fields you had already filled were not changed: {fields}."
       }
     },

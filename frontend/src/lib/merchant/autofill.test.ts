@@ -246,3 +246,19 @@ describe("reading pasted social text without confident wrong fills (#330 review)
     expect(read("25.11.2026")).toMatchObject({ fineness: null, weight: null, price: null });
   });
 });
+
+describe("follow-up of the #330 re-review", () => {
+  it("never takes a label or a single word as a one-line name", () => {
+    expect(read("Çəki: 12 q, 925 gümüş").name).toBeNull();
+    expect(read("Gold 585 chain 1500 g").name).toBeNull();
+    expect(read("Model 2025 il, qızıl üzük 4 q").name).toBeNull();
+    expect(read("Qiymət 450, qızıl üzük").name).toBeNull();
+    expect(read("Dəst: qızıl üzük proba 585, 4 q").name).toBe("Dəst: qızıl üzük");
+    expect(read("Gümüş sırğa əyar 925, 3 q").name).toBe("Gümüş sırğa");
+  });
+
+  it("does not let hashtags decide the metal or the category", () => {
+    expect(read("Sırğa 3 q\n#qizil #uzuk")).toMatchObject({ metal: null, category: "sirgalar" });
+    expect(read("Yeni model\n#gumus #sirga")).toMatchObject({ metal: null, category: null });
+  });
+});

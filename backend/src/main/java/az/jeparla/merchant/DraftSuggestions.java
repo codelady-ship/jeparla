@@ -54,6 +54,9 @@ record DraftSuggestions(String name, BigDecimal price, BigDecimal weight, String
     private static final Pattern YEAR = Pattern.compile(
             "(?<![\\d.,])(?:19|20)\\d{2}\\s*(?:г\\.|год|ил|il|year|г)(?![\\p{L}\\p{N}])", FLAGS);
 
+    private static final Pattern CURRENCY_WORD = Pattern.compile(
+            "₼|(?<!\\p{L})(?:azn|manat|man\\.|манат)(?!\\p{L})", FLAGS);
+
     private static final Pattern HASHTAGS = Pattern.compile("(?:#[\\p{L}\\p{N}_]+[\\s,.]*)+");
 
     static DraftSuggestions of(String pageText) {
@@ -148,7 +151,9 @@ record DraftSuggestions(String name, BigDecimal price, BigDecimal weight, String
     static String name(String text) {
         for (String raw : text.split("\\R")) {
             String line = raw.strip().replaceAll("\\s+", " ");
-            if (line.length() < 3 || line.length() > MAX_NAME || line.chars().noneMatch(Character::isLetter)) {
+            // Letters only from a currency word ("12.450 AZN") do not make a name.
+            String words = CURRENCY_WORD.matcher(line).replaceAll(" ");
+            if (line.length() < 3 || line.length() > MAX_NAME || words.chars().noneMatch(Character::isLetter)) {
                 continue;
             }
             if (PRICE.matcher(line).find() || PRICE_LABEL.matcher(line).find() || WEIGHT.matcher(line).find()
