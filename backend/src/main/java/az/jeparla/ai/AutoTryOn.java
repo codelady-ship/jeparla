@@ -18,8 +18,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * On-model image by itself (#121): when a product gets its first original photo and {@code jeparla.ai.auto-try-on}
  * is on, a VIRTUAL_TRY_ON job is queued for the seller, with the first library model that fits the product's
- * audience. It runs after the photo's commit in the seller's own request, so ownership, quota, budget and the
- * provider are checked as for a job the seller starts; when any of them says no, nothing is queued and the photo
+ * audience. When the seller picked a model for the photo at upload (#315), the job uses that model and is queued
+ * even with the automatic try-on off: the pick is the seller asking for it. It runs after the photo's commit in
+ * the seller's own request, so ownership, quota, budget, the model (active, fitting audience) and the provider are
+ * checked as for a job the seller starts; when any of them says no, nothing is queued and the photo
  * upload is unaffected. The result still waits for the seller's approval.
  */
 @Component
@@ -40,13 +42,15 @@ class AutoTryOn {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void onFirstOriginalPhoto(FirstOriginalPhotoAttached event) {
-        if (!properties.autoTryOn() || !studio.status().configured()) {
+        boolean picked = event.tryOnModelId() != null;
+        if (!(picked || properties.autoTryOn()) || !studio.status().configured()) {
             return;
         }
         try {
             tx.executeWithoutResult(status -> {
-                Long modelId = studio.models(null, event.productId()).stream().findFirst()
-                        .map(AiModelDto::id).orElse(null);
+                Long modelId = picked ? event.tryOnModelId()
+                        : studio.models(null, event.productId()).stream().findFirst().map(AiModelDto::id)
+                                .orElse(null);
                 // A fixed key per photo: a repeated event never queues a second job.
                 UUID key = UUID.nameUUIDFromBytes(
                         ("auto-try-on:" + event.imageId()).getBytes(StandardCharsets.UTF_8));
