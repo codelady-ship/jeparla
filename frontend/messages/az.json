@@ -1731,9 +1731,15 @@
         "studio": "AI Studio-da bu şəkildən model üzərində şəkil hazırlayın. Təsdiqləməsəniz heç nə dərc olunmur.",
         "doneAuto": "Model üzərində şəkil hazırlanmağa başladı. Hazır olanda bildiriş gələcək; AI Studio-da baxıb təsdiqləyin.",
         "doneManual": "Şəkildən model üzərində şəkil hazırlayın: AI Studio-da bir neçə addımdır.",
-        "open": "AI Studio-ya keç"
+        "open": "AI Studio-ya keç",
+        "notStarted": "Model üzərində şəkil başlamadı: bugünkü limit və ya aylıq büdcə dolub, model artıq təklif olunmur, ya da məhsulun auditoriyası modelə uyğun deyil. AI Studio-da yenidən cəhd edin."
       },
-      "aiStudio": "AI Studio"
+      "aiStudio": "AI Studio",
+      "tryOn": {
+        "legend": "Model üzərində göstər",
+        "hint": "Model seçsəniz, məhsulu yadda saxlayanda ilk şəkildən bu modelin üzərində AI şəkli hazırlanır. Hazır olanda AI Studio-da baxıb təsdiqləyirsiniz; təsdiqləməsəniz heç nə dərc olunmur.",
+        "none": "Modelsiz"
+      }
     },
     "profile": {
       "title": "Mağaza profili",

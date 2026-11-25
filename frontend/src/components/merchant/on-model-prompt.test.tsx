@@ -55,6 +55,27 @@ describe("onModelPrompt (#316)", () => {
     });
   });
 
+  it("says whether the job of a picked model started (#315)", () => {
+    expect(
+      onModelPrompt({
+        place: "done",
+        autoTryOn: false,
+        creating: true,
+        productId: 3,
+        started: true,
+      }),
+    ).toEqual({ text: "doneAuto", href: "/merchant/products/3/ai-studio" });
+    expect(
+      onModelPrompt({
+        place: "done",
+        autoTryOn: true,
+        creating: true,
+        productId: 3,
+        started: false,
+      }),
+    ).toEqual({ text: "notStarted", href: "/merchant/products/3/ai-studio" });
+  });
+
   it("has every text in az, en and ru", () => {
     for (const m of [az, en, ru]) {
       const o = m.Merchant.form.onModel;
@@ -65,6 +86,7 @@ describe("onModelPrompt (#316)", () => {
         "studio",
         "doneAuto",
         "doneManual",
+        "notStarted",
         "open",
       ])
         expect(o[key as keyof typeof o]).toBeTruthy();

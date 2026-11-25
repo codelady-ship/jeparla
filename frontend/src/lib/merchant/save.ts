@@ -12,6 +12,9 @@ import {
   type ImageUpload,
 } from "./backend";
 
+/** Whether the on-model job of a picked model was queued (#315). */
+export type OnModelStart = "queued" | "not_started";
+
 /**
  * Saves the product form to the backend from a route handler: create or update, then the
  * photos (new ones go through a presigned upload into private staging and are attached, i.e.
@@ -24,7 +27,7 @@ export async function saveProduct(
   input: ProductInput,
   id: number | null,
   locale: string,
-): Promise<{ id: number; status: ProductStatus }> {
+): Promise<{ id: number; status: ProductStatus; onModel?: OnModelStart }> {
   const call = <T>(path: string, options: Parameters<typeof userFetch>[1] = {}) =>
     userFetch<T>(path, { canRefresh: true, locale, ...options });
   const categories = await api.listCategories();
@@ -55,7 +58,9 @@ export async function saveProduct(
     return upload;
   };
 
-  // Photos.
+  // Photos. The picked AI model (#315) goes with every new photo; the API acts on it only for the
+  // product's first original photo and queues the on-model image after that photo is saved.
+  const tryOn = input.tryOnModelId ? { tryOnModelId: input.tryOnModelId } : {};
   const keep = new Set(input.images.map((img) => backendImageId(img.id)).filter((v) => v !== null));
   for (const img of saved.images) {
     if (!keep.has(img.id))
@@ -73,7 +78,7 @@ export async function saveProduct(
     if (draftId !== null) {
       const attached = await call<{ id: number }>(
         `/merchant/products/${saved.id}/images/from-draft`,
-        { method: "POST", body: { draftId, altAz: input.name.trim().slice(0, 200) } },
+        { method: "POST", body: { draftId, altAz: input.name.trim().slice(0, 200), ...tryOn } },
       );
       order.push(attached.id);
       continue;
@@ -83,7 +88,7 @@ export async function saveProduct(
     const upload = await putFile(`/merchant/products/${saved.id}/images/uploads`, file);
     const attached = await call<{ id: number }>(`/merchant/products/${saved.id}/images`, {
       method: "POST",
-      body: { key: upload.key, altAz: input.name.trim().slice(0, 200) },
+      body: { key: upload.key, altAz: input.name.trim().slice(0, 200), ...tryOn },
     });
     order.push(attached.id);
   }
@@ -113,12 +118,22 @@ export async function saveProduct(
     });
   }
 
+  // With a picked model (#315) the API queued the on-model job while attaching the first photo,
+  // unless the quota, the budget, the model or the audience said no: say which, not nothing.
+  let onModel: OnModelStart | undefined;
+  if (input.tryOnModelId) {
+    const jobs = await call<{ kind: string }[]>("/merchant/ai/jobs", {
+      query: { productId: saved.id },
+    }).catch(() => null);
+    onModel = jobs?.some((j) => j.kind === "VIRTUAL_TRY_ON") ? "queued" : "not_started";
+  }
+
   if (intent === "REVIEW" && saved.status !== "IN_REVIEW" && saved.status !== "APPROVED") {
     const changed = await call<BackendProduct>(`/merchant/products/${saved.id}/status`, {
       method: "PATCH",
       body: { status: "IN_REVIEW" },
     });
-    return { id: saved.id, status: changed.status };
+    return { id: saved.id, status: changed.status, onModel };
   }
-  return { id: saved.id, status: saved.status };
+  return { id: saved.id, status: saved.status, onModel };
 }

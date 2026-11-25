@@ -15,14 +15,17 @@ export function OnModelPrompt({
   autoTryOn,
   creating,
   productId,
+  started,
 }: {
+  /** After a save with a picked model: whether the on-model job was queued (#315). */
+  started?: boolean;
   place: "photos" | "done";
   autoTryOn: boolean;
   creating: boolean;
   productId: number | null;
 }) {
   const t = useTranslations("Merchant.form.onModel");
-  const { text, href } = onModelPrompt({ place, autoTryOn, creating, productId });
+  const { text, href } = onModelPrompt({ place, autoTryOn, creating, productId, started });
   return (
     <section
       aria-labelledby={`on-model-${place}`}

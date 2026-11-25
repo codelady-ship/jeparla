@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * AI Studio results that wait for the seller's approval (#316): jobs in {@code REVIEW_REQUIRED} of the store's
- * products that are not deleted. Read with SQL on {@code ai_jobs} (index V68) so the merchant package does not
+ * products that are not deleted. Read with SQL on {@code ai_jobs} (index V69) so the merchant package does not
  * depend on the AI package, which already depends on it. Callers resolve the store through the signed-in user.
  */
 @Component

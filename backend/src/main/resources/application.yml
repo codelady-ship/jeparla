@@ -151,6 +151,14 @@ jeparla:
     # requests answer 503. Another value must be the id of an installed provider bean, or the API does not start.
     # Provider keys are read by the provider from its own env variables, never from this file.
     image-provider: ${JEPARLA_AI_IMAGE_PROVIDER:none}
+    # image-provider=gemini (docs/ai-providers.md, "Gemini qoşmaq"). The key comes only from the env; empty: the
+    # provider is not configured and job requests answer 503. Set a spending cap in Google AI Studio too.
+    gemini:
+      api-key: ${JEPARLA_GEMINI_API_KEY:}
+      model: ${JEPARLA_GEMINI_MODEL:gemini-2.5-flash-image}
+      # Expected price of one output image in cost-currency (USD), counted against monthly-cost-limit.
+      cost-per-image: ${JEPARLA_GEMINI_COST_PER_IMAGE:0.039}
+      timeout: 120s
     # #119: processor of STUDIO_LOOK jobs (background removal, cream background, shadow, 4:5). "none": the studio
     # look option is shown as not configured. It must not generate; a local one has the daily quota only.
     studio-processor: ${JEPARLA_AI_STUDIO_PROCESSOR:none}

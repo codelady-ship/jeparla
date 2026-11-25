@@ -27,6 +27,7 @@ import {
   stonesStep,
 } from "@/lib/merchant/schemas";
 import type { DocMeta } from "@/lib/seller/schemas";
+import type { AiModel } from "@/types/ai";
 import type { MetalType, ProductStatus, StockStatus, StoneType } from "@/types/api";
 import {
   DIMENSION_KEYS,
@@ -46,6 +47,7 @@ import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
 import { OnModelPrompt } from "./on-model-prompt";
+import { modelFits, TryOnModelPicker } from "./try-on-model-picker";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
 
@@ -53,6 +55,13 @@ export type Option = { value: string; label: string };
 /** A leaf category with the audience it suggests (#121). */
 export type CategoryOption = Option & { audience?: ProductAudience };
 export type FinenessOption = Option & { metal: MetalType; fineness: number };
+
+/** What the save route answers; onModel only with a picked model (#315). */
+type SaveAnswer = {
+  id?: number;
+  status: "DRAFT" | "IN_REVIEW";
+  onModel?: "queued" | "not_started";
+};
 
 const STEP_KEYS = ["1", "2", "3", "4", "5"] as const;
 const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
@@ -84,9 +93,15 @@ export function ProductForm({
   sellerKind = "PRECIOUS",
   occasions = [],
   autoTryOn = false,
+  tryOnModels = [],
 }: {
   /** The first photo of a new product queues an on-model image by itself (#121, #316). */
   autoTryOn?: boolean;
+  /**
+   * AI models the seller may pick at upload (#315); empty when AI Studio is off or the library
+   * is empty, and then no picker is shown.
+   */
+  tryOnModels?: AiModel[];
   /** Shown occasion collections (#115) the seller can tag the product with; value = id. */
   occasions?: Option[];
   /** What the store sells (#128): FASHION stores add bijouterie, MIXED stores choose per new product. */
@@ -131,6 +146,8 @@ export function ProductForm({
   const [done, setDone] = useState<"DRAFT" | "IN_REVIEW" | null>(null);
   // The saved product (#316): the done screen links to its AI Studio.
   const [savedId, setSavedId] = useState<number | null>(null);
+  // With a picked model (#315): whether the on-model job started, for the saved screen.
+  const [onModelStart, setOnModelStart] = useState<"queued" | "not_started" | undefined>();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -176,6 +193,7 @@ export function ProductForm({
               autoTryOn={autoTryOn}
               creating={creating}
               productId={savedId}
+              started={onModelStart === undefined ? undefined : onModelStart === "queued"}
             />
           </div>
         )}
@@ -189,6 +207,7 @@ export function ProductForm({
             onClick={() => {
               setDone(null);
               setSavedId(null);
+              setOnModelStart(undefined);
             }}
           >
             {t("done.another")}
@@ -202,7 +221,11 @@ export function ProductForm({
   const kind: MaterialKind = p.materialKind ?? (sellerKind === "FASHION" ? "FASHION" : "PRECIOUS");
   const fashion = kind === "FASHION";
   const chooseKind = sellerKind === "MIXED" && creating;
-  const withKind = { ...p, materialKind: kind };
+  // A picked model that no longer fits the audience (#315) is not sent: the API would refuse it.
+  const pickedModel = tryOnModels.find(
+    (m) => m.id === p.tryOnModelId && modelFits(p.audience, m.audience),
+  );
+  const withKind = { ...p, materialKind: kind, tryOnModelId: pickedModel?.id ?? null };
   const update = (fn: (d: ProductDraft) => ProductDraft) => store.update(fn);
   const set = (patch: Partial<ProductInput>) =>
     update((d) => ({ ...d, input: { ...d.input, ...patch } }));
@@ -266,16 +289,11 @@ export function ProductForm({
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result = creating
-      ? await sendJson<{ id?: number; status: "DRAFT" | "IN_REVIEW" }>(
-          "POST",
-          "/api/merchant/products",
-          { intent, product: withKind },
-        )
-      : await sendJson<{ id?: number; status: "DRAFT" | "IN_REVIEW" }>(
-          "PUT",
-          `/api/merchant/products/${draftKey}`,
-          { intent, product: withKind },
-        );
+      ? await sendJson<SaveAnswer>("POST", "/api/merchant/products", { intent, product: withKind })
+      : await sendJson<SaveAnswer>("PUT", `/api/merchant/products/${draftKey}`, {
+          intent,
+          product: withKind,
+        });
     setPending(null);
     if (!result.ok) {
       const errs = result.errors;
@@ -284,6 +302,7 @@ export function ProductForm({
     store.clear();
     setStep(null);
     setSavedId(result.data.id ?? productId ?? null);
+    setOnModelStart(result.data.onModel);
     setDone(result.data.status);
   }
 
@@ -359,15 +378,28 @@ export function ProductForm({
                 {err(errors.images)}
               </p>
             )}
-            {p.images.length > 0 && (
-              <div className="mt-2">
-                <OnModelPrompt
-                  place="photos"
-                  autoTryOn={autoTryOn}
-                  creating={creating}
-                  productId={productId ?? null}
+            {/* Before the first photo the seller picks a model (#315); the API queues the image with
+                that photo. Otherwise the prompt says what happens or links to AI Studio (#316). */}
+            {(creating || (initial?.images.length ?? 0) === 0) && tryOnModels.length > 0 ? (
+              <div className="mt-4 border-t pt-5">
+                <TryOnModelPicker
+                  models={tryOnModels}
+                  audience={p.audience}
+                  value={p.tryOnModelId ?? null}
+                  onChange={(tryOnModelId) => set({ tryOnModelId })}
                 />
               </div>
+            ) : (
+              p.images.length > 0 && (
+                <div className="mt-2">
+                  <OnModelPrompt
+                    place="photos"
+                    autoTryOn={autoTryOn}
+                    creating={creating}
+                    productId={productId ?? null}
+                  />
+                </div>
+              )
             )}
             <div className="mt-4 border-t pt-5">
               <EvidenceUpload

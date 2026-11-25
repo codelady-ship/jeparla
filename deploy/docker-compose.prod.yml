@@ -185,6 +185,14 @@ services:
       JEPARLA_S3_PRIVATE_BUCKET: ${JEPARLA_S3_PRIVATE_BUCKET:-jeparla-private}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      # AI Studio image provider (docs/ai-providers.md, "Gemini qoşmaq"). Off by default; with a provider on, nothing
+      # runs until JEPARLA_AI_MONTHLY_COST_LIMIT (USD per month, all stores) is above 0. The key lives only in .env.
+      JEPARLA_AI_IMAGE_PROVIDER: ${JEPARLA_AI_IMAGE_PROVIDER:-none}
+      JEPARLA_GEMINI_API_KEY: ${JEPARLA_GEMINI_API_KEY:-}
+      JEPARLA_GEMINI_MODEL: ${JEPARLA_GEMINI_MODEL:-gemini-2.5-flash-image}
+      JEPARLA_GEMINI_COST_PER_IMAGE: ${JEPARLA_GEMINI_COST_PER_IMAGE:-0.039}
+      JEPARLA_AI_MONTHLY_COST_LIMIT: ${JEPARLA_AI_MONTHLY_COST_LIMIT:-0}
+      JEPARLA_AI_AUTO_TRY_ON: ${JEPARLA_AI_AUTO_TRY_ON:-false}
       # Local, free image models on this VM's CPU (docs/ai-providers.md, docs/image-search.md). Off by default:
       # nothing is downloaded. With a model on, give the API more memory and a smaller heap share (ONNX Runtime
       # works outside the Java heap): JEPARLA_API_MEM_LIMIT=4g, JEPARLA_API_JAVA_OPTS=-XX:MaxRAMPercentage=50 ...

@@ -30,21 +30,24 @@ export async function ProductFormPage({
   if (!hasLocale(routing.locales, locale)) return null;
   const { api, session } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t, prices, occasions, ai] = await Promise.all([
-    api.store(),
-    productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
-    publicApi.listCategories(),
-    publicApi.listFinenesses(),
-    getTranslations("Merchant.form"),
-    // Without a quote the form still works; the preview says the rate is missing.
-    publicApi.latestMetalPrices().catch(() => []),
-    // Occasion tags are optional (#115): without the list the form simply leaves them out.
-    publicApi.listCollections().catch(() => []),
-    // Only the "show on a model" hint (#316) reads it: without the AI status the form says "AI Studio".
-    aiStudioApi(session)
-      .status()
-      .catch(() => NOT_CONFIGURED),
-  ]);
+  const [store, product, categories, finenesses, t, prices, occasions, ai, tryOnModels] =
+    await Promise.all([
+      api.store(),
+      productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
+      publicApi.listCategories(),
+      publicApi.listFinenesses(),
+      getTranslations("Merchant.form"),
+      // Without a quote the form still works; the preview says the rate is missing.
+      publicApi.latestMetalPrices().catch(() => []),
+      // Occasion tags are optional (#115): without the list the form simply leaves them out.
+      publicApi.listCollections().catch(() => []),
+      // Only the "show on a model" hint (#316) reads it: without the AI status the form says "AI Studio".
+      aiStudioApi(session)
+        .status()
+        .catch(() => NOT_CONFIGURED),
+      // "Show on a model" at upload (#315): offered only while AI Studio has a provider.
+      tryOnChoices(session),
+    ]);
   const quotes = Object.fromEntries(
     prices.map((q) => [q.metal, { pricePerGram: q.pricePerGram, date: q.date }]),
   );
@@ -129,10 +132,19 @@ export async function ProductFormPage({
           sellerKind={store.sellerKind ?? "PRECIOUS"}
           occasions={occasions.map((o) => ({ value: String(o.id), label: o.name[locale] }))}
           autoTryOn={ai.configured && ai.autoTryOn === true}
+          tryOnModels={tryOnModels}
         />
       </MerchantIntl>
     </div>
   );
+}
+
+/** Library models for the upload picker (#315); none when AI Studio is off or unreachable. */
+async function tryOnChoices(session: Parameters<typeof aiStudioApi>[0]) {
+  const ai = aiStudioApi(session);
+  const status = await ai.status().catch(() => null);
+  if (!status?.configured) return [];
+  return ai.models().catch(() => []);
 }
 
 export function ProductFormSkeleton() {
