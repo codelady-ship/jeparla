@@ -70,7 +70,7 @@ public class CatalogMapper {
         return detail(product, null);
     }
 
-    /** The product page, with the public product of the same design in another metal (V69) or null. */
+    /** The product page, with the public product of the same design in another metal (V70) or null. */
     public ProductDto detail(Product product, Product metalSibling) {
         return ProductDto.of(summary(product), LocalizedTextDto.of(product.getDescription()),
                 product.getVariants().stream().map(VariantDto::of).toList(), stones(product), product.getStatus(),

@@ -94,7 +94,7 @@ public class Product extends TimestampedEntity {
     @Column(name = "metal")
     private Metal metal;
 
-    /** The same design in another metal of the same store (V69), or null; set by MerchantMetalSiblings. */
+    /** The same design in another metal of the same store (V70), or null; set by MerchantMetalSiblings. */
     @Column(name = "metal_sibling_id")
     private Long metalSiblingId;
 

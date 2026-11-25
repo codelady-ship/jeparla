@@ -287,7 +287,7 @@ export type Product = ProductSummary & {
   /** Up to 5 key features the seller wrote (#174); absent when none. */
   keyFeatures?: string[];
   /**
-   * The same design in another metal of the same store (V69), when that product is public too;
+   * The same design in another metal of the same store (V70), when that product is public too;
    * absent otherwise. The product page shows a Qızıl / Gümüş switch to it.
    */
   metalSibling?: { slug: string; metal: MetalType } | null;

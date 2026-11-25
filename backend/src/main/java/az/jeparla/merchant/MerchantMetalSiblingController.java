@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Same design in another metal (V69): the seller links two own precious products; another seller's is 403. */
+/** Same design in another metal (V70): the seller links two own precious products; another seller's is 403. */
 @RestController
 @RequestMapping("/api/v1/merchant/products/{id}/metal-sibling")
 @PreAuthorize("hasRole('MERCHANT')")

@@ -10,7 +10,7 @@ const body = z.object({ siblingId: z.number().int().positive().nullable() });
 
 /**
  * PUT /api/v1/merchant/products/{id}/metal-sibling: link the same design in another metal, or
- * unlink with null (V69). The backend checks the owner, the store, the kind and the metals.
+ * unlink with null (V70). The backend checks the owner, the store, the kind and the metals.
  * The sample data has no links, so there it only answers like the backend would.
  */
 export async function PUT(

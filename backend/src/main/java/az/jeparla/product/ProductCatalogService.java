@@ -133,7 +133,7 @@ public class ProductCatalogService {
                 .orElseThrow(ApiException::notFound);
     }
 
-    /** The linked product in another metal (V69) when the public sees it too: listed, same store, other metal. */
+    /** The linked product in another metal (V70) when the public sees it too: listed, same store, other metal. */
     private Product metalSibling(Product product, CategoryTree tree) {
         Long id = product.getMetalSiblingId();
         if (id == null) {

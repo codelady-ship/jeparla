@@ -2,7 +2,7 @@ import { USING_MOCK } from "@/lib/api";
 import { userFetch } from "@/lib/auth/backend";
 import type { MetalType } from "@/types/api";
 
-/** GET/PUT /api/v1/merchant/products/{id}/metal-sibling (V69): the same design in another metal. */
+/** GET/PUT /api/v1/merchant/products/{id}/metal-sibling (V70): the same design in another metal. */
 export type MetalSiblings = {
   siblingId: number | null;
   options: { id: number; name: string; metal: MetalType; linkedElsewhere: boolean }[];

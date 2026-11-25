@@ -1,3 +1,4 @@
+-- V70: after V68 (on-model photos, #336) and V69 (AI review index, #337); #320 must take the next free number.
 -- Metal siblings (owner decision 2026-11-25): the same design sold as two products of one store, e.g. a gold
 -- and a silver ring. Each product keeps its own metal, variants, prices and photos (one metal per product, V10);
 -- the link only lets the product page switch between them (Qizil / Gumus). The seller sets it on both rows at

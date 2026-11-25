@@ -1730,6 +1730,11 @@
         "saved": "Bağlandı. Keçid hər iki məhsulun səhifəsində görünür.",
         "removed": "Bağlantı silindi.",
         "error": "Yadda saxlamaq olmadı. Bir az sonra yenidən cəhd edin."
+      },
+      "tryOn": {
+        "legend": "Model üzərində göstər",
+        "hint": "Model seçsəniz, məhsulu yadda saxlayanda ilk şəkildən bu modelin üzərində AI şəkli hazırlanır. Hazır olanda AI Studio-da baxıb təsdiqləyirsiniz; təsdiqləməsəniz heç nə dərc olunmur.",
+        "none": "Modelsiz"
       }
     },
     "profile": {

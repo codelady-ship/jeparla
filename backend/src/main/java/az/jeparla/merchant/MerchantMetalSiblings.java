@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Metal siblings (V69, owner decision 2026-11-25): the seller links two of the store's precious products that are
+ * Metal siblings (V70, owner decision 2026-11-25): the seller links two of the store's precious products that are
  * the same design in different metals, e.g. a gold and a silver ring. Both rows point at each other; a product has
  * at most one partner, so linking a new one first unlinks the old partners of both. Each product keeps its own
  * metal, prices and photos; nothing here sends a product back to review, since nothing that is sold changes.

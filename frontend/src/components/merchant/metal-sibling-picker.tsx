@@ -11,7 +11,7 @@ import type { MetalSiblings } from "@/lib/merchant/metal-sibling";
 import type { MetalType } from "@/types/api";
 
 /**
- * Same design in another metal (V69, owner decision 2026-11-25): on the edit page the seller links
+ * Same design in another metal (V70, owner decision 2026-11-25): on the edit page the seller links
  * this product with one of the store's products in another metal. The product page then shows a
  * Qızıl / Gümüş switch; each product keeps its own photos, prices and on-model image.
  */

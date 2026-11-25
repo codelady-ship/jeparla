@@ -11,7 +11,7 @@ import az.jeparla.store.SellerKind;
 import az.jeparla.support.AuthIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-/** Same design in another metal (V69): the seller links two own products; the product page shows the switch. */
+/** Same design in another metal (V70): the seller links two own products; the product page shows the switch. */
 @AuthIntegrationTest
 class MetalSiblingApiTests extends MerchantApiTestBase {
 

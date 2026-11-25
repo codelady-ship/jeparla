@@ -1730,6 +1730,11 @@
         "saved": "Linked. The switch shows on both product pages.",
         "removed": "Link removed.",
         "error": "Could not save. Please try again shortly."
+      },
+      "tryOn": {
+        "legend": "Show on a model",
+        "hint": "If you pick a model, saving the product makes an AI image of the first photo on that model. When it is ready, review and approve it in AI Studio; nothing is published without your approval.",
+        "none": "No model"
       }
     },
     "profile": {

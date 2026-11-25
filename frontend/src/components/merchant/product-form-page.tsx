@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing } from "@/i18n/routing";
 import { api as publicApi, USING_MOCK } from "@/lib/api";
+import { aiStudioApi } from "@/lib/api/ai";
 import { merchantDrafts } from "@/lib/api/drafts";
 import { suggestAudience } from "@/lib/merchant/audience";
 import { draftFilledFields, draftInput, type DraftOptions } from "@/lib/merchant/from-draft";
@@ -26,9 +27,9 @@ export async function ProductFormPage({
 }) {
   const locale = await rootLocale();
   if (!hasLocale(routing.locales, locale)) return null;
-  const { api } = await merchantContext();
+  const { api, session } = await merchantContext();
   const productId = id === undefined ? null : Number(id);
-  const [store, product, categories, finenesses, t, prices, occasions, siblings, tm] =
+  const [store, product, categories, finenesses, t, prices, occasions, tryOnModels, siblings, tm] =
     await Promise.all([
       api.store(),
       productId === null ? null : Number.isInteger(productId) ? api.product(productId) : null,
@@ -39,6 +40,8 @@ export async function ProductFormPage({
       publicApi.latestMetalPrices().catch(() => []),
       // Occasion tags are optional (#115): without the list the form simply leaves them out.
       publicApi.listCollections().catch(() => []),
+      // "Show on a model" at upload (#315): offered only while AI Studio has a provider.
+      tryOnChoices(session),
       // Same design in another metal (V70): edit page only; without it the section is left out.
       productId !== null && Number.isInteger(productId) ? metalSiblings(productId) : null,
       getTranslations("Product.metal"),
@@ -111,6 +114,7 @@ export async function ProductFormPage({
           requireDocs={USING_MOCK}
           sellerKind={store.sellerKind ?? "PRECIOUS"}
           occasions={occasions.map((o) => ({ value: String(o.id), label: o.name[locale] }))}
+          tryOnModels={tryOnModels}
         />
         {product && siblings && (
           <MetalSiblingPicker
@@ -127,6 +131,14 @@ export async function ProductFormPage({
       </MerchantIntl>
     </div>
   );
+}
+
+/** Library models for the upload picker (#315); none when AI Studio is off or unreachable. */
+async function tryOnChoices(session: Parameters<typeof aiStudioApi>[0]) {
+  const ai = aiStudioApi(session);
+  const status = await ai.status().catch(() => null);
+  if (!status?.configured) return [];
+  return ai.models().catch(() => []);
 }
 
 export function ProductFormSkeleton() {

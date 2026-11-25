@@ -215,7 +215,8 @@ public class MerchantImageService {
         productService.afterChange(product, true, now);
         productService.flush();
         if (!image.isAiGenerated() && originals(product) == 1) {
-            events.publishEvent(new FirstOriginalPhotoAttached(product.getId(), image.getId()));
+            events.publishEvent(
+                    new FirstOriginalPhotoAttached(product.getId(), image.getId(), request.tryOnModelId()));
         }
         audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"imageId\":" + image.getId() + ",\"aiGenerated\":" + image.isAiGenerated() + "}");
@@ -230,7 +231,7 @@ public class MerchantImageService {
      * go after the commit. Another store's draft is 403, a missing one 404 (also when it was already used).
      */
     @Transactional
-    public Created<MerchantImageDto> attachDraft(long productId, long draftId, String altAz) {
+    public Created<MerchantImageDto> attachDraft(long productId, long draftId, String altAz, Long tryOnModelId) {
         Product product = productService.ownedWritable(productId);
         productService.lockStore(product);
         ProductDraft draft = drafts.findById(draftId).orElseThrow(ApiException::notFound);
@@ -258,7 +259,7 @@ public class MerchantImageService {
         productService.afterChange(product, true, now);
         productService.flush();
         if (originals(product) == 1) {
-            events.publishEvent(new FirstOriginalPhotoAttached(product.getId(), image.getId()));
+            events.publishEvent(new FirstOriginalPhotoAttached(product.getId(), image.getId(), tryOnModelId));
         }
         audit.record("IMAGE_ADDED", AuditTargetType.PRODUCT, product.getId(), product.getName().az(), null,
                 "{\"imageId\":" + image.getId() + ",\"aiGenerated\":false,\"draftId\":" + draftId + "}");
