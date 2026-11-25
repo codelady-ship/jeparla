@@ -122,3 +122,127 @@ describe("reading a product's text", () => {
     expect(d.endsWith(".")).toBe(true);
   });
 });
+
+describe("reading pasted social text without confident wrong fills (#330 review)", () => {
+  it("never reads a phone number as a fineness or a metal", () => {
+    expect(read("Sırğa\nWhatsApp 055 585 12 34\n450 AZN")).toMatchObject({
+      metal: null,
+      fineness: null,
+      price: "450",
+    });
+    expect(read("Qızıl sırğa 585\nƏlaqə: +994 50 750 12 34")).toMatchObject({
+      metal: "GOLD",
+      fineness: "2",
+    });
+    expect(read("Üzük, əlaqə 050-375-12-34")).toMatchObject({ fineness: null });
+  });
+
+  it("never reads a labelled price as a fineness", () => {
+    expect(read("Üzük 17 ölçü\nQiymət: 750")).toMatchObject({
+      metal: null,
+      fineness: null,
+      price: "750",
+    });
+    const a = read("Qiymət: 375\nQolbaq");
+    expect(a).toMatchObject({ metal: null, fineness: null, price: "375", name: "Qolbaq" });
+  });
+
+  it("reads a bare fineness only next to a metal or fineness word", () => {
+    expect(read("Model 585")).toMatchObject({ metal: null, fineness: null });
+    expect(read("Model 585 əyar")).toMatchObject({ metal: "GOLD", fineness: "2" });
+    expect(read("Кольцо проба 585")).toMatchObject({ metal: "GOLD", fineness: "2" });
+  });
+
+  it("does not join a fineness and a price into one number", () => {
+    expect(read("Qızıl üzük 585 450 AZN")).toMatchObject({
+      metal: "GOLD",
+      fineness: "2",
+      price: "450",
+    });
+    expect(read("Qızıl üzük 585\n1 250 AZN").price).toBe("1250");
+  });
+
+  it("does not read a year as grams", () => {
+    expect(read("Кольцо золото 585\nКоллекция 2025 г.\n3,1 г").weight).toBe("3.1");
+    expect(read("Кольцо золото 585, новинка 2024 г.").weight).toBeNull();
+    expect(read("Üzük 2025 il kolleksiyası").weight).toBeNull();
+  });
+
+  it("prefers a labelled weight and ignores unlabelled weights over 1000 g", () => {
+    expect(read("Qızıl qolbaq 585 1,5 q\nÇəki: 7,4").weight).toBe("7.4");
+    expect(read("Qolbaq 1500 q").weight).toBeNull();
+  });
+
+  it("does not read a plating as the metal", () => {
+    expect(read("Gold plated silver earrings 925")).toMatchObject({
+      metal: "SILVER",
+      fineness: "5",
+    });
+    expect(read("Qızıl suyuna salınmış gümüş sırğa 925")).toMatchObject({
+      metal: "SILVER",
+      fineness: "5",
+    });
+    expect(read("Серебро 925 с позолотой")).toMatchObject({ metal: "SILVER", fineness: "5" });
+  });
+
+  it("leaves the metal empty when the metal word and the fineness disagree", () => {
+    expect(read("Qızıl sırğa 925")).toMatchObject({ metal: null, fineness: null });
+  });
+
+  it("keeps label and contact lines out of the name and the description", () => {
+    const a = read(
+      [
+        "Qiymət: 375",
+        "Gümüş qolbaq",
+        "Çəki: 7,4",
+        "Zərif gündəlik qolbaq, hər geyimə uyğundur.",
+        "Əlaqə: +994 50 123 45 67",
+        "#qolbaq #gumus",
+      ].join("\n"),
+    );
+    expect(a.name).toBe("Gümüş qolbaq");
+    expect(a.description).toBe("Zərif gündəlik qolbaq, hər geyimə uyğundur.");
+  });
+
+  it("takes the name of one-line text from before the first comma or digit", () => {
+    expect(read("Leyla — qızıl nişan üzüyü, 585 əyar, 3,2 q, 1 250 AZN")).toMatchObject({
+      name: "Leyla — qızıl nişan üzüyü",
+      category: "nisan-uzukleri",
+      metal: "GOLD",
+      fineness: "2",
+      weight: "3.2",
+      price: "1250",
+      description: null,
+    });
+  });
+
+  it("still reads the cases that were right", () => {
+    expect(read("Qızıl üzük 585 əyar, 3,2 q, 450 AZN")).toMatchObject({
+      metal: "GOLD",
+      fineness: "2",
+      weight: "3.2",
+      price: "450",
+    });
+    expect(read("Silver ring 925, 4.1 g, 120 ₼")).toMatchObject({
+      metal: "SILVER",
+      fineness: "5",
+      weight: "4.1",
+      price: "120",
+    });
+    expect(read("Серьги золото 750 2,8 г 900 манат")).toMatchObject({
+      metal: "GOLD",
+      fineness: "3",
+      weight: "2.8",
+      price: "900",
+    });
+    expect(read("Üzük 14k 2,5gr 300azn")).toMatchObject({
+      metal: "GOLD",
+      fineness: "2",
+      weight: "2.5",
+      price: "300",
+    });
+    expect(read("Ring 18 K white gold 3.0 g")).toMatchObject({ metal: "GOLD", fineness: "3" });
+    expect(filledFields(read("17 ölçü"))).toEqual(["name"]);
+    expect(read("25.11.2026")).toMatchObject({ fineness: null, weight: null, price: null });
+  });
+});
