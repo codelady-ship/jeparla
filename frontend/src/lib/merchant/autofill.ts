@@ -46,74 +46,107 @@ export function fold(text: string): string {
     .replace(/ü/g, "u");
 }
 
-// Numbers: "1 250,50", "1250.5", "4,2". A space or no-break space may group thousands.
-const NUM = String.raw`(\d{1,3}(?:[  ]\d{3})+|\d+)(?:[.,](\d{1,3}))?`;
+/** Finenesses a leading 3-digit group may be: "585 450 AZN" is a fineness and a price, not 585450. */
+const FINENESS_GROUP = "(?:375|583|585|750|875|916|925|950|999)";
+// Numbers: "1 250,50", "1250.5", "4,2". A space or no-break space may group thousands, but never
+// after a fineness ("585 450").
+const NUM = String.raw`((?!${FINENESS_GROUP}[  ]\d{3}(?!\d))\d{1,3}(?:[  ]\d{3})+(?!\d)|\d+)(?:[.,](\d{1,3}))?`;
 const CURRENCY = String.raw`(?:₼|azn|manat|man\.|манат)`;
-const PRICE_AFTER = new RegExp(String.raw`(?<![\d.,])${NUM}\s*${CURRENCY}`, "u");
-const PRICE_BEFORE = new RegExp(String.raw`${CURRENCY}\s*${NUM}`, "u");
-const PRICE_LABEL = new RegExp(String.raw`(?:qiymet|price|цена|стоимость)\s*[:\-]?\s*${NUM}`, "u");
+const PRICE_AFTER = String.raw`(?<![\d.,])${NUM}\s*${CURRENCY}`;
+const PRICE_BEFORE = String.raw`${CURRENCY}\s*${NUM}`;
+const PRICE_LABEL = String.raw`(?:qiymet|price|цена|стоимость)\s*[:\-]?\s*${NUM}`;
 const GRAM = String.raw`(?:qram|gram|qr|gr|q|g|гр|г)(?![\p{L}\p{N}])`;
-const WEIGHT_UNIT = new RegExp(String.raw`(?<![\d.,])${NUM}\s*${GRAM}`, "gu");
-const WEIGHT_LABEL = new RegExp(String.raw`(?:ceki|weight|вес|масса)\s*[:\-]?\s*${NUM}`, "u");
-/** A number followed by a price or weight unit is never a fineness. */
-const UNIT_AFTER = new RegExp(String.raw`^\s*(?:${CURRENCY}|${GRAM}|mm|sm|cm|мм|см|%)`, "u");
+const WEIGHT_UNIT = String.raw`(?<![\d.,])${NUM}\s*${GRAM}`;
+const WEIGHT_LABEL = String.raw`(?:ceki|weight|вес|масса)\s*[:\-]?\s*${NUM}`;
+const re = (source: string, flags = "") => new RegExp(source, `u${flags}`);
+/** A number followed by a price, weight or size unit is never a fineness. */
+const UNIT_AFTER = re(String.raw`^\s*(?:${CURRENCY}|${GRAM}|mm|sm|cm|мм|см|%)`);
+
+/** Azerbaijani phone numbers (+994 50 585 12 34, 055 585 12 34) and other long digit runs. */
+const PHONE = re(
+  String.raw`(?:\+\s?994|(?<![\d.,])0)[\s-]?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?!\d)` +
+    String.raw`|(?<![\d.,])\d{1,4}(?:[\s-]\d{2,4}){3,}(?!\d)`,
+  "g",
+);
+/** "2025 г.", "2024 il": a year, not grams. */
+const YEAR = re(
+  String.raw`(?<![\d.,])(?:19|20)\d{2}\s*(?:г\.|год|ил|il|year|г)(?![\p{L}\p{N}])`,
+  "gi",
+);
+const HASHTAGS = /^(?:#[\p{L}\p{N}_]+[\s,.]*)+$/u;
+/** Lines that are a contact, not product data: a phone number or only hashtags. */
+const isContactLine = (line: string) => re(PHONE.source).test(line) || HASHTAGS.test(line.trim());
 
 const decimal = (whole: string, frac: string | undefined) =>
   whole.replace(/[  ]/g, "") + (frac ? `.${frac}` : "");
 
 function price(text: string): string | null {
-  for (const re of [PRICE_AFTER, PRICE_BEFORE, PRICE_LABEL]) {
-    const m = re.exec(text);
-    if (!m) continue;
-    // Money has at most 2 decimals; "1.250" is not a price we can read safely.
-    if (m[2] && m[2].length > 2) continue;
-    const v = decimal(m[1], m[2]);
-    if (Number(v) > 0 && v.replace(".", "").length <= 10) return v;
+  for (const source of [PRICE_AFTER, PRICE_BEFORE, PRICE_LABEL]) {
+    for (const m of text.matchAll(re(source, "g"))) {
+      // Money has at most 2 decimals; "1.250" is not a price we can read safely.
+      if (m[2] && m[2].length > 2) continue;
+      const v = decimal(m[1], m[2]);
+      if (Number(v) > 0 && v.replace(".", "").length <= 10) return v;
+    }
   }
   return null;
 }
 
+/** A labelled weight ("Çəki: 3,2") first; a bare "3,2 q" only up to 1000 g (a year is not grams). */
 function weight(text: string): string | null {
-  for (const m of text.matchAll(WEIGHT_UNIT)) {
+  for (const m of text.matchAll(re(WEIGHT_LABEL, "g"))) {
     const v = decimal(m[1], m[2]);
     if (Number(v) > 0 && Number(v) <= 10_000) return v;
   }
-  const m = WEIGHT_LABEL.exec(text);
-  if (m) {
+  for (const m of text.matchAll(re(WEIGHT_UNIT, "g"))) {
     const v = decimal(m[1], m[2]);
-    if (Number(v) > 0 && Number(v) <= 10_000) return v;
+    if (Number(v) > 0 && Number(v) <= 1000) return v;
   }
   return null;
 }
 
 const METAL_WORDS: [MetalType, RegExp][] = [
-  ["GOLD", /qizil|\bgold|золот/u],
-  ["SILVER", /gumus|silver|серебр/u],
-  ["PLATINUM", /platin|платин/u],
-  ["PALLADIUM", /palladi|паллади/u],
+  ["GOLD", /qizil|\bgold|(?<!по)золот/gu],
+  ["SILVER", /gumus|silver|серебр/gu],
+  ["PLATINUM", /platin|платин/gu],
+  ["PALLADIUM", /palladi|паллади/gu],
 ];
+/** "gold plated", "qızıl suyuna", "qızıl örtüklü", "qızılı rəngli", "gold-filled": a coating. */
+const COATING_AFTER =
+  /^\p{L}*[\s-]*(?:plated|plating|filled|tone|vermeil|suy|ortu|rengl|покрыт|напылен)/u;
 
-/** The metal named first in the text. */
-function metalWord(text: string): MetalType | null {
-  let best: { metal: MetalType; at: number } | null = null;
-  for (const [metal, re] of METAL_WORDS) {
-    const at = text.search(re);
-    if (at >= 0 && (!best || at < best.at)) best = { metal, at };
-  }
-  return best?.metal ?? null;
+/** Metals the text names as the material, in order; coatings and colours do not count. */
+function metalWords(text: string): MetalType[] {
+  const found: { metal: MetalType; at: number }[] = [];
+  for (const [metal, pattern] of METAL_WORDS)
+    for (const m of text.matchAll(pattern)) {
+      const at = m.index ?? 0;
+      if (COATING_AFTER.test(text.slice(at + m[0].length, at + m[0].length + 20))) continue;
+      found.push({ metal, at });
+    }
+  return found.sort((a, b) => a.at - b.at).map((f) => f.metal);
 }
 
 /** Gold karats as finenesses: 9K = 375, 14K = 585, 18K = 750, 22K = 916, 24K = 999. */
 const KARAT: Record<string, number> = { "9": 375, "14": 585, "18": 750, "22": 916, "24": 999 };
 const KARAT_RE = /(?<![\d.,])(9|14|18|22|24)\s?(?:k|kt|karat|карат)(?![\p{L}\p{N}])/u;
+/** A bare "585" counts only on a line that names a metal or the word for fineness. */
+const FINENESS_WORD =
+  /eyar|ayar|proba|проб|fineness|hallmark|damga|qizil|gold|золот|gumus|silver|серебр|platin|платин|palladi|паллади/u;
 
-/** Three-digit finenesses that stand alone (not part of a price, weight or size). */
+/** Three-digit finenesses that stand alone, next to a metal or fineness word. */
 function finenessNumbers(text: string): number[] {
+  // Prices, weights (also labelled ones without a unit) are blanked out first.
+  let rest = text;
+  for (const source of [PRICE_AFTER, PRICE_BEFORE, PRICE_LABEL, WEIGHT_LABEL, WEIGHT_UNIT])
+    rest = rest.replace(re(source, "g"), (s) => " ".repeat(s.length));
   const found: number[] = [];
-  for (const m of text.matchAll(/(?<![\d.,])(\d{3})(?![\d]|[.,]\d)/gu)) {
-    const rest = text.slice((m.index ?? 0) + m[0].length);
-    if (UNIT_AFTER.test(rest)) continue;
-    found.push(Number(m[1]));
+  for (const line of rest.split("\n")) {
+    if (!FINENESS_WORD.test(line)) continue;
+    for (const m of line.matchAll(/(?<![\d.,])(\d{3})(?![\d]|[.,]\d)/gu)) {
+      if (UNIT_AFTER.test(line.slice((m.index ?? 0) + m[0].length))) continue;
+      found.push(Number(m[1]));
+    }
   }
   return found;
 }
@@ -122,12 +155,13 @@ function metalAndFineness(
   text: string,
   finenesses: AutofillFineness[],
 ): { metal: MetalType | null; fineness: string | null } {
-  const named = metalWord(text);
+  const named = metalWords(text)[0] ?? null;
   const karat = KARAT_RE.exec(text);
   const candidates: { value: number; gold?: boolean }[] = [
     ...(karat ? [{ value: KARAT[karat[1]], gold: true }] : []),
     ...finenessNumbers(text).map((value) => ({ value })),
   ];
+  let conflict = false;
   for (const c of candidates) {
     const options = finenesses.filter(
       (f) => f.fineness === c.value && (!c.gold || f.metal === "GOLD"),
@@ -135,8 +169,10 @@ function metalAndFineness(
     const mine = named ? options.filter((f) => f.metal === named) : options;
     // Without a metal word the number must belong to one metal only (999 is gold or silver).
     if (mine.length === 1) return { metal: mine[0].metal, fineness: mine[0].value };
+    // "Qızıl sırğa 925": the word and the number disagree, so neither is trusted.
+    if (named && mine.length === 0 && options.length > 0) conflict = true;
   }
-  return { metal: named, fineness: null };
+  return { metal: conflict ? null : named, fineness: null };
 }
 
 /**
@@ -158,7 +194,8 @@ const CATEGORY_WORDS: [string, RegExp][] = [
 
 function category(text: string, categories: AutofillCategory[]): string | null {
   const offered = new Set(categories.map((c) => c.value));
-  for (const [slug, re] of CATEGORY_WORDS) if (offered.has(slug) && re.test(text)) return slug;
+  for (const [slug, pattern] of CATEGORY_WORDS)
+    if (offered.has(slug) && pattern.test(text)) return slug;
   // A category an admin added later: its own name in the text.
   for (const c of categories) {
     const label = fold(c.label).trim();
@@ -173,26 +210,39 @@ const lines = (text: string) =>
     .map((l) => l.replace(/\s+/g, " ").trim())
     .filter(Boolean);
 
-/** A line that carries only numbers, a price or a weight is data, not a name or a sentence. */
-function isDataLine(folded: string): boolean {
+const DATA_PATTERNS = [PRICE_AFTER, PRICE_BEFORE, PRICE_LABEL, WEIGHT_UNIT, WEIGHT_LABEL].map(
+  (source) => re(source),
+);
+
+/** A line with a price or weight (labelled or not), a contact, or no words is not a name or a sentence. */
+function isDataLine(line: string): boolean {
+  const folded = fold(line);
   return (
-    PRICE_AFTER.test(folded) ||
-    PRICE_BEFORE.test(folded) ||
-    new RegExp(WEIGHT_UNIT.source, "u").test(folded) ||
-    !/\p{L}{2}/u.test(folded)
+    DATA_PATTERNS.some((p) => p.test(folded)) || isContactLine(line) || !/\p{L}{2}/u.test(folded)
   );
 }
 
-/** The first line that reads like a name: letters, 3 to 120 characters, no price or weight. */
+const fitsName = (l: string) => l.length >= NAME_MIN && l.length <= NAME_MAX;
+
+/**
+ * The first line that reads like a name: letters, 3 to 120 characters, no price, weight or contact.
+ * One-line text ("Leyla — qızıl üzük, 585, 3,2 q, 450 AZN") gives the part before the first comma
+ * or digit.
+ */
 function name(all: string[]): string | null {
-  return (
-    all.find((l) => l.length >= NAME_MIN && l.length <= NAME_MAX && !isDataLine(fold(l))) ?? null
-  );
+  const line = all.find((l) => fitsName(l) && !isDataLine(l));
+  if (line) return line;
+  const first = all.find((l) => !isContactLine(l));
+  const head = first
+    ?.split(/[,;\d]/u)[0]
+    .replace(/[\s\-–—:.]+$/u, "")
+    .trim();
+  return head && fitsName(head) && /\p{L}{2}/u.test(head) && !isDataLine(head) ? head : null;
 }
 
-/** The rest of the text as sentences: lines other than the name and the bare data lines. */
+/** The rest of the text as sentences: lines other than the name, data and contact lines. */
 function description(all: string[], title: string | null): string | null {
-  const rest = all.filter((l) => l !== title && !isDataLine(fold(l)));
+  const rest = all.filter((l) => l !== title && !isDataLine(l));
   const text = rest.join(" ").trim();
   if (text.length < 10) return null;
   if (text.length <= DESCRIPTION_MAX) return text;
@@ -206,8 +256,9 @@ export function readProductText(
   options: { categories: AutofillCategory[]; finenesses: AutofillFineness[] },
 ): Autofill {
   const all = lines(text ?? "");
-  const folded = fold(all.join("\n"));
   const title = name(all);
+  // Phone numbers and years are removed before any number is read.
+  const folded = fold(all.map((l) => l.replace(PHONE, " ").replace(YEAR, " ")).join("\n"));
   const { metal, fineness } = metalAndFineness(folded, options.finenesses);
   return {
     name: title,

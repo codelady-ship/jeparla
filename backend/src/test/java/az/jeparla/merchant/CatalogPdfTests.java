@@ -241,4 +241,42 @@ class CatalogPdfTests {
         assertThat(cut).hasSize(4 * 999 + 3);
         assertThat(cut.length()).isLessThanOrEqualTo(DraftSuggestions.MAX_TEXT);
     }
+
+    @Test
+    void aFirstLineLongerThanTheLimitIsCutNotLost() {
+        assertThat(DraftSuggestions.text("b".repeat(5000))).isEqualTo("b".repeat(DraftSuggestions.MAX_TEXT));
+        assertThat(DraftSuggestions.text("Üzük\n" + "c".repeat(5000)))
+                .isEqualTo("Üzük\n" + "c".repeat(DraftSuggestions.MAX_TEXT - 5));
+        // An emoji (surrogate pair) on the cut is dropped whole, never split.
+        String text = DraftSuggestions.text("d".repeat(DraftSuggestions.MAX_TEXT - 1) + "💎 tail");
+        assertThat(text).isEqualTo("d".repeat(DraftSuggestions.MAX_TEXT - 1));
+    }
+
+    @Test
+    void phoneNumbersAndYearsAreNotPricesOrWeights() {
+        DraftSuggestions phone = DraftSuggestions.of("Sırğa\nWhatsApp 055 585 12 34\n450 AZN");
+        assertThat(phone.price()).isEqualByComparingTo("450");
+        assertThat(phone.name()).isEqualTo("Sırğa");
+        assertThat(DraftSuggestions.of("Üzük\nƏlaqə: +994 50 750 12 34 g").weight()).isNull();
+        DraftSuggestions year = DraftSuggestions.of("Кольцо золото 585\nКоллекция 2025 г.\n3,1 г");
+        assertThat(year.weight()).isEqualByComparingTo("3.1");
+        assertThat(DraftSuggestions.of("Кольцо золото 585, новинка 2024 г.").weight()).isNull();
+    }
+
+    @Test
+    void aFinenessIsNotJoinedToThePrice() {
+        assertThat(DraftSuggestions.price("Qızıl üzük 585 450 AZN")).contains(new BigDecimal("450.00"));
+        assertThat(DraftSuggestions.price("Qızıl üzük 1 250 AZN")).contains(new BigDecimal("1250.00"));
+        assertThat(DraftSuggestions.price("Qızıl üzük 1 585 000 AZN")).contains(new BigDecimal("1585000.00"));
+    }
+
+    @Test
+    void labelledPricesAndWeights() {
+        DraftSuggestions s = DraftSuggestions.of("Qiymət: 375\nQolbaq\nÇəki: 7,4\n1,5 q");
+        assertThat(s.price()).isEqualByComparingTo("375");
+        assertThat(s.weight()).isEqualByComparingTo("7.4");
+        assertThat(s.name()).isEqualTo("Qolbaq");
+        assertThat(DraftSuggestions.weight("Qolbaq 1500 q")).isEmpty();
+        assertThat(DraftSuggestions.of("#qolbaq #gumus\nGümüş qolbaq").name()).isEqualTo("Gümüş qolbaq");
+    }
 }
