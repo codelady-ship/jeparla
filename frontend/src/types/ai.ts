@@ -17,6 +17,8 @@ export type AiStatus = {
   maxAttempts: number;
   /** STUDIO_LOOK has its own non-generative processor (#119), on or off separately. */
   studioLook: boolean;
+  /** The first photo of a new product queues an on-model image by itself (#121, #316). */
+  autoTryOn?: boolean;
 };
 
 export type AiAsset = {

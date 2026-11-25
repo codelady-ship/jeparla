@@ -81,12 +81,14 @@ public class MerchantProductService {
     private final MerchantViews views;
     private final AuditService audit;
     private final CollectionService collections;
+    private final AiReviewCounts aiReviews;
     private final Clock clock;
 
     public MerchantProductService(MerchantStores merchantStores, MerchantProducts merchantProducts,
             ProductRepository products, ProductVariantRepository variants, MetalPriceSnapshotRepository snapshots,
             PriceHistoryRepository history, UserRepository users, ProductRequestChecks checks, MerchantViews views,
-            AuditService audit, CollectionService collections, Clock clock) {
+            AuditService audit, CollectionService collections, AiReviewCounts aiReviews, Clock clock) {
+        this.aiReviews = aiReviews;
         this.collections = collections;
         this.merchantStores = merchantStores;
         this.merchantProducts = merchantProducts;
@@ -106,7 +108,9 @@ public class MerchantProductService {
     @Transactional(readOnly = true)
     public List<MerchantProductRowDto> list() {
         Store store = merchantStores.own();
-        return products.findLiveByStoreId(store.getId()).stream().map(views::row).toList();
+        Map<Long, Integer> waiting = aiReviews.byProduct(store.getId());
+        return products.findLiveByStoreId(store.getId()).stream()
+                .map(product -> views.row(product, waiting.getOrDefault(product.getId(), 0))).toList();
     }
 
     @Transactional(readOnly = true)

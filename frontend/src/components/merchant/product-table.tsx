@@ -13,6 +13,7 @@ import {
   type QuickOption,
   type QuickSaved,
 } from "./draft-quick-edit";
+import { AiReviewBadge } from "./ai-review-badge";
 import { StatusBadge } from "./status-badge";
 import type { Locale } from "@/i18n/routing";
 import type { BulkStatusResult } from "@/lib/merchant/bulk";
@@ -212,6 +213,16 @@ export function ProductTable({
       />
     );
   }
+
+  /** "Awaiting approval" (#316): an AI Studio result of the product waits for the seller. */
+  const aiBadge = (row: MerchantProductRow) => (
+    <AiReviewBadge
+      productId={row.id}
+      count={row.aiReviewCount}
+      label={t("aiWaiting")}
+      name={t("aiWaitingNamed", { name: row.name[locale] })}
+    />
+  );
 
   function actions(row: MerchantProductRow) {
     const name = row.name[locale];
@@ -470,7 +481,10 @@ export function ProductTable({
                   <Thumb row={row} />
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <p className="line-clamp-2 text-sm font-medium">{row.name[locale]}</p>
-                    <StatusBadge status={row.status} label={ts(row.status)} />
+                    <div className="flex flex-wrap gap-1.5">
+                      <StatusBadge status={row.status} label={ts(row.status)} />
+                      {aiBadge(row)}
+                    </div>
                     <p className="text-sm tabular-nums">{price(row)}</p>
                   </div>
                 </div>
@@ -534,7 +548,10 @@ export function ProductTable({
                       </div>
                     </th>
                     <td className="p-3">
-                      <StatusBadge status={row.status} label={ts(row.status)} />
+                      <div className="flex flex-wrap gap-1.5">
+                        <StatusBadge status={row.status} label={ts(row.status)} />
+                        {aiBadge(row)}
+                      </div>
                     </td>
                     <td className="p-3 text-right whitespace-nowrap tabular-nums">
                       {row.priceFrom === null ? "—" : formatPrice(row.priceFrom, locale)}

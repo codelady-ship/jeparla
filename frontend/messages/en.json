@@ -1301,7 +1301,10 @@
       "fix": "Fix",
       "notCounted": "Views are not counted yet",
       "byQuestion": "WhatsApp questions",
-      "byQuestionNote": "The ready question buyers picked before opening WhatsApp in the last 30 days. Nothing about the buyer is stored."
+      "byQuestionNote": "The ready question buyers picked before opening WhatsApp in the last 30 days. Nothing about the buyer is stored.",
+      "aiReviewTitle": "Awaiting approval",
+      "aiReviewText": "{count, plural, one {# AI result awaits your approval.} other {# AI results await your approval.}} Nothing is published without it.",
+      "aiReviewOpen": "Open in AI Studio"
     },
     "guide": {
       "title": "Get your store ready in 3 steps",
@@ -1415,7 +1418,9 @@
           "decimalInvalid": "enter a number, for example 3.25.",
           "quickNotDraft": "This product is no longer a draft; change it in the product form."
         }
-      }
+      },
+      "aiWaiting": "Awaiting approval",
+      "aiWaitingNamed": "{name}: an AI result awaits your approval, open AI Studio"
     },
     "form": {
       "newTitle": "New product",
@@ -1719,6 +1724,17 @@
         "same": "The form already has the details from this text; nothing changed.",
         "kept": "Fields you had already filled were not changed: {fields}."
       },
+      "onModel": {
+        "title": "Show on a model",
+        "autoNew": "When you save the product, the site starts preparing an on-model image from the first photo by itself. You will get a notification when it is ready; nothing is published without your approval.",
+        "afterSave": "After you save the product, you can make an on-model image from this photo in AI Studio.",
+        "studio": "Make an on-model image from this photo in AI Studio. Nothing is published without your approval.",
+        "doneAuto": "Preparing the on-model image has started. You will get a notification when it is ready; review and approve it in AI Studio.",
+        "doneManual": "Make an on-model image from your photo: it takes a few steps in AI Studio.",
+        "open": "Go to AI Studio",
+        "notStarted": "The on-model image did not start: today's limit or the monthly budget is used up, the model is no longer offered, or the product's audience does not fit the model. Try again in AI Studio."
+      },
+      "aiStudio": "AI Studio",
       "tryOn": {
         "legend": "Show on a model",
         "hint": "If you pick a model, saving the product makes an AI image of the first photo on that model. When it is ready, review and approve it in AI Studio; nothing is published without your approval.",

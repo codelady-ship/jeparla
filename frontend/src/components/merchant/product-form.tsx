@@ -46,6 +46,7 @@ import { AutofillText, type AutofillOutcome } from "./autofill-text";
 import { EvidenceUpload } from "./evidence-upload";
 import { VideoUpload } from "./video-upload";
 import { ImageUpload } from "./image-upload";
+import { OnModelPrompt } from "./on-model-prompt";
 import { modelFits, TryOnModelPicker } from "./try-on-model-picker";
 import { PricingFields, previewPrice, type GramQuote } from "./pricing-fields";
 import { isMessage } from "@/lib/api/problem";
@@ -54,6 +55,13 @@ export type Option = { value: string; label: string };
 /** A leaf category with the audience it suggests (#121). */
 export type CategoryOption = Option & { audience?: ProductAudience };
 export type FinenessOption = Option & { metal: MetalType; fineness: number };
+
+/** What the save route answers; onModel only with a picked model (#315). */
+type SaveAnswer = {
+  id?: number;
+  status: "DRAFT" | "IN_REVIEW";
+  onModel?: "queued" | "not_started";
+};
 
 const STEP_KEYS = ["1", "2", "3", "4", "5"] as const;
 const METALS: MetalType[] = ["GOLD", "SILVER", "PLATINUM", "PALLADIUM"];
@@ -84,8 +92,11 @@ export function ProductForm({
   requireDocs = true,
   sellerKind = "PRECIOUS",
   occasions = [],
+  autoTryOn = false,
   tryOnModels = [],
 }: {
+  /** The first photo of a new product queues an on-model image by itself (#121, #316). */
+  autoTryOn?: boolean;
   /**
    * AI models the seller may pick at upload (#315); empty when AI Studio is off or the library
    * is empty, and then no picker is shown.
@@ -133,6 +144,10 @@ export function ProductForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState<"DRAFT" | "REVIEW" | null>(null);
   const [done, setDone] = useState<"DRAFT" | "IN_REVIEW" | null>(null);
+  // The saved product (#316): the done screen links to its AI Studio.
+  const [savedId, setSavedId] = useState<number | null>(null);
+  // With a picked model (#315): whether the on-model job started, for the saved screen.
+  const [onModelStart, setOnModelStart] = useState<"queued" | "not_started" | undefined>();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -171,6 +186,17 @@ export function ProductForm({
           {t(`done.${done}.title`)}
         </h2>
         <p className="max-w-md text-muted-foreground">{t(`done.${done}.text`)}</p>
+        {savedId !== null && (
+          <div className="w-full max-w-xl">
+            <OnModelPrompt
+              place="done"
+              autoTryOn={autoTryOn}
+              creating={creating}
+              productId={savedId}
+              started={onModelStart === undefined ? undefined : onModelStart === "queued"}
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link href="/merchant/products" className={buttonVariants({ size: "lg" })}>
             {t("done.toList")}
@@ -178,7 +204,11 @@ export function ProductForm({
           <Link
             href="/merchant/products/new"
             className={buttonVariants({ variant: "outline", size: "lg" })}
-            onClick={() => setDone(null)}
+            onClick={() => {
+              setDone(null);
+              setSavedId(null);
+              setOnModelStart(undefined);
+            }}
           >
             {t("done.another")}
           </Link>
@@ -259,15 +289,11 @@ export function ProductForm({
       return fail({ form: "docsRequired" });
     setPending(intent);
     const result = creating
-      ? await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>("POST", "/api/merchant/products", {
+      ? await sendJson<SaveAnswer>("POST", "/api/merchant/products", { intent, product: withKind })
+      : await sendJson<SaveAnswer>("PUT", `/api/merchant/products/${draftKey}`, {
           intent,
           product: withKind,
-        })
-      : await sendJson<{ status: "DRAFT" | "IN_REVIEW" }>(
-          "PUT",
-          `/api/merchant/products/${draftKey}`,
-          { intent, product: withKind },
-        );
+        });
     setPending(null);
     if (!result.ok) {
       const errs = result.errors;
@@ -275,6 +301,8 @@ export function ProductForm({
     }
     store.clear();
     setStep(null);
+    setSavedId(result.data.id ?? productId ?? null);
+    setOnModelStart(result.data.onModel);
     setDone(result.data.status);
   }
 
@@ -350,8 +378,9 @@ export function ProductForm({
                 {err(errors.images)}
               </p>
             )}
-            {/* Only before the product has a photo: the API queues the image with the first one. */}
-            {(creating || (initial?.images.length ?? 0) === 0) && (
+            {/* Before the first photo the seller picks a model (#315); the API queues the image with
+                that photo. Otherwise the prompt says what happens or links to AI Studio (#316). */}
+            {(creating || (initial?.images.length ?? 0) === 0) && tryOnModels.length > 0 ? (
               <div className="mt-4 border-t pt-5">
                 <TryOnModelPicker
                   models={tryOnModels}
@@ -360,6 +389,17 @@ export function ProductForm({
                   onChange={(tryOnModelId) => set({ tryOnModelId })}
                 />
               </div>
+            ) : (
+              p.images.length > 0 && (
+                <div className="mt-2">
+                  <OnModelPrompt
+                    place="photos"
+                    autoTryOn={autoTryOn}
+                    creating={creating}
+                    productId={productId ?? null}
+                  />
+                </div>
+              )
             )}
             <div className="mt-4 border-t pt-5">
               <EvidenceUpload

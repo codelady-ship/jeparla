@@ -37,7 +37,8 @@ class AutoTryOnTests {
     }
 
     private AutoTryOn autoTryOn(boolean auto, boolean configured) {
-        when(studio.status()).thenReturn(new AiStatusDto(configured, configured ? "gemini" : "none", 10, 0, 3, false));
+        when(studio.status()).thenReturn(
+                new AiStatusDto(configured, configured ? "gemini" : "none", 10, 0, 3, false, auto));
         AiProperties properties = new AiProperties(10, 3, BigDecimal.TEN, "USD", Duration.ofMinutes(5),
                 Duration.ofMinutes(10), ZoneId.of("Asia/Baku"), auto);
         return new AutoTryOn(studio, properties, transactions);

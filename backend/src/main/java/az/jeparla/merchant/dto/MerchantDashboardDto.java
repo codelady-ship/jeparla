@@ -14,11 +14,13 @@ import java.util.Map;
  * @param whatsappClicksByQuestion the same clicks per ready question the buyer picked (#111); every question is
  *                                 present. Clicks sent without a question are only in the total
  * @param counts                   the store's products per status, deleted ones excluded; every status is present
+ * @param aiReviewCount            AI Studio results of the store's products that wait for approval (#316)
  */
 @Schema(name = "MerchantDashboard")
 public record MerchantDashboardDto(
         @Schema(nullable = true) Long views,
         long whatsappClicks,
         Map<ContactQuestion, Long> whatsappClicksByQuestion,
-        Map<ProductStatus, Long> counts) {
+        Map<ProductStatus, Long> counts,
+        long aiReviewCount) {
 }

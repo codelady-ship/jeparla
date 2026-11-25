@@ -12,6 +12,9 @@ import {
   type ImageUpload,
 } from "./backend";
 
+/** Whether the on-model job of a picked model was queued (#315). */
+export type OnModelStart = "queued" | "not_started";
+
 /**
  * Saves the product form to the backend from a route handler: create or update, then the
  * photos (new ones go through a presigned upload into private staging and are attached, i.e.
@@ -24,7 +27,7 @@ export async function saveProduct(
   input: ProductInput,
   id: number | null,
   locale: string,
-): Promise<{ id: number; status: ProductStatus }> {
+): Promise<{ id: number; status: ProductStatus; onModel?: OnModelStart }> {
   const call = <T>(path: string, options: Parameters<typeof userFetch>[1] = {}) =>
     userFetch<T>(path, { canRefresh: true, locale, ...options });
   const categories = await api.listCategories();
@@ -115,12 +118,22 @@ export async function saveProduct(
     });
   }
 
+  // With a picked model (#315) the API queued the on-model job while attaching the first photo,
+  // unless the quota, the budget, the model or the audience said no: say which, not nothing.
+  let onModel: OnModelStart | undefined;
+  if (input.tryOnModelId) {
+    const jobs = await call<{ kind: string }[]>("/merchant/ai/jobs", {
+      query: { productId: saved.id },
+    }).catch(() => null);
+    onModel = jobs?.some((j) => j.kind === "VIRTUAL_TRY_ON") ? "queued" : "not_started";
+  }
+
   if (intent === "REVIEW" && saved.status !== "IN_REVIEW" && saved.status !== "APPROVED") {
     const changed = await call<BackendProduct>(`/merchant/products/${saved.id}/status`, {
       method: "PATCH",
       body: { status: "IN_REVIEW" },
     });
-    return { id: saved.id, status: changed.status };
+    return { id: saved.id, status: changed.status, onModel };
   }
-  return { id: saved.id, status: saved.status };
+  return { id: saved.id, status: saved.status, onModel };
 }

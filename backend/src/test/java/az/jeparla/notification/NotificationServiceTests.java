@@ -77,4 +77,23 @@ class NotificationServiceTests {
         assertThat(notification.getBody()).endsWith("\n\nDəstək: destek@jeparla.az");
         assertThat(emailBody()).contains("\n\nDəstək: destek@jeparla.az\n\n").doesNotContain("/help");
     }
+
+    @Test
+    void aReadyAiResultNamesTheProductInEachLanguageWithoutTheSupportLine() {
+        SupportProperties contact = new SupportProperties("destek@jeparla.az", "", "/help", "https://jeparla.az");
+        when(notifications.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        NotificationService service = new NotificationService(notifications, outbox, messages(), contact,
+                Clock.fixed(Instant.parse("2026-11-23T09:00:00Z"), ZoneOffset.UTC));
+        for (Language language : Language.values()) {
+            User seller = new User("satici@jeparla.test", null, "hash", "Satıcı");
+            seller.setPreferredLocale(language);
+            Notification notification = service.notify(seller, NotificationKind.AI_RESULT_READY,
+                    locale -> new Object[] {"Qızıl üzük"}, null, "/merchant/products/7/ai-studio");
+
+            assertThat(notification.getTitle()).isNotBlank().doesNotStartWith("notification.");
+            assertThat(notification.getBody()).contains("Qızıl üzük").contains("AI Studio")
+                    .doesNotContain("destek@jeparla.az");
+            assertThat(notification.getLink()).isEqualTo("/merchant/products/7/ai-studio");
+        }
+    }
 }

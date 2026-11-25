@@ -9,7 +9,9 @@ package az.jeparla.ai.dto;
  * @param usedToday   used by this store today (Asia/Baku)
  * @param maxAttempts attempts per job
  * @param studioLook  whether STUDIO_LOOK jobs (#119) can run: they have their own, non-generative processor
+ * @param autoTryOn   whether the first photo of a product queues an on-model image by itself (#121, #316): on and a
+ *                    provider configured
  */
 public record AiStatusDto(boolean configured, String provider, int dailyLimit, int usedToday, int maxAttempts,
-        boolean studioLook) {
+        boolean studioLook, boolean autoTryOn) {
 }

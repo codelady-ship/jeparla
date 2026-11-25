@@ -52,11 +52,14 @@ public class MerchantStoreService {
     private final UserRepository users;
     private final ProductRepository products;
     private final ProductContactClickRepository clicks;
+    private final AiReviewCounts aiReviews;
     private final AuditService audit;
     private final Clock clock;
 
     public MerchantStoreService(StoreRepository stores, MerchantStores merchantStores, UserRepository users,
-            ProductRepository products, ProductContactClickRepository clicks, AuditService audit, Clock clock) {
+            ProductRepository products, ProductContactClickRepository clicks, AiReviewCounts aiReviews,
+            AuditService audit, Clock clock) {
+        this.aiReviews = aiReviews;
         this.stores = stores;
         this.merchantStores = merchantStores;
         this.users = users;
@@ -199,7 +202,7 @@ public class MerchantStoreService {
         return new GeoPoint(request.latitude(), request.longitude());
     }
 
-    /** Product counts per status and WhatsApp clicks of the last 30 days. */
+    /** Product counts per status, WhatsApp clicks of the last 30 days and AI results awaiting approval. */
     @Transactional(readOnly = true)
     public MerchantDashboardDto dashboard() {
         Store store = merchantStores.own();
@@ -218,7 +221,8 @@ public class MerchantStoreService {
         for (Object[] row : clicks.sumByQuestionForStoreSince(store.getId(), from)) {
             byQuestion.put(ContactQuestion.valueOf((String) row[0]), ((Number) row[1]).longValue());
         }
-        return new MerchantDashboardDto(null, clicks.sumByStoreSince(store.getId(), from), byQuestion, counts);
+        return new MerchantDashboardDto(null, clicks.sumByStoreSince(store.getId(), from), byQuestion, counts,
+                aiReviews.total(store.getId()));
     }
 
     private static void applyProfile(Store store, String phone, String social, String description,

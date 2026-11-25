@@ -5,12 +5,17 @@ import az.jeparla.ai.provider.GenerationResult;
 import az.jeparla.ai.provider.ImageGenerationException;
 import az.jeparla.ai.provider.ImageGenerationProvider;
 import az.jeparla.ai.provider.ImageGenerationProviders;
+import az.jeparla.common.i18n.Language;
 import az.jeparla.common.storage.ImageProbe;
 import az.jeparla.common.storage.ImageProbe.ImageInfo;
 import az.jeparla.common.storage.ImageUrls;
 import az.jeparla.common.storage.ObjectStorage;
 import az.jeparla.merchant.MerchantImageService;
+import az.jeparla.notification.NotificationKind;
+import az.jeparla.notification.NotificationService;
+import az.jeparla.product.Product;
 import az.jeparla.product.ProductImage;
+import az.jeparla.store.Store;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -33,7 +38,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * {@value #BATCH} jobs one by one: the claim (row lock with SKIP LOCKED, so several instances never run one job),
  * the monthly cost check and the attempt row are one short transaction; the provider call runs outside any
  * transaction; the results are stored in the private bucket and recorded in a second transaction. A job left
- * PROCESSING longer than twice {@link AiProperties#attemptTimeout} (a crash) is marked FAILED.
+ * PROCESSING longer than twice {@link AiProperties#attemptTimeout} (a crash) is marked FAILED. A result that waits
+ * for approval tells the seller in that second transaction (#316): an in-app notification, and an email when the
+ * account has an address, both linking to the product's AI Studio.
  *
  * <p>No job queues itself again (PLAN 5.13): only the seller's retry does, within the attempt limit.
  */
@@ -58,12 +65,13 @@ public class AiJobWorker {
     private final EntityManager entityManager;
     private final TransactionTemplate tx;
     private final AiProperties properties;
+    private final NotificationService notifications;
     private final Clock clock;
 
     public AiJobWorker(AiJobRepository jobs, AiJobAttemptRepository attempts, AiAssetRepository assets,
             AiUsage usage, AiPrompts prompts, AiJobParameters parameters, ImageGenerationProviders providers,
             ObjectStorage storage, ImageUrls imageUrls, EntityManager entityManager, TransactionTemplate tx,
-            AiProperties properties, Clock clock) {
+            AiProperties properties, NotificationService notifications, Clock clock) {
         this.jobs = jobs;
         this.attempts = attempts;
         this.assets = assets;
@@ -76,6 +84,7 @@ public class AiJobWorker {
         this.entityManager = entityManager;
         this.tx = tx;
         this.properties = properties;
+        this.notifications = notifications;
         this.clock = clock;
     }
 
@@ -191,6 +200,7 @@ public class AiJobWorker {
             Instant now = clock.instant();
             stored.forEach(assets::save);
             job.resultReady(now);
+            notifySeller(job);
             attempts.findById(claimed.attemptId()).ifPresent(a -> a.succeeded(result.cost(), now));
             if (result.cost() != null) {
                 usage.addCost(claimed.storeId(), LocalDate.ofInstant(now, properties.zone()),
@@ -201,6 +211,23 @@ public class AiJobWorker {
         if (!Boolean.TRUE.equals(kept)) {
             stored.forEach(asset -> deleteQuietly(asset.getStorageKey()));
         }
+    }
+
+    /** The store owner learns that a result waits for approval, with a link to the product's AI Studio. */
+    private void notifySeller(AiJob job) {
+        Store store = entityManager.find(Store.class, job.getStoreId());
+        Product product = entityManager.find(Product.class, job.getProductId());
+        if (store == null || product == null) {
+            return;
+        }
+        notifications.notify(store.getOwner(), NotificationKind.AI_RESULT_READY,
+                locale -> new Object[] {product.getName().in(Language.of(locale))}, null,
+                studioLink(job.getProductId()));
+    }
+
+    /** Frontend path of a product's AI Studio, where the seller approves or rejects the result. */
+    static String studioLink(long productId) {
+        return "/merchant/products/" + productId + "/ai-studio";
     }
 
     /** Checks one generated file (type by magic number, size) and puts it into the private bucket. */

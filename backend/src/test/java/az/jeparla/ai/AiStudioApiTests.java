@@ -147,6 +147,39 @@ class AiStudioApiTests extends MerchantApiTestBase {
     }
 
     @Test
+    void aReadyResultNotifiesTheSellerAndIsCountedUntilDecided() throws Exception {
+        Ready ready = product();
+        long jobId = queued(ready);
+        mvc.perform(get("/api/v1/merchant/dashboard").with(ready.seller().token()))
+                .andExpect(jsonPath("$.aiReviewCount").value(0));
+        worker.run();
+
+        String link = "/merchant/products/" + ready.productId() + "/ai-studio";
+        mvc.perform(get("/api/v1/notifications").with(ready.seller().token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].kind").value("AI_RESULT_READY"))
+                .andExpect(jsonPath("$.content[0].link").value(link))
+                .andExpect(jsonPath("$.content[0].body", org.hamcrest.Matchers.containsString("Muncuqlu qolbaq")));
+        mvc.perform(get("/api/v1/merchant/dashboard").with(ready.seller().token()))
+                .andExpect(jsonPath("$.aiReviewCount").value(1));
+        mvc.perform(get("/api/v1/merchant/products").with(ready.seller().token()))
+                .andExpect(jsonPath("$[0].id").value((int) ready.productId()))
+                .andExpect(jsonPath("$[0].aiReviewCount").value(1));
+
+        // Another store never sees this store's waiting result.
+        Seller other = seller(SellerKind.FASHION, true);
+        mvc.perform(get("/api/v1/merchant/dashboard").with(other.token()))
+                .andExpect(jsonPath("$.aiReviewCount").value(0));
+
+        mvc.perform(post("/api/v1/merchant/ai/jobs/" + jobId + "/reject").with(ready.seller().token()))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/merchant/dashboard").with(ready.seller().token()))
+                .andExpect(jsonPath("$.aiReviewCount").value(0));
+        mvc.perform(get("/api/v1/merchant/products").with(ready.seller().token()))
+                .andExpect(jsonPath("$[0].aiReviewCount").value(0));
+    }
+
+    @Test
     void aRejectedResultIsCancelledAndNeverPublished() throws Exception {
         Ready ready = product();
         long jobId = queued(ready);
@@ -198,7 +231,9 @@ class AiStudioApiTests extends MerchantApiTestBase {
         assertThat(over.getResponse().getHeader("Retry-After")).isNotBlank();
         mvc.perform(get("/api/v1/merchant/ai/status").with(ready.seller().token()))
                 .andExpect(jsonPath("$.configured").value(true))
-                .andExpect(jsonPath("$.usedToday").value(DAILY_LIMIT));
+                .andExpect(jsonPath("$.usedToday").value(DAILY_LIMIT))
+                // jeparla.ai.auto-try-on is off here.
+                .andExpect(jsonPath("$.autoTryOn").value(false));
         // Cancelled jobs leave the queue (other tests run the worker) but still count today.
         for (long jobId : jobs) {
             mvc.perform(delete("/api/v1/merchant/ai/jobs/" + jobId).with(ready.seller().token()))

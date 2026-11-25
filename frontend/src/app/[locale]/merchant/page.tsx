@@ -1,4 +1,4 @@
-import { Eye, MessageCircle, Plus, Undo2 } from "lucide-react";
+import { Eye, MessageCircle, Plus, Sparkles, Undo2 } from "lucide-react";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -20,6 +20,7 @@ import { routing } from "@/i18n/routing";
 import { USING_MOCK } from "@/lib/api";
 import { formatDecimal } from "@/lib/money";
 import { codeState } from "@/lib/merchant/code";
+import { aiStudioHref } from "@/lib/merchant/on-model";
 import { merchantContext } from "@/lib/merchant/server";
 import { CONTACT_QUESTIONS } from "@/lib/whatsapp";
 import type { ProductStatus } from "@/types/api";
@@ -43,6 +44,9 @@ async function Dashboard() {
   // Sample data has no acceptance: no banner there (codeVersion comes only from the backend).
   const code = store.codeVersion === undefined ? null : codeState(store, new Date());
   const returned = rows.filter((r) => r.status === "RETURNED");
+  // AI Studio results waiting for the seller (#316): the card shows only when there are some.
+  const aiWaiting = rows.filter((r) => (r.aiReviewCount ?? 0) > 0);
+  const aiReviewCount = stats.aiReviewCount ?? 0;
   const num = (n: number) => formatDecimal(String(n), locale);
 
   return (
@@ -133,6 +137,40 @@ async function Dashboard() {
                     <span className="text-2xl font-semibold tabular-nums">
                       {num(stats.whatsappClicksByQuestion?.[q] ?? 0)}
                     </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {aiReviewCount > 0 && (
+            <section
+              aria-labelledby="ai-review"
+              className="flex flex-col gap-3 rounded-lg border border-gold/50 bg-card p-5"
+            >
+              <div className="flex flex-col gap-1">
+                <h2 id="ai-review" className="flex items-center gap-2 text-xl">
+                  <Sparkles aria-hidden className="size-5 text-gold-text" />
+                  {t("aiReviewTitle")}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {t("aiReviewText", { count: aiReviewCount })}
+                </p>
+              </div>
+              <ul className="flex flex-col gap-2">
+                {aiWaiting.map((r) => (
+                  <li
+                    key={r.id}
+                    className="flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center"
+                  >
+                    <p className="min-w-0 flex-1 truncate font-medium">{r.name[locale]}</p>
+                    <Link
+                      href={aiStudioHref(r.id)}
+                      className={buttonVariants({ variant: "outline" })}
+                    >
+                      <Sparkles aria-hidden />
+                      {t("aiReviewOpen")}
+                    </Link>
                   </li>
                 ))}
               </ul>
