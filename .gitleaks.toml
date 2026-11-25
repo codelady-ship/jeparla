@@ -15,3 +15,9 @@ condition = "AND"
 paths = ['''(^|/)\.env\.example$''']
 regexTarget = "line"
 regexes = ['''^[A-Z][A-Z0-9_]*=\s*$''']
+
+# e082314 (#314) added an empty JEPARLA_GEMINI_API_KEY= line to deploy/.env.example; the generic rule read the
+# next line into it (no value was ever committed). The line is commented since ab1c860; history is not rewritten.
+[[allowlists]]
+description = "Empty Gemini key line in e082314 (#314)"
+commits = ["e082314455313c2f2bdaae557c711fcce289f73e"]

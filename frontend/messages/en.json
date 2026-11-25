@@ -1722,6 +1722,11 @@
         "nothing": "Nothing recognisable was found in the text. Fill in the form by hand.",
         "same": "The form already has the details from this text; nothing changed.",
         "kept": "Fields you had already filled were not changed: {fields}."
+      },
+      "tryOn": {
+        "legend": "Show on a model",
+        "hint": "If you pick a model, saving the product makes an AI image of the first photo on that model. When it is ready, review and approve it in AI Studio; nothing is published without your approval.",
+        "none": "No model"
       }
     },
     "profile": {

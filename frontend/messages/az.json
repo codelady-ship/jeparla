@@ -1722,6 +1722,11 @@
         "nothing": "Mətndə tanınan məlumat tapılmadı. Formanı əl ilə doldurun.",
         "same": "Forma artıq bu mətndəki məlumatlarla doludur, heç nə dəyişmədi.",
         "kept": "Artıq yazdığınız sahələr dəyişdirilmədi: {fields}."
+      },
+      "tryOn": {
+        "legend": "Model üzərində göstər",
+        "hint": "Model seçsəniz, məhsulu yadda saxlayanda ilk şəkildən bu modelin üzərində AI şəkli hazırlanır. Hazır olanda AI Studio-da baxıb təsdiqləyirsiniz; təsdiqləməsəniz heç nə dərc olunmur.",
+        "none": "Modelsiz"
       }
     },
     "profile": {

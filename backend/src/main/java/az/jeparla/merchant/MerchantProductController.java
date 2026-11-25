@@ -150,7 +150,8 @@ public class MerchantProductController {
                     + " 409 merchant.image_limit at 8 photos.")
     public ResponseEntity<MerchantImageDto> attachDraft(@PathVariable long id,
             @Valid @RequestBody DraftImageRequest request) {
-        Created<MerchantImageDto> result = images.attachDraft(id, request.draftId(), request.altAz());
+        Created<MerchantImageDto> result = images.attachDraft(id, request.draftId(), request.altAz(),
+                request.tryOnModelId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result.body());
     }
 

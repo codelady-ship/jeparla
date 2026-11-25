@@ -8,7 +8,10 @@ import jakarta.validation.constraints.Size;
  * {@code POST /api/v1/merchant/products/{id}/images/from-draft} (#109): the photo of one of the store's drafts
  * becomes a photo of the product, and the draft is used up.
  *
- * @param altAz optional alt text in Azerbaijani (the product name by default in the form)
+ * @param altAz        optional alt text in Azerbaijani (the product name by default in the form)
+ * @param tryOnModelId optional AI model the seller picked: when this becomes the product's first photo, an
+ *                     on-model image with that model is queued (it still waits for the seller's approval)
  */
-public record DraftImageRequest(@NotNull @Positive Long draftId, @Size(max = 200) String altAz) {
+public record DraftImageRequest(@NotNull @Positive Long draftId, @Size(max = 200) String altAz,
+        @Positive Long tryOnModelId) {
 }

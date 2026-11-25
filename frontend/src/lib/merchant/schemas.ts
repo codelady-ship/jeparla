@@ -23,6 +23,8 @@ export const imagesStep = z.object({
     .array(z.object({ id: z.string(), url: z.string().min(1), name: z.string().max(200) }))
     .min(1, "imagesRequired")
     .max(MAX_IMAGES, "imagesTooMany"),
+  /** AI model picked for an on-model image (#315); the API checks it is active and fits. */
+  tryOnModelId: z.number().int().positive().nullable().optional(),
 });
 
 export const MAX_KEY_FEATURES = 5;
